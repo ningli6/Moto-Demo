@@ -25,6 +25,7 @@ public class GridMap {
 
 	// initialize map using four coordinates and cell degree
 	public GridMap(Location ul, Location ur, Location ll, Location lr, double cd) {
+		if (cd <= 0) throw new IllegalArgumentException("Cell size defined in degree must be positive");
 		// expect user's input is a rectangle area
 		if (Math.abs(ul.getLatitude() - ur.getLatitude()) > epsilon) throw new IllegalArgumentException();
 		if (Math.abs(ll.getLatitude() - lr.getLatitude()) > epsilon) throw new IllegalArgumentException();
@@ -45,6 +46,20 @@ public class GridMap {
 		length = upperLeft.distTo(upperRight);
 		height = upperLeft.distTo(lowerLeft);
 		averDist = (length + height) / (rows + cols);
+	}
+
+	public GridMap(GridMap map) {
+		if (map == null) throw new NullPointerException();
+		upperLeft = map.getUpperLeft();
+		upperRight = map.getUpperRight();
+		lowerLeft = map.getLowerLeft();
+		lowerRight = map.getLowerRight();
+		cellDegree = map.getCellDegree();
+		rows = map.getRows();
+		cols = map.getCols();
+		length = map.getLength();
+		height = map.getHeight();
+		averDist = map.getAverageDistance();
 	}
 
 	public double getLength() {
@@ -88,10 +103,11 @@ public class GridMap {
 	}
 	// check if the location is in the range of grid map
 	public boolean withInBoundary(Location location) {
+		if (location == null) return false;
 		double lat = location.getLatitude();
 		double lon = location.getLongitude();
 		if (lat < getLowerBounday() || lat > getUpperBoundary()) return false;
-		if (lon < getLeftBoundary() || lat > getRightBoundary()) return false;
+		if (lon < getLeftBoundary() || lon > getRightBoundary()) return false;
 		return true;
 	}
 
@@ -110,7 +126,7 @@ public class GridMap {
 	public double getLowerBounday() {
 		return lowerLeft.getLatitude();
 	}
-
+	// print four corners of location
 	public void showBoundary() {
 		System.out.println("Map boundary: ");
 		upperLeft.printLocation();

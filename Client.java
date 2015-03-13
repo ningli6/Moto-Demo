@@ -13,11 +13,13 @@ public class Client {
 	public Client(double lat, double lon, GridMap map) {
 		location = new Location(lat, lon);
 		inferMap = new InferMap(map);
+		if (!inferMap.withInBoundary(location)) System.out.println("SU's location is not in the range of map area");
 	}
 
 	// send a query to server
 	public void query(Server server) {
-		double power = server.response(this.location);
+		if (server == null) return;
+		double power = server.response(this);
 		System.out.println("Server response with: " + power);
 		if (power < 0) {
 			System.out.println("Channel unavailable");
@@ -42,6 +44,10 @@ public class Client {
 		}
 		System.out.println("d1: " + d1 + ", d2: " + d2);
 		inferMap.update(this.location, d1, d2);
+	}
+
+	public Location getLocation() {
+		return location;
 	}
 
 	public void printInferMap() {

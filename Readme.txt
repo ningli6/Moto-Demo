@@ -4,3 +4,5 @@ Right now there is only 1 PU an 1 SU. SU sends query Q(location) to server, serv
 SU then uses that response to update its inference map, based on different situation proposed in the paper. It's kind of hard to visualize the results using terminal output. With small numbers of cells we can still convince ourselves that the algorithm works as expected though.
 
 Uses latitude & longitude instead of cell index to compute. Cell size are defined by degree. User must assign a rectangle area to the program.
+
+Add PU class. Test both String & double input format. Enable decimals using String input.

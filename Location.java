@@ -17,12 +17,13 @@ public class Location {
 		longitude = lon;
 	}
 	// the position's format - Degrees|minutes'seconds''hemisphere
-	// ([0-9])+\|([0-9])+'([0-9])+''(N|S|E|W)
+	// ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
 	public Location(String lat, String lon) {
+		if (lat == null || lon == null) throw new NullPointerException();
 		// define a pattern
-		String regexp = "([0-9])+\\|([0-9])+'([0-9])+''(N|S|E|W)";
+		String regexp = "([0-9])+(\\.[0-9]+){0,1}\\|([0-9])+(\\.[0-9]+){0,1}'([0-9])+(\\.[0-9]+){0,1}''(N|S|E|W)\\.";
 		if (!lat.matches(regexp) || !lon.matches(regexp))
-			throw new IllegalArgumentException("Input location format must be: ([0-9])+\\|([0-9])+'([0-9])+''(N|S|E|W)");
+			throw new IllegalArgumentException("The regexp of input must be: ([0-9])+(\\.[0-9]+){0,1}\\|([0-9])+(\\.[0-9]+){0,1}'([0-9])+(\\.[0-9]+){0,1}''(N|S|E|W)\\.");
 		latitude = convertToDecDeg(Degrees(lat), Minutes(lat), Seconds(lat), Hemisphere(lat));
 		longitude = convertToDecDeg(Degrees(lon), Minutes(lon), Seconds(lon), Hemisphere(lon));
 	}
@@ -122,7 +123,10 @@ public class Location {
 		// the delimiter signifying the beginning of the hemisphere
 		int begin = pos.indexOf("''") + 2;
 		// the delimiter signifying the end of the hemisphere
-		int end = pos.indexOf(".");
+		//int end = pos.indexOf(".");
+		/*** update by Ning Li ***/
+		/* use lastIndexOf to allow decimal fraction from input */
+		int end = pos.lastIndexOf(".");
 		//isolate the hemisphere
 		hemisphere = pos.substring(begin, end);
 		return hemisphere;

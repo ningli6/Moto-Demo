@@ -11,39 +11,30 @@ public class Server {
 	// Server has an instance of GridMap
 	private GridMap map;
 	// use a hashSet to store the location of PU
-	private HashSet<Location> set;
+	private HashSet<PU> set;
 
 	public Server(GridMap map) {
 		this.map = map;
-		set = new HashSet<Location>();
+		set = new HashSet<PU>();
 	}
 
-	public void addPU(double lat, double lon) {
+	public void addPU(PU pu) {
 		// error checking
 		if (map == null) {
 			System.out.println("Initialize map first");
 			return;
 		}
+		if (pu == null) return;
 		// check if location is in the rectangle area
-		Location location = new Location(lat, lon);
-		if (map.withInBoundary(location)) set.add(location);
-	}
-
-	public void addPU(Location location) {
-		// error checking
-		if (map == null) {
-			System.out.println("Initialize map first");
-			return;
-		}
-		// check if location is in the rectangle area
-		if (map.withInBoundary(location)) set.add(location);
+		if (map.withInBoundary(pu.getLocation())) set.add(pu);
+		else System.out.println("PU's location out of range");
 	}
 
 	// print the location of PUs
 	public void printLocationOfPUs() {
 		if (set == null) return;
-		for (Location location : set) {
-			location.printLocation();
+		for (PU pu : set) {
+			pu.printLocation();
 		}
 	}
 
@@ -54,17 +45,17 @@ public class Server {
 	}
 
 	// resonse to the query from client
-	public double response(Location location) {
-		if (location == null) return -1;
-		if (!map.withInBoundary(location)) return -1;
+	public double response(Client client) {
+		if (client == null) return -1;
+		if (!map.withInBoundary(client.getLocation())) return -1;
 		if (set.isEmpty()) return PMAX;
-		Iterator<Location> iter = set.iterator();
-		Location pu = null;
+		Iterator<PU> iter = set.iterator();
+		PU pu = null;
 		// Note that right now set only has one PU
 		if (iter.hasNext()) {
 			pu = iter.next();
 		}
-		return MTP(pu.distTo(location));
+		return MTP(pu.getLocation().distTo(client.getLocation()));
 	}
 
     // MTP function

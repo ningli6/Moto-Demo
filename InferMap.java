@@ -7,10 +7,11 @@ import java.text.DecimalFormat;
  */
 
 public class InferMap extends GridMap {
+	// probability map
 	private double[][] p;
 
 	public InferMap(GridMap map) {
-		super(map.getUpperLeft(), map.getUpperRight(), map.getLowerLeft(), map.getLowerRight(), map.getCellDegree());
+		super(map);
 		p = new double[getRows()][getCols()];
 		for (int i = 0; i < getRows(); i++) 
 			for (int j = 0; j < getCols(); j++)
@@ -28,6 +29,7 @@ public class InferMap extends GridMap {
 
 	// updates the matrix based on response from server
 	public void update(Location location, int d1, int d2) {
+		if (location == null) return;
 		if (!withInBoundary(location)) {
 			System.out.println("Invalid location");
 			return;
@@ -37,8 +39,13 @@ public class InferMap extends GridMap {
 			return;
 		}
 		int G = 0;
-		int rowIndex = (int) (Math.abs((getUpperBoundary() - location.getLatitude())) / getCellDegree());
-		int colIndex = (int) (Math.abs((getLeftBoundary() - location.getLongitude())) / getCellDegree());
+		double cd = getCellDegree();
+		if (cd <= 0) return;
+		double upperBoundary = getUpperBoundary();
+		double leftBoundary = getLeftBoundary();
+		int rowIndex = (int) (Math.abs((upperBoundary - location.getLatitude())) / cd);
+		int colIndex = (int) (Math.abs((leftBoundary - location.getLongitude())) / cd);
+		
 		/* debug information */
 		System.out.println("***Update****");
 		System.out.println("center: ");
@@ -59,15 +66,15 @@ public class InferMap extends GridMap {
 		System.out.println("startCol: " + startCol);
 
 		Location loc = new Location();
-		// assume that PU is located at the center of cell
 		for (int i = startRow; i < startRow + updateLength && i < getRows(); i++)
 			for (int j = startCol; j < startCol + updateLength && j < getCols(); j++) {
-				loc.setLocation(getUpperBoundary() - 0.5 * getCellDegree() - i * getCellDegree(), getLeftBoundary() + 0.5 * getCellDegree() + j * getCellDegree());
+				// assume that PU is located at the center of cell
+				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 				double distance = loc.distTo(location);
 				if (distance < d1) {
 					p[i][j] = 0;
 					/* debug information */
-					System.out.println("Set to 0: " + i + ", " + j);
+					System.out.println("p" + "[" + i + "]" + "[" + j + "] = 0");
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
@@ -76,7 +83,8 @@ public class InferMap extends GridMap {
 		if (G != 0) {
 			for (int i = startRow; i < startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j < startCol + updateLength && j < getCols(); j++) {
-					loc.setLocation(getUpperBoundary() - 0.5 * getCellDegree() - i * getCellDegree(), getLeftBoundary() + 0.5 * getCellDegree() + j * getCellDegree());
+					// assume that PU is located at the center of cell
+					loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 					double distance = loc.distTo(location);
 					if (distance >= d1 && distance < d2) {
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
@@ -86,7 +94,8 @@ public class InferMap extends GridMap {
 				}
 		}
 	}
-	// print the matrix
+
+	// print the probability matrix
 	public void print() {
 		for (int i = 0; i < getRows(); i++) {
 			for (int j = 0; j < getCols(); j++) {
