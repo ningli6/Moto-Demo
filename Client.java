@@ -51,6 +51,7 @@ public class Client {
 	}
 
 	public void printInferMap() {
-		inferMap.print();
+		// inferMap.print();
+		inferMap.visualize();
 	}
 }

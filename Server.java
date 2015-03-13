@@ -60,7 +60,7 @@ public class Server {
 
     // MTP function
 	private double MTP(double distance) {
-		System.out.println("Distance between PU and SU is: " + distance);
+		System.out.println("Distance between PU and SU is: " + distance + " km");
 		if (distance < 8) return 0;
 		if (distance >= 8 && distance < 14) return 0.5 * PMAX;
 		if (distance >= 14 && distance < 25) return 0.75 * PMAX;

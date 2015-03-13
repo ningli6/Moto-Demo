@@ -1,4 +1,8 @@
 import java.text.DecimalFormat;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 
 /*
  * InferMap is the grid map that attackers use to infer PU's location
@@ -74,7 +78,7 @@ public class InferMap extends GridMap {
 				if (distance < d1) {
 					p[i][j] = 0;
 					/* debug information */
-					System.out.println("p" + "[" + i + "]" + "[" + j + "] = 0");
+					// System.out.println("p" + "[" + i + "]" + "[" + j + "] = 0");
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
@@ -89,7 +93,7 @@ public class InferMap extends GridMap {
 					if (distance >= d1 && distance < d2) {
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
 						/* debug information */
-						System.out.println("p" + "[" + i + "]" + "[" + j + "] = " + p[i][j]);
+						// System.out.println("p" + "[" + i + "]" + "[" + j + "] = " + p[i][j]);
 					}
 				}
 		}
@@ -103,5 +107,40 @@ public class InferMap extends GridMap {
 			}
 			System.out.println();
 		}
+	}
+
+	// visualize results
+	public void visualize() {
+		int rows = getRows();
+		int cols = getCols();
+		int[] data = new int[rows * cols];
+		int red = -1;
+		int green = -1;
+		int blue = -1;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				if (p[i][j] == 0.5) { // gray
+					red = 128;
+					green = 128;
+					blue = 128;
+				}
+				else if (p[i][j] == 0) { // black
+					red = 255;
+					green = 255;
+					blue = 255;
+				}
+				else { // > 0.5, white
+					red = 0;
+					green = 0;
+					blue = 0;
+				}
+				data[j + rows * i] = (red << 16) | (green << 8) | blue;
+			}
+		}
+		JFrame frame = new JFrame("ColorPan");
+		frame.getContentPane().add(new ColorPan(data, cols, rows));
+		frame.setSize(rows, cols);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 }
