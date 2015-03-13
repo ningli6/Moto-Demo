@@ -10,14 +10,14 @@ public class Client {
 	// inferMap of the SU
 	private InferMap inferMap;
 	// constructor
-	public Client(int r, int c, GridMap map) {
-		location = new Location(r, c);
-		inferMap = new InferMap(map.getLength(), map.getHeight(), map.getCellSize());
+	public Client(double lat, double lon, GridMap map) {
+		location = new Location(lat, lon);
+		inferMap = new InferMap(map);
 	}
 
 	// send a query to server
 	public void query(Server server) {
-		double power = server.response(location);
+		double power = server.response(this.location);
 		System.out.println("Server response with: " + power);
 		if (power < 0) {
 			System.out.println("Channel unavailable");
@@ -41,7 +41,7 @@ public class Client {
 			d2 = d1;
 		}
 		System.out.println("d1: " + d1 + ", d2: " + d2);
-		inferMap.update(location, d1, d2);
+		inferMap.update(this.location, d1, d2);
 	}
 
 	public void printInferMap() {

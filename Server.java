@@ -13,58 +13,63 @@ public class Server {
 	// use a hashSet to store the location of PU
 	private HashSet<Location> set;
 
-	// constructor
-	public Server(double length, double height, double cellLength) {
-		map = new GridMap(length, height, cellLength);
+	public Server(GridMap map) {
+		this.map = map;
 		set = new HashSet<Location>();
 	}
 
-	// add PU
-	public void addPU(int r, int c) {
+	public void addPU(double lat, double lon) {
 		// error checking
-		if (map == null) throw new NullPointerException("Initialize map first");
-		if (r < 0 || r >= map.getRows()) {
-			System.out.println("Rows must be with in " + 0 + " and " + map.getRows());
+		if (map == null) {
+			System.out.println("Initialize map first");
 			return;
 		}
-		if (c < 0 || c >= map.getCols()) {
-			System.out.println("Columns must be with in " + 0 + " and " + map.getCols());
-			return;
-		}
-		Location location = new Location(r, c);
-		// assume no duplicate locations
-		set.add(location);
+		// check if location is in the rectangle area
+		Location location = new Location(lat, lon);
+		if (map.withInBoundary(location)) set.add(location);
 	}
-	// print the location of pus
+
+	public void addPU(Location location) {
+		// error checking
+		if (map == null) {
+			System.out.println("Initialize map first");
+			return;
+		}
+		// check if location is in the rectangle area
+		if (map.withInBoundary(location)) set.add(location);
+	}
+
+	// print the location of PUs
 	public void printLocationOfPUs() {
 		if (set == null) return;
 		for (Location location : set) {
 			location.printLocation();
 		}
 	}
+
 	// return numbers of PUs
 	public int getNumberOfPUs() {
 		if (set == null) return 0;
 		return set.size();
 	}
-    // return the GridMap instance
-	public GridMap getMap() {
-		return map;
-	}
+
 	// resonse to the query from client
 	public double response(Location location) {
 		if (location == null) return -1;
+		if (!map.withInBoundary(location)) return -1;
 		if (set.isEmpty()) return PMAX;
 		Iterator<Location> iter = set.iterator();
-		Location pu = new Location();
+		Location pu = null;
 		// Note that right now set only has one PU
 		if (iter.hasNext()) {
 			pu = iter.next();
 		}
-		return MTP(pu.distTo(location) * map.getCellSize());
+		return MTP(pu.distTo(location));
 	}
+
     // MTP function
 	private double MTP(double distance) {
+		System.out.println("Distance between PU and SU is: " + distance);
 		if (distance < 8) return 0;
 		if (distance >= 8 && distance < 14) return 0.5 * PMAX;
 		if (distance >= 14 && distance < 25) return 0.75 * PMAX;
