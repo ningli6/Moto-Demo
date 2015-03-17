@@ -54,4 +54,12 @@ public class Client {
 		// inferMap.print();
 		inferMap.visualize();
 	}
+
+	public void printoutMap() {
+		inferMap.printout();
+	}
+
+	public void printFormattedTable() {
+		inferMap.printInRequiredFormat();
+	}
 }

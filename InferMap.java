@@ -3,7 +3,9 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.File;
 /*
  * InferMap is the grid map that attackers use to infer PU's location
  * It inherents GridMap class, with additional matrix that corresponding
@@ -142,5 +144,45 @@ public class InferMap extends GridMap {
 		frame.setSize(rows, cols);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+	}
+
+	// the output will be matrix
+	public void printout() {
+		// String text = "Output";
+		File file = new File("/Users/ningli/Desktop/javaout.txt");
+		try {
+			PrintWriter out = new PrintWriter(file);
+			System.out.println("Start printing... ");
+			for (int i = 0; i < getRows(); i++) {
+				for (int j = 0; j < getCols(); j++) {
+					out.print(p[i][j] + " ");
+				}
+				out.println();
+			}
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} finally {
+			System.out.println("Printing ends");
+		}
+	}
+	// the output will be tables that specified in the sample data
+	public void printInRequiredFormat() {
+		File file = new File("/Users/ningli/Desktop/demodata.txt");
+		try {
+			PrintWriter out = new PrintWriter(file);
+			System.out.println("Start printing... ");
+			out.println("LAT LON P");
+			for (int i = 0; i < getRows(); i++) {
+				for (int j = 0; j < getCols(); j++) {
+					out.println(getLatitude(i) + " " + getLongitude(j) + " " + p[i][j]);
+				}
+			}
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} finally {
+			System.out.println("Printing ends");
+		}
 	}
 }

@@ -10,6 +10,11 @@ public class GridMap {
 	private Location upperRight;
 	private Location lowerLeft;
 	private Location lowerRight;
+	// lat & lon coordinate location
+	private double upperLat;
+	private double lowerLat;
+	private double leftLon;
+	private double rightLon;
 	// length of the grid
 	private double length = -1;
 	// height of the grid
@@ -46,6 +51,10 @@ public class GridMap {
 		length = upperLeft.distTo(upperRight);
 		height = upperLeft.distTo(lowerLeft);
 		averDist = (length + height) / (rows + cols);
+		upperLat = getUpperBoundary();
+		lowerLat = getLowerBounday();
+		leftLon = getLeftBoundary();
+		rightLon = getRightBoundary();
 	}
 
 	public GridMap(GridMap map) {
@@ -60,6 +69,10 @@ public class GridMap {
 		length = map.getLength();
 		height = map.getHeight();
 		averDist = map.getAverageDistance();
+		upperLat = map.getUpperBoundary();
+		lowerLat = map.getLowerBounday();
+		leftLon = map.getLeftBoundary();
+		rightLon = map.getRightBoundary();
 	}
 
 	public double getLength() {
@@ -133,5 +146,22 @@ public class GridMap {
 		upperRight.printLocation();
 		lowerLeft.printLocation();
 		lowerRight.printLocation();
+	}
+	
+	// get lat & lon according to given rows & cols index
+	public double getLatitude(int r) {
+		if (r < 0 || r >= rows) throw new IllegalArgumentException();
+		return upperLat - 0.5 * cellDegree - r * cellDegree;
+	}
+
+	public double getLongitude(int c) {
+		if (c < 0 || c >= cols) throw new IndexOutOfBoundsException();
+		return leftLon + 0.5 * cellDegree + c * cellDegree;
+	}
+
+	public Location getLocation(int r, int c) {
+		if (r < 0 || r >= rows || c < 0 || c >= cols) throw new IndexOutOfBoundsException();
+		return new Location(upperLat - 0.5 * cellDegree - r * cellDegree, 
+			leftLon + 0.5 * cellDegree + c * cellDegree);
 	}
 }

@@ -8,3 +8,5 @@ Uses latitude & longitude instead of cell index to compute. Cell size are define
 Add PU class. Test both String & double input format. Enable decimals using String input.
 
 Add a ColorPan class to visualize the results of probability matrix. The gray area means the probability of existence of PU is still 0.5. The white area means p[i][j] is set to 0. Black area means p[i][j] has increased.
+
+Be able to output propability matrix in requried format.

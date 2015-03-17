@@ -60,9 +60,11 @@ public class Main {
 		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
 
 		// initialize a SU, speficify its location and grid map it uses
-		Client client = new Client(47.7, -97.5, map);
+		Client client = new Client(47.6, -97.7, map);
 		// SU sends a query to server, updates its inference results
 		client.query(server);
-		client.printInferMap();
+		// client.printoutMap();
+		// client.printInferMap();
+		client.printFormattedTable();
 	}
 }
