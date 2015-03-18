@@ -1,15 +1,22 @@
+import java.util.Random;
 /*
  * Main class is the entrace of the program
  */
 
 public class Main {
-
+	/* The example map area is:
+	 * 50°00'00.0"N, 100°00'00.0"W
+	 * 50°00'00.0"N, 95°00'00.0"W
+	 * 45°00'00.0"N, 100°00'00.0"W
+	 * 45°00'00.0"N, 95°00'00.0"W
+	 * allow user to define a rectangle area with four lat-lon coordinates
+	 * user can input location as string that matches to
+	 * ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
+	 */
 	public static void main(String[] args) {
 		// Cell size, when cellDegree equals to 0.1, distance between each cell is about 10 km.
 		// When cellDegree equals to 0.01, distance between each cell is about 1 km.
 		final double cellDegree = 0.01; // in degree
-		// allow user to define a rectangle area with four lat-lon coordinates
-		// ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
 		/*****************************/
 		// String ulLat = "50|00'00''N.";
 		// String ulLon = "100|00'00''W.";
@@ -54,17 +61,38 @@ public class Main {
 	    // initialize a server with parameters from initial settings
 		Server server = new Server(map);
 		// add a PU to the server's grid map, speficify the PU's location
+		/* The location of PU is:
+		 * 47°30'00.0"N, 97°30'00.0"W
+		 */
 		PU pu = new PU(47.5, -97.5);
 		server.addPU(pu);
 		/* debug information */
 		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
-
-		// initialize a SU, speficify its location and grid map it uses
-		Client client = new Client(47.6, -97.7, map);
+		
+		// initiliza a client, then change its location and make a query for N times;
+		int N = 10;
+		Client client = new Client(47.6, -97.6, map);
+		client.query(server);
+		Random rand = new Random();
+		for (int i = 0; i < N; i++) {
+			double rLat = 50 - (50 - 45) * rand.nextDouble();
+			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
+			client.setLocation(rLat, rLon);
+			// SU sends a query to server, updates its inference results
+			client.query(server);
+		}
+		
+		/*
+		Client client = new Client(map);
+		Random rand = new Random();
+		double rLat = 50 - (50 - 45) * rand.nextDouble();
+		double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
+		client.setLocation(rLat, rLon);
 		// SU sends a query to server, updates its inference results
 		client.query(server);
-		// client.printoutMap();
-		// client.printInferMap();
+		*/
+		client.printInferMap();
+		client.printFormattedMatrix();
 		client.printFormattedTable();
 	}
 }

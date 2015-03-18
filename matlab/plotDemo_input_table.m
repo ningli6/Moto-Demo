@@ -1,3 +1,7 @@
+% info for output files
+userid = 'ning';
+filename = 'Demo';
+
 % same setting as java program does. Hard coded for now.
 latStart = 45;
 latEnd = 50;
@@ -8,8 +12,8 @@ cellsize = 0.01;
 PU_Lat = 47.5;
 PU_Lon = -97.5;
 
-% import data
-A = importdata('/Users/ningli/Desktop/demodata.txt');
+% import data from a text file
+A = importdata('/Users/ningli/Desktop/demoTable.txt');
 A = A.data;
 x = (LongStart):((LongEnd - LongStart)/499):(LongEnd);
 y = (latStart):((latEnd - latStart)/499):(latEnd);
@@ -21,7 +25,7 @@ for i = 1:length(A)
     if A(i,3) == 0.5
         I(i) = NaN;
     else if A(i, 3) > 0.5
-        I(i) = 0.7;
+        I(i) = 0.8;
         end
     end
 end
@@ -44,3 +48,11 @@ plot(PU_Lon ,PU_Lat,'w.','MarkerSize',20);
 % drwa google map
 plot_google_map('maptype','hybrid','APIKey','AIzaSyDMSjokr-3WVHSYtZeW5xM2gI6uO8BkiMI');
 hold off;
+
+% Output the contours into pdf and png file
+fileextension = '.pdf';
+name = ['/Users/ningli/Desktop/', userid, '_', filename, '_probability',fileextension];
+print('-dpdf',name);
+fileextension = '.png';
+name=['/Users/ningli/Desktop/', userid, '_', filename, '_probability',fileextension];
+print('-dpng',name);

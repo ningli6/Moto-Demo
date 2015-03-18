@@ -102,6 +102,7 @@ public class InferMap extends GridMap {
 	}
 
 	// print the probability matrix
+	// obsolete
 	public void print() {
 		for (int i = 0; i < getRows(); i++) {
 			for (int j = 0; j < getCols(); j++) {
@@ -126,12 +127,12 @@ public class InferMap extends GridMap {
 					green = 128;
 					blue = 128;
 				}
-				else if (p[i][j] == 0) { // black
+				else if (p[i][j] == 0) { // white
 					red = 255;
 					green = 255;
 					blue = 255;
 				}
-				else { // > 0.5, white
+				else { // > 0.5, black
 					red = 0;
 					green = 0;
 					blue = 0;
@@ -147,9 +148,9 @@ public class InferMap extends GridMap {
 	}
 
 	// the output will be matrix
-	public void printout() {
+	public void printoutMatrix() {
 		// String text = "Output";
-		File file = new File("/Users/ningli/Desktop/javaout.txt");
+		File file = new File("/Users/ningli/Desktop/demoMatrix.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -166,9 +167,10 @@ public class InferMap extends GridMap {
 			System.out.println("Printing ends");
 		}
 	}
+
 	// the output will be tables that specified in the sample data
 	public void printInRequiredFormat() {
-		File file = new File("/Users/ningli/Desktop/demodata.txt");
+		File file = new File("/Users/ningli/Desktop/demoTable.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");

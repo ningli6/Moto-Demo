@@ -16,6 +16,22 @@ public class Client {
 		if (!inferMap.withInBoundary(location)) System.out.println("SU's location is not in the range of map area");
 	}
 
+	public Client(GridMap map) {
+		location = new Location(); // use defalut settings lat = 0 & lon = 0;
+		inferMap = new InferMap(map);
+		if (!inferMap.withInBoundary(location)) System.out.println("SU's location is not in the range of map area");
+	}
+
+	public void setLocation(double lat, double lon) {
+		if (location == null) System.out.println("Initialize client first");
+		else location.setLocation(lat, lon);
+	}
+
+	public void setLocation(String lat, String lon) {
+		if (location == null) System.out.println("Initialize client first");
+		else location.setLocation(lat, lon);
+	}
+
 	// send a query to server
 	public void query(Server server) {
 		if (server == null) return;
@@ -50,15 +66,24 @@ public class Client {
 		return location;
 	}
 
+	/*
+	 * This function plot the result in a colorpan for visualization
+	 */
 	public void printInferMap() {
 		// inferMap.print();
 		inferMap.visualize();
 	}
 
-	public void printoutMap() {
-		inferMap.printout();
+	/*
+	 * This function output the probability matrix in matrix form
+	 */
+	public void printFormattedMatrix() {
+		inferMap.printoutMatrix();
 	}
 
+	/*
+	 * This function output the probability matrix as a column in the table
+	 */
 	public void printFormattedTable() {
 		inferMap.printInRequiredFormat();
 	}
