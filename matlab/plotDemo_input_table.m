@@ -30,9 +30,14 @@ Z = griddata(A(:,2),A(:,1),I,X,Y,'natural');
 % plot on google map
 figure();
 contourf(X,Y,Z);
-title('Probability');
+title('Probability map');
 xlabel('longitude');
 ylabel('latitude');
+% plot color bar
+contourcmap('jet', 'Colorbar', 'on', ...
+   'Location', 'vertical', ...
+   'ColorAlignment', 'center',...
+   'TitleString', 'Probability value');
 hold on;
 % draw the PU location on the map
 plot(PU_Lon ,PU_Lat,'w.','MarkerSize',20);
