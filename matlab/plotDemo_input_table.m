@@ -13,8 +13,8 @@ PU_Lat = 47.5;
 PU_Lon = -97.5;
 
 % import data from a text file
-A = importdata('/Users/ningli/Desktop/demoTable.txt');
-A = A.data;
+import = importdata('/Users/ningli/Desktop/demoTable.txt');
+A = import.data;
 x = (LongStart):((LongEnd - LongStart)/499):(LongEnd);
 y = (latStart):((latEnd - latStart)/499):(latEnd);
 [X,Y] = meshgrid(x,y);
@@ -22,9 +22,11 @@ y = (latStart):((latEnd - latStart)/499):(latEnd);
 % change entries value to gain better output map
 I = zeros(length(A), 1);
 for i = 1:length(A)
-    if A(i,3) == 0.5
+    if A(i,3) == 0
         I(i) = NaN;
-    else if A(i, 3) > 0.5
+    else if A(i, 3) == 0.5
+            I(i) = 0.5;
+    else
         I(i) = 0.8;
         end
     end

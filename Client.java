@@ -41,21 +41,38 @@ public class Client {
 			System.out.println("Channel unavailable");
 			return;
 		}
-		int d1 = -1; int d2 = -1;
+		double d1 = -1; double d2 = -1;
+		// if (power == 0) {
+		// 	d1 = 0;
+		// 	d2 = 8;
+		// }
+		// if (power == 0.5 * PMAX) {
+		// 	d1 = 8;
+		// 	d2 = 14;
+		// }
+		// if (power == 0.75 * PMAX) {
+		// 	d1 = 14;
+		// 	d2 = 25;
+		// }
+		// if (power == PMAX) {
+		// 	d1 = 25;
+		// 	d2 = d1;
+		// }
+		// for testing
 		if (power == 0) {
-			d1 = 0;
-			d2 = 8;
+			d1 = MTP.d0;
+			d2 = MTP.d1;
 		}
 		if (power == 0.5 * PMAX) {
-			d1 = 8;
-			d2 = 14;
+			d1 = MTP.d1;
+			d2 = MTP.d2;
 		}
 		if (power == 0.75 * PMAX) {
-			d1 = 14;
-			d2 = 25;
+			d1 = MTP.d2;
+			d2 = MTP.d2;
 		}
 		if (power == PMAX) {
-			d1 = 25;
+			d1 = MTP.d2;
 			d2 = d1;
 		}
 		System.out.println("d1: " + d1 + ", d2: " + d2);

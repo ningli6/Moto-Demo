@@ -70,9 +70,9 @@ public class Main {
 		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
 		
 		// initiliza a client, then change its location and make a query for N times;
-		int N = 10;
+		int N = 40;
 		Client client = new Client(47.6, -97.6, map);
-		client.query(server);
+		// client.query(server);
 		Random rand = new Random();
 		for (int i = 0; i < N; i++) {
 			double rLat = 50 - (50 - 45) * rand.nextDouble();

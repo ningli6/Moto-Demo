@@ -34,7 +34,7 @@ public class InferMap extends GridMap {
 	}
 
 	// updates the matrix based on response from server
-	public void update(Location location, int d1, int d2) {
+	public void update(Location location, double d1, double d2) {
 		if (location == null) return;
 		if (!withInBoundary(location)) {
 			System.out.println("Invalid location");
@@ -59,7 +59,9 @@ public class InferMap extends GridMap {
 		System.out.println("[" + rowIndex + "][" + colIndex + "]");
 		System.out.println("***Update****");
 
-		int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
+		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
+		// for testing
+		int updateLength = (int) Math.round(MTP.d3 * 2.5 / getAverageDistance());
 		/* debug information */
 		System.out.println("updateLength: " + updateLength);
 

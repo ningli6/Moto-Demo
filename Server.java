@@ -55,7 +55,9 @@ public class Server {
 		if (iter.hasNext()) {
 			pu = iter.next();
 		}
-		return MTP(pu.getLocation().distTo(client.getLocation()));
+		// return MTP(pu.getLocation().distTo(client.getLocation()));
+		// for testing
+		return MTPtest(pu.getLocation().distTo(client.getLocation()));
 	}
 
     // MTP function
@@ -64,6 +66,23 @@ public class Server {
 		if (distance < 8) return 0;
 		if (distance >= 8 && distance < 14) return 0.5 * PMAX;
 		if (distance >= 14 && distance < 25) return 0.75 * PMAX;
+		return PMAX; // >= 25
+	}
+
+	// in test, change MTP function
+	// private double MTPtest(double distance, double multi) {
+	// 	if (multi < 1) System.out.println("Required multiple para greater than 1");
+	// 	System.out.println("Distance between PU and SU is: " + distance + " km");
+	// 	if (distance < 8 * multi) return 0;
+	// 	if (distance >= 8 * multi && distance < 14 * multi) return 0.5 * PMAX;
+	// 	if (distance >= 14 * multi && distance < 25 * multi) return 0.75 * PMAX;
+	// 	return PMAX; // >= 25
+	// }
+	private double MTPtest(double distance) {
+		System.out.println("Distance between PU and SU is: " + distance + " km");
+		if (distance < MTP.d1) return 0;
+		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
+		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
 		return PMAX; // >= 25
 	}
 }
