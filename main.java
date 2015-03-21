@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		// Cell size, when cellDegree equals to 0.1, distance between each cell is about 10 km.
 		// When cellDegree equals to 0.01, distance between each cell is about 1 km.
-		final double cellDegree = 0.01; // in degree
+		final double cellDegree = 0.1; // in degree
 		/*****************************/
 		// String ulLat = "50|00'00''N.";
 		// String ulLon = "100|00'00''W.";
@@ -70,7 +70,7 @@ public class Main {
 		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
 		
 		// initiliza a client, then change its location and make a query for N times;
-		int N = 40;
+		int N = 50;
 		Client client = new Client(47.6, -97.6, map);
 		// client.query(server);
 		Random rand = new Random();
@@ -91,6 +91,7 @@ public class Main {
 		// SU sends a query to server, updates its inference results
 		client.query(server);
 		*/
+		
 		client.printInferMap();
 		client.printFormattedMatrix();
 		client.printFormattedTable();
