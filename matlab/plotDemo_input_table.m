@@ -7,14 +7,16 @@ latStart = 45;
 latEnd = 50;
 LongStart = -100;
 LongEnd = -95;
-PU_Lat = 47.5;
-PU_Lon = -97.5;
+PU_Lat = 49;
+PU_Lon = -99;
 cellSize = 0.1;
 rows = 5 / cellSize;
 cols = 5 / cellSize;
 
+importNumber = '0';
 % import data from a text file
-import = importdata('/Users/ningli/Desktop/demoTable.txt');
+importName = ['/Users/ningli/Desktop/demoTable_', importNumber, '.txt'];
+import = importdata(importName);
 A = import.data;
 M = zeros(rows, cols);
 for i = 1: rows
@@ -33,20 +35,26 @@ for i = 1: m
     inverseM(i, :) = M(m - i + 1, :);
 end
 
+minP = 0.5;
+maxP = max(max(inverseM));
+plotrange = minP:(maxP - minP)/4:maxP;
+
 copy = inverseM;
 for i = 1: m
     for j = 1 : n
-        if copy(i, j) >= 0.5 && copy(i, j) < 0.502
+        if copy(i, j) > plotrange(1, 1) && copy(i, j) < plotrange(1, 2)
             copy(i, j) = 0.5;
-        else if copy(i, j) >= 0.502 && copy(i, j) < 0.504
+        else if copy(i, j) >= plotrange(1, 2) && copy(i, j) < plotrange(1, 3)
                 copy(i, j) = 0.6;
-            else if copy(i, j) >= 0.504 && copy(i, j) < 0.506
+            else if copy(i, j) >= plotrange(1, 3) && copy(i, j) < plotrange(1, 4)
                     copy(i, j) = 0.7;
-                else if copy(i, j) >= 0.506 && copy(i, j) < 0.508
+                else if copy(i, j) >= plotrange(1, 4) && copy(i, j) < plotrange(1, 5)
                         copy(i, j) = 0.8;
-                    else if copy(i, j) >= 0.508
+                    else if copy(i, j) >= plotrange(1, 5)
                             copy(i, j) = 0.9;
                         else if copy(i, j) == 0
+                                copy(i, j) = 0;
+                            else
                                 copy(i, j) = NaN;
                             end
                         end
@@ -91,10 +99,10 @@ hold off;
 
 % Output the contours into pdf and png file
 fileextension = '.pdf';
-name = ['/Users/ningli/Desktop/', userid, '_', filename, '_probability',fileextension];
+name = ['/Users/ningli/Desktop/', userid, '_', filename, '_probability_', importNumber, fileextension];
 print('-dpdf',name);
 fileextension = '.png';
-name=['/Users/ningli/Desktop/', userid, '_', filename, '_probability',fileextension];
+name=['/Users/ningli/Desktop/', userid, '_', filename, '_probability_', importNumber, fileextension];
 print('-dpng',name);
 
-close all;
+% close all;

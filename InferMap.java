@@ -14,10 +14,12 @@ import java.io.File;
 
 public class InferMap extends GridMap {
 	// probability map
+	private int id;
 	private double[][] p;
 
-	public InferMap(GridMap map) {
+	public InferMap(int id, GridMap map) {
 		super(map);
+		this.id = id;
 		p = new double[getRows()][getCols()];
 		for (int i = 0; i < getRows(); i++) 
 			for (int j = 0; j < getCols(); j++)
@@ -25,8 +27,9 @@ public class InferMap extends GridMap {
 	}
 
 	// initialize each entry to be 0.5
-	public InferMap(Location ul, Location ur, Location ll, Location lr, double cd) {
+	public InferMap(int id, Location ul, Location ur, Location ll, Location lr, double cd) {
 		super(ul, ur, ll, lr, cd);
+		this.id = id;
 		p = new double[getRows()][getCols()];
 		for (int i = 0; i < getRows(); i++) 
 			for (int j = 0; j < getCols(); j++)
@@ -142,7 +145,7 @@ public class InferMap extends GridMap {
 				data[j + rows * i] = (red << 16) | (green << 8) | blue;
 			}
 		}
-		JFrame frame = new JFrame("ColorPan");
+		JFrame frame = new JFrame("ColorPan " + id);
 		frame.getContentPane().add(new ColorPan(data, cols, rows));
 		frame.setSize(rows, cols);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -150,9 +153,9 @@ public class InferMap extends GridMap {
 	}
 
 	// the output will be matrix
-	public void printoutMatrix() {
+	public void printoutMatrix(int id) {
 		// String text = "Output";
-		File file = new File("/Users/ningli/Desktop/demoMatrix.txt");
+		File file = new File("/Users/ningli/Desktop/demoMatrix_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -171,8 +174,8 @@ public class InferMap extends GridMap {
 	}
 
 	// the output will be tables that specified in the sample data
-	public void printInRequiredFormat() {
-		File file = new File("/Users/ningli/Desktop/demoTable.txt");
+	public void printInRequiredFormat(int id) {
+		File file = new File("/Users/ningli/Desktop/demoTable_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");

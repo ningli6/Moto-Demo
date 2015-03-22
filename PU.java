@@ -4,21 +4,37 @@
  */
 
 public class PU {
+	private int id;
 	private Location location;
 
-	public PU(Location location) {
+	public PU(int id, Location location) {
 		// defalut
+		this.id = id;
 		if (location == null) this.location = new Location();
 		else this.location = location;
 	}
 
-	public PU(double lat, double lon) {
+	public PU(int id, double lat, double lon) {
+		this.id = id;
 		this.location = new Location(lat, lon);
 	}
 
-	public PU(String lat, String lon) {
+	public PU(int id, String lat, String lon) {
 		if (lat == null || lon == null) throw new NullPointerException();
+		this.id = id;
 		this.location = new Location(lat, lon);
+	}
+
+	public int getID() {
+		return id;
+	}
+
+	public void setID(int id) {
+		if (this == null) {
+			System.out.println("Initialize PU first");
+			return;
+		}
+		this.id = id;
 	}
 
 	public void setLocation(Location location) {

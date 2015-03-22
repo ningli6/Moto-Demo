@@ -6,12 +6,20 @@ import java.util.Iterator;
  */
 
 public class Server {
-	public static final double PMAX = 1;
-
+	public static double PMAX = 1;
+	public static int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
 	private GridMap map;
 	// use a hashSet to store the location of PU
 	private HashSet<PU> set;
+
+	/*
+	 * This function should be called to set number of channels before consturct server
+	 */
+	public static void setNumberOfChannels(int n) {
+		if (n < 0) throw new IllegalArgumentException("Number of channels must be greater than 1");
+		Number_Of_Channels = n;
+	}
 
 	public Server(GridMap map) {
 		this.map = map;
@@ -26,6 +34,7 @@ public class Server {
 		}
 		if (pu == null) return;
 		// check if location is in the rectangle area
+		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) set.add(pu);
 		else System.out.println("PU's location out of range");
 	}
@@ -45,29 +54,38 @@ public class Server {
 	}
 
 	// resonse to the query from client
-	public double response(Client client) {
-		if (client == null) return -1;
-		if (!map.withInBoundary(client.getLocation())) return -1;
-		if (set.isEmpty()) return PMAX;
+	public Response response(Client client) {
+		if (client == null) return new Response(-1, -1);
+		if (!map.withInBoundary(client.getLocation())) return new Response(-1, -1);
+		if (set.isEmpty()) return new Response(-1, PMAX);
+		double minDis = Double.MAX_VALUE;
+		int minID = -1;
 		Iterator<PU> iter = set.iterator();
 		PU pu = null;
 		// Note that right now set only has one PU
-		if (iter.hasNext()) {
+		while (iter.hasNext()) {
 			pu = iter.next();
+			double dist = pu.getLocation().distTo(client.getLocation());
+			System.out.println("Server compute dist: [" + pu.getID() + "] " + dist);
+			if (dist < minDis) {
+				minID = pu.getID();
+				minDis = dist;
+			}
 		}
+		System.out.println("Server chooses dist: [" + minID + "] " + minDis);
 		// return MTP(pu.getLocation().distTo(client.getLocation()));
 		// for testing
-		return MTPtest(pu.getLocation().distTo(client.getLocation()));
+		return new Response(minID, MTP(minDis));
 	}
 
-    // MTP function
-	private double MTP(double distance) {
-		System.out.println("Distance between PU and SU is: " + distance + " km");
-		if (distance < 8) return 0;
-		if (distance >= 8 && distance < 14) return 0.5 * PMAX;
-		if (distance >= 14 && distance < 25) return 0.75 * PMAX;
-		return PMAX; // >= 25
-	}
+ //    // MTP function
+	// private double MTP(double distance) {
+	// 	System.out.println("Distance between PU and SU is: " + distance + " km");
+	// 	if (distance < 8) return 0;
+	// 	if (distance >= 8 && distance < 14) return 0.5 * PMAX;
+	// 	if (distance >= 14 && distance < 25) return 0.75 * PMAX;
+	// 	return PMAX; // >= 25
+	// }
 
 	// in test, change MTP function
 	// private double MTPtest(double distance, double multi) {
@@ -78,7 +96,7 @@ public class Server {
 	// 	if (distance >= 14 * multi && distance < 25 * multi) return 0.75 * PMAX;
 	// 	return PMAX; // >= 25
 	// }
-	private double MTPtest(double distance) {
+	private double MTP(double distance) {
 		System.out.println("Distance between PU and SU is: " + distance + " km");
 		if (distance < MTP.d1) return 0;
 		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
