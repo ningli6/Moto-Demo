@@ -101,7 +101,7 @@ public class Client {
 
 	public void updateWhich() {
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			System.out.println("map " + i + "is updated " + count[i] + "times");
+			System.out.println("map " + i + " is updated " + count[i] + " times");
 		}
 	}
 

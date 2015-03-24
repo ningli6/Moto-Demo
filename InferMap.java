@@ -60,8 +60,6 @@ public class InferMap extends GridMap {
 		System.out.println("center: ");
 		location.printLocation();
 		System.out.println("[" + rowIndex + "][" + colIndex + "]");
-		System.out.println("***Update****");
-
 		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
 		// for testing
 		int updateLength = (int) Math.round(MTP.d3 * 2.5 / getAverageDistance());
@@ -104,6 +102,7 @@ public class InferMap extends GridMap {
 					}
 				}
 		}
+		System.out.println("***Update over****");
 	}
 
 	// print the probability matrix

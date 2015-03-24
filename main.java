@@ -118,7 +118,7 @@ public class Main {
 		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
 		
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(46.1, -96.1, map);
+		Client client = new Client(47.5, -97.5, map);
 		// client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
 			double rLat = 50 - (50 - 45) * rand.nextDouble();
