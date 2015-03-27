@@ -8,8 +8,9 @@ public class Client {
 	public static int Number_Of_Channels = 1;
 	// location of the SU
 	private Location location;
-	// inferMap of the SU
+	// inferMap of the SU for each channel
 	private InferMap[] inferMap;
+	// count the number for each channel for updating
 	private int[] count;
 
 	/*
@@ -62,13 +63,16 @@ public class Client {
 		if (server == null) return;
 		Response res = server.response(this);
 		double power = res.getPower();
-		int id = res.getID();
-		System.out.println("Server response with: " + "[" + id + "] " + power);
+		int channelID = res.getChannelID();
+		/* debug information */
+		res.getPU().sendResponse();
+		System.out.println("Server response with: " + "[" + res.getPUID() + "] with power " + power + " on channel [" + channelID + "]");
 		if (power < 0) {
 			System.out.println("Channel unavailable");
 			return;
 		}
-		if (id < 0) {
+		// client will know that no one is responding
+		if (channelID < 0) {
 			System.out.println("No PU responses within the map");
 			return;
 		}
@@ -90,25 +94,25 @@ public class Client {
 			d2 = d1;
 		}
 		System.out.println("d1: " + d1 + ", d2: " + d2);
-		count[id]++;
-		// System.out.println("Number of maps: " + inferMap.length);
-		inferMap[id].update(this.location, d1, d2);
+		count[channelID]++;
+		inferMap[channelID].update(this.location, d1, d2);
 	}
 
 	public Location getLocation() {
 		return location;
 	}
 
+	/* debug information */
 	public void updateWhich() {
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			System.out.println("map " + i + " is updated " + count[i] + " times");
+			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
 		}
 	}
 
 	/*
 	 * This function plot the result in a colorpan for visualization
 	 */
-	public void printInferMap(int i) {
+	public void plotInferMap(int i) {
 		if (i < 0 || i > Number_Of_Channels) 
 			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
 		// inferMap.print();

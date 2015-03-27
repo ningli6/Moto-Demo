@@ -1,10 +1,12 @@
 import java.util.Random;
 import java.util.Scanner;
+import java.io.File;
 /*
  * Main class is the entrace of the program
  */
 
 public class Main {
+	public static String directory = "/Users/ningli/Desktop/Project/output/";
 	/* The example map area is:
 	 * 50°00'00.0"N, 100°00'00.0"W
 	 * 50°00'00.0"N, 95°00'00.0"W
@@ -15,6 +17,10 @@ public class Main {
 	 * ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
 	 */
 	public static void main(String[] args) {
+		// clear file
+		File dir = new File(directory);
+		for(File file: dir.listFiles()) file.delete();
+
 		Scanner sc = new Scanner(System.in);
 		// get default settings from user
 		// cell size
@@ -30,7 +36,7 @@ public class Main {
 		cd = sc.nextDouble();
 		System.out.println("Multiple times on default MTP function: ");
 		mult = sc.nextDouble();
-		System.out.println("Number of PUs: ");
+		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
 		System.out.println("Number of queries: ");
 		number_of_Queries = sc.nextInt();
@@ -41,6 +47,7 @@ public class Main {
 		MTP.ChangeMult(mult);
 		Server.setNumberOfChannels(Number_Of_Channels);
 		Client.setNumberOfChannels(Number_Of_Channels);
+		InferMap.getDirectory(directory);
 
 		/*****************************/
 		// String ulLat = "50|00'00''N.";
@@ -93,61 +100,50 @@ public class Main {
 		 * The location of PU is: 47°30'00.0"N, 97°30'00.0"W
 		 */
 		PU pu0 = new PU(0, 49, -99);
-		server.addPU(pu0);
+		server.addPU(pu0, 0);
 
 		PU pu1 = new PU(1, 49, -96);
-		server.addPU(pu1);
+		server.addPU(pu1, 1);
 
 		PU pu2 = new PU(2, 46, -99);
-		server.addPU(pu2);
+		server.addPU(pu2, 1);
 
 		PU pu3 = new PU(3, 46, -96);
-		server.addPU(pu3);
+		server.addPU(pu3, 0);
 
-		// /* 
-  //        * Use multiple PU, specified by Number_Of_Channels;
-		//  */
-		// for (int i = 0; i < Number_Of_Channels; i++) {
-		// 	double rLat = 50 - (50 - 45) * rand.nextDouble();
-		// 	double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
-		// 	PU pu = new PU(i, rLat, rLon);
-		// 	server.addPU(pu);
-		// }
+		/* 
+         * Use multiple PU, specified by Number_Of_Channels;
+		 *
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			double rLat = 50 - (50 - 45) * rand.nextDouble();
+			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
+			PU pu = new PU(i, rLat, rLon);
+			server.addPU(pu);
+		}
+		*/
 
 		/* debug information */
-		System.out.println("Number of PU on the map is: " + server.getNumberOfPUs());
-		
+		System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		server.printInfoPU();
+		server.printInfoChannel();
+		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(47.5, -97.5, map);
-		// client.query(server);
+		Client client = new Client(49, -97.5, map);
+		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
 			double rLat = 50 - (50 - 45) * rand.nextDouble();
 			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
 			client.setLocation(rLat, rLon);
 			client.query(server);
 		}
-		
+		/* debug information */
 		client.updateWhich();
-		/*
-		Client client = new Client(map);
-		Random rand = new Random();
-		double rLat = 50 - (50 - 45) * rand.nextDouble();
-		double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
-		client.setLocation(rLat, rLon);
-		// SU sends a query to server, updates its inference results
-		client.query(server);
-		*/
+		server.printInfoPU();
 		/*** these functions should be update! ***/
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			client.printInferMap(i);
+			client.plotInferMap(i);
 			client.printFormattedMatrix(i);
 			client.printFormattedTable(i);
 		}
-		// client.printInferMap(0);
-		// client.printInferMap(1);
-		// client.printInferMap(2);
-		// client.printInferMap(3);
-		// client.printFormattedMatrix(0);
-		// client.printFormattedTable(0);
 	}
 }

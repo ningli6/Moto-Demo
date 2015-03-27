@@ -16,6 +16,11 @@ public class InferMap extends GridMap {
 	// probability map
 	private int id;
 	private double[][] p;
+	public static String directory;
+
+	public static void getDirectory(String direc) {
+		directory = direc;
+	}
 
 	public InferMap(int id, GridMap map) {
 		super(map);
@@ -154,7 +159,7 @@ public class InferMap extends GridMap {
 	// the output will be matrix
 	public void printoutMatrix(int id) {
 		// String text = "Output";
-		File file = new File("/Users/ningli/Desktop/demoMatrix_" + id + ".txt");
+		File file = new File(directory + "demoMatrix_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -174,7 +179,7 @@ public class InferMap extends GridMap {
 
 	// the output will be tables that specified in the sample data
 	public void printInRequiredFormat(int id) {
-		File file = new File("/Users/ningli/Desktop/demoTable_" + id + ".txt");
+		File file = new File(directory + "demoTable_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");

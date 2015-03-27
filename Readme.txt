@@ -10,3 +10,11 @@ Add PU class. Test both String & double input format. Enable decimals using Stri
 Add a ColorPan class to visualize the results of probability matrix. The gray area means the probability of existence of PU is still 0.5. The white area means p[i][j] is set to 0. Black area means p[i][j] has increased.
 
 Be able to output propability matrix in requried format.
+
+Update: March 27, 2015
+We allow several channels, in each channel we can have several primary users. 
+Good guess results can happen at:
+cellSize: 0.2
+MTP times 7
+Number of channel is 2
+Number of query is 10000

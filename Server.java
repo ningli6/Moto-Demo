@@ -1,5 +1,5 @@
 import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Collections;
 
 /*
@@ -11,10 +11,14 @@ public class Server {
 	public static int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
 	private GridMap map;
-	// use a hashSet to store the location of PU
-	// private HashSet<PU> set;
-	private LinkedList<PU> set;
+	private List<PU>[] channels_List;
+	private int Number_Of_PUs;
 
+	public class NumberOfPUsMismatchException extends RuntimeException {
+		public NumberOfPUsMismatchException(String message) {
+			super(message);
+		}
+	}
 	/*
 	 * This function should be called to set number of channels before consturct server
 	 */
@@ -25,54 +29,105 @@ public class Server {
 
 	public Server(GridMap map) {
 		this.map = map;
-		set = new LinkedList<PU>();
+		this.Number_Of_PUs = 0;
+		// set = new LinkedList<PU>();
+		channels_List = (List<PU>[]) new List[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			channels_List[i] = new LinkedList<PU>();
+		}
 	}
 
-	public void addPU(PU pu) {
+	// add pu to one of channels
+	public void addPU(PU pu, int channel) {
 		// error checking
 		if (map == null) {
 			System.out.println("Initialize map first");
 			return;
 		}
 		if (pu == null) return;
+		if (channel < 0 || channel >= Number_Of_Channels) {
+			System.out.println("Avalible channels are from 0 to " + (Number_Of_Channels - 1) + ". Operation failed");
+			return;
+		}
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
-		if (map.withInBoundary(pu.getLocation())) set.add(pu);
+		if (map.withInBoundary(pu.getLocation())) {
+			channels_List[channel].add(pu);
+			pu.setChannelID(channel);
+			Number_Of_PUs++;
+		}
 		else System.out.println("PU's location out of range");
 	}
 
-	// print the location of PUs
-	public void printLocationOfPUs() {
-		if (set == null) return;
-		for (PU pu : set) {
-			pu.printLocation();
+	// resonse to the query
+	public Response response(Client client) {
+		// response with (-1, -1) means no transmit power available
+		if (client == null) return new Response(-1, -1);
+		if (!map.withInBoundary(client.getLocation())) {
+			System.out.println("Querying client is out of boundary of map");
+			return new Response(-1, -1);
 		}
+		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
+		/* clarify this behavior */
+		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
+		List<Response> response_list = new LinkedList<Response>();
+		double final_res_power = -1;
+		int final_res_id = -1;
+		for (List<PU> list : channels_List) {
+			Collections.shuffle(list);
+			PU minPU = null;
+			double minPower = Double.MAX_VALUE;
+			for (PU pu : list) {
+				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
+				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
+				if (resPower <= minPower) {
+					minPU = pu;
+					minPower = resPower;
+				}
+			}
+			// if one of channels is empty, then minPU would be null
+			if (minPU != null) response_list.add(new Response(minPU, minPower));
+		}
+		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
+		Collections.shuffle(response_list);
+		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
+		return Collections.max(response_list);
 	}
 
 	// return numbers of PUs
-	public int getNumberOfPUs() {
-		if (set == null) return 0;
-		return set.size();
+	public int getNumberOfPUs() throws NumberOfPUsMismatchException {
+		int sum = 0;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sum += channels_List[i].size();
+		}
+		if (sum != Number_Of_PUs) {
+			throw new NumberOfPUsMismatchException("Number of PUs doesn't match");
+		}
+		return sum;
 	}
 
-	// resonse to the query from client
-	public Response response(Client client) {
-		if (client == null) return new Response(-1, -1);
-		if (!map.withInBoundary(client.getLocation())) return new Response(-1, -1);
-		if (set.isEmpty()) return new Response(-1, PMAX);
-		double maxPower = 0;
-		int maxID = -1;
-		Collections.shuffle(set);
-		for (PU pu : set) {
-			double dist = pu.getLocation().distTo(client.getLocation());
-			double resPower = MTP(dist);
-			System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
-			if (resPower >= maxPower) {
-				maxID = pu.getID();
-				maxPower = resPower;
+	// print the location of PUs
+	public void printInfoPU() {
+		if (channels_List == null) return;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			for (PU pu : channels_List[i]) {
+				pu.printInfo();
 			}
 		}
-		return new Response(maxID, maxPower);
+	}
+
+	// print infomation about channel
+	public void printInfoChannel() {
+		if (channels_List == null) {
+			System.out.println("Initialize server first");
+		}
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			System.out.print("Channel [" + i + "]: ");
+			for (PU pu : channels_List[i]) {
+				System.out.print("pu " + pu.getID() + ", ");
+			}
+			System.out.println();
+		}
 	}
 
     // MTP function
