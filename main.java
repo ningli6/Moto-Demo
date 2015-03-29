@@ -7,11 +7,7 @@ import java.io.File;
 
 public class Main {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
-	/* The example map area is:
-	 * 50°00'00.0"N, 100°00'00.0"W
-	 * 50°00'00.0"N, 95°00'00.0"W
-	 * 45°00'00.0"N, 100°00'00.0"W
-	 * 45°00'00.0"N, 95°00'00.0"W
+	/* 
 	 * allow user to define a rectangle area with four lat-lon coordinates
 	 * user can input location as string that matches to
 	 * ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
@@ -47,35 +43,17 @@ public class Main {
 		MTP.ChangeMult(mult);
 		Server.setNumberOfChannels(Number_Of_Channels);
 		Client.setNumberOfChannels(Number_Of_Channels);
+		// define directory for the output file
 		InferMap.getDirectory(directory);
 
-		/*****************************/
-		// String ulLat = "50|00'00''N.";
-		// String ulLon = "100|00'00''W.";
-		// String urLat = "50|00'00''N.";
-		// String urLon = "99|48'00''W.";
-		// String llLat = "49|48'00''N.";
-		// String llLon = "100|00'00''W.";
-		// String lrLat = "49|48'00''N.";
-		// String lrLon = "99|48'00''W.";
-		/*****************************/
-		// String ulLat = "50|00'00''N.";
-		// String ulLon = "100|00'00''W.";
-		// String urLat = "50|00'00''N.";
-		// String urLon = "99.8|00'00''W.";
-		// String llLat = "49.8|00'00''N.";
-		// String llLon = "100|00'00''W.";
-		// String lrLat = "49.8|00'00''N.";
-		// String lrLon = "99.8|00'00''W.";
-		/*****************************/
-		double ulLat = 50;
-		double ulLon = -100;
-		double urLat = 50;
-		double urLon = -95;
-		double llLat = 45;
-		double llLon = -100;
-		double lrLat = 45;
-		double lrLon = -95;
+		double ulLat = 38;
+		double ulLon = -82;
+		double urLat = 38;
+		double urLon = -79;
+		double llLat = 36;
+		double llLon = -82;
+		double lrLat = 36;
+		double lrLon = -79;
 		/*****************************/
 		Location upperLeft = new Location(ulLat, ulLon);
 		Location upperRight = new Location(urLat, urLon);
@@ -99,16 +77,16 @@ public class Main {
 		/* add a PU to the server's grid map, speficify the PU's location
 		 * The location of PU is: 47°30'00.0"N, 97°30'00.0"W
 		 */
-		PU pu0 = new PU(0, 49, -99);
+		PU pu0 = new PU(0, 37.5, -81);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 49, -96);
+		PU pu1 = new PU(1, 37.5, -80);
 		server.addPU(pu1, 1);
 
-		PU pu2 = new PU(2, 46, -99);
+		PU pu2 = new PU(2, 36.5, -81);
 		server.addPU(pu2, 1);
 
-		PU pu3 = new PU(3, 46, -96);
+		PU pu3 = new PU(3, 36.5, -80);
 		server.addPU(pu3, 0);
 
 		/* 
@@ -128,11 +106,11 @@ public class Main {
 		server.printInfoChannel();
 		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(49, -97.5, map);
+		Client client = new Client(37, -80.1, map);
 		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
-			double rLat = 50 - (50 - 45) * rand.nextDouble();
-			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
+			double rLat = llLat + (ulLat - llLat) * rand.nextDouble();
+			double rLon = ulLon + (urLon - ulLon) * rand.nextDouble();
 			client.setLocation(rLat, rLon);
 			client.query(server);
 		}

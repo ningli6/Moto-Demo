@@ -23,7 +23,7 @@ public class Response implements Comparable<Response> {
 
 	public int getChannelID() {
 		if (pu == null) {
-			System.out.println("Initialize response first");
+			System.out.println("Channel unavailable");
 			return -1;
 		}
 		return channelID;

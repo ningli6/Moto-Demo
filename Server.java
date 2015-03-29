@@ -64,7 +64,7 @@ public class Server {
 		// response with (-1, -1) means no transmit power available
 		if (client == null) return new Response(-1, -1);
 		if (!map.withInBoundary(client.getLocation())) {
-			System.out.println("Querying client is out of boundary of map");
+			System.out.println("Client is out of scope");
 			return new Response(-1, -1);
 		}
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power

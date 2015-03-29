@@ -57,15 +57,13 @@ public class Client {
 	// send a query to server
 	public void query(Server server) {
 		if (inferMap == null) {
-			System.out.println("Initialize infermaps first");
+			System.out.println("Initialize infermap first");
 			return;
 		}
 		if (server == null) return;
 		Response res = server.response(this);
 		double power = res.getPower();
 		int channelID = res.getChannelID();
-		/* debug information */
-		res.getPU().sendResponse();
 		System.out.println("Server response with: " + "[" + res.getPUID() + "] with power " + power + " on channel [" + channelID + "]");
 		if (power < 0) {
 			System.out.println("Channel unavailable");
@@ -76,6 +74,8 @@ public class Client {
 			System.out.println("No PU responses within the map");
 			return;
 		}
+		/* debug information */
+		res.getPU().sendResponse();
 		double d1 = -1; double d2 = -1;
 		if (power == 0) {
 			d1 = MTP.d0;

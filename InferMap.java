@@ -146,12 +146,12 @@ public class InferMap extends GridMap {
 					green = 0;
 					blue = 0;
 				}
-				data[j + rows * i] = (red << 16) | (green << 8) | blue;
+				data[j + cols * i] = (red << 16) | (green << 8) | blue;
 			}
 		}
 		JFrame frame = new JFrame("ColorPan " + id);
 		frame.getContentPane().add(new ColorPan(data, cols, rows));
-		frame.setSize(rows, cols);
+		frame.setSize(cols, rows);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
