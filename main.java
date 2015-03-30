@@ -81,13 +81,13 @@ public class Main {
 		server.addPU(pu0, 0);
 
 		PU pu1 = new PU(1, 37.5, -80);
-		server.addPU(pu1, 1);
+		server.addPU(pu1, 0);
 
 		PU pu2 = new PU(2, 36.5, -81);
 		server.addPU(pu2, 1);
 
 		PU pu3 = new PU(3, 36.5, -80);
-		server.addPU(pu3, 0);
+		server.addPU(pu3, 2);
 
 		/* 
          * Use multiple PU, specified by Number_Of_Channels;
@@ -106,7 +106,7 @@ public class Main {
 		server.printInfoChannel();
 		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(37, -80.1, map);
+		Client client = new Client(37.4, -80.9, map);
 		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
 			double rLat = llLat + (ulLat - llLat) * rand.nextDouble();
@@ -123,5 +123,14 @@ public class Main {
 			client.printFormattedMatrix(i);
 			client.printFormattedTable(i);
 		}
+
+		double[] IC = client.computeIC(server);
+		for (int i = 0; i < IC.length; i++) {
+			System.out.println("Channel " + i + " : " + IC[i]);
+		}
+		// System.out.println(client.check[0]);
+		// System.out.println(client.check[1]);
+		// System.out.println(client.check[2]);
+		// System.out.println(client.check[3]);
 	}
 }

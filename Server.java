@@ -78,6 +78,7 @@ public class Server {
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
+				System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
 				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
 				if (resPower <= minPower) {
@@ -92,6 +93,15 @@ public class Server {
 		Collections.shuffle(response_list);
 		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
 		return Collections.max(response_list);
+	}
+
+	// cheat
+	public List<PU>[] getChannelsList() {
+		if (channels_List == null) {
+			System.out.println("Initialize Server first");
+			return null;
+		} 
+		return channels_List;
 	}
 
 	// return numbers of PUs
@@ -132,7 +142,7 @@ public class Server {
 
     // MTP function
 	private double MTP(double distance) {
-		System.out.println("Distance between PU and SU is: " + distance + " km");
+		// System.out.println("Distance between PU and SU is: " + distance + " km");
 		if (distance < MTP.d1) return 0;
 		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
 		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;

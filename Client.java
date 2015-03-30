@@ -1,3 +1,5 @@
+import java.util.List;
+import java.util.LinkedList;
 /*
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
@@ -12,6 +14,18 @@ public class Client {
 	private InferMap[] inferMap;
 	// count the number for each channel for updating
 	private int[] count;
+	// cheat
+	private List<PU>[] channels_List;
+	// public int[] check = new int[4];
+
+	public class NumberOfChannelsMismatchException extends RuntimeException {
+		public NumberOfChannelsMismatchException(String message) {
+			super(message);
+		}
+		public NumberOfChannelsMismatchException() {
+			super();
+		}
+	}
 
 	/*
 	 * This function should be called to set number of channels before consturct clients
@@ -52,6 +66,10 @@ public class Client {
 	public void setLocation(String lat, String lon) {
 		if (location == null) System.out.println("Initialize client first");
 		else location.setLocation(lat, lon);
+	}
+
+	public Location getLocation() {
+		return location;
 	}
 
 	// send a query to server
@@ -98,8 +116,48 @@ public class Client {
 		inferMap[channelID].update(this.location, d1, d2);
 	}
 
-	public Location getLocation() {
-		return location;
+	public double[] computeIC(Server server) {
+		if (server == null) return null;
+		channels_List = server.getChannelsList();
+		if (channels_List == null) return null;
+		if (Number_Of_Channels != channels_List.length)
+			throw new NumberOfChannelsMismatchException();
+		double[] IC = new double[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			if (channels_List[i].size() == 0) {
+				System.out.println("channel " + i + " has no PU");
+				IC[i] = Double.POSITIVE_INFINITY;
+				continue;
+			}
+			double sum = 0;
+			double[][] p = inferMap[i].getProbabilityMatrix();
+			int row = p.length;
+			int col = p[0].length;
+			for (int r = 0; r < row; r++) {
+				for (int c = 0; c < col; c++) {
+					sum += p[r][c] * distanceToClosestPU(i, r, c);
+				}
+			}
+			if (sum == 0) IC[i] = Double.POSITIVE_INFINITY;
+			else IC[i] = sum;
+		}
+		return IC;
+	}
+
+	private double distanceToClosestPU(int channel, int r, int c) {
+		if (channel < 0 || channel >= Number_Of_Channels) throw new IllegalArgumentException("Bad channel number");
+		double minDist = Double.MAX_VALUE;
+		PU minPU = null;
+		for (PU pu : channels_List[channel]) {
+			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
+			if (dist < minDist) {
+				minDist = dist;
+				minPU = pu;
+			}
+		}
+		/* debug info */
+		// check[minPU.getID()]++;
+		return minDist;
 	}
 
 	/* debug information */

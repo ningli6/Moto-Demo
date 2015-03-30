@@ -110,6 +110,14 @@ public class InferMap extends GridMap {
 		System.out.println("***Update over****");
 	}
 
+	public double[][] getProbabilityMatrix() {
+		return p;
+	}
+
+	public Location getLocation(int r, int c) {
+		return super.getLocation(r, c);
+	}
+
 	// print the probability matrix
 	// obsolete
 	public void print() {
