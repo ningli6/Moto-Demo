@@ -118,6 +118,12 @@ public class InferMap extends GridMap {
 		return super.getLocation(r, c);
 	}
 
+	public void resetMap() {
+		for (int i = 0; i < getRows(); i++) 
+			for (int j = 0; j < getCols(); j++)
+				p[i][j] = 0.5;
+	}
+
 	// print the probability matrix
 	// obsolete
 	public void print() {

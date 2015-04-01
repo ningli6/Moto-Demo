@@ -126,6 +126,15 @@ public class Server {
 		}
 	}
 
+	public void reset() {
+		if (channels_List == null) return;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			for (PU pu : channels_List[i]) {
+				pu.reset();
+			}
+		}
+	}
+
 	// print infomation about channel
 	public void printInfoChannel() {
 		if (channels_List == null) {

@@ -80,6 +80,10 @@ public class PU {
 	public void sendResponse() {
 		number_of_response++;
 	}
+
+	public void reset() {
+		number_of_response = 0;
+	}
 	
 	/* main will call this method to check which pu has responsed for how many times
 	 * again for debugging purpose

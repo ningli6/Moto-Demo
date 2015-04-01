@@ -1,0 +1,63 @@
+Parameter settings: 
+CellSize:0.05
+MapSize: 40 x 60
+MTP: 40 70 125
+SU's location for each query is randomly generated
+
+1. 1 Channel, 1 PU
+N = 10,
+Channel 0 : 2751.8791116480274
+N = 25,
+Channel 0 : 5020.699963765144
+N = 50,
+Channel 0 : 279.7927547836059
+N = 75,
+Channel 0 : 38.162195385100816
+N = 100,
+Channel 0 : 1.8847987771104318
+N = 150,
+Channel 0 : N/A
+N = 200, 
+Channel 0 : N/A
+
+2. 1 Channel, 2 PU
+N = 10,
+Channel 0 : 15042.763294211949
+N = 25,
+Channel 0 : 2698.9029960911553
+N = 50,
+Channel 0 : 247.79378713997127
+N = 75, 
+Channel 0 : 9.486077226223982
+N = 100,
+Channel 0 : 14.90612321521079
+N = 125,
+Channel 0 : 3.8550448017999575
+N = 150,
+Channel 0 : 3.8977783890453273
+N = 200,
+Channel 0 : 2.007350527607694
+N = 250,
+Channel 0 : N/A
+
+3. 1 Channel, 4 PU
+N = 10, 
+Channel 0 : 38384.8187014132
+N = 25, 
+Channel 0 : 20035.23159249371
+N = 50, 
+Channel 0 : 5701.732082843727
+N = 75, 
+Channel 0 : 771.7082355680678
+N = 100, 
+Channel 0 : 1589.170617412635
+N = 125,
+Channel 0 : 56.46355724096377
+N = 150, 
+Channel 0 : 36.65116779236919
+N = 175,
+Channel 0 : 24.671707322530708
+N = 200, 
+Channel 0 : 42.04119818958734
+N = 250,
+Channel 0 : N/A

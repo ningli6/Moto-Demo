@@ -167,6 +167,13 @@ public class Client {
 		}
 	}
 
+	public void reset() {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			count[i] = 0;
+			inferMap[i].resetMap();
+		}
+	}
+
 	/*
 	 * This function plot the result in a colorpan for visualization
 	 */
