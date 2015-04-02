@@ -1,20 +1,8 @@
+This project is to implement techniques for protecting privacy of primary users proposed in paper: Protecting the Primary Users’ Operational Privacy in Spectrum Sharing. [2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]
+
 Usage:
-main.java is the entrance of the program.
-Right now there is only 1 PU an 1 SU. SU sends query Q(location) to server, server respondes with R(power), according to the distances between query point to PU.
-SU then uses that response to update its inference map, based on different situation proposed in the paper. 
+Main.java is the entrance of the program. We will allow user to specify parameters such as maps range, cell size, number of queries. We set up several channels that PUs are working in, and assign PUs in different channels. The attacker then makes queries and receive responses from PU. With this knowledge it will infer the location of PUs for each channel. The program then produces the probability of PU's existence for each channels. The Matlab code uses these data to plot on google map to reflect these data.
 
-Uses latitude & longitude instead of cell index to compute. Cell size are defined by degree. User must assign a rectangle area to the program.
+We use latitude & longitude instead of cell index to do computation in our map. Cell size are defined by degree. Conceptually user will assign a rectangle area for the program.
 
-Add PU class. Test both String & double input format. Enable decimals using String input.
-
-Add a ColorPan class to visualize the results of probability matrix. The gray area means the probability of existence of PU is still 0.5. The white area means p[i][j] is set to 0. Black area means p[i][j] has increased.
-
-Be able to output propability matrix in requried format.
-
-Update: March 27, 2015
-We allow several channels, in each channel we can have several primary users. 
-Good guess results can happen at:
-cellSize: 0.2
-MTP times 7
-Number of channel is 2
-Number of query is 10000
+We compute inaccuracy for each channel to evaluate the result of inference. The actual compute formula is in presented in the paper.
