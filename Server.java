@@ -19,13 +19,6 @@ public class Server {
 			super(message);
 		}
 	}
-	/*
-	 * This function should be called to set number of channels before consturct server
-	 */
-	public static void setNumberOfChannels(int n) {
-		if (n < 0) throw new IllegalArgumentException("Number of channels must be greater than 1");
-		Number_Of_Channels = n;
-	}
 
 	public Server(GridMap map) {
 		this.map = map;
@@ -49,10 +42,22 @@ public class Server {
 			System.out.println("Avalible channels are from 0 to " + (Number_Of_Channels - 1) + ". Operation failed");
 			return;
 		}
+		int pu_r = pu.getRowIndex();
+		int pu_c = pu.getColIndex();
+		if (pu_r < 0 || pu_r >= map.getRows()) {
+			System.out.println("PU's location is out out index");
+			return;
+		}
+		if (pu_c < 0 || pu_c >= map.getCols()) {
+			System.out.println("PU's location is out out index");
+			return;
+		}
+		pu.setLocation(map.RowToLat(pu_r), map.LonToCol(pu_c));
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
 			channels_List[channel].add(pu);
+			pu.attachToServer(this);
 			pu.setChannelID(channel);
 			Number_Of_PUs++;
 		}

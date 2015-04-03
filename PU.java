@@ -6,32 +6,42 @@
 public class PU {
 	/* may not need id for pu in future versioin */
 	private int id = -1;
-	private Location location = null;
 	private int channelID = -1;
+	private Location location = null;
+	private int indexOfRow;
+	private int indexOfCol;
 	/* debugging purpose */
-	private int number_of_response;
+	private int number_of_response = 0;
 	/* maybe implemented in future version */
 	// private double power; potenital? power that pu is transmitting
+	private Server server;
 
 	public PU(int id, Location location) {
+		if (location == null) throw new NullPointerException();
 		// defalut
 		this.id = id;
-		if (location == null) this.location = new Location();
-		else this.location = location;
-		this.number_of_response = 0;
+		this.location = location;
 	}
 
 	public PU(int id, double lat, double lon) {
 		this.id = id;
 		this.location = new Location(lat, lon);
-		this.number_of_response = 0;
 	}
 
 	public PU(int id, String lat, String lon) {
 		if (lat == null || lon == null) throw new NullPointerException();
 		this.id = id;
 		this.location = new Location(lat, lon);
-		this.number_of_response = 0;
+	}
+
+	public PU(int id, int r, int c) {
+		this.id = id;
+		indexOfRow = r;
+		indexOfCol = c;
+	}
+
+	public void attachToServer(Server server) {
+		this.server = server;
 	}
 
 	public void setID(int id) {
@@ -110,6 +120,19 @@ public class PU {
 		else location.setLocation(lat, lon);
 	}
 
+	public void setIndices(int r, int c) {
+		indexOfRow = r;
+		indexOfCol = c;
+	}
+
+	public int getRowIndex() {
+		return indexOfRow;
+	}
+
+	public int getColIndex() {
+		return indexOfCol;
+	}
+
 	public Location getLocation() {
 		return location;
 	}
@@ -124,12 +147,17 @@ public class PU {
 		return location.getLongitude();
 	}
 
+	public void printIndices() {
+		System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
+	}
+
 	public void printLocation() {
 		if (location == null) {
 			System.out.println("PU has no location information");
 			return;
 		}
 		location.printLocation();
+		// location.printLocationIndex();
 	}
 
 	public void printInfo() {

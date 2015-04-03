@@ -1,5 +1,6 @@
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Random;
 /*
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
@@ -10,13 +11,17 @@ public class Client {
 	public static int Number_Of_Channels = 1;
 	// location of the SU
 	private Location location;
+	private int indexOfRow;
+	private int indexOfCol;
 	// inferMap of the SU for each channel
+	private GridMap map;
 	private InferMap[] inferMap;
 	// count the number for each channel for updating
 	private int[] count;
 	// cheat
 	private List<PU>[] channels_List;
 	// public int[] check = new int[4];
+	private Random rand;
 
 	public class NumberOfChannelsMismatchException extends RuntimeException {
 		public NumberOfChannelsMismatchException(String message) {
@@ -26,18 +31,13 @@ public class Client {
 			super();
 		}
 	}
-
-	/*
-	 * This function should be called to set number of channels before consturct clients
-	 */
-	public static void setNumberOfChannels(int n) {
-		if (n < 0) throw new IllegalArgumentException("Number of channels must be greater than 1");
-		Number_Of_Channels = n;
-	}
-
+	
 	// constructor
 	public Client(double lat, double lon, GridMap map) {
+		if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException();
+		this.map = map;
 		// System.out.println("Initialize client...");
+		rand = new Random();
 		location = new Location(lat, lon);
 		count = new int[Number_Of_Channels];
 		inferMap = new InferMap[Number_Of_Channels];
@@ -49,8 +49,9 @@ public class Client {
 	}
 
 	public Client(GridMap map) {
-		location = new Location(); // use defalut settings lat = 0 & lon = 0;
 		inferMap = new InferMap[Number_Of_Channels];
+		this.map = map;
+		rand = new Random();
 		count = new int[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
 		for (int i = 0; i < Number_Of_Channels; i++)
@@ -58,14 +59,42 @@ public class Client {
 				System.out.println("SU's location for channel" + i + "is not in the range of map area");
 	}
 
+	public Client(int r, int c, GridMap map) {
+		// System.out.println("Initialize client...");
+		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
+		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
+		this.map = map;
+		rand = new Random();
+		location = new Location(map.RowToLat(r), map.ColToLon(c));
+		count = new int[Number_Of_Channels];
+		inferMap = new InferMap[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
+		for (int i = 0; i < Number_Of_Channels; i++)
+			if (!inferMap[i].withInBoundary(location)) 
+				System.out.println("SU's location for channel" + i + "is not in the range of map area");
+		// System.out.println("Initialize complete!");
+	}
+
 	public void setLocation(double lat, double lon) {
-		if (location == null) System.out.println("Initialize client first");
+		if (location == null) System.out.println("Initialize location first");
 		else location.setLocation(lat, lon);
 	}
 
 	public void setLocation(String lat, String lon) {
-		if (location == null) System.out.println("Initialize client first");
+		if (location == null) System.out.println("Initialize location first");
 		else location.setLocation(lat, lon);
+	}
+
+	public void setLocation(int r, int c) {
+		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
+		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
+		location.setLocation(map.RowToLat(r), map.ColToLon(c));
+	}
+
+	public void randomLocation() {
+		int newR = rand.nextInt(map.getRows());
+		int newC = rand.nextInt(map.getCols());
+		setLocation(newR, newC);
 	}
 
 	public Location getLocation() {

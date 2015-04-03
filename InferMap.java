@@ -17,9 +17,13 @@ public class InferMap extends GridMap {
 	private int id;
 	private double[][] p;
 	public static String directory;
+	// cheat!
+	public static int[] puIndex = new int[2];
 
-	public static void getDirectory(String direc) {
-		directory = direc;
+	public class IllegalClearException extends RuntimeException {
+		public IllegalClearException(String message) {
+			super(message);
+		}
 	}
 
 	public InferMap(int id, GridMap map) {
@@ -62,6 +66,7 @@ public class InferMap extends GridMap {
 		
 		/* debug information */
 		System.out.println("***Update****");
+		System.out.println("d1: " + d1 + " d2: " + d2);
 		System.out.println("center: ");
 		location.printLocation();
 		System.out.println("[" + rowIndex + "][" + colIndex + "]");
@@ -86,6 +91,13 @@ public class InferMap extends GridMap {
 				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 				double distance = loc.distTo(location);
 				if (distance < d1) {
+					if (i == puIndex[0] && j == puIndex[1]) {
+						System.out.print("[i, j]'s location: ");
+						loc.printLocation();
+						System.out.println("Distance between PU's center to SU:" + distance);
+						System.out.println("PU's location index: [" + i + "], [" + j + "]");
+						throw new IllegalClearException("Cannot set pu's cell to 0");
+					}
 					p[i][j] = 0;
 					/* debug information */
 					// System.out.println("p" + "[" + i + "]" + "[" + j + "] = 0");
@@ -108,6 +120,7 @@ public class InferMap extends GridMap {
 				}
 		}
 		System.out.println("***Update over****");
+		System.out.println("");
 	}
 
 	public double[][] getProbabilityMatrix() {
@@ -200,7 +213,7 @@ public class InferMap extends GridMap {
 			out.println("LAT LON P");
 			for (int i = 0; i < getRows(); i++) {
 				for (int j = 0; j < getCols(); j++) {
-					out.println(getLatitude(i) + " " + getLongitude(j) + " " + p[i][j]);
+					out.println(RowToLat(i) + " " + LonToCol(j) + " " + p[i][j]);
 				}
 			}
 			out.close (); // this is necessary

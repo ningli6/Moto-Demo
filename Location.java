@@ -3,9 +3,10 @@
  */
 
 public class Location {
-	// lat & long in degree
 	private double latitude;
 	private double longitude;
+	// private int indexOfRow;
+	// private int indexOfCol;
 
 	public Location() {
 		latitude = 0;
@@ -13,9 +14,19 @@ public class Location {
 	}
 
 	public Location(double lat, double lon) {
+		// if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 		latitude = lat;
 		longitude = lon;
 	}
+
+	// public Location(int r, int c) {
+	// 	if (r < 0 || r >= map.getRows() || c < 0 || c >= map.getCols()) throw new IndexOutOfBoundsException();
+	// 	indexOfRow = r;
+	// 	indexOfCol = c;
+	// 	latitude = map.getLatitude(r);
+	// 	longitude = map.getLongitude(c);
+	// }
+
 	// the position's format - Degrees|minutes'seconds''hemisphere
 	// ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
 	public Location(String lat, String lon) {
@@ -26,6 +37,7 @@ public class Location {
 			throw new IllegalArgumentException("The regexp of input must be: ([0-9])+(\\.[0-9]+){0,1}\\|([0-9])+(\\.[0-9]+){0,1}'([0-9])+(\\.[0-9]+){0,1}''(N|S|E|W)\\.");
 		latitude = convertToDecDeg(Degrees(lat), Minutes(lat), Seconds(lat), Hemisphere(lat));
 		longitude = convertToDecDeg(Degrees(lon), Minutes(lon), Seconds(lon), Hemisphere(lon));
+		// if (!map.withInBoundary(latitude, longitude)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 	}
 
 	/********************************************************************************************
@@ -133,9 +145,18 @@ public class Location {
 	}
 
 	public void setLocation(double lat, double lon) {
+		// if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 		latitude = lat;
 		longitude = lon;
 	}
+
+	// public void setLocation(int r, int c) {
+	// 	if (r < 0 || r >= map.getRows() || c < 0 || c >= map.getCols()) throw new IndexOutOfBoundsException();
+	// 	indexOfRow = r;
+	// 	indexOfCol = c;
+	// 	latitude = map.getLatitude(r);
+	// 	longitude = map.getLongitude(c);
+	// }
 
 	public void setLocation(String lat, String lon) {
 		// use regular expression to check formation of input string
@@ -146,6 +167,7 @@ public class Location {
 		}
 		latitude = convertToDecDeg(Degrees(lat), Minutes(lat), Seconds(lat), Hemisphere(lat));
 		longitude = convertToDecDeg(Degrees(lon), Minutes(lon), Seconds(lon), Hemisphere(lon));
+		// if (!map.withInBoundary(latitude, longitude)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 	}
 
 	public double getLatitude() {
@@ -156,9 +178,13 @@ public class Location {
 		return longitude;
 	}
 
-	public void printLocation() {
-		System.out.println("( " + latitude + ", " + longitude + " )");
-	}
+	// public double getRowIndex() {
+	// 	return indexOfRow;
+	// }
+
+	// public double getColIndex() {
+	// 	return indexOfCol;
+	// }
 
 	// compute actual distance between two location
 	public double distTo(Location location) {
@@ -181,4 +207,12 @@ public class Location {
 		ans = R * c;
 		return ans;
 	}
+
+	public void printLocation() {
+		System.out.println("( " + latitude + ", " + longitude + " )");
+	}
+
+	// public void printLocationIndex() {
+	// 	System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
+	// }
 }

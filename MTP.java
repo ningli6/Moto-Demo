@@ -9,11 +9,6 @@ public class MTP {
 	public static double d2 = 14 * times;
 	public static double d3 = 25 * times;
 
-	// public MTP(double power, double d1, double d2) {
-	// 	this.power = power;
-	// 	this.d1 = d1;
-	// 	this.d2 = d2;
-	// }
 	public static void ChangeMult(double mult) {
 		times = mult;
 		d0 = 0 * times;

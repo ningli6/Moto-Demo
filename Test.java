@@ -11,7 +11,7 @@ public class Test {
 		Scanner sc = new Scanner(System.in);
 		// default settings
 		// cell size
-		double cd = 0.1;
+		double cellDegree = 0.1;
 		// multiple times for MTP
 		double mult = 1;
 		// number of PUs/Channels
@@ -20,17 +20,11 @@ public class Test {
 		int number_of_Queries = 50;
 
 		System.out.println("Cell size in degree: ");
-		cd = sc.nextDouble();
+		cellDegree = sc.nextDouble();
 		System.out.println("Multiple times on default MTP function: ");
 		mult = sc.nextDouble();
 		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
-
-		final double cellDegree = cd; // in degree
-		MTP.ChangeMult(mult);
-		Server.setNumberOfChannels(Number_Of_Channels);
-		Client.setNumberOfChannels(Number_Of_Channels);
-		// InferMap.getDirectory(directory);
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -40,12 +34,18 @@ public class Test {
 		double llLon = -82;
 		double lrLat = 36;
 		double lrLon = -79;
+
 		Location upperLeft = new Location(ulLat, ulLon);
 		Location upperRight = new Location(urLat, urLon);
 		Location lowerLeft = new Location(llLat, llLon);
 		Location lowerRight = new Location(lrLat, lrLon);
-		// initialize a gridmap
+
+		// initialization
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
+		// Location.map = map;
+		MTP.times = mult;
+		Server.Number_Of_Channels = Number_Of_Channels;
+		Client.Number_Of_Channels = Number_Of_Channels;
 
 		Random rand = new Random();
 
