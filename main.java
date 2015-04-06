@@ -53,12 +53,10 @@ public class Main {
 
 		// initialization
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
-		// Location.map = map;
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
 		InferMap.directory = directory;
-
 		/* debug information */
 		System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
 		System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
@@ -72,17 +70,17 @@ public class Main {
 		 * Add a PU to the server's grid map, speficify the PU's location
 		 * The location of PU is: 47°30'00.0"N, 97°30'00.0"W
 		 */
-		PU pu0 = new PU(0, 1, 0);
+		PU pu0 = new PU(0, 10, 10);
 		server.addPU(pu0, 0);
 
-		// PU pu1 = new PU(1, 37.5, -80);
-		// server.addPU(pu1, 0);
+		PU pu1 = new PU(1, 10, 50);
+		server.addPU(pu1, 1);
 
-		// PU pu2 = new PU(2, 36.5, -81);
-		// server.addPU(pu2, 1);
+		PU pu2 = new PU(2, 30, 10);
+		server.addPU(pu2, 1);
 
-		// PU pu3 = new PU(3, 36.5, -80);
-		// server.addPU(pu3, 0);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 0);
 
 		/* 
          * Use multiple PU, specified by Number_Of_Channels;
@@ -101,11 +99,9 @@ public class Main {
 		server.printInfoChannel();
 		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(0, 1, map);
+		Client client = new Client(10, 30, map);
 		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
-			// double rLat = llLat + (ulLat - llLat) * rand.nextDouble();
-			// double rLon = ulLon + (urLon - ulLon) * rand.nextDouble();
 			client.randomLocation();
 			client.query(server);
 		}
@@ -120,9 +116,9 @@ public class Main {
 			// client.printFormattedTable(i);
 		}
 
-		// double[] IC = client.computeIC(server);
-		// for (int i = 0; i < IC.length; i++) {
-		// 	System.out.println("Channel " + i + " : " + IC[i]);
-		// }
+		double[] IC = client.computeIC(server);
+		for (int i = 0; i < IC.length; i++) {
+			System.out.println("Channel " + i + " : " + IC[i]);
+		}
 	}
 }

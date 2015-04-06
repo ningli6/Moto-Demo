@@ -17,14 +17,6 @@ public class InferMap extends GridMap {
 	private int id;
 	private double[][] p;
 	public static String directory;
-	// cheat!
-	public static int[] puIndex = new int[2];
-
-	public class IllegalClearException extends RuntimeException {
-		public IllegalClearException(String message) {
-			super(message);
-		}
-	}
 
 	public InferMap(int id, GridMap map) {
 		super(map);
@@ -91,16 +83,10 @@ public class InferMap extends GridMap {
 				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 				double distance = loc.distTo(location);
 				if (distance < d1) {
-					if (i == puIndex[0] && j == puIndex[1]) {
-						System.out.print("[i, j]'s location: ");
-						loc.printLocation();
-						System.out.println("Distance between PU's center to SU:" + distance);
-						System.out.println("PU's location index: [" + i + "], [" + j + "]");
-						throw new IllegalClearException("Cannot set pu's cell to 0");
-					}
 					p[i][j] = 0;
-					/* debug information */
-					// System.out.println("p" + "[" + i + "]" + "[" + j + "] = 0");
+					// if (i == 11 && j == 11 && id == 0) {
+					// 	throw new IllegalArgumentException("Check!!!");
+					// }
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
@@ -150,6 +136,7 @@ public class InferMap extends GridMap {
 
 	// visualize results
 	public void visualize() {
+		// boolean greater = false;
 		int rows = getRows();
 		int cols = getCols();
 		int[] data = new int[rows * cols];
@@ -172,6 +159,8 @@ public class InferMap extends GridMap {
 					red = 0;
 					green = 0;
 					blue = 0;
+					// greater = true;
+					// throw new IllegalArgumentException();
 				}
 				data[j + cols * i] = (red << 16) | (green << 8) | blue;
 			}
@@ -181,18 +170,21 @@ public class InferMap extends GridMap {
 		frame.setSize(cols, rows);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		// System.out.println("Greater than 0.5:" + greater);
 	}
 
 	// the output will be matrix
 	public void printoutMatrix(int id) {
 		// String text = "Output";
 		File file = new File(directory + "demoMatrix_" + id + ".txt");
+		double max = 0;
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
 			for (int i = 0; i < getRows(); i++) {
 				for (int j = 0; j < getCols(); j++) {
 					out.print(p[i][j] + " ");
+					if (p[i][j] > max) max = p[i][j];
 				}
 				out.println();
 			}
@@ -200,6 +192,7 @@ public class InferMap extends GridMap {
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} finally {
+			System.out.println("Greatest value: " + max);
 			System.out.println("Printing ends");
 		}
 	}

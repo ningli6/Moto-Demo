@@ -164,11 +164,13 @@ public class Client {
 			int col = p[0].length;
 			for (int r = 0; r < row; r++) {
 				for (int c = 0; c < col; c++) {
+					// if (p[r][c] > 0) System.out.println("(r, c): " + r + ", " + c);
 					sum += p[r][c] * distanceToClosestPU(i, r, c);
 				}
 			}
-			if (sum == 0) IC[i] = Double.POSITIVE_INFINITY;
-			else IC[i] = sum;
+			IC[i] = sum;
+			// if (sum == 0) IC[i] = Double.POSITIVE_INFINITY;
+			// else IC[i] = sum;
 		}
 		return IC;
 	}

@@ -20,6 +20,12 @@ public class Server {
 		}
 	}
 
+	public class ClientOutOfMapException extends RuntimeException {
+		public ClientOutOfMapException(String message) {
+			super(message);
+		}
+	}
+
 	public Server(GridMap map) {
 		this.map = map;
 		this.Number_Of_PUs = 0;
@@ -52,7 +58,7 @@ public class Server {
 			System.out.println("PU's location is out out index");
 			return;
 		}
-		pu.setLocation(map.RowToLat(pu_r), map.LonToCol(pu_c));
+		pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
@@ -68,10 +74,7 @@ public class Server {
 	public Response response(Client client) {
 		// response with (-1, -1) means no transmit power available
 		if (client == null) return new Response(-1, -1);
-		if (!map.withInBoundary(client.getLocation())) {
-			System.out.println("Client is out of scope");
-			return new Response(-1, -1);
-		}
+		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
@@ -110,7 +113,7 @@ public class Server {
 	}
 
 	// return numbers of PUs
-	public int getNumberOfPUs() throws NumberOfPUsMismatchException {
+	public int getNumberOfPUs() {
 		int sum = 0;
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			sum += channels_List[i].size();

@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.util.Scanner;
 
 /*
@@ -43,33 +42,25 @@ public class Test {
 		// initialization
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
 		// Location.map = map;
-		MTP.times = mult;
+		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
 
-		Random rand = new Random();
-
 		Server server = new Server(map);
 
-		PU pu0 = new PU(0, 37.5, -81);
+		PU pu0 = new PU(0, 10, 10);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 37.5, -80);
+		PU pu1 = new PU(1, 10, 50);
 		server.addPU(pu1, 1);
 
-		// PU pu2 = new PU(2, 36.5, -80.5);
-		// server.addPU(pu2, 0);
+		PU pu2 = new PU(2, 30, 10);
+		server.addPU(pu2, 1);
 
-		// PU pu3 = new PU(3, 37.5, -80.5);
-		// server.addPU(pu3, 1);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 1);
 
-		PU pu4 = new PU(4, 36.5, -81);
-		server.addPU(pu4, 1);
-
-		PU pu5 = new PU(5, 36.5, -80);
-		server.addPU(pu5, 0);
-
-		Client client = new Client(37, -81.5, map);
+		Client client = new Client(10, 30, map);
 
 		System.out.println("Now you can perform a series of queries");
 		System.out.println("Number of queries: ");
@@ -83,9 +74,7 @@ public class Test {
 			server.reset();
 			// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 			for (int i = 0; i < number_of_Queries; i++) {
-				double rLat = llLat + (ulLat - llLat) * rand.nextDouble();
-				double rLon = ulLon + (urLon - ulLon) * rand.nextDouble();
-				client.setLocation(rLat, rLon);
+				client.randomLocation();
 				client.query(server);
 			}
 			/* debug information */

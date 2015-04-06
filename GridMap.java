@@ -28,6 +28,15 @@ public class GridMap {
 	// average distance between each cell
 	private double averDist;
 
+	public class coordinatesOutOfBoundsException extends RuntimeException {
+		public coordinatesOutOfBoundsException(String message) {
+			super(message);
+		}
+		public coordinatesOutOfBoundsException() {
+			super();
+		}
+	}
+
 	// initialize map using four coordinates and cell degree
 	public GridMap(Location ul, Location ur, Location ll, Location lr, double cd) {
 		if (cd <= 0) throw new IllegalArgumentException("Cell size defined in degree must be positive");
@@ -158,18 +167,16 @@ public class GridMap {
 	// get lat & lon according to given number_of_rows & number_of_cols index
 	public double RowToLat(int r) {
 		if (r < 0 || r >= number_of_rows) throw new IllegalArgumentException();
-		return upperLat - 0.5 * cellDegree - r * cellDegree;
+		double newLat = upperLat - 0.5 * cellDegree - r * cellDegree;
+		if (newLat < getLowerBounday() || newLat > getUpperBoundary()) throw new coordinatesOutOfBoundsException();
+		return newLat;
 	}
 
 	public double ColToLon(int c) {
 		if (c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
-		return leftLon + 0.5 * cellDegree + c * cellDegree;
-	}
-
-	public Location getLocation(int r, int c) {
-		if (r < 0 || r >= number_of_rows || c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
-		return new Location(upperLat - 0.5 * cellDegree - r * cellDegree, 
-			leftLon + 0.5 * cellDegree + c * cellDegree);
+		double newLon = leftLon + 0.5 * cellDegree + c * cellDegree;
+		if (newLon < getLeftBoundary() || newLon > getRightBoundary()) throw new coordinatesOutOfBoundsException();
+		return newLon;
 	}
 
 	// convert latitude to the index of row where the coordinate belongs 
@@ -186,5 +193,11 @@ public class GridMap {
 		int colIndex = (int) (Math.abs(upperLeft.getLongitude() - lon) / cellDegree);
 		if (colIndex >= number_of_cols) throw new IndexOutOfBoundsException();
 		return colIndex;
+	}
+
+	public Location getLocation(int r, int c) {
+		if (r < 0 || r >= number_of_rows || c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
+		return new Location(upperLat - 0.5 * cellDegree - r * cellDegree, 
+			leftLon + 0.5 * cellDegree + c * cellDegree);
 	}
 }
