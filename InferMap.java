@@ -53,8 +53,8 @@ public class InferMap extends GridMap {
 		if (cd <= 0) return;
 		double upperBoundary = getUpperBoundary();
 		double leftBoundary = getLeftBoundary();
-		int rowIndex = (int) (Math.abs((upperBoundary - location.getLatitude())) / cd);
-		int colIndex = (int) (Math.abs((leftBoundary - location.getLongitude())) / cd);
+		int rowIndex = LatToRow(location.getLatitude());
+		int colIndex = LonToCol(location.getLongitude());
 		
 		/* debug information */
 		System.out.println("***Update****");
@@ -64,7 +64,7 @@ public class InferMap extends GridMap {
 		System.out.println("[" + rowIndex + "][" + colIndex + "]");
 		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
 		// for testing
-		int updateLength = (int) Math.round(MTP.d3 * 2.5 / getAverageDistance());
+		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
 		/* debug information */
 		System.out.println("updateLength: " + updateLength);
 
@@ -77,15 +77,20 @@ public class InferMap extends GridMap {
 		System.out.println("startCol: " + startCol);
 
 		Location loc = new Location();
-		for (int i = startRow; i < startRow + updateLength && i < getRows(); i++)
-			for (int j = startCol; j < startCol + updateLength && j < getCols(); j++) {
+		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
+			for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 				// assume that PU is located at the center of cell
 				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 				double distance = loc.distTo(location);
 				if (distance < d1) {
 					p[i][j] = 0;
-					// if (i == 11 && j == 11 && id == 0) {
-					// 	throw new IllegalArgumentException("Check!!!");
+					// if (i == 1 && j == 51 && id == 1) {
+					// 	System.out.println("Distance: " + distance);
+					// 	throw new IllegalArgumentException("Check c1!!!");
+					// }
+					// if (i == 1 && j == 8 && id == 0) {
+					// 	System.out.println("Distance: " + distance);
+					// 	throw new IllegalArgumentException("Check c2!!!");
 					// }
 				}
 				if (distance >= d1 && distance < d2) G++;
@@ -93,8 +98,8 @@ public class InferMap extends GridMap {
 		/* debug information */
 		System.out.println("Number of G is: " + G);
 		if (G != 0) {
-			for (int i = startRow; i < startRow + updateLength && i < getRows(); i++)
-				for (int j = startCol; j < startCol + updateLength && j < getCols(); j++) {
+			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
+				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 					// assume that PU is located at the center of cell
 					loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
 					double distance = loc.distTo(location);

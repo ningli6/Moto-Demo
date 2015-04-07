@@ -51,7 +51,7 @@ public class Client {
 	public Client(GridMap map) {
 		inferMap = new InferMap[Number_Of_Channels];
 		this.map = map;
-		rand = new Random();
+		// rand = new Random();
 		count = new int[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
 		for (int i = 0; i < Number_Of_Channels; i++)
@@ -64,7 +64,7 @@ public class Client {
 		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
 		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
 		this.map = map;
-		rand = new Random();
+		// rand = new Random();
 		location = new Location(map.RowToLat(r), map.ColToLon(c));
 		count = new int[Number_Of_Channels];
 		inferMap = new InferMap[Number_Of_Channels];
@@ -92,13 +92,24 @@ public class Client {
 	}
 
 	public void randomLocation() {
+		rand = new Random();
 		int newR = rand.nextInt(map.getRows());
 		int newC = rand.nextInt(map.getCols());
 		setLocation(newR, newC);
+		indexOfRow = newR;
+		indexOfCol = newC;
 	}
 
 	public Location getLocation() {
 		return location;
+	}
+
+	public int getRowIndex() {
+		return indexOfRow;
+	}
+
+	public int getColIndex() {
+		return indexOfCol;
 	}
 
 	// send a query to server
@@ -128,17 +139,20 @@ public class Client {
 			d1 = MTP.d0;
 			d2 = MTP.d1;
 		}
-		if (power == 0.5 * PMAX) {
+		else if (power == 0.5 * PMAX) {
 			d1 = MTP.d1;
 			d2 = MTP.d2;
 		}
-		if (power == 0.75 * PMAX) {
+		else if (power == 0.75 * PMAX) {
 			d1 = MTP.d2;
 			d2 = MTP.d3;
 		}
-		if (power == PMAX) {
+		else if (power == PMAX) {
 			d1 = MTP.d3;
 			d2 = d1;
+		}
+		else {
+			throw new IllegalArgumentException("Can not throw here");
 		}
 		System.out.println("d1: " + d1 + ", d2: " + d2);
 		count[channelID]++;
@@ -166,6 +180,8 @@ public class Client {
 				for (int c = 0; c < col; c++) {
 					// if (p[r][c] > 0) System.out.println("(r, c): " + r + ", " + c);
 					sum += p[r][c] * distanceToClosestPU(i, r, c);
+					// sum += p[r][c];
+					// sum += distanceToClosestPU(i, r, c);
 				}
 			}
 			IC[i] = sum;
@@ -178,12 +194,12 @@ public class Client {
 	private double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= Number_Of_Channels) throw new IllegalArgumentException("Bad channel number");
 		double minDist = Double.MAX_VALUE;
-		PU minPU = null;
+		// PU minPU = null;
 		for (PU pu : channels_List[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
 			if (dist < minDist) {
 				minDist = dist;
-				minPU = pu;
+				// minPU = pu;
 			}
 		}
 		/* debug info */

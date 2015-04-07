@@ -55,12 +55,12 @@ public class Test {
 		server.addPU(pu1, 1);
 
 		PU pu2 = new PU(2, 30, 10);
-		server.addPU(pu2, 1);
+		server.addPU(pu2, 0);
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 1);
 
-		Client client = new Client(10, 30, map);
+		Client client = new Client(0, 36, map);
 
 		System.out.println("Now you can perform a series of queries");
 		System.out.println("Number of queries: ");

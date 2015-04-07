@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.io.File;
+import java.util.Random;
 /*
  * Main class is the entrace of the program
  */
@@ -76,11 +77,11 @@ public class Main {
 		PU pu1 = new PU(1, 10, 50);
 		server.addPU(pu1, 1);
 
-		PU pu2 = new PU(2, 30, 10);
-		server.addPU(pu2, 1);
+		// PU pu2 = new PU(2, 30, 10);
+		// server.addPU(pu2, 0);
 
-		PU pu3 = new PU(3, 30, 50);
-		server.addPU(pu3, 0);
+		// PU pu3 = new PU(3, 30, 50);
+		// server.addPU(pu3, 1);
 
 		/* 
          * Use multiple PU, specified by Number_Of_Channels;
@@ -99,10 +100,17 @@ public class Main {
 		server.printInfoChannel();
 		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
-		Client client = new Client(10, 30, map);
+		Client client = new Client(10, 49, map);
+		Random randr = new Random();
+		Random randc = new Random();
 		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
-			client.randomLocation();
+			// int newR = randr.nextInt(map.getRows());
+			// int newC = randc.nextInt(map.getCols());
+			int newR = randr.nextInt(40);
+			int newC = randc.nextInt(60);
+			client.setLocation(newR, newC);
+			// client.randomLocation();
 			client.query(server);
 		}
 		/* debug information */
