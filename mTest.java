@@ -46,34 +46,41 @@ public class mTest {
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
 
-		int repeat = 10;
 		ArrayList<Double>[] rlist = (ArrayList<Double>[]) new ArrayList[Number_Of_Channels];
 		for (int i = 0; i < rlist.length; i++) {
 			rlist[i] = new ArrayList<Double>();
 		}
 		// for (ArrayList<Double> ls : rlist) ls = new ArrayList<Double>();
 
-		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000};
+		int repeat = 10;
 
 		Server server = new Server(map);
 
-		PU pu0 = new PU(0, 10, 10);
+		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 10, 50);
-		server.addPU(pu1, 1);
+		PU pu1 = new PU(1, 9, 50);
+		server.addPU(pu1, 0);
 
-		// PU pu2 = new PU(2, 30, 10);
-		// server.addPU(pu2, 0);
+		PU pu2 = new PU(2, 30, 9);
+		server.addPU(pu2, 1);
 
-		// PU pu3 = new PU(3, 30, 50);
-		// server.addPU(pu3, 1);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 1);
+
+		PU pu4 = new PU(4, 29, 29);
+		server.addPU(pu4, 0);
+
+		PU pu5 = new PU(5, 10, 30);
+		server.addPU(pu5, 1);
 
 		Client client = new Client(10, 30, map);
 
 		System.out.println("Now perform a series of queries");
 		// go thru number of queries in the query list
 		for (int q : queries) {
+			System.out.println("Number of queries: " + q);
 			double[] sumIC = new double[Number_Of_Channels];
 			// make queries for certain times
 			for (int i = 0; i < repeat; i++) {
@@ -84,6 +91,7 @@ public class mTest {
 					client.query(server);
 				}
 				double[] IC = client.computeIC(server);
+				System.out.println("IC for channel 0 is " + IC[0]);
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
@@ -94,6 +102,7 @@ public class mTest {
 			int cid = 0;
 			for (double ic : sumIC) {
 				rlist[cid].add(ic / repeat);
+				System.out.println("Average is " + ic / repeat);
 				cid++;
 			}
 		}

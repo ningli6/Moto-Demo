@@ -48,17 +48,17 @@ public class Test {
 
 		Server server = new Server(map);
 
-		PU pu0 = new PU(0, 10, 10);
+		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 10, 50);
-		server.addPU(pu1, 1);
+		PU pu1 = new PU(1, 9, 50);
+		server.addPU(pu1, 0);
 
-		PU pu2 = new PU(2, 30, 10);
+		PU pu2 = new PU(2, 30, 9);
 		server.addPU(pu2, 0);
 
 		PU pu3 = new PU(3, 30, 50);
-		server.addPU(pu3, 1);
+		server.addPU(pu3, 0);
 
 		Client client = new Client(0, 36, map);
 
