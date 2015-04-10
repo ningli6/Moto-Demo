@@ -1,3 +1,4 @@
+package utility;
 /*
  * PU represents a primary user, server keeps track of pus that were added to it. 
  * Right now it just has location information.
@@ -91,6 +92,7 @@ public class PU {
 		number_of_response++;
 	}
 
+	// clear number of response
 	public void reset() {
 		number_of_response = 0;
 	}

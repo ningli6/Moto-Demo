@@ -1,3 +1,5 @@
+package server;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collections;
@@ -10,8 +12,8 @@ public class Server {
 	public static double PMAX = 1;
 	public static int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
-	private GridMap map;
-	private List<PU>[] channels_List;
+	protected GridMap map;
+	protected List<PU>[] channels_List;
 	private int Number_Of_PUs;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
@@ -86,7 +88,7 @@ public class Server {
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
 				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
 				if (resPower <= minPower) {

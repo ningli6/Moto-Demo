@@ -7,7 +7,7 @@ import java.util.Random;
  * Main class is the entrace of the program
  */
 
-public class Main {
+public class Main_AdditiveNoise {
 
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 	/* 
@@ -30,6 +30,8 @@ public class Main {
 		int Number_Of_Channels = 1;
 		// query times
 		int number_of_Queries = 50;
+		// noise
+		double noise_level = 0.5;
 
 		System.out.println("Cell size in degree: ");
 		cellDegree = sc.nextDouble();
@@ -39,6 +41,8 @@ public class Main {
 		Number_Of_Channels = sc.nextInt();
 		System.out.println("Number of queries: ");
 		number_of_Queries = sc.nextInt();
+		System.out.println("Noise level: ");
+		noise_level = sc.nextDouble();
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -58,6 +62,7 @@ public class Main {
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
+		ServerAdditiveNoise.Number_Of_Queries = number_of_Queries;
 		Client.Number_Of_Channels = Number_Of_Channels;
 		InferMap.directory = directory;
 		/* debug information */
@@ -67,23 +72,23 @@ public class Main {
 		System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
 
 	    // initialize a server with parameters from initial settings
-		Server server = new Server(map);
+		ServerAdditiveNoise server = new ServerAdditiveNoise(map, noise_level);
 
 		/* 
 		 * Add a PU to the server's grid map, speficify the PU's location
 		 * The location of PU is: 47°30'00.0"N, 97°30'00.0"W
 		 */
-		PU pu0 = new PU(0, 10, 10);
+		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 10, 50);
+		PU pu1 = new PU(1, 9, 50);
 		server.addPU(pu1, 1);
 
-		// PU pu2 = new PU(2, 30, 10);
-		// server.addPU(pu2, 0);
+		PU pu2 = new PU(2, 30, 9);
+		server.addPU(pu2, 1);
 
-		// PU pu3 = new PU(3, 30, 50);
-		// server.addPU(pu3, 1);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 0);
 
 		/* 
          * Use multiple PU, specified by Number_Of_Channels;
@@ -115,6 +120,12 @@ public class Main {
 			// client.randomLocation();
 			client.query(server);
 		}
+		// make sure that server has reached enough number of lies
+		if (!server.reachNoiseLevel()) {
+			System.out.println("Noise condition is not satisfied, try again or increase number of queries");
+			return;
+		}
+		System.out.println("Noise condition is satisfied");
 		/* debug information */
 		client.updateWhich();
 		server.printInfoPU();
@@ -125,6 +136,11 @@ public class Main {
 			client.printFormattedMatrix(i);
 			// client.printFormattedTable(i);
 		}
+
+		/* debug info */
+		System.out.println("Noise level: " + server.getNoiseLevel());
+		System.out.println("Expected lies: " + server.getExpectedLies());
+		System.out.println("Actual lies: " + server.getNumberOfLies());
 
 		double[] IC = client.computeIC(server);
 		for (int i = 0; i < IC.length; i++) {

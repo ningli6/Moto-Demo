@@ -1,3 +1,4 @@
+package utility;
 /*
  * This class wrap information that Server passes to client.
  * Right now it wraps pu's channelID & available transmit power.
@@ -41,6 +42,14 @@ public class Response implements Comparable<Response> {
 	/* delete this!!! */
 	public PU getPU() {
 		return pu;
+	}
+
+	public boolean decrease(int step) {
+		if (power == MTP.P_0) return false;
+		if (power == MTP.P_50) power = MTP.P_0;
+		if (power == MTP.P_75) power = MTP.P_50;
+		if (power == MTP.P_100) power = MTP.P_75;
+		return true;
 	}
 
 	public int compareTo(Response response) {

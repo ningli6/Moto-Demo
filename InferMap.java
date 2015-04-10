@@ -1,3 +1,5 @@
+package utility;
+
 import java.text.DecimalFormat;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -57,24 +59,24 @@ public class InferMap extends GridMap {
 		int colIndex = LonToCol(location.getLongitude());
 		
 		/* debug information */
-		System.out.println("***Update****");
-		System.out.println("d1: " + d1 + " d2: " + d2);
-		System.out.println("center: ");
-		location.printLocation();
-		System.out.println("[" + rowIndex + "][" + colIndex + "]");
+		// System.out.println("***Update****");
+		// System.out.println("d1: " + d1 + " d2: " + d2);
+		// System.out.println("center: ");
+		// location.printLocation();
+		// System.out.println("[" + rowIndex + "][" + colIndex + "]");
 		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
 		// for testing
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
 		/* debug information */
-		System.out.println("updateLength: " + updateLength);
+		// System.out.println("updateLength: " + updateLength);
 
 		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
 		if (startRow < 0) startRow = 0;
 		int startCol = colIndex - (int) Math.round(updateLength / 2.0);
 		if (startCol < 0) startCol = 0;
 		/* debug information */
-		System.out.println("startRow: " + startRow);
-		System.out.println("startCol: " + startCol);
+		// System.out.println("startRow: " + startRow);
+		// System.out.println("startCol: " + startCol);
 
 		Location loc = new Location();
 		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
@@ -84,19 +86,11 @@ public class InferMap extends GridMap {
 				double distance = loc.distTo(location);
 				if (distance < d1) {
 					p[i][j] = 0;
-					// if (i == 1 && j == 51 && id == 1) {
-					// 	System.out.println("Distance: " + distance);
-					// 	throw new IllegalArgumentException("Check c1!!!");
-					// }
-					// if (i == 1 && j == 8 && id == 0) {
-					// 	System.out.println("Distance: " + distance);
-					// 	throw new IllegalArgumentException("Check c2!!!");
-					// }
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
 		/* debug information */
-		System.out.println("Number of G is: " + G);
+		// System.out.println("Number of G is: " + G);
 		if (G != 0) {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
@@ -110,8 +104,8 @@ public class InferMap extends GridMap {
 					}
 				}
 		}
-		System.out.println("***Update over****");
-		System.out.println("");
+		// System.out.println("***Update over****");
+		// System.out.println("");
 	}
 
 	public double[][] getProbabilityMatrix() {
