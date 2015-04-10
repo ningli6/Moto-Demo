@@ -2,15 +2,16 @@ package tests;
 
 import java.util.Scanner;
 import java.io.File;
-import java.util.Random;
 
 import client.Client;
 import server.*;
 import utility.*;
-/*
- * Main class is the entrace of the program
- */
 
+/*
+ * A testing class for countermeasure with additive noise.
+ * Can only do a certain number of query once.
+ * Use automatic class for a set of queries.
+ */
 public class Main_AdditiveNoise {
 
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
@@ -94,34 +95,17 @@ public class Main_AdditiveNoise {
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
 
-		/* 
-         * Use multiple PU, specified by Number_Of_Channels;
-		 *
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			double rLat = 50 - (50 - 45) * rand.nextDouble();
-			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
-			PU pu = new PU(i, rLat, rLon);
-			server.addPU(pu);
-		}
-		*/
+		// /* debug information */
+		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		// server.printInfoPU();
+		// server.printInfoChannel();
+		// System.out.println();
 
-		/* debug information */
-		System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		server.printInfoPU();
-		server.printInfoChannel();
-		System.out.println();
 		// initiliza a client, then change its location and make a query for N times;
 		Client client = new Client(10, 49, map);
-		Random randr = new Random();
-		Random randc = new Random();
 		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
 		for (int i = 0; i < number_of_Queries; i++) {
-			// int newR = randr.nextInt(map.getRows());
-			// int newC = randc.nextInt(map.getCols());
-			int newR = randr.nextInt(40);
-			int newC = randc.nextInt(60);
-			client.setLocation(newR, newC);
-			// client.randomLocation();
+			client.randomLocation();
 			client.query(server);
 		}
 		// make sure that server has reached enough number of lies
@@ -137,7 +121,7 @@ public class Main_AdditiveNoise {
 		/*** these functions should be update! ***/
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			client.plotInferMap(i);
-			client.printFormattedMatrix(i);
+			// client.printFormattedMatrix(i);
 			// client.printFormattedTable(i);
 		}
 

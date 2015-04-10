@@ -6,3 +6,5 @@ Main.java is the entrance of the program. We will allow user to specify paramete
 We use latitude & longitude instead of cell index to do computation in our map. Cell size are defined by degree. Conceptually user will assign a rectangle area for the program.
 
 We compute inaccuracy for each channel to evaluate the result of inference. The actual compute formula is in presented in the paper.
+
+First technique for protecting location privacy is perturbation with additive noise.

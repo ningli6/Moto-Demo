@@ -9,9 +9,8 @@ import server.*;
 import utility.*;
 
 /*
- * Main class is the entrace of the program
+ * Test class for location preservation without countermeasure.
  */
-
 public class Main {
 
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
@@ -22,8 +21,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// clear file
-		File dir = new File(directory);
-		for(File file: dir.listFiles()) file.delete();
+		// File dir = new File(directory);
+		// for(File file: dir.listFiles()) file.delete();
 
 		Scanner sc = new Scanner(System.in);
 		// get default settings from user

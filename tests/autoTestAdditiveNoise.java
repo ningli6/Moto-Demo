@@ -10,6 +10,12 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/* 
+ * Automate tests for location preservation with additive noise.
+ * User specify a noise level between 0 and 1.
+ * Each query is repeated 10 times.
+ * Output inaccuracy to txt file.
+ */
 public class autoTestAdditiveNoise {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
@@ -65,22 +71,22 @@ public class autoTestAdditiveNoise {
 			rlist[i] = new ArrayList<Double>();
 		}
 
-		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
 		int repeat = 10;
 
 		ServerAdditiveNoise server = new ServerAdditiveNoise(map, noise_level);
 
-		PU pu0 = new PU(0, 9, 9);
+		PU pu0 = new PU(0, 20, 30);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 9, 50);
-		server.addPU(pu1, 1);
+		// PU pu1 = new PU(1, 9, 50);
+		// server.addPU(pu1, 1);
 
-		PU pu2 = new PU(2, 30, 9);
-		server.addPU(pu2, 1);
+		// PU pu2 = new PU(2, 30, 9);
+		// server.addPU(pu2, 1);
 
-		PU pu3 = new PU(3, 30, 50);
-		server.addPU(pu3, 0);
+		// PU pu3 = new PU(3, 30, 50);
+		// server.addPU(pu3, 0);
 
 		// PU pu4 = new PU(4, 29, 29);
 		// server.addPU(pu4, 0);
@@ -107,13 +113,15 @@ public class autoTestAdditiveNoise {
 					client.randomLocation();
 					client.query(server);
 				}
+				// after querying, check if number of lies has reached requirement
 				if (!server.reachNoiseLevel()) {
 					System.out.println("Noise condition is not satisfied, try again");
 					i--;
 					continue;
 				}
-				/* debug */
+				/* debug info*/
 				System.out.println(server.getNumberOfLies());
+
 				double[] IC = client.computeIC(server);
 				// System.out.println("IC for channel 0 is " + IC[0]);
 				int k = 0;

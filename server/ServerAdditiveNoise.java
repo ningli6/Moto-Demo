@@ -15,6 +15,7 @@ public class ServerAdditiveNoise extends Server{
 	public static double noise = 0.5;
 	public static int Number_Of_Queries = -1;
 	public static int NOISE_DECREASE_STEP = 1;
+	
 	private int actual_lies;
 	private int expected_lies;
 
