@@ -1,4 +1,4 @@
-// package test;
+package tests;
 
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -6,7 +6,11 @@ import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
 
-public class autoTestAdditiveNoise {
+import client.Client;
+import server.*;
+import utility.*;
+
+public class autoTest {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
@@ -19,8 +23,6 @@ public class autoTestAdditiveNoise {
 		double mult = 1;
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
-		// noise
-		double noise_level = 0.5;
 
 		System.out.println("Cell size in degree: ");
 		cellDegree = sc.nextDouble();
@@ -28,12 +30,6 @@ public class autoTestAdditiveNoise {
 		mult = sc.nextDouble();
 		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
-		System.out.println("Noise level: ");
-		noise_level = sc.nextDouble();
-		if (noise_level > 0) {
-			System.out.println("Noise is between 0 to 1");
-			return;
-		}
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -60,11 +56,12 @@ public class autoTestAdditiveNoise {
 		for (int i = 0; i < rlist.length; i++) {
 			rlist[i] = new ArrayList<Double>();
 		}
+		// for (ArrayList<Double> ls : rlist) ls = new ArrayList<Double>();
 
 		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
-		ServerAdditiveNoise server = new ServerAdditiveNoise(map, noise_level);
+		Server server = new Server(map);
 
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
@@ -90,26 +87,15 @@ public class autoTestAdditiveNoise {
 		// go thru number of queries in the query list
 		for (int q : queries) {
 			System.out.println("Number of queries: " + q);
-			// specify number of queries for server:
-			server.setNoise(q);
 			double[] sumIC = new double[Number_Of_Channels];
 			// make queries for certain times
 			for (int i = 0; i < repeat; i++) {
-				// clear client's probability map to 0.5
 				client.reset();
-				// set actual lies back to 0
 				server.reset();
 				for (int j = 0; j < q; j++) {
 					client.randomLocation();
 					client.query(server);
 				}
-				if (!server.reachNoiseLevel()) {
-					System.out.println("Noise condition is not satisfied, try again");
-					i--;
-					continue;
-				}
-				/* debug */
-				System.out.println(server.getNumberOfLies());
 				double[] IC = client.computeIC(server);
 				// System.out.println("IC for channel 0 is " + IC[0]);
 				int k = 0;
@@ -126,7 +112,7 @@ public class autoTestAdditiveNoise {
 				cid++;
 			}
 		}
-		File file = new File(directory + "ic_an.txt");
+		File file = new File(directory + "ic.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -142,7 +128,7 @@ public class autoTestAdditiveNoise {
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} finally {
-			System.out.println("Printing succeeded");
+			System.out.println("Printing ends");
 		}
 	}
 }

@@ -1,9 +1,11 @@
-// package client;
+package client;
 
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Random;
 
+import utility.*;
+import server.*;
 /*
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map

@@ -1,4 +1,4 @@
-// package utility;
+package utility;
 
 import java.text.DecimalFormat;
 import java.awt.Graphics;

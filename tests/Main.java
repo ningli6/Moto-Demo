@@ -1,8 +1,13 @@
-// package test;
+package tests;
 
 import java.util.Scanner;
 import java.io.File;
 import java.util.Random;
+
+import client.Client;
+import server.*;
+import utility.*;
+
 /*
  * Main class is the entrace of the program
  */

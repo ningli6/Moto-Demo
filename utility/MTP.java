@@ -1,4 +1,4 @@
-// package utility;
+package utility;
 /*
  * This class provides parameters that MTP function is going to use
  */

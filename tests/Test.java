@@ -1,6 +1,10 @@
-// package test;
+package tests;
 
 import java.util.Scanner;
+
+import client.Client;
+import server.*;
+import utility.*;
 
 /*
  * This class is written for testing relationship between number of queries and IC for each channel

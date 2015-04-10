@@ -1,4 +1,6 @@
-// package utility;
+package utility;
+
+import server.*;
 /*
  * PU represents a primary user, server keeps track of pus that were added to it. 
  * Right now it just has location information.

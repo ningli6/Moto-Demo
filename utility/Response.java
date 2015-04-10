@@ -1,4 +1,4 @@
-// package utility;
+package utility;
 /*
  * This class wrap information that Server passes to client.
  * Right now it wraps pu's channelID & available transmit power.

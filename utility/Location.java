@@ -1,4 +1,4 @@
-// package utility;
+package utility;
 /*
  * This class represent coordinate location for a certain cell in the grid
  */
