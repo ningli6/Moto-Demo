@@ -1,12 +1,10 @@
-package test;
+// package test;
 
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
-
-import utility.Location;
 
 public class autoTestAdditiveNoise {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
