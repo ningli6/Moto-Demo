@@ -1,15 +1,18 @@
 % draw countermeasure with additive noise with only 1 channels
+% normalize results
 importName = ['/Users/ningli/Desktop/input.txt'];
 table = importdata(importName);
 [m,n] = size(table);
 x = table(1, :);
 y = table(2, :);
-ad_50 = table(3, :);
-ad_75 = table(4, :);
-ad_100 = table(5, :);
+nor = y(1, 1);
+ad_0 = y / nor;
+ad_50 = table(3, :) / nor;
+ad_75 = table(4, :) / nor;
+ad_100 = table(5, :) / nor;
 figure;
 hold on;
-plot(x, y, '-ro');
+plot(x, ad_0, '-ro');
 plot(x, ad_50, '-bo');
 plot(x, ad_75, '-go');
 plot(x, ad_100, '-mo');
