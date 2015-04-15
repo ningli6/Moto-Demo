@@ -1,10 +1,16 @@
+package tests;
+
 import java.util.Scanner;
 import java.io.File;
 import java.util.Random;
-/*
- * Main class is the entrace of the program
- */
 
+import client.Client;
+import server.*;
+import utility.*;
+
+/*
+ * Test class for location preservation without countermeasure.
+ */
 public class Main {
 
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
@@ -15,8 +21,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// clear file
-		File dir = new File(directory);
-		for(File file: dir.listFiles()) file.delete();
+		// File dir = new File(directory);
+		// for(File file: dir.listFiles()) file.delete();
 
 		Scanner sc = new Scanner(System.in);
 		// get default settings from user

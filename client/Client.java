@@ -1,6 +1,11 @@
+package client;
+
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Random;
+
+import utility.*;
+import server.*;
 /*
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
@@ -120,9 +125,10 @@ public class Client {
 		}
 		if (server == null) return;
 		Response res = server.response(this);
+		if (res == null) return;
 		double power = res.getPower();
 		int channelID = res.getChannelID();
-		System.out.println("Server response with: " + "[" + res.getPUID() + "] with power " + power + " on channel [" + channelID + "]");
+		// System.out.println("Server response with: " + "[" + res.getPUID() + "] with power " + power + " on channel [" + channelID + "]");
 		if (power < 0) {
 			System.out.println("Channel unavailable");
 			return;
@@ -154,7 +160,7 @@ public class Client {
 		else {
 			throw new IllegalArgumentException("Can not throw here");
 		}
-		System.out.println("d1: " + d1 + ", d2: " + d2);
+		// System.out.println("d1: " + d1 + ", d2: " + d2);
 		count[channelID]++;
 		inferMap[channelID].update(this.location, d1, d2);
 	}

@@ -1,9 +1,16 @@
+package tests;
+
 import java.util.Scanner;
+
+import client.Client;
+import server.*;
+import utility.*;
 
 /*
  * This class is written for testing relationship between number of queries and IC for each channel
+ * Measure inaccuracy without countermeasure.
+ * User can specify query numbers to the input.
  */ 
-
 public class Test {
 	// public static String directory = "/Users/ningli/Desktop/Project/output/";
 	public static void main(String[] args) {
@@ -52,10 +59,10 @@ public class Test {
 		server.addPU(pu0, 0);
 
 		PU pu1 = new PU(1, 9, 50);
-		server.addPU(pu1, 0);
+		server.addPU(pu1, 1);
 
 		PU pu2 = new PU(2, 30, 9);
-		server.addPU(pu2, 0);
+		server.addPU(pu2, 1);
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);

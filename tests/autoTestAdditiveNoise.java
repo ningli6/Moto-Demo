@@ -1,10 +1,22 @@
+package tests;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
 
-public class mTest {
+import client.Client;
+import server.*;
+import utility.*;
+
+/* 
+ * Automate tests for location preservation with additive noise.
+ * User specify a noise level between 0 and 1.
+ * Each query is repeated 10 times.
+ * Output inaccuracy to txt file.
+ */
+public class autoTestAdditiveNoise {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
@@ -17,6 +29,8 @@ public class mTest {
 		double mult = 1;
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
+		// noise
+		double noise_level = 0.5;
 
 		System.out.println("Cell size in degree: ");
 		cellDegree = sc.nextDouble();
@@ -24,6 +38,12 @@ public class mTest {
 		mult = sc.nextDouble();
 		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
+		System.out.println("Noise level: ");
+		noise_level = sc.nextDouble();
+		if (noise_level < 0 || noise_level > 1) {
+			System.out.println("Noise is between 0 to 1");
+			return;
+		}
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -50,30 +70,30 @@ public class mTest {
 		for (int i = 0; i < rlist.length; i++) {
 			rlist[i] = new ArrayList<Double>();
 		}
-		// for (ArrayList<Double> ls : rlist) ls = new ArrayList<Double>();
 
-		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000};
+		// int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
-		Server server = new Server(map);
+		ServerAdditiveNoise server = new ServerAdditiveNoise(map, noise_level);
 
-		PU pu0 = new PU(0, 9, 9);
+		PU pu0 = new PU(0, 20, 30);
 		server.addPU(pu0, 0);
 
 		PU pu1 = new PU(1, 9, 50);
-		server.addPU(pu1, 0);
+		server.addPU(pu1, 1);
 
 		PU pu2 = new PU(2, 30, 9);
 		server.addPU(pu2, 1);
 
 		PU pu3 = new PU(3, 30, 50);
-		server.addPU(pu3, 1);
+		server.addPU(pu3, 0);
 
-		PU pu4 = new PU(4, 29, 29);
-		server.addPU(pu4, 0);
+		// PU pu4 = new PU(4, 29, 29);
+		// server.addPU(pu4, 0);
 
-		PU pu5 = new PU(5, 10, 30);
-		server.addPU(pu5, 1);
+		// PU pu5 = new PU(5, 10, 30);
+		// server.addPU(pu5, 1);
 
 		Client client = new Client(10, 30, map);
 
@@ -81,17 +101,30 @@ public class mTest {
 		// go thru number of queries in the query list
 		for (int q : queries) {
 			System.out.println("Number of queries: " + q);
+			// specify number of queries for server:
+			server.setNoise(q);
 			double[] sumIC = new double[Number_Of_Channels];
 			// make queries for certain times
 			for (int i = 0; i < repeat; i++) {
+				// clear client's probability map to 0.5
 				client.reset();
+				// set actual lies back to 0
 				server.reset();
 				for (int j = 0; j < q; j++) {
 					client.randomLocation();
 					client.query(server);
 				}
+				// after querying, check if number of lies has reached requirement
+				if (!server.reachNoiseLevel()) {
+					System.out.println("Noise condition is not satisfied, try again");
+					i--;
+					continue;
+				}
+				/* debug info*/
+				System.out.println(server.getNumberOfLies());
+
 				double[] IC = client.computeIC(server);
-				System.out.println("IC for channel 0 is " + IC[0]);
+				// System.out.println("IC for channel 0 is " + IC[0]);
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
@@ -102,13 +135,11 @@ public class mTest {
 			int cid = 0;
 			for (double ic : sumIC) {
 				rlist[cid].add(ic / repeat);
-				System.out.println("Average is " + ic / repeat);
+				// System.out.println("Average is " + ic / repeat);
 				cid++;
 			}
 		}
-		System.out.println("Test is over");
-		System.out.println("Output");
-		File file = new File(directory + "ic.txt");
+		File file = new File(directory + "ic_an_" + noise_level + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -124,7 +155,7 @@ public class mTest {
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} finally {
-			System.out.println("Printing ends");
+			System.out.println("Printing succeeded");
 		}
 	}
 }

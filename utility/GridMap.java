@@ -1,3 +1,4 @@
+package utility;
 /*
  * GridMap class represent a grid map, with lenght, height and cell size
  * Number of number_of_rows and columns are computed then
