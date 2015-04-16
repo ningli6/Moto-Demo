@@ -9,22 +9,22 @@ import client.Client;
 
 public class ServerTransfiguration extends Server{
 	public static int NUMBER_OF_SIDES = 3;
-	private List<Polygon>[] channels_poly_List;
+	private List<PolyPU>[] channels_poly_List;
 
 	public ServerTransfiguration(GridMap map) {
 		super(map);
-		channels_poly_List = (List<Polygon>[]) new List[Number_Of_Channels];
+		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_poly_List[i] = new LinkedList<Polygon>();
+			channels_poly_List[i] = new LinkedList<PolyPU>();
 		}
 	}
 
 	public ServerTransfiguration(GridMap map, int number_of_sides) {
 		super(map);
 		NUMBER_OF_SIDES = number_of_sides;
-		channels_poly_List = (List<Polygon>[]) new List[Number_Of_Channels];
+		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_poly_List[i] = new LinkedList<Polygon>();
+			channels_poly_List[i] = new LinkedList<PolyPU>();
 		}
 	}
 
@@ -33,7 +33,7 @@ public class ServerTransfiguration extends Server{
 		int channel = 0;
 		for (List<PU> list : channels_List) {
 			for (PU pu: list) {
-				channels_poly_List[channel].add(new Polygon(pu, NUMBER_OF_SIDES));
+				channels_poly_List[channel].add(new PolyPU(pu, NUMBER_OF_SIDES));
 			}
 			channel++;
 		}
@@ -50,11 +50,11 @@ public class ServerTransfiguration extends Server{
 		List<Response> response_list = new LinkedList<Response>();
 		double final_res_power = -1;
 		int final_res_id = -1;
-		for (List<Polygon> list : channels_poly_List) {
+		for (List<PolyPU> list : channels_poly_List) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
-			for (Polygon poly : list) {
+			for (PolyPU poly : list) {
 				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = poly.response(client.getLocation());
 				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);

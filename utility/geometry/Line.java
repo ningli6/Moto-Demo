@@ -1,3 +1,5 @@
+package geometry;
+
 public class Line {
 	// ax + by + c = 0
 	public double a, b, c;
@@ -20,30 +22,24 @@ public class Line {
 		}
 	}
 
-	public void print() {
-		System.out.println("a: " + a + " b: " + b + " c: " + c + " k: " + k);
-	}
-
-	private boolean online(Point a) {
+	public boolean online(Point a) {
 		return this.a * a.x + this.b * a.y + this.c == 0;
 	}
 
 	public boolean sameSide(Point a, Point b) {
-		if (online(a) || online(b)) {
-			System.out.println("Some points are onlie, return false");
-			return false;
-		}
 		if (a.x == b.x && a.y == b.y) return true;
-		return (this.a * a.x + this.b * a.y + this.c) * (this.a * b.x + this.b * b.y + this.c) > 0;
+		// if some point is on the line, return true
+		return (this.a * a.x + this.b * a.y + this.c) * (this.a * b.x + this.b * b.y + this.c) >= 0;
+	}
+
+	public void print() {
+		System.out.println("a: " + a + " b: " + b + " c: " + c + " k: " + k);
 	}
 
 	public static void main(String[] args) {
-		Point a = new Point(1, 2);
-		Point b = new Point(1, 7);
+		Point a = new Point(2, 2);
+		Point b = new Point(6, 6);
 		Line l = new Line(a, b);
-		l.print();
-		Point c = new Point(0, 0);
-		Point d = new Point(1, -40);
-		System.out.println(l.sameSide(c, d));
+		System.out.println(l.online(new Point(1, 5)));
 	}
 }
