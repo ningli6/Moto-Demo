@@ -1,4 +1,4 @@
-package geometry;
+package utility.geometry;
 
 public class Point {
 	public double x, y;
@@ -11,6 +11,10 @@ public class Point {
 	public boolean SamePoint(Point p) {
 		if (this.x == p.x && this.y == p.y) return true;
 		return false;
+	}
+
+	public void printPoint() {
+		System.out.println("[" + x + ", " + y + "]");
 	}
 
 	public static void main(String[] args) {

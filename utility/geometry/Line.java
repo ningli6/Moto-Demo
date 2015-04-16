@@ -1,4 +1,4 @@
-package geometry;
+package utility.geometry;
 
 public class Line {
 	// ax + by + c = 0

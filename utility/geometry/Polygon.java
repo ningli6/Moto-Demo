@@ -1,4 +1,6 @@
-package geometry;
+package utility.geometry;
+
+import java.util.Scanner;
 /* This class represents the polygon contour for a PU */
 
 public class Polygon {
@@ -27,13 +29,41 @@ public class Polygon {
 		return true;
 	}
 
+	public void printPoly() {
+		for (Point p : vertexes)
+			System.out.println("[" + p.x + ", " + p.y + "]");
+	}
+
 	public static void main(String[] args) {
-		Point[] p = new Point[4];
-		p[0] = new Point(-5, -5);
-		p[1] = new Point(5, -5);
-		p[2] = new Point(5, 5);
-		p[3] = new Point(-5, 5);
-		Polygon t = new Polygon(p);
-		System.out.println(t.inPolygon(new Point(5, 3)));
+		int sides = 4;
+		double r = 10; // km
+		double cake = 360 / sides;
+		Point[] vertexes = new Point[sides];
+		double R = r / Math.cos(Math.toRadians(cake / 2));
+		// System.out.println("R: " + R);
+		// incorrect
+		for (int i = 0; i < sides; i++) {
+			double angle = Math.toRadians(cake * i + cake / 2);
+			double x = R * Math.sin(angle);
+			double y = R * Math.cos(angle);
+			vertexes[i] = new Point(x, y);
+			// System.out.print(i + ": ");
+			// vertexes[i].printPoint();
+		}
+		Polygon poly = new Polygon(vertexes);
+		poly.printPoly();
+		Scanner sc = new Scanner(System.in);
+		double x = 0, y = 0;
+		int count = 0;
+		while(sc.hasNextDouble()) {
+			if (count == 0) {
+				x = sc.nextDouble();
+				count++;
+				continue;
+			}
+			y = sc.nextDouble();
+			System.out.println(poly.inPolygon(new Point(x, y)));
+			count = 0;
+		}
 	}
 }
