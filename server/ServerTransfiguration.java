@@ -22,13 +22,14 @@ public class ServerTransfiguration extends Server{
 	public ServerTransfiguration(GridMap map, int number_of_sides) {
 		super(map);
 		NUMBER_OF_SIDES = number_of_sides;
+		if (NUMBER_OF_SIDES < 3) throw new IllegalArgumentException("Number of sides must be at least 3"); 
 		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_poly_List[i] = new LinkedList<PolyPU>();
 		}
 	}
 
-	public void transigure(NUMBER_OF_SIDES) {
+	public void transigure() {
 		if (getNumberOfPUs() == 0) return;
 		int channel = 0;
 		for (List<PU> list : channels_List) {
@@ -56,7 +57,7 @@ public class ServerTransfiguration extends Server{
 			double minPower = Double.MAX_VALUE;
 			for (PolyPU poly : list) {
 				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
-				double resPower = poly.response(client.getLocation());
+				double resPower = poly.response(client.getRowIndex(), client.getColIndex());
 				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
 				if (resPower <= minPower) {
 					minPU = poly.getPU();

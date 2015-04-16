@@ -2,6 +2,7 @@ package utility;
 
 import java.util.HashMap;
 
+import utility.geometry.*;
 /*
  * It include a hashmap that maps location to transmit power
  */
@@ -14,7 +15,7 @@ public class PolyPU {
 	private GridMap map;
 	private Polygon polygon;
 
-	private HashMap hashmap<Location, double>();
+	private HashMap<Integer, Double> hashmap;
 
 	public PolyPU(PU pu, int sides) {
 		if (sides < 3) throw new IllegalArgumentException("Number of sides must be at least 3"); 
@@ -24,7 +25,7 @@ public class PolyPU {
 		center_indexCol = pu.getColIndex();
 		location = pu.getLocation();
 		map = pu.getServer().getMap();
-		hashmap = new HashMap<Location, double>();
+		hashmap = new HashMap<Integer, Double>();
 		transfigure(MTP.d1, MTP.P_0);
 		transfigure(MTP.d2, MTP.P_50);
 		transfigure(MTP.d3, MTP.P_75);
@@ -53,7 +54,9 @@ public class PolyPU {
 		if (endCol >= map.getCols()) endCol = map.getCols();
 		for (int i = startRow; i < endRow; i++) {
 			for (int j = startCol; j < endCol; j++) {
-				if (polygon.inPolygon(indexTodist(i, j)) && !hashmap.containsKey())
+				int code = hashcode(i, j);
+				if (polygon.inPolygon(indexTodist(i, j)) && !hashmap.containsKey(code))
+					hashmap.put(code, power);
 			}
 		}
 	}
@@ -90,13 +93,20 @@ public class PolyPU {
 		return map.getAverageDistance();
 	}
 
-	public double response(Location loc) {
+	public double response(int i, int j) {
+		if (i < 0 || j < 0 || i >= map.getRows() || j >= map.getCols()) throw new IndexOutOfBoundsException();
 		// this may not work!
-		if (map.containsKey(loc)) return hashmap.get(loc);
+		int code = hashcode(i, j);
+		if (hashmap.containsKey(code)) return hashmap.get(code);
 		return MTP.P_100;
 	}
 
 	public PU getPU() {
 		return pu;
+	}
+
+	/* This hash function works as long as j is smaller than 100000 */
+	public static int hashcode(int i, int j) {
+		return 100000 * i + j;
 	}
 }

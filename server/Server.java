@@ -75,7 +75,7 @@ public class Server {
 		else System.out.println("PU's location out of range");
 	}
 
-	public getMap() {
+	public GridMap getMap() {
 		return map;
 	}
 
