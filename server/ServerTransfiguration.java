@@ -29,19 +29,29 @@ public class ServerTransfiguration extends Server{
 		}
 	}
 
-	public void transigure() {
+	public void transfigure() {
 		if (getNumberOfPUs() == 0) return;
 		int channel = 0;
 		for (List<PU> list : channels_List) {
 			for (PU pu: list) {
+				System.out.println("Transfigure: " + pu.getID() + " on channel: " + channel);
 				channels_poly_List[channel].add(new PolyPU(pu, NUMBER_OF_SIDES));
 			}
 			channel++;
 		}
+		// for (List<PolyPU> list : channels_poly_List) {
+		// 	for (PolyPU ppu: list) {
+		// 		// preCompute
+		// 		ppu.printPreCompute();
+		// 		// originalCompute
+		// 		ppu.printOriginCompute();
+		// 	}
+		// }
 	}
 
 	// @override
 	public Response response(Client client) {
+		// System.out.println("override");
 		// response with (-1, -1) means no transmit power available
 		if (client == null) return new Response(-1, -1);
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");

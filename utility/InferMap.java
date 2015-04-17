@@ -174,6 +174,7 @@ public class InferMap extends GridMap {
 
 	// the output will be matrix
 	public void printoutMatrix(int id) {
+		if (directory == null || directory.length() == 0) return;
 		// String text = "Output";
 		File file = new File(directory + "demoMatrix_" + id + ".txt");
 		double max = 0;
@@ -198,6 +199,7 @@ public class InferMap extends GridMap {
 
 	// the output will be tables that specified in the sample data
 	public void printInRequiredFormat(int id) {
+		if (directory == null || directory.length() == 0) return;
 		File file = new File(directory + "demoTable_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);

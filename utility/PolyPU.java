@@ -1,6 +1,13 @@
 package utility;
 
 import java.util.HashMap;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.File;
 
 import utility.geometry.*;
 /*
@@ -16,7 +23,7 @@ public class PolyPU {
 	private Polygon polygon;
 
 	private HashMap<Integer, Double> hashmap;
-
+	public static String directory = "/Users/ningli/Desktop/Project/output/";
 	public PolyPU(PU pu, int sides) {
 		if (sides < 3) throw new IllegalArgumentException("Number of sides must be at least 3"); 
 		this.pu = pu;
@@ -49,9 +56,9 @@ public class PolyPU {
 		int startCol = center_indexCol - 3 * updateRadius;
 		if (startCol < 0) startCol = 0;
 		int endRow = center_indexRow + 3 * updateRadius;
-		if (endRow >= map.getRows()) endRow = map.getRows();
+		if (endRow > map.getRows()) endRow = map.getRows();
 		int endCol = center_indexCol + 3 * updateRadius;
-		if (endCol >= map.getCols()) endCol = map.getCols();
+		if (endCol > map.getCols()) endCol = map.getCols();
 		for (int i = startRow; i < endRow; i++) {
 			for (int j = startCol; j < endCol; j++) {
 				int code = hashcode(i, j);
@@ -108,5 +115,109 @@ public class PolyPU {
 	/* This hash function works as long as j is smaller than 100000 */
 	public static int hashcode(int i, int j) {
 		return 100000 * i + j;
+	}
+
+	/* debug */
+	/* call only after transfiguration */
+	public void visualPreCompute() {
+		int rows = map.getRows();
+		int cols = map.getCols();
+		double[][] p = new double[rows][cols];
+		int[] data = new int[rows * cols];
+		int red = -1;
+		int green = -1;
+		int blue = -1;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				int code = hashcode(i, j);
+				p[i][j] = response(i, j);
+				if (p[i][j] == MTP.P_0) { // gray
+					red = 255;
+					green = 255;
+					blue = 255;
+				}
+				else if (p[i][j] == MTP.P_50) { // white
+					red = 180;
+					green = 180;
+					blue = 180;
+				}
+				else if (p[i][j] == MTP.P_75) { // white
+					red = 100;
+					green = 100;
+					blue = 100;
+				}
+				else { // > 0.5, black
+					red = 0;
+					green = 0;
+					blue = 0;
+					// greater = true;
+					// throw new IllegalArgumentException();
+				}
+				data[j + cols * i] = (red << 16) | (green << 8) | blue;
+			}
+		}
+		JFrame frame = new JFrame("Pre compute " + pu.getID());
+		frame.getContentPane().add(new ColorPan(data, cols, rows));
+		frame.setSize(cols, rows);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+
+	public void printPreCompute() {
+		File file = new File(directory + "precompute" + pu.getID() + ".txt");
+		double[][] p = new double[map.getRows()][map.getCols()];
+		try {
+			PrintWriter out = new PrintWriter(file);
+			System.out.println("Start printing... ");
+			for (int i = 0; i < map.getRows(); i++) {
+				for (int j = 0; j < map.getCols(); j++) {
+					p[i][j] = response(i, j);
+					out.print(p[i][j] + " ");
+				}
+				out.println();
+			}
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} finally {
+			System.out.println("Printing ends");
+		}
+	}
+
+	public void printOriginCompute() {
+		File file = new File(directory + "original" + pu.getID() + ".txt");
+		double[][] p = new double[map.getRows()][map.getCols()];
+		try {
+			PrintWriter out = new PrintWriter(file);
+			System.out.println("Start printing... ");
+			for (int i = 0; i < map.getRows(); i++) {
+				for (int j = 0; j < map.getCols(); j++) {
+					p[i][j] = MTP(map.getLocation(i, j).distTo(this.location));
+					out.print(p[i][j] + " ");
+				}
+				out.println();
+			}
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} finally {
+			System.out.println("Printing ends");
+		}
+	}
+
+    // MTP function
+	public static double MTP(double distance) {
+		double PMAX = 1;
+		// System.out.println("Distance between PU and SU is: " + distance + " km");
+		if (distance < MTP.d1) return 0;
+		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
+		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
+		return PMAX;
+	}
+
+	public static void main(String[] args) {
+		Location l1 = new Location(38, -82);
+		Location l2 = new Location(38, -80);
+		System.out.println(bearing(l1, l2));
 	}
 }
