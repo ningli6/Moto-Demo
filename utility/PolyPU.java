@@ -117,7 +117,7 @@ public class PolyPU {
 		return 100000 * i + j;
 	}
 
-	/* debug */
+	/* Following three methods are used for visualize/plot protection contours */
 	/* call only after transfiguration */
 	public void visualPreCompute() {
 		int rows = map.getRows();

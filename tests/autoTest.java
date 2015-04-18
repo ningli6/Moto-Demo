@@ -63,28 +63,22 @@ public class autoTest {
 		}
 		// for (ArrayList<Double> ls : rlist) ls = new ArrayList<Double>();
 
-		int[] queries = {20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
 		Server server = new Server(map);
 
-		PU pu0 = new PU(0, 20, 30);
+		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		// PU pu1 = new PU(1, 9, 50);
-		// server.addPU(pu1, 1);
+		PU pu1 = new PU(1, 9, 50);
+		server.addPU(pu1, 1);
 
-		// PU pu2 = new PU(2, 30, 9);
-		// server.addPU(pu2, 1);
+		PU pu2 = new PU(2, 30, 9);
+		server.addPU(pu2, 1);
 
-		// PU pu3 = new PU(3, 30, 50);
-		// server.addPU(pu3, 0);
-
-		// PU pu4 = new PU(4, 29, 29);
-		// server.addPU(pu4, 0);
-
-		// PU pu5 = new PU(5, 10, 30);
-		// server.addPU(pu5, 1);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 0);
 
 		Client client = new Client(10, 30, map);
 

@@ -14,25 +14,31 @@ public class autoTestTransfiguration {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
+
+		if (args.length == 0) {
+			System.out.println("Please specify number of sides");
+			return;
+		}
+		
 		Scanner sc = new Scanner(System.in);
 		// get default settings from user
 		// cell size
-		double cellDegree = 0.1;
+		double cellDegree = 0.05;
 		// multiple times for MTP
-		double mult = 1;
+		double mult = 3;
 		// number of PUs/Channels
-		int Number_Of_Channels = 1;
+		int Number_Of_Channels = 2;
 		// sides
-		int sides = 3;
+		int sides = Integer.parseInt(args[0]);
 
-		System.out.println("Cell size in degree: ");
-		cellDegree = sc.nextDouble();
-		System.out.println("Multiple times on default MTP function: ");
-		mult = sc.nextDouble();
-		System.out.println("Number of channels: ");
-		Number_Of_Channels = sc.nextInt();
-		System.out.println("Polygon sides: ");
-		sides = sc.nextInt();
+		// System.out.println("Cell size in degree: ");
+		// cellDegree = sc.nextDouble();
+		// System.out.println("Multiple times on default MTP function: ");
+		// mult = sc.nextDouble();
+		// System.out.println("Number of channels: ");
+		// Number_Of_Channels = sc.nextInt();
+		// System.out.println("Polygon sides: ");
+		// sides = sc.nextInt();
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -59,7 +65,7 @@ public class autoTestTransfiguration {
 			rlist[i] = new ArrayList<Double>();
 		}
 		// int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-		int[] queries = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
 		/* debug information */
@@ -72,7 +78,7 @@ public class autoTestTransfiguration {
 		ServerTransfiguration server = new ServerTransfiguration(map, sides);
 
 		/* 
-		 * Add a PU to the server's grid map, speficify the PU's location
+		 * Add a PU to the server's grid map, specify the PU's location
 		 */
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
