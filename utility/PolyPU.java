@@ -43,6 +43,7 @@ public class PolyPU {
 		double cake = 360 / sides;
 		Point[] vertexes = new Point[sides];
 		double R = r / Math.cos(Math.toRadians(cake / 2));
+		// System.out.println("R: " + R);
 		for (int i = 0; i < sides; i++) {
 			double angle = Math.toRadians(cake * i + cake / 2);
 			double x = R * Math.sin(angle);
@@ -50,6 +51,8 @@ public class PolyPU {
 			vertexes[i] = new Point(x, y);
 		}
 		polygon = new Polygon(vertexes);
+		// polygon.printPoly();
+		// System.out.println();
 		int updateRadius = (int) Math.round(r / getAveDist());
 		int startRow = center_indexRow - 3 * updateRadius;
 		if (startRow < 0) startRow = 0;
@@ -61,9 +64,13 @@ public class PolyPU {
 		if (endCol > map.getCols()) endCol = map.getCols();
 		for (int i = startRow; i < endRow; i++) {
 			for (int j = startCol; j < endCol; j++) {
+				// System.out.println("center: " + "[" + center_indexRow + ", " + center_indexCol + "]");
+				// System.out.println("compute: " + "[" + i + ", " + j + "]");
+				// indexTodist(i, j).printPoint();
 				int code = hashcode(i, j);
 				if (polygon.inPolygon(indexTodist(i, j)) && !hashmap.containsKey(code))
 					hashmap.put(code, power);
+				// System.out.println();
 			}
 		}
 	}
@@ -71,8 +78,13 @@ public class PolyPU {
 	private Point indexTodist(int i, int j) {
 		Location loc = map.getLocation(i, j);
 		double dist = loc.distTo(this.location);
+		// System.out.println("center location: ");
+		// this.location.printLocation();
+		// System.out.println("compute location: ");
+		// loc.printLocation();
 		// compute bearing, then return coordinate
 		double bear = Math.toRadians(bearing(this.location, loc));
+		// System.out.println("bear(degrees): " + Math.toDegrees(bear) + " bear(radians): " + bear + " distance: " + dist);
 		return new Point(dist * Math.sin(bear), dist * Math.cos(bear));
 	}
 
@@ -102,7 +114,6 @@ public class PolyPU {
 
 	public double response(int i, int j) {
 		if (i < 0 || j < 0 || i >= map.getRows() || j >= map.getCols()) throw new IndexOutOfBoundsException();
-		// this may not work!
 		int code = hashcode(i, j);
 		if (hashmap.containsKey(code)) return hashmap.get(code);
 		return MTP.P_100;

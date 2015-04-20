@@ -25,7 +25,7 @@ public class autoTestTransfiguration {
 		// cell size
 		double cellDegree = 0.05;
 		// multiple times for MTP
-		double mult = 3;
+		double mult = 5;
 		// number of PUs/Channels
 		int Number_Of_Channels = 2;
 		// sides
@@ -64,15 +64,15 @@ public class autoTestTransfiguration {
 		for (int i = 0; i < rlist.length; i++) {
 			rlist[i] = new ArrayList<Double>();
 		}
-		// int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+		// int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
 		/* debug information */
-		System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
-		System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
-		map.showBoundary();
-		System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
+		// System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
+		// System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
+		// map.showBoundary();
+		// System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
 
 	    // initialize a server with parameters from initial settings
 		ServerTransfiguration server = new ServerTransfiguration(map, sides);
@@ -93,7 +93,7 @@ public class autoTestTransfiguration {
 		server.addPU(pu3, 0);
 
 		/* debug information */
-		System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
 		server.printInfoPU();
 		server.printInfoChannel();
 		System.out.println();
@@ -121,12 +121,16 @@ public class autoTestTransfiguration {
 					client.query(server);
 				}
 				double[] IC = client.computeIC(server);
-				// System.out.println("IC for channel 0 is " + IC[0]);
+				// for (double res : IC) {
+				// 	System.out.print(res + ", ");
+				// }
+				// System.out.println();
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
 					k++;
 				}
+				// System.out.println("k: " + k);
 			}
 			// compute average
 			int cid = 0;
@@ -138,10 +142,10 @@ public class autoTestTransfiguration {
 		}
 
 		/* debug information */
-		System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		server.printInfoPU();
-		server.printInfoChannel();
-		System.out.println();
+		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		// server.printInfoPU();
+		// server.printInfoChannel();
+		// System.out.println();
 
 		File file = new File(directory + "ic_tf_" + sides + ".txt");
 		try {

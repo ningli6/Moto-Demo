@@ -62,8 +62,8 @@ public class autoTest {
 			rlist[i] = new ArrayList<Double>();
 		}
 		// for (ArrayList<Double> ls : rlist) ls = new ArrayList<Double>();
-
-		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
+		// int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
 		int repeat = 10;
 
 		Server server = new Server(map);
@@ -96,12 +96,16 @@ public class autoTest {
 					client.query(server);
 				}
 				double[] IC = client.computeIC(server);
-				// System.out.println("IC for channel 0 is " + IC[0]);
+				// for (double res : IC) {
+				// 	System.out.print(res + ", ");
+				// }
+				// System.out.println();
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
 					k++;
 				}
+				// System.out.println("k: " + k);
 			}
 			// compute average
 			int cid = 0;
