@@ -8,3 +8,5 @@ We use latitude & longitude instead of cell index to do computation in our map. 
 We compute inaccuracy for each channel to evaluate the result of inference. The actual compute formula is in presented in the paper.
 
 First technique for protecting location privacy is perturbation with additive noise.
+
+Second technique for protecing privacy is to use transfiguration, which tansfigure circular contours into convex polygon. It works pretty good for small numbers of sides, such as triangle and rectangle.
