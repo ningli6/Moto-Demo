@@ -75,6 +75,10 @@ public class Server {
 		else System.out.println("PU's location out of range");
 	}
 
+	public GridMap getMap() {
+		return map;
+	}
+
 	// resonse to the query
 	public Response response(Client client) {
 		// response with (-1, -1) means no transmit power available

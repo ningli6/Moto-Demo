@@ -47,6 +47,10 @@ public class PU {
 		this.server = server;
 	}
 
+	public Server getServer() {
+		return server;
+	}
+
 	public void setID(int id) {
 		if (this == null) {
 			System.out.println("Initialize PU first");
