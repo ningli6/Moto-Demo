@@ -94,9 +94,9 @@ public class autoTestTransfiguration {
 
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		server.printInfoPU();
-		server.printInfoChannel();
-		System.out.println();
+		// server.printInfoPU();
+		// server.printInfoChannel();
+		// System.out.println();
 
 		// after adding pu, transfigure
 		server.transfigure();
