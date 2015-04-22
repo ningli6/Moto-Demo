@@ -1,7 +1,6 @@
 package server;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Collections;
 
 import utility.*;
@@ -16,7 +15,7 @@ public class Server {
 	public static int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
 	protected GridMap map;
-	protected List<PU>[] channels_List;
+	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
@@ -35,7 +34,7 @@ public class Server {
 		this.map = map;
 		this.Number_Of_PUs = 0;
 		// set = new LinkedList<PU>();
-		channels_List = (List<PU>[]) new List[Number_Of_Channels];
+		channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_List[i] = new LinkedList<PU>();
 		}
@@ -87,10 +86,10 @@ public class Server {
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
-		List<Response> response_list = new LinkedList<Response>();
+		LinkedList<Response> response_list = new LinkedList<Response>();
 		double final_res_power = -1;
 		int final_res_id = -1;
-		for (List<PU> list : channels_List) {
+		for (LinkedList<PU> list : channels_List) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
@@ -113,7 +112,7 @@ public class Server {
 	}
 
 	// cheat
-	public List<PU>[] getChannelsList() {
+	public LinkedList<PU>[] getChannelsList() {
 		if (channels_List == null) {
 			System.out.println("Initialize Server first");
 			return null;

@@ -1,5 +1,7 @@
 package utility;
 
+import java.util.Comparator;
+
 import server.*;
 /*
  * PU represents a primary user, server keeps track of pus that were added to it. 
@@ -8,6 +10,7 @@ import server.*;
 
 public class PU {
 	/* may not need id for pu in future versioin */
+	public final Comparator<PU> DIST_ORDER = new distOrder(); // can this be static
 	private int id = -1;
 	private int channelID = -1;
 	private Location location = null;
@@ -18,6 +21,20 @@ public class PU {
 	/* maybe implemented in future version */
 	// private double power; potenital? power that pu is transmitting
 	private Server server;
+
+	private class distOrder implements Comparator<PU> { // can this be static class
+		public int compare(PU pu1, PU pu2) {
+			if (pu1 == null || pu2 == null) throw new NullPointerException();
+			// if (pu1 == this || pu2 == this) throw new IllegalArgumentException();
+			double dist1 = distTo(pu1);
+			double dist2 = distTo(pu2);
+			if (dist1 == dist2) return 0;
+			if (dist1 < dist2) return -1;
+			return 1;
+		}
+	}
+
+	public PU() {}
 
 	public PU(int id, Location location) {
 		if (location == null) throw new NullPointerException();
@@ -142,6 +159,7 @@ public class PU {
 	}
 
 	public Location getLocation() {
+		if (location == null) throw new NullPointerException("Location for PU has not yet been initialized");
 		return location;
 	}
 
@@ -153,6 +171,18 @@ public class PU {
 	public double getLongitude() {
 		if (location == null) return 0;
 		return location.getLongitude();
+	}
+
+	public double distTo(PU pu) {
+		if (pu == null) throw new NullPointerException();
+		if (this.location == null) throw new NullPointerException("Location for PU has not yet been initialized");
+		return this.location.distTo(pu.getLocation());
+	}
+
+	public Location indexToLocation() {
+		if (location != null) return location;
+		this.location = server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
+		return location;
 	}
 
 	public void printIndices() {
