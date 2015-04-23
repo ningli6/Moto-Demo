@@ -14,13 +14,14 @@ public class PU {
 	private int id = -1;
 	private int channelID = -1;
 	private Location location = null;
-	private int indexOfRow;
-	private int indexOfCol;
+	private int indexOfRow = 0;
+	private int indexOfCol = 0;
 	/* debugging purpose */
 	private int number_of_response = 0;
 	/* maybe implemented in future version */
 	// private double power; potenital? power that pu is transmitting
-	private Server server;
+	private Server server = null;
+	private double baseRadius = 0;
 
 	private class distOrder implements Comparator<PU> { // can this be static class
 		public int compare(PU pu1, PU pu2) {
@@ -34,7 +35,9 @@ public class PU {
 		}
 	}
 
-	public PU() {}
+	public PU() {
+
+	}
 
 	public PU(int id, Location location) {
 		if (location == null) throw new NullPointerException();
@@ -173,16 +176,26 @@ public class PU {
 		return location.getLongitude();
 	}
 
-	public double distTo(PU pu) {
+	private double distTo(PU pu) {
 		if (pu == null) throw new NullPointerException();
 		if (this.location == null) throw new NullPointerException("Location for PU has not yet been initialized");
 		return this.location.distTo(pu.getLocation());
 	}
 
 	public Location indexToLocation() {
-		if (location != null) return location;
-		this.location = server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
+		// if (location != null) return location;
+		if (this.server == null) throw new NullPointerException("Attach to server first");
+		this.location = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
 		return location;
+	}
+
+	public void updateRadius(double base) {
+		if (base < 0) throw new IllegalArgumentException();
+		this.baseRadius = base;
+	}
+
+	public double getRadius() {
+		return baseRadius;
 	}
 
 	public void printIndices() {

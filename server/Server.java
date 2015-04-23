@@ -81,7 +81,7 @@ public class Server {
 	// resonse to the query
 	public Response response(Client client) {
 		// response with (-1, -1) means no transmit power available
-		if (client == null) return new Response(-1, -1);
+		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		/* clarify this behavior */
