@@ -11,6 +11,16 @@ public class ServerKAnonymity extends Server {
 	public static int K = 3;
 	private List<PU>[] virtual_List;
 
+	public class NumberOfChannelsMismatchException extends RuntimeException {
+		public NumberOfChannelsMismatchException() {
+			super();
+		}
+
+		public NumberOfChannelsMismatchException(String message) {
+			super(message);
+		}
+	}
+
 	public ServerKAnonymity(GridMap map) {
 		super(map);
 		this.K = 3;
@@ -89,6 +99,7 @@ public class ServerKAnonymity extends Server {
 		List<Response> response_list = new LinkedList<Response>();
 		double final_res_power = -1;
 		int final_res_id = -1;
+		int channel_id = 0;
 		for (List<PU> list : virtual_List) {
 			Collections.shuffle(list);
 			PU minPU = null;
@@ -98,16 +109,17 @@ public class ServerKAnonymity extends Server {
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
 				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
 				if (resPower <= minPower) {
+					// take care of channel id for virtual pu, which was undefined
+					pu.setChannelID(channel_id);
 					minPU = pu;
 					minPower = resPower;
 				}
 			}
-			// if one of channels is empty, then minPU would be null
 			if (minPU != null) response_list.add(new Response(minPU, minPower));
+			channel_id++;
 		}
-		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
+		if (channel_id != Number_Of_Channels) throw new NumberOfChannelsMismatchException();
 		Collections.shuffle(response_list);
-		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
 		return Collections.max(response_list);
 	}
 

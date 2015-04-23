@@ -39,23 +39,23 @@ public class PU {
 
 	}
 
-	public PU(int id, Location location) {
-		if (location == null) throw new NullPointerException();
-		// defalut
-		this.id = id;
-		this.location = location;
-	}
+	// public PU(int id, Location location) {
+	// 	if (location == null) throw new NullPointerException();
+	// 	// defalut
+	// 	this.id = id;
+	// 	this.location = location;
+	// }
 
-	public PU(int id, double lat, double lon) {
-		this.id = id;
-		this.location = new Location(lat, lon);
-	}
+	// public PU(int id, double lat, double lon) {
+	// 	this.id = id;
+	// 	this.location = new Location(lat, lon);
+	// }
 
-	public PU(int id, String lat, String lon) {
-		if (lat == null || lon == null) throw new NullPointerException();
-		this.id = id;
-		this.location = new Location(lat, lon);
-	}
+	// public PU(int id, String lat, String lon) {
+	// 	if (lat == null || lon == null) throw new NullPointerException();
+	// 	this.id = id;
+	// 	this.location = new Location(lat, lon);
+	// }
 
 	public PU(int id, int r, int c) {
 		this.id = id;
