@@ -80,17 +80,6 @@ public class Main_KAnonymity {
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
 
-		// PU pu4 = new PU(4, 9, 30);
-		// server.addPU(pu4, 0);
-
-		// PU pu5 = new PU(5, 30, 30);
-		// server.addPU(pu5, 1);
-
-		// PU pu6 = new PU(6, 20, 9);
-		// server.addPU(pu6, 1);
-
-		// PU pu7 = new PU(7, 20, 50);
-		// server.addPU(pu7, 1);
 
 		/* debug information */
 		System.out.println("Number of PUs: " + server.getNumberOfPUs());

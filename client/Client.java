@@ -144,7 +144,7 @@ public class Client {
 		double d1 = -1; double d2 = -1;
 		if (power == 0) {
 			d1 = MTP.d0;
-			d2 = MTP.d1;
+			d2 = MTP.d1 ;
 		}
 		else if (power == 0.5 * PMAX) {
 			d1 = MTP.d1;
@@ -159,7 +159,7 @@ public class Client {
 			d2 = d1;
 		}
 		else {
-			throw new IllegalArgumentException("Can not throw here");
+			throw new IllegalArgumentException();
 		}
 		// System.out.println("d1: " + d1 + ", d2: " + d2);
 		count[channelID]++;
