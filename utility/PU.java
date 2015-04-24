@@ -151,6 +151,7 @@ public class PU {
 	public void setIndices(int r, int c) {
 		indexOfRow = r;
 		indexOfCol = c;
+		indexToLocation();
 	}
 
 	public int getRowIndex() {
@@ -176,17 +177,17 @@ public class PU {
 		return location.getLongitude();
 	}
 
-	private double distTo(PU pu) {
+	public double distTo(PU pu) {
 		if (pu == null) throw new NullPointerException();
 		if (this.location == null) throw new NullPointerException("Location for PU has not yet been initialized");
 		return this.location.distTo(pu.getLocation());
 	}
 
-	public Location indexToLocation() {
+	private void indexToLocation() {
 		// if (location != null) return location;
 		if (this.server == null) throw new NullPointerException("Attach to server first");
 		this.location = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
-		return location;
+		// return location;
 	}
 
 	public void updateRadius(double base) {
@@ -207,8 +208,12 @@ public class PU {
 			System.out.println("PU has no location information");
 			return;
 		}
+		printIndexLocation();
 		location.printLocation();
-		// location.printLocationIndex();
+	}
+
+	public void printIndexLocation() {
+		System.out.println("[ " + getRowIndex() + " " + getColIndex() + " ]");
 	}
 
 	public void printInfo() {
@@ -218,5 +223,12 @@ public class PU {
 		printLocation();
 		System.out.println("updated " + this.number_of_response + " times");
 		System.out.println();
+	}
+
+	public void printVirtualPUInfo() {
+		System.out.println("***Virtual PU***");
+		System.out.println("Radius: " + getRadius());
+		System.out.println("Working channel: " + this.channelID);
+		printLocation();
 	}
 }

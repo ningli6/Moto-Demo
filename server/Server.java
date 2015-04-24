@@ -54,6 +54,7 @@ public class Server {
 		}
 		int pu_r = pu.getRowIndex();
 		int pu_c = pu.getColIndex();
+		System.out.println("pu: " + pu_r + ", " + pu_c);
 		if (pu_r < 0 || pu_r >= map.getRows()) {
 			System.out.println("PU's location is out out index");
 			return;
@@ -63,6 +64,7 @@ public class Server {
 			return;
 		}
 		pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
+		System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
