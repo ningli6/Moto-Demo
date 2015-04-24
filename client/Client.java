@@ -129,7 +129,7 @@ public class Client {
 		double power = res.getPower();
 		int channelID = res.getChannelID();
 		/* debug */
-		System.out.println("Server response with power " + power + " on channel [" + channelID + "]");
+		// System.out.println("Server response with power " + power + " on channel [" + channelID + "]");
 		if (power < 0) {
 			System.out.println("Channel unavailable");
 			return;
