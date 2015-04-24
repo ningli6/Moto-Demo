@@ -1,5 +1,6 @@
 package server;
 
+import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -120,7 +121,7 @@ public class Server {
 	}
 
 	// cheat
-	public LinkedList<PU>[] getChannelsList() {
+	public List<PU>[] getChannelsList() {
 		if (channels_List == null) {
 			System.out.println("Initialize Server first");
 			return null;
@@ -138,6 +139,14 @@ public class Server {
 			throw new NumberOfPUsMismatchException("Number of PUs doesn't match");
 		}
 		return sum;
+	}
+
+	public void updateNumbersOfPUs() {
+		int sum = 0;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sum += channels_List[i].size();
+		}
+		Number_Of_PUs = sum;
 	}
 
 	// print the location of PUs

@@ -128,7 +128,8 @@ public class Client {
 		if (res == null) return;
 		double power = res.getPower();
 		int channelID = res.getChannelID();
-		// System.out.println("Server response with: " + "[" + res.getPUID() + "] with power " + power + " on channel [" + channelID + "]");
+		/* debug */
+		System.out.println("Server response with power " + power + " on channel [" + channelID + "]");
 		if (power < 0) {
 			System.out.println("Channel unavailable");
 			return;

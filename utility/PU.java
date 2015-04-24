@@ -231,5 +231,6 @@ public class PU {
 		System.out.println("Radius: " + getRadius());
 		System.out.println("Working channel: " + this.channelID);
 		printLocation();
+		System.out.println("updated " + this.number_of_response + " times");
 	}
 }

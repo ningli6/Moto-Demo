@@ -100,20 +100,25 @@ public class Main_KAnonymity {
 
 		server.kAnonymity();
 
-		// Client client = new Client(10, 10, map);
+		Client client = new Client(10, 10, map);
 
-		// for (int i = 0; i < number_of_Queries; i++) {
-		// 	client.randomLocation();
-		// 	client.query(server);
-		// }
+		for (int i = 0; i < number_of_Queries; i++) {
+			client.randomLocation();
+			client.query(server);
+		}
 
-		// for (int i = 0; i < Number_Of_Channels; i++) {
-		// 	client.plotInferMap(i);
-		// }
+		/* debug information */
+		client.updateWhich();
+		server.printInfoVirtualPU();
+		System.out.println();
 
-		// double[] IC = client.computeIC(server);
-		// for (int i = 0; i < IC.length; i++) {
-		// 	System.out.println("Channel " + i + " : " + IC[i]);
-		// }
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			client.plotInferMap(i);
+		}
+
+		double[] IC = client.computeIC(server);
+		for (int i = 0; i < IC.length; i++) {
+			System.out.println("Channel " + i + " : " + IC[i]);
+		}
 	}
 }

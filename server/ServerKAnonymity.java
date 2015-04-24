@@ -10,6 +10,7 @@ import client.Client;
 public class ServerKAnonymity extends Server {
 	public static int K = 3;
 	private List<PU>[] virtual_List;
+	private int Number_Of_Virtual_PUs;
 
 	public class NumberOfChannelsMismatchException extends RuntimeException {
 		public NumberOfChannelsMismatchException() {
@@ -27,6 +28,7 @@ public class ServerKAnonymity extends Server {
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
+		Number_Of_Virtual_PUs = 0;
 	}
 
 	public ServerKAnonymity(GridMap map, int k) {
@@ -36,12 +38,15 @@ public class ServerKAnonymity extends Server {
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
+		Number_Of_Virtual_PUs = 0;
 	}
 
 	public void kAnonymity() {
 		if (getNumberOfPUs() == 0 || this.K == 1) {
 			System.out.println("No need to convert to virtual pu");
 			virtual_List = channels_List;
+			updateNumbersOfVirtualPUs();
+			updateNumbersOfPUs();
 			return;
 		}
 		List<PU> tmpGroup;
@@ -90,6 +95,11 @@ public class ServerKAnonymity extends Server {
 				}
 			}
 		}
+		// update number of pus
+		updateNumbersOfPUs();
+		// update number of virtual pus
+		updateNumbersOfVirtualPUs();
+
 		/* debug */
 		int i = 0;
 		System.out.println();
@@ -155,8 +165,8 @@ public class ServerKAnonymity extends Server {
 	public Response response(Client client) {
 		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
-		if (getNumberOfPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
-		List<Response> response_list = new LinkedList<Response>();
+		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
+		List<Response> response_list = new LinkedList<Response>();// linkedlist that saves responses
 		double final_res_power = -1;
 		int final_res_id = -1;
 		int channel_id = 0;
@@ -165,12 +175,13 @@ public class ServerKAnonymity extends Server {
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+				if (channel_id != pu.getChannelID()) throw new IllegalArgumentException("Channel id does not match");
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
-				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
+				/* debug */
+				System.out.println("Distance between client and virtual pu is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+				System.out.println("with response: " + resPower);
+				System.out.println("Virtual PU protection contour: " + pu.getRadius());
 				if (resPower <= minPower) {
-					// take care of channel id for virtual pu, which was undefined
-					pu.setChannelID(channel_id);
 					minPU = pu;
 					minPower = resPower;
 				}
@@ -183,6 +194,35 @@ public class ServerKAnonymity extends Server {
 		return Collections.max(response_list);
 	}
 
+	public void updateNumbersOfVirtualPUs() {
+		int sum = 0;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sum += virtual_List[i].size();
+		}
+		Number_Of_Virtual_PUs = sum;
+	}
+
+	public int getNumbersOfVirtualPUs() {
+		int sum = 0;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sum += virtual_List[i].size();
+		}
+		if (sum != Number_Of_Virtual_PUs) {
+			System.out.println("sum = " + sum + ", Number_Of_Virtual_PUs = " + Number_Of_Virtual_PUs);
+			throw new NumberOfPUsMismatchException("Number of virtual PUs doesn't match");
+		}
+		return sum;
+	}
+
+	//@override
+	public List<PU>[] getChannelsList() {
+		if (virtual_List == null) {
+			System.out.println("Initialize Server first");
+			return null;
+		} 
+		return virtual_List;
+	}
+
 	public static double virtualMTP(double dist, double base) {
 		double PMAX = 1;
 		if (dist < MTP.d1 + base) return 0;
@@ -191,5 +231,13 @@ public class ServerKAnonymity extends Server {
 		return PMAX;
 	}
 
+	public void printInfoVirtualPU() {
+		if (virtual_List == null) return;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			for (PU pu : virtual_List[i]) {
+				pu.printVirtualPUInfo();
+			}
+		}
+	}
 
 }
