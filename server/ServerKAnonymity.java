@@ -67,9 +67,9 @@ public class ServerKAnonymity extends Server {
 					Collections.sort(channels_List[i], axle.DIST_ORDER);
 					/* debug */
 					System.out.println("After sort: " + "take " + axle.getID());
-					System.out.print("channel [" + i + "]: ");
+					System.out.println("channel [" + i + "]: ");
 					for (PU pu : channels_List[i]) {
-						System.out.print(pu.getID() + " ");
+						System.out.println(pu.getID() + ", distance to axle = " + pu.distTo(axle));
 						if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
 					}
 					System.out.println();
@@ -95,6 +95,10 @@ public class ServerKAnonymity extends Server {
 		System.out.println();
 		System.out.println("*****Virtual list*****");
 		for (List<PU> list : virtual_List) {
+			if (list.isEmpty()) {
+				System.out.println("No virtual pu in this channel");
+				continue;
+			}
 			for (PU pu : list) {
 				System.out.println("Channel: [" + i + "]");
 				System.out.println(pu.getChannelID() + ", R: " + pu.getRadius());
@@ -133,7 +137,7 @@ public class ServerKAnonymity extends Server {
 				if (max_radius < min_max_radius) {
 					min_max_radius = max_radius;
 					/* specific MTP function requried */
-					virtualPU.setIndices(i, j);
+					virtualPU.setIndices(i, j);  // set index position and actual location for pu
 					virtualPU.updateRadius(min_max_radius);
 				}
 			}

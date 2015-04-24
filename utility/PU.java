@@ -179,6 +179,7 @@ public class PU {
 
 	public double distTo(PU pu) {
 		if (pu == null) throw new NullPointerException();
+		if (pu == this) return 0;
 		if (this.location == null) throw new NullPointerException("Location for PU has not yet been initialized");
 		return this.location.distTo(pu.getLocation());
 	}

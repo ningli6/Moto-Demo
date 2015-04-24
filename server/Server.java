@@ -2,6 +2,7 @@ package server;
 
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import utility.*;
 import client.Client;
@@ -17,6 +18,7 @@ public class Server {
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
+	private HashSet<Integer> set;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
 		public NumberOfPUsMismatchException(String message) {
@@ -38,6 +40,7 @@ public class Server {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_List[i] = new LinkedList<PU>();
 		}
+		set = new HashSet<Integer>();
 	}
 
 	// add pu to one of channels
@@ -63,6 +66,9 @@ public class Server {
 			System.out.println("PU's location is out out index");
 			return;
 		}
+		// prevent pu at the same location to be added
+		// if (!set.contains(hashcode(pu_r, pu_c))) set.add(hashcode(pu_r, pu_c));
+		// else return;
 		pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
 		System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
@@ -174,5 +180,10 @@ public class Server {
 		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
 		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
 		return PMAX;
+	}
+
+	/* This hash function works as long as j is smaller than 100000 */
+	private int hashcode(int i, int j) {
+		return 100000 * i + j;
 	}
 }
