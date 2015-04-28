@@ -10,3 +10,5 @@ We compute inaccuracy for each channel to evaluate the result of inference. The 
 First technique for protecting location privacy is perturbation with additive noise.
 
 Second technique for protecing privacy is to use transfiguration, which tansfigure circular contours into convex polygon. It works pretty good for small numbers of sides, such as triangle and rectangle.
+
+The third technique is K-anonymity, which groups PUs into a group of k members, such that they share a larger area of protection contour.

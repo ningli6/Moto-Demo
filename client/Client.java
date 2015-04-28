@@ -41,7 +41,6 @@ public class Client {
 	public Client(double lat, double lon, GridMap map) {
 		if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException();
 		this.map = map;
-		// System.out.println("Initialize client...");
 		rand = new Random();
 		location = new Location(lat, lon);
 		count = new int[Number_Of_Channels];
@@ -50,13 +49,11 @@ public class Client {
 		for (int i = 0; i < Number_Of_Channels; i++)
 			if (!inferMap[i].withInBoundary(location)) 
 				System.out.println("SU's location for channel" + i + "is not in the range of map area");
-		// System.out.println("Initialize complete!");
 	}
 
 	public Client(GridMap map) {
 		inferMap = new InferMap[Number_Of_Channels];
 		this.map = map;
-		// rand = new Random();
 		count = new int[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
 		for (int i = 0; i < Number_Of_Channels; i++)
@@ -65,11 +62,9 @@ public class Client {
 	}
 
 	public Client(int r, int c, GridMap map) {
-		// System.out.println("Initialize client...");
 		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
 		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
 		this.map = map;
-		// rand = new Random();
 		location = new Location(map.RowToLat(r), map.ColToLon(c));
 		count = new int[Number_Of_Channels];
 		inferMap = new InferMap[Number_Of_Channels];
@@ -77,7 +72,6 @@ public class Client {
 		for (int i = 0; i < Number_Of_Channels; i++)
 			if (!inferMap[i].withInBoundary(location)) 
 				System.out.println("SU's location for channel" + i + "is not in the range of map area");
-		// System.out.println("Initialize complete!");
 	}
 
 	public void setLocation(double lat, double lon) {
@@ -129,7 +123,7 @@ public class Client {
 		double power = res.getPower();
 		int channelID = res.getChannelID();
 		/* debug */
-		// System.out.println("Server response with power " + power + " on channel [" + channelID + "]");
+		// System.out.println("Server response: " + power + ", dist to pu: " + res.getPU().getLocation().distTo(this.location));
 		if (power < 0) {
 			System.out.println("Channel unavailable");
 			return;
@@ -161,7 +155,6 @@ public class Client {
 		else {
 			throw new IllegalArgumentException();
 		}
-		// System.out.println("d1: " + d1 + ", d2: " + d2);
 		count[channelID]++;
 		inferMap[channelID].update(this.location, d1, d2);
 	}
@@ -187,13 +180,9 @@ public class Client {
 				for (int c = 0; c < col; c++) {
 					// if (p[r][c] > 0) System.out.println("(r, c): " + r + ", " + c);
 					sum += p[r][c] * distanceToClosestPU(i, r, c);
-					// sum += p[r][c];
-					// sum += distanceToClosestPU(i, r, c);
 				}
 			}
 			IC[i] = sum;
-			// if (sum == 0) IC[i] = Double.POSITIVE_INFINITY;
-			// else IC[i] = sum;
 		}
 		return IC;
 	}
@@ -201,12 +190,10 @@ public class Client {
 	private double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= Number_Of_Channels) throw new IllegalArgumentException("Bad channel number");
 		double minDist = Double.MAX_VALUE;
-		// PU minPU = null;
 		for (PU pu : channels_List[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
 			if (dist < minDist) {
 				minDist = dist;
-				// minPU = pu;
 			}
 		}
 		/* debug info */

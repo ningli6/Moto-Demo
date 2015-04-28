@@ -52,17 +52,7 @@ public class ServerKAnonymity extends Server {
 		List<PU> tmpGroup;
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			while (!channels_List[i].isEmpty()) {
-				/* debug */
-				// System.out.println("Before k-anonymity: ");
-				// System.out.print("channel [" + i + "]: ");
-				// for (PU pu : channels_List[i]) {
-				// 	System.out.print(pu.getID() + " ");
-				// 	if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
-				// }
-				// System.out.println();
 				if (channels_List[i].size() <= this.K) {
-					/* debug */
-					// System.out.println("list size is less than K");
 					virtual_List[i].add(findVirtualPU(channels_List[i], i));
 					channels_List[i].clear();
 				}
@@ -70,26 +60,10 @@ public class ServerKAnonymity extends Server {
 					Collections.shuffle(channels_List[i]);
 					PU axle = channels_List[i].pop();
 					Collections.sort(channels_List[i], axle.DIST_ORDER);
-					/* debug */
-					// System.out.println("After sort: " + "take " + axle.getID());
-					// System.out.println("channel [" + i + "]: ");
-					// for (PU pu : channels_List[i]) {
-					// 	System.out.println(pu.getID() + ", distance to axle = " + pu.distTo(axle));
-					// 	if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
-					// }
-					// System.out.println();
 					tmpGroup = new LinkedList<PU>();
 					tmpGroup.add(axle);
 					for (int j = 0; j < this.K - 1; j++)
 						tmpGroup.add(channels_List[i].pop()); // remove first
-					/* debug */
-					// System.out.println("In tmpGroup: ");
-					// System.out.print("channel [" + i + "]: ");
-					// for (PU pu : tmpGroup) {
-					// 	System.out.print(pu.getID() + " ");
-					// 	if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
-					// }
-					// System.out.println();
 					virtual_List[i].add(findVirtualPU(tmpGroup, i));
 					System.out.println();
 				}
@@ -99,24 +73,6 @@ public class ServerKAnonymity extends Server {
 		updateNumbersOfPUs();
 		// update number of virtual pus
 		updateNumbersOfVirtualPUs();
-
-		/* debug */
-		// int i = 0;
-		// System.out.println();
-		// System.out.println("*****Virtual list*****");
-		// for (List<PU> list : virtual_List) {
-		// 	if (list.isEmpty()) {
-		// 		System.out.println("No virtual pu in this channel");
-		// 		continue;
-		// 	}
-		// 	for (PU pu : list) {
-		// 		System.out.println("Channel: [" + i + "]");
-		// 		System.out.println(pu.getChannelID() + ", R: " + pu.getRadius());
-		// 		pu.printLocation();
-		// 		if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
-		// 	}
-		// 	i++;
-		// }
 	}
 
 	/* Minimal Enclosing Circle Problem */
@@ -126,13 +82,6 @@ public class ServerKAnonymity extends Server {
 		if (list.size() > this.K) throw new IllegalArgumentException();
 		if (channel_id < 0 || channel_id >= Number_Of_Channels) throw new IllegalArgumentException();
 		double min_max_radius = Double.POSITIVE_INFINITY;
-		/* debug */
-		// System.out.println("Input list: ");
-		// for (PU pu : list) {
-		// 	System.out.print(pu.getID() + " ");
-		// 	if (channel_id != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
-		// }
-		// System.out.println();
 		PU virtualPU = new PU();
 		virtualPU.attachToServer(this);     // attach to server
 		virtualPU.setChannelID(channel_id); // set up working channel
@@ -152,12 +101,6 @@ public class ServerKAnonymity extends Server {
 				}
 			}
 		}
-		/* debug */
-		// virtualPU.printVirtualPUInfo();
-		/* debug */
-		// for (PU pu: list) {
-		// 	System.out.println("distance to " + pu.getID() + " = " + pu.distTo(virtualPU));
-		// }
 		return virtualPU;
 	}
 
@@ -177,10 +120,6 @@ public class ServerKAnonymity extends Server {
 			for (PU pu : list) {
 				if (channel_id != pu.getChannelID()) throw new IllegalArgumentException("Channel id does not match");
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
-				/* debug */
-				// System.out.println("Distance between client and virtual pu is: " + pu.getLocation().distTo(client.getLocation()) + " km");
-				// System.out.println("with response: " + resPower);
-				// System.out.println("Virtual PU protection contour: " + pu.getRadius());
 				if (resPower <= minPower) {
 					minPU = pu;
 					minPower = resPower;

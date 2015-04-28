@@ -39,24 +39,6 @@ public class PU {
 
 	}
 
-	// public PU(int id, Location location) {
-	// 	if (location == null) throw new NullPointerException();
-	// 	// defalut
-	// 	this.id = id;
-	// 	this.location = location;
-	// }
-
-	// public PU(int id, double lat, double lon) {
-	// 	this.id = id;
-	// 	this.location = new Location(lat, lon);
-	// }
-
-	// public PU(int id, String lat, String lon) {
-	// 	if (lat == null || lon == null) throw new NullPointerException();
-	// 	this.id = id;
-	// 	this.location = new Location(lat, lon);
-	// }
-
 	public PU(int id, int r, int c) {
 		this.id = id;
 		indexOfRow = r;
@@ -122,13 +104,6 @@ public class PU {
 	public void reset() {
 		number_of_response = 0;
 	}
-	
-	/* main will call this method to check which pu has responsed for how many times
-	 * again for debugging purpose
-	 *
-	public int getNumberOfResponse() {
-		return number_of_response;
-	} */
 
 	public void setLocation(Location location) {
 		if (location == null) {
@@ -185,10 +160,8 @@ public class PU {
 	}
 
 	private void indexToLocation() {
-		// if (location != null) return location;
 		if (this.server == null) throw new NullPointerException("Attach to server first");
 		this.location = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
-		// return location;
 	}
 
 	public void updateRadius(double base) {

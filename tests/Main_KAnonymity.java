@@ -103,6 +103,7 @@ public class Main_KAnonymity {
 
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			client.plotInferMap(i);
+			// client.printFormattedMatrix(i);
 		}
 
 		double[] IC = client.computeIC(server);

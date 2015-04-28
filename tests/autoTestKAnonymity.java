@@ -15,7 +15,7 @@ public class autoTestKAnonymity {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.out.println("Please specify number of sides");
+			System.out.println("Please specify number of K");
 			return;
 		}
 		
