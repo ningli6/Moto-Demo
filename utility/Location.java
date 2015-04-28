@@ -6,8 +6,6 @@ package utility;
 public class Location {
 	private double latitude;
 	private double longitude;
-	// private int indexOfRow;
-	// private int indexOfCol;
 
 	public Location() {
 		latitude = 0;
@@ -19,14 +17,6 @@ public class Location {
 		latitude = lat;
 		longitude = lon;
 	}
-
-	// public Location(int r, int c) {
-	// 	if (r < 0 || r >= map.getRows() || c < 0 || c >= map.getCols()) throw new IndexOutOfBoundsException();
-	// 	indexOfRow = r;
-	// 	indexOfCol = c;
-	// 	latitude = map.getLatitude(r);
-	// 	longitude = map.getLongitude(c);
-	// }
 
 	// the position's format - Degrees|minutes'seconds''hemisphere
 	// ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
@@ -179,14 +169,6 @@ public class Location {
 		return longitude;
 	}
 
-	// public double getRowIndex() {
-	// 	return indexOfRow;
-	// }
-
-	// public double getColIndex() {
-	// 	return indexOfCol;
-	// }
-
 	// compute actual distance between two location
 	public double distTo(Location location) {
 		if (location == null) return 0;
@@ -212,8 +194,4 @@ public class Location {
 	public void printLocation() {
 		System.out.println("( " + latitude + ", " + longitude + " )");
 	}
-
-	// public void printLocationIndex() {
-	// 	System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
-	// }
 }

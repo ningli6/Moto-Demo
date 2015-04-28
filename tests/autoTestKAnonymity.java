@@ -10,24 +10,25 @@ import client.Client;
 import server.*;
 import utility.*;
 
-/* 
- * Automate tests for location preservation without countermeasure.
- * Each query is repeated 10 times.
- * Output inaccuracy to txt file.
- */
-public class autoTest {
+public class autoTestKAnonymity {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
-
+		if (args.length == 0) {
+			System.out.println("Please specify number of K");
+			return;
+		}
+		
 		Scanner sc = new Scanner(System.in);
-		// default settings
+		// get default settings from user
 		// cell size
 		double cellDegree = 0.05;
 		// multiple times for MTP
 		double mult = 1;
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
+		// sides
+		int K = Integer.parseInt(args[0]);
 
 		// System.out.println("Cell size in degree: ");
 		// cellDegree = sc.nextDouble();
@@ -44,7 +45,7 @@ public class autoTest {
 		double llLon = -82;
 		double lrLat = 36;
 		double lrLon = -79;
-
+		/*****************************/
 		Location upperLeft = new Location(ulLat, ulLon);
 		Location upperRight = new Location(urLat, urLon);
 		Location lowerLeft = new Location(llLat, llLon);
@@ -52,7 +53,6 @@ public class autoTest {
 
 		// initialization
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
-		// Location.map = map;
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
@@ -61,35 +61,48 @@ public class autoTest {
 		for (int i = 0; i < rlist.length; i++) {
 			rlist[i] = new ArrayList<Double>();
 		}
-
 		// int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		// int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		int[] queries = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
 		int repeat = 10;
 
-		Server server = new Server(map);
+	    // initialize a server with parameters from initial settings
+		ServerKAnonymity server = new ServerKAnonymity(map, K);
 
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 15, 15);
+		PU pu1 = new PU(1, 9, 50);
 		server.addPU(pu1, 0);
 
-		PU pu2 = new PU(2, 30, 55);
+		PU pu2 = new PU(2, 30, 9);
 		server.addPU(pu2, 0);
 
-		PU pu3 = new PU(3, 35, 50);
+		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
 
+		/* debug information */
+		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		// server.printInfoPU();
+		// server.printInfoChannel();
+		// System.out.println();
+
+		server.kAnonymity();
+
+		// initiliza a client, then change its location and make a query for N times;
 		Client client = new Client(10, 10, map);
 
 		System.out.println("Now perform a series of queries");
 		// go thru number of queries in the query list
 		for (int q : queries) {
 			System.out.println("Number of queries: " + q);
+			// specify number of queries for server:
 			double[] sumIC = new double[Number_Of_Channels];
 			// make queries for certain times
 			for (int i = 0; i < repeat; i++) {
+				// clear client's probability map to 0.5
 				client.reset();
+				// set actual lies back to 0
 				server.reset();
 				for (int j = 0; j < q; j++) {
 					client.randomLocation();
@@ -115,7 +128,14 @@ public class autoTest {
 				cid++;
 			}
 		}
-		File file = new File(directory + "ic.txt");
+
+		/* debug information */
+		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		// server.printInfoPU();
+		// server.printInfoChannel();
+		// System.out.println();
+
+		File file = new File(directory + "ic_ka_" + K + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
@@ -131,7 +151,7 @@ public class autoTest {
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} finally {
-			System.out.println("Printing ends");
+			System.out.println("Printing succeeded");
 		}
 	}
 }

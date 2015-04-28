@@ -1,8 +1,9 @@
 package server;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import utility.*;
 import client.Client;
@@ -16,8 +17,9 @@ public class Server {
 	public static int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
 	protected GridMap map;
-	protected List<PU>[] channels_List;
+	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
+	private HashSet<Integer> set;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
 		public NumberOfPUsMismatchException(String message) {
@@ -35,10 +37,11 @@ public class Server {
 		this.map = map;
 		this.Number_Of_PUs = 0;
 		// set = new LinkedList<PU>();
-		channels_List = (List<PU>[]) new List[Number_Of_Channels];
+		channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_List[i] = new LinkedList<PU>();
 		}
+		set = new HashSet<Integer>();
 	}
 
 	// add pu to one of channels
@@ -55,6 +58,7 @@ public class Server {
 		}
 		int pu_r = pu.getRowIndex();
 		int pu_c = pu.getColIndex();
+		// System.out.println("pu: " + pu_r + ", " + pu_c);
 		if (pu_r < 0 || pu_r >= map.getRows()) {
 			System.out.println("PU's location is out out index");
 			return;
@@ -63,7 +67,11 @@ public class Server {
 			System.out.println("PU's location is out out index");
 			return;
 		}
+		// prevent pu at the same location to be added
+		// if (!set.contains(hashcode(pu_r, pu_c))) set.add(hashcode(pu_r, pu_c));
+		// else return;
 		pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
+		// System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
@@ -82,15 +90,15 @@ public class Server {
 	// resonse to the query
 	public Response response(Client client) {
 		// response with (-1, -1) means no transmit power available
-		if (client == null) return new Response(-1, -1);
+		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
-		List<Response> response_list = new LinkedList<Response>();
+		LinkedList<Response> response_list = new LinkedList<Response>();
 		double final_res_power = -1;
 		int final_res_id = -1;
-		for (List<PU> list : channels_List) {
+		for (LinkedList<PU> list : channels_List) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
@@ -133,6 +141,14 @@ public class Server {
 		return sum;
 	}
 
+	public void updateNumbersOfPUs() {
+		int sum = 0;
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sum += channels_List[i].size();
+		}
+		Number_Of_PUs = sum;
+	}
+
 	// print the location of PUs
 	public void printInfoPU() {
 		if (channels_List == null) return;
@@ -173,5 +189,10 @@ public class Server {
 		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
 		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
 		return PMAX;
+	}
+
+	/* This hash function works as long as j is smaller than 100000 */
+	private int hashcode(int i, int j) {
+		return 100000 * i + j;
 	}
 }

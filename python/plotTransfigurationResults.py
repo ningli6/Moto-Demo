@@ -29,8 +29,7 @@ for index in plotPolygon:
 			path = '/Users/ningli/Desktop/Project/output/ic_tf_' + str(index) + '.txt'
 		f = open ( path , 'r')
 		l = chophead([ map(float,line.split()) for line in f ])
-		# l = [ map(float,line.split()) for line in f ]
-		# print l[1], l[2]
+		# for 2 channels compute average
 		avg = avglist(l[1], l[2]);
 		if index == -1:
 			label = 'sides: infinity'
