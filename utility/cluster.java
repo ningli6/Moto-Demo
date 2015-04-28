@@ -3,19 +3,19 @@ package utility;
 import java.util.List;
 import java.util.LinkedList;
 
-public class cluster {
+public class Cluster {
 	private List<PU> pus;
 
-	public cluster() {
+	public Cluster() {
 		pus = new LinkedList<PU>();
 	}
 
-	public cluster(PU pu) {
+	public Cluster(PU pu) {
 		pus = new LinkedList<PU>();
 		pus.add(pu);
 	}
 
-	public cluster(List<PU> list) {
+	public Cluster(List<PU> list) {
 		pus = new LinkedList<PU>(list);
 	}
 
@@ -35,7 +35,7 @@ public class cluster {
 		pus.clear();
 	}
 
-	public void merge(cluster c) {
+	public void merge(Cluster c) {
 		if (c == null || c.getNumbersOfPU() == 0) return;
 		pus.addAll(c.getMembers());
 		c.clear();
