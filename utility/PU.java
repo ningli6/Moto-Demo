@@ -18,10 +18,11 @@ public class PU {
 	private int indexOfCol = 0;
 	/* debugging purpose */
 	private int number_of_response = 0;
-	/* maybe implemented in future version */
-	// private double power; potenital? power that pu is transmitting
 	private Server server = null;
+	/* used by k-anonymity */
 	private double baseRadius = 0;
+	/* used by k-clustering */
+	private Cluster cluster;
 
 	private class distOrder implements Comparator<PU> { // can this be static class
 		public int compare(PU pu1, PU pu2) {
@@ -37,6 +38,15 @@ public class PU {
 
 	public PU() {
 
+	}
+
+	public PU(PU p) {
+		if (p == null) throw new NullPointerException();
+		this.id = p.getID();
+		this.channelID = p.getChannelID();
+		this.location = p.getLocation();
+		this.server = p.getServer();
+		this.baseRadius = p.getRadius();
 	}
 
 	public PU(int id, int r, int c) {
@@ -164,13 +174,27 @@ public class PU {
 		this.location = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
 	}
 
+	/* used by k-anonymity and k-clustering */
 	public void updateRadius(double base) {
 		if (base < 0) throw new IllegalArgumentException();
 		this.baseRadius = base;
 	}
-
+	/* used by k-anonymity and k-clustering */
 	public double getRadius() {
 		return baseRadius;
+	}
+
+	/* used by k-clustering */
+	public void putInCluster(Cluster c) {
+		this.cluster = c;
+	}
+	/* used by k-clustering */
+	public boolean isInCluster() {
+		return this.cluster != null;
+	}
+	/* used by k-clustering */
+	public Cluster getCluster() {
+		return this.cluster;
 	}
 
 	public void printIndices() {

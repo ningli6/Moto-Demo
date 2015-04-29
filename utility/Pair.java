@@ -5,6 +5,7 @@ public class Pair implements Comparable<Pair>{
 	private PU pu2;
 	private double dist;
 
+	/* initialize a pair with two pus */
 	public Pair(PU pu1, PU pu2) {
 		this.pu1 = pu1;
 		this.pu2 = pu2;
@@ -36,5 +37,9 @@ public class Pair implements Comparable<Pair>{
 		if (this.dist < p.getDist()) return -1;
 		else if (this.dist == p.getDist()) return 0;
 		else return 1;
+	}
+
+	public void printPair() {
+		System.out.println("[" + pu1.getID() + "], " + "[" + pu2.getID() +"], " + dist + "km");
 	}
 }
