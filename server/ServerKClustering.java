@@ -7,6 +7,7 @@ import java.util.Collections;
 import utility.*;
 import client.Client;
 
+/* K-Clustering server */
 public class ServerKClustering extends Server {
 	public static int K = 3;                /* default number of cluster */
 	private List<PU>[] virtual_List;        /* list for virtual pus on that channel */
@@ -55,13 +56,14 @@ public class ServerKClustering extends Server {
 		for (int i = 0; i < Number_Of_Channels; i++) { // for each channel
 			while (!channels_List[i].isEmpty()) { // if that channel is empty, do nothing
 				int size = channels_List[i].size();
+				/* each pu is itself a cluster */
+				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
 				/* do nothing if number of pus is smaller than K */
 				if (size <= this.K) {
+					System.out.println("K is greater than number of pus in that channel");
 					virtual_List[i] = channels_List[i];
-					return;
+					break;
 				}
-				/* each pu is a cluster. */
-				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
 				for (int m = 0; m < size; m++) {
 					for (int n = m + 1; n < size; n++) {
 						/* Compute the distance dij between all pairs of PUs ui and uj. */
@@ -113,12 +115,13 @@ public class ServerKClustering extends Server {
 			}
 			for (PU pu : list) {
 				System.out.println("Channel: [" + i + "]");
-				System.out.println(pu.getChannelID() + ", R: " + pu.getRadius());
+				System.out.println("working on channel " + pu.getChannelID() + ", with R " + pu.getRadius() + "km");
 				pu.printLocation();
 				if (i != pu.getChannelID()) throw new UnitTestException("Channel id mismatches");
 			}
 			i++;
 		}
+		System.out.println();
 	}
 
 	private PU findVirtualPU(List<PU> list, int channel_id) {
@@ -149,6 +152,9 @@ public class ServerKClustering extends Server {
 
 	//@ override
 	public Response response(Client client) {
+		/* debug 
+		 * client position */
+		client.printClientPosition();
 		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
@@ -163,17 +169,30 @@ public class ServerKClustering extends Server {
 			for (PU pu : list) {
 				if (channel_id != pu.getChannelID()) throw new UnitTestException("Channel id does not match");
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
+				/* debug 
+				 * check server response */
+				System.out.println("Server=> pu: [" + pu.getID() + "] dist: " + pu.getLocation().distTo(client.getLocation()) + ", power: " + resPower);
 				if (resPower <= minPower) {
 					minPU = pu;
 					minPower = resPower;
 				}
 			}
-			if (minPU != null) response_list.add(new Response(minPU, minPower));
+			/* debug 
+			 * check server's choice for that channel */
+			Response channelRes = new Response(minPU, minPower);
+			System.out.println("Channel choice :");
+			channelRes.printResponse();
+			if (minPU != null) response_list.add(channelRes);
 			channel_id++;
 		}
 		if (channel_id != Number_Of_Channels) throw new UnitTestException();
 		Collections.shuffle(response_list);
-		return Collections.max(response_list);
+		/* debug 
+		 * check server's final choice */
+		System.out.println("Final choice :");
+		finalRes.printResponse();
+		Response finalRes = Collections.max(response_list);
+		return finalRes;
 	}
 
 	private int getNumbersOfVirtualPUs() {

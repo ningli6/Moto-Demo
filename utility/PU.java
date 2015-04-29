@@ -7,7 +7,6 @@ import server.*;
  * PU represents a primary user, server keeps track of pus that were added to it. 
  * Right now it just has location information.
  */
-
 public class PU {
 	/* may not need id for pu in future versioin */
 	public final Comparator<PU> DIST_ORDER = new distOrder(); // can this be static
@@ -22,7 +21,7 @@ public class PU {
 	/* used by k-anonymity */
 	private double baseRadius = 0;
 	/* used by k-clustering */
-	private Cluster cluster;
+	private Cluster cluster = null;
 
 	private class distOrder implements Comparator<PU> { // can this be static class
 		public int compare(PU pu1, PU pu2) {
@@ -223,6 +222,7 @@ public class PU {
 		System.out.println();
 	}
 
+	/* used by k-anonymity and k-clustering */
 	public void printVirtualPUInfo() {
 		System.out.println("***Virtual PU***");
 		System.out.println("Radius: " + getRadius());

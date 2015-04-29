@@ -6,9 +6,9 @@ package utility;
  * hide pu's information to enhance privacy.
  */
 public class Response implements Comparable<Response> {
-	private double power;
-	private int channelID;
-	private PU pu; // pu that makes response
+	private double power = -1;
+	private int channelID = -1;
+	private PU pu = null; // pu that makes response
 
 	public Response(PU pu, double power) {
 		this.pu = pu;
@@ -56,5 +56,10 @@ public class Response implements Comparable<Response> {
 		if (this.power < response.getPower()) return -1;
 		else if (this.power == response.getPower()) return 0;
 		else return 1;
+	}
+
+	/* print response info in one line */
+	public void printResponse() {
+		System.out.println("Response=> channel: " + channelID + ", pu: " + pu.getID() + ", power: " + power)
 	}
 }

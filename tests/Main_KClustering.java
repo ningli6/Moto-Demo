@@ -33,7 +33,7 @@ public class Main_KClustering {
 		Number_Of_Channels = sc.nextInt();
 		System.out.println("Number of queries: ");
 		number_of_Queries = sc.nextInt();
-		System.out.println("K for k-anonymity: ");
+		System.out.println("K for k-clustering: ");
 		K = sc.nextInt();
 		if (K <= 0) throw new IllegalArgumentException();
 

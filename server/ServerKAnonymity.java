@@ -7,6 +7,7 @@ import java.util.Collections;
 import utility.*;
 import client.Client;
 
+/* K-Anonymity server */
 public class ServerKAnonymity extends Server {
 	public static int K = 3;
 	private List<PU>[] virtual_List;

@@ -242,4 +242,9 @@ public class Client {
 			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
 		inferMap[i].printInRequiredFormat(i);
 	}
+
+	/* print client index position in one line */
+	public void printClientPosition() {
+		System.out.println("Client=> r: " + indexOfRow + ", c: " + indexOfCol);
+	}
 }
