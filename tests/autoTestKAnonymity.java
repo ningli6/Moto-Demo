@@ -26,7 +26,7 @@ public class autoTestKAnonymity {
 		// multiple times for MTP
 		double mult = 1;
 		// number of PUs/Channels
-		int Number_Of_Channels = 1;
+		int Number_Of_Channels = 2;
 		// sides
 		int K = Integer.parseInt(args[0]);
 
@@ -80,6 +80,12 @@ public class autoTestKAnonymity {
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
+
+		PU pu4 = new PU(4, 9, 30);
+		server.addPU(pu4, 1);
+
+		PU pu5 = new PU(5, 30, 30);
+		server.addPU(pu5, 1);
 
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());

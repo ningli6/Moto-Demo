@@ -73,6 +73,24 @@ public class ServerKAnonymity extends Server {
 		updateNumbersOfPUs();
 		// update number of virtual pus
 		updateNumbersOfVirtualPUs();
+
+		/* debug */
+		// int i = 0;
+		// System.out.println();
+		// System.out.println("*****Virtual list*****");
+		// for (List<PU> list : virtual_List) {
+		// 	if (list.isEmpty()) {
+		// 		System.out.println("No virtual pu in this channel");
+		// 		continue;
+		// 	}
+		// 	for (PU pu : list) {
+		// 		System.out.println("Channel: [" + i + "]");
+		// 		System.out.println(pu.getChannelID() + ", R: " + pu.getRadius());
+		// 		pu.printLocation();
+		// 		if (i != pu.getChannelID()) throw new IllegalArgumentException("Channel id mismatch");
+		// 	}
+		// 	i++;
+		// }
 	}
 
 	/* Minimal Enclosing Circle Problem */

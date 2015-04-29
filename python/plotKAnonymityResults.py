@@ -32,12 +32,16 @@ for index in plotKAnonymity:
 		# for 2 channels
 		# avg = avglist(l[1], l[2])
 		# for 1 channel
-		avg = l[1]
-		if index == -1:
-			label = 'No countermeasure'
-		else:
-			label = 'K: ' + str(index)
-		plt.plot(l[0], avg, marker = 'o', label = label)
+		avg1 = l[1]
+		avg2 = l[2]
+		# if index == -1:
+		# 	label = 'No countermeasure'
+		# else:
+		# 	label = 'K: ' + str(index)
+		label1 = 'channel 0'
+		label2 = 'channel 1'
+		plt.plot(l[0], avg1, marker = 'o', label = label1)
+		plt.plot(l[0], avg2, marker = 'x', label = label2)
 		plt.legend()
 	except IOError:
 		print 'No such file'

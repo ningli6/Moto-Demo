@@ -52,10 +52,10 @@ public class ServerKClustering extends Server {
 				}
 				/* Put each ui into a single cluster. */
 				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
-				for (int i = 0; i < size; i++) {
+				for (int k = 0; k < size; k++) {
 					for (int j = i + 1; j < size; j++) {
 						/* Compute the distance dij between all pairs of PUs ui and uj. */
-						compare.add(new Pair(channels_List[i].get(i), channels_List[i].get(j)));
+						compare.add(new Pair(channels_List[i].get(k), channels_List[i].get(j)));
 					}
 				}
 				/* Put dij values into a sorted array D. */
