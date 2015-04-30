@@ -1,9 +1,22 @@
 package utility;
 
-public class Pair implements Comparable<Pair>{
+import java.util.Comparator;
+
+public class Pair {
 	private PU pu1;
 	private PU pu2;
 	private double dist;
+	public static Comparator<Pair> PAIR_ORDER = new pairOrder(); // can this be static
+
+	private static class pairOrder implements Comparator<Pair> { // can this be static class
+		public int compare(Pair p1, Pair p2) {
+			// if (pu1 == this || pu2 == this) throw new IllegalArgumentException();
+			Double dist1 = p1.getDist();
+			Double dist2 = p2.getDist();
+			// ascending order
+			return dist1.compareTo(dist2);
+		}
+	}
 
 	/* initialize a pair with two pus */
 	public Pair(PU pu1, PU pu2) {
@@ -31,12 +44,6 @@ public class Pair implements Comparable<Pair>{
 
 	public double getDist() {
 		return dist;
-	}
-
-	public int compareTo(Pair p) {
-		if (this.dist < p.getDist()) return -1;
-		else if (this.dist == p.getDist()) return 0;
-		else return 1;
 	}
 
 	public void printPair() {

@@ -60,6 +60,6 @@ public class Response implements Comparable<Response> {
 
 	/* print response info in one line */
 	public void printResponse() {
-		System.out.println("Response=> channel: " + channelID + ", pu: " + pu.getID() + ", power: " + power)
+		System.out.println("Response=> channel: " + channelID + ", pu: " + pu.getID() + ", power: " + power);
 	}
 }

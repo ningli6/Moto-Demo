@@ -65,27 +65,43 @@ public class Main_KClustering {
 
 		ServerKClustering server = new ServerKClustering(map, K);
 
-		/* 
-		 * Add a PU to the server's grid map, speficify the PU's location
-		 */
+		/* channel 0 */
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 9, 50);
+		PU pu1 = new PU(1, 9, 13);
 		server.addPU(pu1, 0);
 
-		PU pu2 = new PU(2, 30, 9);
+		PU pu2 = new PU(2, 30, 55);
 		server.addPU(pu2, 0);
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
 
-		// PU pu4 = new PU(4, 9, 30);
-		// server.addPU(pu4, 1);
+		PU pu4 = new PU(4, 10, 10);
+		server.addPU(pu4, 0);
 
-		// PU pu5 = new PU(5, 30, 30);
-		// server.addPU(pu5, 1);
+		PU pu5 = new PU(5, 11, 7);
+		server.addPU(pu5, 0);
 
+		/* channel 1 */
+		PU pu10 = new PU(10, 9, 55);
+		server.addPU(pu10, 1);
+
+		PU pu11 = new PU(11, 9, 53);
+		server.addPU(pu11, 1);
+
+		PU pu12 = new PU(12, 10, 50);
+		server.addPU(pu12, 1);
+
+		PU pu13 = new PU(13, 33, 6);
+		server.addPU(pu13, 1);
+
+		PU pu14 = new PU(14, 35, 8);
+		server.addPU(pu14, 1);
+
+		PU pu15 = new PU(15, 33, 11);
+		server.addPU(pu15, 1);
 
 		/* debug information */
 		System.out.println("Number of PUs: " + server.getNumberOfPUs());

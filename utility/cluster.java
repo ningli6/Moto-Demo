@@ -44,6 +44,7 @@ public class Cluster {
 
 	public void merge(Cluster c) {
 		if (c == null || c.getNumbersOfPU() == 0) return;
+		if (this == c) return; /* don't merge with yourself */
 		pus.addAll(c.getMembers());
 		c.clear();
 		putInThisCluster();

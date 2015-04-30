@@ -54,15 +54,15 @@ public class ServerKClustering extends Server {
 		/* list for pairs of pus */
 		LinkedList<Pair> compare = new LinkedList<Pair>();
 		for (int i = 0; i < Number_Of_Channels; i++) { // for each channel
-			while (!channels_List[i].isEmpty()) { // if that channel is empty, do nothing
+			if (!channels_List[i].isEmpty()) { // if that channel is empty, do nothing
 				int size = channels_List[i].size();
 				/* each pu is itself a cluster */
 				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
 				/* do nothing if number of pus is smaller than K */
 				if (size <= this.K) {
-					System.out.println("K is greater than number of pus in that channel");
+					System.out.println("K is greater than or equal to the number of pus in that channel");
 					virtual_List[i] = channels_List[i];
-					break;
+					continue;
 				}
 				for (int m = 0; m < size; m++) {
 					for (int n = m + 1; n < size; n++) {
@@ -70,11 +70,16 @@ public class ServerKClustering extends Server {
 						compare.add(new Pair(channels_List[i].get(m), channels_List[i].get(n)));
 					}
 				}
+				/* debug 
+				 * see pair list before sorting */
+				System.out.println("Before sorting... size: " + compare.size());
+				for (Pair p : compare) p.printPair();
 				/* Put dij values into a sorted array D. */
-				Collections.sort(compare);
+				Collections.sort(compare, Pair.PAIR_ORDER);
 				/* debug 
 				 * see the result of sorting
 				 */
+				System.out.println("After sorting... size: " + compare.size());
 				for (Pair p : compare) p.printPair();
 				/* while (number of clusters) > k do */
 				while(cluster_list[i].size() > this.K) {
@@ -82,14 +87,22 @@ public class ServerKClustering extends Server {
 					Pair min = compare.pop();
 					/* debug 
 					 * see which one is poped out */
+					System.out.println("pop out: ");
 					min.printPair();
 					PU pu1 = min.getPU1();
 					PU pu2 = min.getPU2();
 					/* Combine clusters of ui and uj. */
 					pu1.getCluster().merge(pu2.getCluster());
+					boolean[] removeMark = new boolean[size];
+					int count = 0;
 					for (Cluster c : cluster_list[i]) {
 						if (c == null || c.getNumbersOfPU() == 0)
-							cluster_list[i].remove(c);
+							removeMark[count] = true;
+						count++;
+					}
+					/* remove empty cluster */
+					for (int k = 0; k < size; k++) {
+						if (removeMark[k] == true) cluster_list[i].remove(k);
 					}
 					/* debug
 					 * see result of merging
@@ -173,6 +186,8 @@ public class ServerKClustering extends Server {
 				 * check server response */
 				System.out.println("Server=> pu: [" + pu.getID() + "] dist: " + pu.getLocation().distTo(client.getLocation()) + ", power: " + resPower);
 				if (resPower <= minPower) {
+					System.out.println("resPower " + resPower + " is smaller than minPower " + minPower);
+					// System.out.println("Update=> minPU: " + pu.getID());
 					minPU = pu;
 					minPower = resPower;
 				}
@@ -187,11 +202,11 @@ public class ServerKClustering extends Server {
 		}
 		if (channel_id != Number_Of_Channels) throw new UnitTestException();
 		Collections.shuffle(response_list);
+		Response finalRes = Collections.max(response_list);
 		/* debug 
 		 * check server's final choice */
 		System.out.println("Final choice :");
 		finalRes.printResponse();
-		Response finalRes = Collections.max(response_list);
 		return finalRes;
 	}
 
