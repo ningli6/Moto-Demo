@@ -139,7 +139,7 @@ public class autoTestKClustering {
 
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		// server.printInfoPU();
+		// server.printInfoVirtualPU();
 		// server.printInfoChannel();
 		// System.out.println();
 
