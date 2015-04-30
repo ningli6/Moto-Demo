@@ -21,7 +21,7 @@ public class Main_KClustering {
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
 		// query times
-		int number_of_Queries = 50;
+		int Number_of_Queries = 50;
 		// k for k-anonymity
 		int K = 1;
 
@@ -32,7 +32,7 @@ public class Main_KClustering {
 		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
 		System.out.println("Number of queries: ");
-		number_of_Queries = sc.nextInt();
+		Number_of_Queries = sc.nextInt();
 		System.out.println("K for k-clustering: ");
 		K = sc.nextInt();
 		if (K <= 0) throw new IllegalArgumentException();
@@ -85,23 +85,23 @@ public class Main_KClustering {
 		server.addPU(pu5, 0);
 
 		/* channel 1 */
-		PU pu10 = new PU(10, 9, 55);
-		server.addPU(pu10, 1);
+		// PU pu10 = new PU(10, 9, 55);
+		// server.addPU(pu10, 1);
 
-		PU pu11 = new PU(11, 9, 53);
-		server.addPU(pu11, 1);
+		// PU pu11 = new PU(11, 9, 53);
+		// server.addPU(pu11, 1);
 
-		PU pu12 = new PU(12, 10, 50);
-		server.addPU(pu12, 1);
+		// PU pu12 = new PU(12, 10, 50);
+		// server.addPU(pu12, 1);
 
-		PU pu13 = new PU(13, 33, 6);
-		server.addPU(pu13, 1);
+		// PU pu13 = new PU(13, 33, 6);
+		// server.addPU(pu13, 1);
 
-		PU pu14 = new PU(14, 35, 8);
-		server.addPU(pu14, 1);
+		// PU pu14 = new PU(14, 35, 8);
+		// server.addPU(pu14, 1);
 
-		PU pu15 = new PU(15, 33, 11);
-		server.addPU(pu15, 1);
+		// PU pu15 = new PU(15, 33, 11);
+		// server.addPU(pu15, 1);
 
 		/* debug information */
 		System.out.println("Number of PUs: " + server.getNumberOfPUs());
@@ -113,7 +113,7 @@ public class Main_KClustering {
 
 		Client client = new Client(10, 10, map);
 
-		for (int i = 0; i < number_of_Queries; i++) {
+		for (int i = 0; i < Number_of_Queries; i++) {
 			client.randomLocation();
 			client.query(server);
 		}

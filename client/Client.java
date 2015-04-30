@@ -172,6 +172,9 @@ public class Client {
 				IC[i] = Double.POSITIVE_INFINITY;
 				continue;
 			}
+			/* debug 
+			 * check server has returned correct list of pu to client */
+			// System.out.println("CLient=> list size: " + channels_List[i].size());
 			double sum = 0;
 			double[][] p = inferMap[i].getProbabilityMatrix();
 			int row = p.length;

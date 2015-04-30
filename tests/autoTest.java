@@ -68,17 +68,24 @@ public class autoTest {
 
 		Server server = new Server(map);
 
+		/* channel 0 */
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 15, 15);
+		PU pu1 = new PU(1, 9, 13);
 		server.addPU(pu1, 0);
 
 		PU pu2 = new PU(2, 30, 55);
 		server.addPU(pu2, 0);
 
-		PU pu3 = new PU(3, 35, 50);
+		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
+
+		PU pu4 = new PU(4, 10, 10);
+		server.addPU(pu4, 0);
+
+		PU pu5 = new PU(5, 11, 7);
+		server.addPU(pu5, 0);
 
 		Client client = new Client(10, 10, map);
 

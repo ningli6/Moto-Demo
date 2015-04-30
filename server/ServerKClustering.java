@@ -72,23 +72,23 @@ public class ServerKClustering extends Server {
 				}
 				/* debug 
 				 * see pair list before sorting */
-				System.out.println("Before sorting... size: " + compare.size());
-				for (Pair p : compare) p.printPair();
+				// System.out.println("Before sorting... size: " + compare.size());
+				// for (Pair p : compare) p.printPair();
 				/* Put dij values into a sorted array D. */
 				Collections.sort(compare, Pair.PAIR_ORDER);
 				/* debug 
 				 * see the result of sorting
 				 */
-				System.out.println("After sorting... size: " + compare.size());
-				for (Pair p : compare) p.printPair();
+				// System.out.println("After sorting... size: " + compare.size());
+				// for (Pair p : compare) p.printPair();
 				/* while (number of clusters) > k do */
 				while(cluster_list[i].size() > this.K) {
 					/* Choose the smallest value dij from array D. */
 					Pair min = compare.pop();
 					/* debug 
 					 * see which one is poped out */
-					System.out.println("pop out: ");
-					min.printPair();
+					// System.out.println("pop out: ");
+					// min.printPair();
 					PU pu1 = min.getPU1();
 					PU pu2 = min.getPU2();
 					/* Combine clusters of ui and uj. */
@@ -107,7 +107,7 @@ public class ServerKClustering extends Server {
 					/* debug
 					 * see result of merging
 					 */
-					for (Cluster c : cluster_list[i]) c.printCluster();
+					// for (Cluster c : cluster_list[i]) c.printCluster();
 				}
 				/* Find point Q that minimizes Equation 3. */
 				for (Cluster c : cluster_list[i]) 
@@ -117,24 +117,24 @@ public class ServerKClustering extends Server {
 		/* debug 
 		 * see result of virtual pu
 		 */
-		int i = 0;
-		System.out.println();
-		System.out.println("*****Virtual list*****");
-		for (List<PU> list : virtual_List) {
-			if (cluster_list[i].size() != virtual_List[i].size()) throw new UnitTestException("Cluster size is not equal to virtual pu number");
-			if (list.isEmpty()) {
-				System.out.println("No virtual pu in this channel");
-				continue;
-			}
-			for (PU pu : list) {
-				System.out.println("Channel: [" + i + "]");
-				System.out.println("working on channel " + pu.getChannelID() + ", with R " + pu.getRadius() + "km");
-				pu.printLocation();
-				if (i != pu.getChannelID()) throw new UnitTestException("Channel id mismatches");
-			}
-			i++;
-		}
-		System.out.println();
+		// int i = 0;
+		// System.out.println();
+		// System.out.println("*****Virtual list*****");
+		// for (List<PU> list : virtual_List) {
+		// 	if (cluster_list[i].size() != virtual_List[i].size()) throw new UnitTestException("Cluster size is not equal to virtual pu number");
+		// 	if (list.isEmpty()) {
+		// 		System.out.println("No virtual pu in this channel");
+		// 		continue;
+		// 	}
+		// 	for (PU pu : list) {
+		// 		System.out.println("Channel: [" + i + "]");
+		// 		System.out.println("working on channel " + pu.getChannelID() + ", with R " + pu.getRadius() + "km");
+		// 		pu.printLocation();
+		// 		if (i != pu.getChannelID()) throw new UnitTestException("Channel id mismatches");
+		// 	}
+		// 	i++;
+		// }
+		// System.out.println();
 	}
 
 	private PU findVirtualPU(List<PU> list, int channel_id) {
@@ -167,7 +167,7 @@ public class ServerKClustering extends Server {
 	public Response response(Client client) {
 		/* debug 
 		 * client position */
-		client.printClientPosition();
+		// client.printClientPosition();
 		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
@@ -184,9 +184,9 @@ public class ServerKClustering extends Server {
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
 				/* debug 
 				 * check server response */
-				System.out.println("Server=> pu: [" + pu.getID() + "] dist: " + pu.getLocation().distTo(client.getLocation()) + ", power: " + resPower);
+				// System.out.println("Server=> pu: [" + pu.getID() + "] dist: " + pu.getLocation().distTo(client.getLocation()) + ", power: " + resPower);
 				if (resPower <= minPower) {
-					System.out.println("resPower " + resPower + " is smaller than minPower " + minPower);
+					// System.out.println("resPower " + resPower + " is smaller than minPower " + minPower);
 					// System.out.println("Update=> minPU: " + pu.getID());
 					minPU = pu;
 					minPower = resPower;
@@ -195,8 +195,8 @@ public class ServerKClustering extends Server {
 			/* debug 
 			 * check server's choice for that channel */
 			Response channelRes = new Response(minPU, minPower);
-			System.out.println("Channel choice :");
-			channelRes.printResponse();
+			// System.out.println("Channel choice :");
+			// channelRes.printResponse();
 			if (minPU != null) response_list.add(channelRes);
 			channel_id++;
 		}
@@ -205,8 +205,8 @@ public class ServerKClustering extends Server {
 		Response finalRes = Collections.max(response_list);
 		/* debug 
 		 * check server's final choice */
-		System.out.println("Final choice :");
-		finalRes.printResponse();
+		// System.out.println("Final choice :");
+		// finalRes.printResponse();
 		return finalRes;
 	}
 
@@ -224,6 +224,20 @@ public class ServerKClustering extends Server {
 		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
 		if (dist >= MTP.d2 + base && dist < MTP.d3 + base) return 0.75 * PMAX;
 		return PMAX;
+	}
+
+	/* 
+	 * @override 
+	 * be careful! must override this function
+	 * otherwise ic is computed based on original pus' location
+	 * rather than virtual pus' location
+	 */
+	public List<PU>[] getChannelsList() {
+		if (virtual_List == null) {
+			System.out.println("Initialize Server first");
+			return null;
+		} 
+		return virtual_List;
 	}
 
 	public void printInfoVirtualPU() {
