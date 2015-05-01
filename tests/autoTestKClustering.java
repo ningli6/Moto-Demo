@@ -26,7 +26,7 @@ public class autoTestKClustering {
 		/* multiple times for MTP */
 		double mult = 1;
 		/* number of PUs/Channels */
-		int Number_Of_Channels = 1;
+		int Number_Of_Channels = 2;
 		/* K */
 		int K = Integer.parseInt(args[0]);
 
@@ -88,6 +88,16 @@ public class autoTestKClustering {
 		PU pu5 = new PU(5, 11, 7);
 		server.addPU(pu5, 0);
 
+		/* channel 1 */
+		PU pu6 = new PU(6, 9, 55);
+		server.addPU(pu6, 1);
+
+		PU pu7 = new PU(7, 10, 53);
+		server.addPU(pu7, 1);
+
+		PU pu8 = new PU(8, 30, 5);
+		server.addPU(pu8, 1);
+
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
 		// server.printInfoPU();
@@ -106,35 +116,40 @@ public class autoTestKClustering {
 			System.out.println("Number of queries: " + q);
 			// specify number of queries for server:
 			double[] sumIC = new double[Number_Of_Channels];
-			// make queries for certain times
+			/* for each number of query, do repeat times */
 			for (int i = 0; i < repeat; i++) {
 				// clear client's probability map to 0.5
 				client.reset();
-				// set actual lies back to 0
-				server.reset();
 				for (int j = 0; j < q; j++) {
 					client.randomLocation();
 					client.query(server);
 				}
 				double[] IC = client.computeIC(server);
-				// for (double res : IC) {
-				// 	System.out.print(res + ", ");
+				/* debug */
+				// System.out.print("RES=>");
+				// for (int k = 0; k < IC.length; k++) {
+				// 	System.out.print(" channel [" + k + "] " + IC[k]);
 				// }
 				// System.out.println();
+				/* put result in sumIC */
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
 					k++;
 				}
-				// System.out.println("k: " + k);
 			}
 			// compute average
 			int cid = 0;
+			/* debug */
+			// System.out.print("RES=> average:");
 			for (double ic : sumIC) {
 				rlist[cid].add(ic / repeat);
-				// System.out.println("Average is " + ic / repeat);
+				/* debug */
+				// System.out.print(" channel: [" + cid + "] " + ic / repeat);
 				cid++;
 			}
+			/* debug */
+			// System.out.println();
 		}
 
 		/* debug information */

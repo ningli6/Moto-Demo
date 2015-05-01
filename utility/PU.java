@@ -109,7 +109,10 @@ public class PU {
 		number_of_response++;
 	}
 
-	// clear number of response
+	/* 
+	 * clear number of response 
+	 * used by additive noise 
+	 */
 	public void reset() {
 		number_of_response = 0;
 	}
