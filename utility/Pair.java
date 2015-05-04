@@ -2,6 +2,7 @@ package utility;
 
 import java.util.Comparator;
 
+/* A helper class that bind a pair of PUs */
 public class Pair {
 	private PU pu1;
 	private PU pu2;

@@ -10,6 +10,10 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/* 
+ * Tests for location preservation with k anonymity.
+ * User should choose a number K.
+ */
 public class autoTestKAnonymity {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 

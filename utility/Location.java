@@ -1,8 +1,8 @@
 package utility;
+
 /*
  * This class represent coordinate location for a certain cell in the grid
  */
-
 public class Location {
 	private double latitude;
 	private double longitude;

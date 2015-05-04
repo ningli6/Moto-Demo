@@ -47,7 +47,7 @@ public class PU {
 		this.server = p.getServer();
 		this.baseRadius = p.getRadius();
 	}
-
+	
 	public PU(int id, int r, int c) {
 		this.id = id;
 		indexOfRow = r;

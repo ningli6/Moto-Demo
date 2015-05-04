@@ -8,6 +8,9 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/*
+ * A testing class for countermeasure with k clustering.
+ */
 public class Main_KClustering {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 

@@ -7,14 +7,13 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/*
+ * A testing class for countermeasure with transfiguration.
+ */
 public class Main_Transfiguration {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
-		// clear file
-		// File dir = new File(directory);
-		// for(File file: dir.listFiles()) file.delete();
-
 		Scanner sc = new Scanner(System.in);
 		// get default settings from user
 		// cell size

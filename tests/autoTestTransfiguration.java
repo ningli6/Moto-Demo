@@ -10,6 +10,10 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/* 
+ * Tests for location preservation with transfiguration.
+ * User should choose a number K for sides of polygon.
+ */
 public class autoTestTransfiguration {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 

@@ -10,6 +10,10 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/* 
+ * Tests for location preservation with k clustering.
+ * User should choose a number K.
+ */
 public class autoTestKClustering {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 

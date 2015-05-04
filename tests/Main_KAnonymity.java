@@ -8,6 +8,9 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/*
+ * A testing class for countermeasure with k anonymity.
+ */
 public class Main_KAnonymity {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 

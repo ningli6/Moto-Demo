@@ -3,6 +3,10 @@ package utility;
 import java.util.List;
 import java.util.LinkedList;
 
+
+/*
+ * Cluster represents a cluster of PUs used by k-clustering method
+ */
 public class Cluster {
 	private List<PU> pus;
 
