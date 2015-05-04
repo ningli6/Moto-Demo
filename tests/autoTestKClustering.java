@@ -11,10 +11,10 @@ import server.*;
 import utility.*;
 
 /* 
- * Tests for location preservation with k anonymity.
+ * Tests for location preservation with k clustering.
  * User should choose a number K.
  */
-public class autoTestKAnonymity {
+public class autoTestKClustering {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
@@ -24,14 +24,14 @@ public class autoTestKAnonymity {
 		}
 		
 		Scanner sc = new Scanner(System.in);
-		// get default settings from user
-		// cell size
+		/* get default settings from user */
+		/* cell size */
 		double cellDegree = 0.05;
-		// multiple times for MTP
+		/* multiple times for MTP */
 		double mult = 1;
-		// number of PUs/Channels
+		/* number of PUs/Channels */
 		int Number_Of_Channels = 2;
-		// K
+		/* K */
 		int K = Integer.parseInt(args[0]);
 
 		// System.out.println("Cell size in degree: ");
@@ -66,30 +66,41 @@ public class autoTestKAnonymity {
 			rlist[i] = new ArrayList<Double>();
 		}
 		// int[] queries = {0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200};
-		// int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
-		int[] queries = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
+		int[] queries = {0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		// int[] queries = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
 		int repeat = 10;
 
 	    // initialize a server with parameters from initial settings
-		ServerKAnonymity server = new ServerKAnonymity(map, K);
+		ServerKClustering server = new ServerKClustering(map, K);
 
+		/* channel 0 */
 		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		PU pu1 = new PU(1, 9, 50);
+		PU pu1 = new PU(1, 9, 13);
 		server.addPU(pu1, 0);
 
-		PU pu2 = new PU(2, 30, 9);
+		PU pu2 = new PU(2, 30, 55);
 		server.addPU(pu2, 0);
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
 
-		PU pu4 = new PU(4, 9, 30);
-		server.addPU(pu4, 1);
+		PU pu4 = new PU(4, 10, 10);
+		server.addPU(pu4, 0);
 
-		PU pu5 = new PU(5, 30, 30);
-		server.addPU(pu5, 1);
+		PU pu5 = new PU(5, 11, 7);
+		server.addPU(pu5, 0);
+
+		/* channel 1 */
+		PU pu6 = new PU(6, 9, 55);
+		server.addPU(pu6, 1);
+
+		PU pu7 = new PU(7, 10, 53);
+		server.addPU(pu7, 1);
+
+		PU pu8 = new PU(8, 30, 5);
+		server.addPU(pu8, 1);
 
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
@@ -97,7 +108,8 @@ public class autoTestKAnonymity {
 		// server.printInfoChannel();
 		// System.out.println();
 
-		server.kAnonymity();
+		/* precompute clustering */
+		server.kClustering();
 
 		// initiliza a client, then change its location and make a query for N times;
 		Client client = new Client(10, 10, map);
@@ -108,44 +120,49 @@ public class autoTestKAnonymity {
 			System.out.println("Number of queries: " + q);
 			// specify number of queries for server:
 			double[] sumIC = new double[Number_Of_Channels];
-			// make queries for certain times
+			/* for each number of query, do repeat times */
 			for (int i = 0; i < repeat; i++) {
 				// clear client's probability map to 0.5
 				client.reset();
-				// set actual lies back to 0
-				server.reset();
 				for (int j = 0; j < q; j++) {
 					client.randomLocation();
 					client.query(server);
 				}
 				double[] IC = client.computeIC(server);
-				// for (double res : IC) {
-				// 	System.out.print(res + ", ");
+				/* debug */
+				// System.out.print("RES=>");
+				// for (int k = 0; k < IC.length; k++) {
+				// 	System.out.print(" channel [" + k + "] " + IC[k]);
 				// }
 				// System.out.println();
+				/* put result in sumIC */
 				int k = 0;
 				for (double ic : IC) {
 					sumIC[k] += ic;
 					k++;
 				}
-				// System.out.println("k: " + k);
 			}
 			// compute average
 			int cid = 0;
+			/* debug */
+			// System.out.print("RES=> average:");
 			for (double ic : sumIC) {
 				rlist[cid].add(ic / repeat);
-				// System.out.println("Average is " + ic / repeat);
+				/* debug */
+				// System.out.print(" channel: [" + cid + "] " + ic / repeat);
 				cid++;
 			}
+			/* debug */
+			// System.out.println();
 		}
 
 		/* debug information */
 		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		// server.printInfoPU();
+		// server.printInfoVirtualPU();
 		// server.printInfoChannel();
 		// System.out.println();
 
-		File file = new File(directory + "ic_ka_" + K + ".txt");
+		File file = new File(directory + "ic_kc_" + K + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");

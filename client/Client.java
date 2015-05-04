@@ -172,6 +172,9 @@ public class Client {
 				IC[i] = Double.POSITIVE_INFINITY;
 				continue;
 			}
+			/* debug 
+			 * check server has returned correct list of pu to client */
+			// System.out.println("CLient=> list size: " + channels_List[i].size());
 			double sum = 0;
 			double[][] p = inferMap[i].getProbabilityMatrix();
 			int row = p.length;
@@ -241,5 +244,10 @@ public class Client {
 		if (i < 0 || i > Number_Of_Channels) 
 			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
 		inferMap[i].printInRequiredFormat(i);
+	}
+
+	/* print client index position in one line */
+	public void printClientPosition() {
+		System.out.println("Client=> r: " + indexOfRow + ", c: " + indexOfCol);
 	}
 }

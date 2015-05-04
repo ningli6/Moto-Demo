@@ -2,15 +2,16 @@ package tests;
 
 import java.util.Scanner;
 import java.io.File;
+import java.util.Random;
 
 import client.Client;
 import server.*;
 import utility.*;
 
 /*
- * A testing class for countermeasure with transfiguration.
+ * A testing class for countermeasure with k clustering.
  */
-public class Main_Transfiguration {
+public class Main_KClustering {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
 	public static void main(String[] args) {
@@ -23,9 +24,9 @@ public class Main_Transfiguration {
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
 		// query times
-		int number_of_Queries = 50;
-		// sides
-		int sides = 3;
+		int Number_of_Queries = 50;
+		// k for k-anonymity
+		int K = 1;
 
 		System.out.println("Cell size in degree: ");
 		cellDegree = sc.nextDouble();
@@ -34,9 +35,10 @@ public class Main_Transfiguration {
 		System.out.println("Number of channels: ");
 		Number_Of_Channels = sc.nextInt();
 		System.out.println("Number of queries: ");
-		number_of_Queries = sc.nextInt();
-		System.out.println("Polygon sides: ");
-		sides = sc.nextInt();
+		Number_of_Queries = sc.nextInt();
+		System.out.println("K for k-clustering: ");
+		K = sc.nextInt();
+		if (K <= 0) throw new IllegalArgumentException();
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -57,7 +59,6 @@ public class Main_Transfiguration {
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
-		ServerTransfiguration.NUMBER_OF_SIDES = sides;
 		InferMap.directory = directory;
 		/* debug information */
 		System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
@@ -65,48 +66,69 @@ public class Main_Transfiguration {
 		map.showBoundary();
 		System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
 
-	    // initialize a server with parameters from initial settings
-		ServerTransfiguration server = new ServerTransfiguration(map, sides);
+		ServerKClustering server = new ServerKClustering(map, K);
 
-		/* 
-		 * Add a PU to the server's grid map, speficify the PU's location
-		 */
-		PU pu0 = new PU(0, 20, 30);
+		/* channel 0 */
+		PU pu0 = new PU(0, 9, 9);
 		server.addPU(pu0, 0);
 
-		// PU pu1 = new PU(1, 9, 50);
-		// server.addPU(pu1, 1);
+		PU pu1 = new PU(1, 9, 13);
+		server.addPU(pu1, 0);
 
-		// PU pu2 = new PU(2, 30, 9);
-		// server.addPU(pu2, 1);
+		PU pu2 = new PU(2, 30, 55);
+		server.addPU(pu2, 0);
 
-		// PU pu3 = new PU(3, 30, 50);
-		// server.addPU(pu3, 0);
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 0);
 
-		// /* debug information */
-		// System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		// server.printInfoPU();
-		// server.printInfoChannel();
-		// System.out.println();
+		PU pu4 = new PU(4, 10, 10);
+		server.addPU(pu4, 0);
 
-		// after adding pu, transfigure
-		server.transfigure();
-		// initiliza a client, then change its location and make a query for N times;
+		PU pu5 = new PU(5, 11, 7);
+		server.addPU(pu5, 0);
+
+		/* channel 1 */
+		// PU pu10 = new PU(10, 9, 55);
+		// server.addPU(pu10, 1);
+
+		// PU pu11 = new PU(11, 9, 53);
+		// server.addPU(pu11, 1);
+
+		// PU pu12 = new PU(12, 10, 50);
+		// server.addPU(pu12, 1);
+
+		// PU pu13 = new PU(13, 33, 6);
+		// server.addPU(pu13, 1);
+
+		// PU pu14 = new PU(14, 35, 8);
+		// server.addPU(pu14, 1);
+
+		// PU pu15 = new PU(15, 33, 11);
+		// server.addPU(pu15, 1);
+
+		/* debug information */
+		System.out.println("Number of PUs: " + server.getNumberOfPUs());
+		server.printInfoPU();
+		server.printInfoChannel();
+		System.out.println();
+
+		server.kClustering();
+
 		Client client = new Client(10, 10, map);
-		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
-		for (int i = 0; i < number_of_Queries; i++) {
+
+		for (int i = 0; i < Number_of_Queries; i++) {
 			client.randomLocation();
 			client.query(server);
 		}
+
 		/* debug information */
 		client.updateWhich();
-		server.printInfoPU();
-		// System.out.println("PU's location index: [" + rowPUIndex + "], [" + colPUIndex + "]");
-		/*** these functions should be update! ***/
+		server.printInfoVirtualPU();
+		System.out.println();
+
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			client.plotInferMap(i);
 			// client.printFormattedMatrix(i);
-			// client.printFormattedTable(i);
 		}
 
 		double[] IC = client.computeIC(server);

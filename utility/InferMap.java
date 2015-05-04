@@ -8,12 +8,12 @@ import javax.swing.JFrame;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
+
 /*
  * InferMap is the grid map that attackers use to infer PU's location
  * It inherents GridMap class, with additional matrix that corresponding
  * to each cell representing the probability of existence of PU
  */
-
 public class InferMap extends GridMap {
 	// probability map
 	private int id;

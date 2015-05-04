@@ -8,6 +8,9 @@ import client.Client;
 import server.*;
 import utility.*;
 
+/*
+ * A testing class for countermeasure with k anonymity.
+ */
 public class Main_KAnonymity {
 	public static String directory = "/Users/ningli/Desktop/Project/output/";
 
@@ -79,6 +82,12 @@ public class Main_KAnonymity {
 
 		PU pu3 = new PU(3, 30, 50);
 		server.addPU(pu3, 0);
+
+		PU pu4 = new PU(4, 9, 30);
+		server.addPU(pu4, 1);
+
+		PU pu5 = new PU(5, 30, 30);
+		server.addPU(pu5, 1);
 
 
 		/* debug information */

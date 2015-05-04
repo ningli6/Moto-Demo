@@ -10,7 +10,10 @@ import java.io.FileNotFoundException;
 import java.io.File;
 
 import utility.geometry.*;
+
 /*
+ * A pu class that has polygon contours
+ */
  * It include a hashmap that maps location to transmit power
  */
 public class PolyPU {
