@@ -12,37 +12,38 @@ import utility.*;
  * Test class for location preservation without countermeasure.
  */
 public class Main {
-
-	public static String directory = "/Users/ningli/Desktop/Project/output/";
-	/* 
-	 * allow user to define a rectangle area with four lat-lon coordinates
-	 * user can input location as string that matches to
-	 * ([0-9])+(\.[0-9]+){0,1}\|([0-9])+(\.[0-9]+){0,1}'([0-9])+(\.[0-9]+){0,1}''(N|S|E|W)\.
-	 */
 	public static void main(String[] args) {
-		// clear file
-		// File dir = new File(directory);
-		// for(File file: dir.listFiles()) file.delete();
-
-		Scanner sc = new Scanner(System.in);
-		// get default settings from user
+		if (args.length == 0) {
+			System.out.println("Arguments required");
+			return;
+		}
+		if (args.length != 2) {
+			System.out.println("Usage: java Main Number_Of_Channels Number_of_Queries");
+			return;
+		}
 		// cell size
-		double cellDegree = 0.1;
+		double cellDegree = 0.05;
 		// multiple times for MTP
-		double mult = 1;
+		double mult = 5;
 		// number of PUs/Channels
 		int Number_Of_Channels = 1;
 		// query times
-		int number_of_Queries = 50;
+		int Number_of_Queries = 50;
 
-		System.out.println("Cell size in degree: ");
-		cellDegree = sc.nextDouble();
-		System.out.println("Multiple times on default MTP function: ");
-		mult = sc.nextDouble();
-		System.out.println("Number of channels: ");
-		Number_Of_Channels = sc.nextInt();
-		System.out.println("Number of queries: ");
-		number_of_Queries = sc.nextInt();
+		// System.out.println("Cell size in degree: ");
+		// cellDegree = sc.nextDouble();
+		// System.out.println("Multiple times on default MTP function: ");
+		// mult = sc.nextDouble();
+		try {
+			System.out.println("Number of channels: ");
+			Number_Of_Channels = Integer.parseInt(args[0]);
+			System.out.println("Number of queries: ");
+			Number_of_Queries = Integer.parseInt(args[1]);
+		} catch (Exception e) {
+			 System.err.println("Caught Exception: " + e.getMessage());
+			 return;
+		}
+
 
 		double ulLat = 38;
 		double ulLon = -82;
@@ -63,12 +64,12 @@ public class Main {
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
-		InferMap.directory = directory;
+		// InferMap.directory = directory;
 		/* debug information */
 		System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
 		System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
 		map.showBoundary();
-		System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
+		// System.out.println("Average distance between each cell is: " + map.getAverageDistance() + " km");
 
 	    // initialize a server with parameters from initial settings
 		Server server = new Server(map);
@@ -83,34 +84,24 @@ public class Main {
 		PU pu1 = new PU(1, 10, 50);
 		server.addPU(pu1, 1);
 
-		// PU pu2 = new PU(2, 30, 10);
-		// server.addPU(pu2, 0);
+		PU pu2 = new PU(2, 30, 10);
+		server.addPU(pu2, 0);
 
-		// PU pu3 = new PU(3, 30, 50);
-		// server.addPU(pu3, 1);
-
-		/* 
-         * Use multiple PU, specified by Number_Of_Channels;
-		 *
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			double rLat = 50 - (50 - 45) * rand.nextDouble();
-			double rLon = -100 + (-95 - (-100)) * rand.nextDouble();
-			PU pu = new PU(i, rLat, rLon);
-			server.addPU(pu);
-		}
-		*/
+		PU pu3 = new PU(3, 30, 50);
+		server.addPU(pu3, 1);
 
 		/* debug information */
 		System.out.println("Number of PUs: " + server.getNumberOfPUs());
-		server.printInfoPU();
+		// server.printInfoPU();
 		server.printInfoChannel();
 		System.out.println();
+
 		// initiliza a client, then change its location and make a query for N times;
 		Client client = new Client(10, 49, map);
 		Random randr = new Random();
 		Random randc = new Random();
-		// for (int i = 0; i < number_of_Queries; i++) client.query(server);
-		for (int i = 0; i < number_of_Queries; i++) {
+		// for (int i = 0; i < Number_of_Queries; i++) client.query(server);
+		for (int i = 0; i < Number_of_Queries; i++) {
 			// int newR = randr.nextInt(map.getRows());
 			// int newC = randc.nextInt(map.getCols());
 			int newR = randr.nextInt(40);
@@ -126,7 +117,7 @@ public class Main {
 		/*** these functions should be update! ***/
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			client.plotInferMap(i);
-			client.printFormattedMatrix(i);
+			// client.printFormattedMatrix(i);
 			// client.printFormattedTable(i);
 		}
 
