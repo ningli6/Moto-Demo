@@ -35,10 +35,11 @@ public class Main {
 		// System.out.println("Multiple times on default MTP function: ");
 		// mult = sc.nextDouble();
 		try {
-			System.out.println("Number of channels: ");
 			Number_Of_Channels = Integer.parseInt(args[0]);
-			System.out.println("Number of queries: ");
 			Number_of_Queries = Integer.parseInt(args[1]);
+			System.out.println("Number of channels: " + Number_Of_Channels);
+			System.out.println("Number of queries: " + Number_of_Queries);
+
 		} catch (Exception e) {
 			 System.err.println("Caught Exception: " + e.getMessage());
 			 return;

@@ -10,75 +10,40 @@
 <body> 
 
 <?php
+/* add external helper php script */
+require 'script.php';
 require 'PHPMailer/PHPMailerAutoload.php';
-// define variables and set to empty values
-$number_of_channels;
-$number_of_queries;
-$channelErr = $queryErr = $command = "";
-$output = "";
-$receiver = $emailErr = "";
+/* start a php session */
+session_start();
 
+/* nuber of channels */
+$number_of_channels;
+/* nuber of queries */
+$number_of_queries;
+/* error message */
+$channelErr = $queryErr = $command = "";
+/* email message */
+$receiver = $emailResult = $message = "";
+
+/* handle form submit */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  /* if submitted element is address, try to send email */
   if (isset($_POST["addr"])) {
     if (empty($_POST["addr"])) {
-      $emailErr = "Please enter your email address";
-    } else {
+      $emailResult = "Please enter your email address";
+    }
+    elseif (strlen($_SESSION['message']) == 0) {
+       $emailResult = "Please start demo first";
+     } 
+    else {
      $receiver = $_POST["addr"];
-     sendTo($receiver);
+     $emailResult = sendTo($receiver, $_SESSION['message']);
+     session_unset();
    }
  }
   else {
-    if (empty($_POST["channels"])) {
-      $channelErr = "Number of channels is required";
-    } else {
-     $number_of_channels = $_POST["channels"];
-      if ($number_of_channels < 1) {
-        $channelErr = "Number of channels must be positive integer"; 
-      }
-    }
-    if (empty($_POST["queries"])) {
-      $queryErr = "Number of queries is required";
-    } else {
-     $number_of_queries = $_POST["queries"];
-     if ($number_of_queries < 1) {
-        $queryErr = "Number of queries must be positive integer"; 
-     }
-    }
-    if ($number_of_channels > 0 && $number_of_channels > 0) {
-      $command = "java -cp Project tests/Main %s %s";
-      $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
-      exec($command, $output);
-    }
-    else {
-      echo "Program is unable to start!";
-    }
-  }
-}
-
-function sendTo($recv) {
-  //Create a new PHPMailer instance
-  $mail = new PHPMailer;
-  $mail->isSMTP();             // Set mailer to use SMTP
-  $mail->SMTPAuth = false;
-  $mail->Port = 8000;          // TCP port to connect to
-  // // Set PHPMailer to use the sendmail transport
-  // $mail->isSendmail();
-  //Set who the message is to be sent from
-  $mail->setFrom('from@example.com', 'First Last');
-  //Set an alternative reply-to address
-  $mail->addReplyTo('replyto@example.com', 'First Last');
-  //Set who the message is to be sent to
-  $mail->addAddress('ningli@vt.edu', 'Ning Li');
-
-  $mail->Subject = 'PHPMailer sendmail test';
-  $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-  $mail->AltBody = 'This is a plain-text message body';
-
-  //send the message, check for errors
-  if (!$mail->send()) {
-      echo "Mailer Error: " . $mail->ErrorInfo;
-  } else {
-      echo "Message sent!";
+    /* otherwise, try to start demo */
+    $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr, $command);
   }
 }
 ?>
@@ -104,31 +69,17 @@ echo "<h2>Execute:</h2>";
 echo $command;
 echo "<h2>Output:</h2>";
 // print out standard output of java program
-printArray($output);
-
-function printArray($a) {
-    foreach($a as $x => $x_value) {
-      echo $x_value;
-      echo "<br>";
-  }
-}
+printArray($output, $message);
+/* use session to store message to keep values between pages */
+$_SESSION['message'] = $message;
 ?>
 
+<!-- handler email request -->
 <h2>Email:</h2>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 Email Address: <input type="text" name="addr">
 <input type="submit" value="Send me Email">
-<span ><?php
-  if ($receiver != "") {
-    echo "<br>";
-    echo "Successfully sent to " . $receiver;
-  }
-  else {
-    echo "<br>";
-    echo $emailErr;
-  }
-    // print phpinfo();  
- ?></span>
+<span ><?php echo "<br>" . $emailResult; ?></span>
 </form>
 
 </body>
