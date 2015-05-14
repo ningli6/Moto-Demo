@@ -22,7 +22,7 @@ function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$qu
     } else {
      $number_of_channels = $_POST["channels"];
       if ($number_of_channels < 1) {
-        $channelErr = "Number of channels must be positive integer"; 
+        $channelErr = "Number of channels must be positive"; 
       }
     }
     if (empty($_POST["queries"])) {
@@ -30,7 +30,7 @@ function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$qu
     } else {
      $number_of_queries = $_POST["queries"];
      if ($number_of_queries < 1) {
-        $queryErr = "Number of queries must be positive integer"; 
+        $queryErr = "Number of queries must be positive"; 
      }
     }
     if ($number_of_channels > 0 && $number_of_channels > 0) {
@@ -39,7 +39,7 @@ function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$qu
       exec($command, $output);
     }
     else {
-      echo "Program is unable to start!";
+      return "Program is unable to start!";
     }
     return $output;
 }
