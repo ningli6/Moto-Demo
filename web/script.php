@@ -62,6 +62,7 @@ function sendTo($recv, $message) {
   $mail->Body = ($body .= $message);
   //Replace the plain text body with one created manually
   $mail->AltBody = 'This is a plain-text message body';
+  $mail->addAttachment('/var/www/html/kc.png', 'kc.png');    // Optional name
 
   //send the message, check for errors
   if (!$mail->send()) {
