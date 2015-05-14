@@ -16,7 +16,7 @@ function printArray($a, &$message) {
  * but first need to decide if params are passed correctly
  */
 function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$queryErr, &$command) {
-  $output = "";
+	$output = "";
     if (empty($_POST["channels"])) {
       $channelErr = "Number of channels is required";
     } else {
@@ -33,7 +33,7 @@ function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$qu
         $queryErr = "Number of queries must be positive"; 
      }
     }
-    if ($number_of_channels > 0 && $number_of_queries > 0) {
+    if ($number_of_channels > 0 && $number_of_channels > 0) {
       $command = "java -cp Project tests/Main %s %s";
       $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
       exec($command, $output);

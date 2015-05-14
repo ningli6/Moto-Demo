@@ -16,7 +16,7 @@
 </head>
 <?php
     /* add external helper php script */
-    require 'script.php';
+    require 'script-dev.php';
     session_start();
     /* nuber of channels */
     $number_of_channels;
@@ -38,7 +38,7 @@
         $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
         $_SESSION['OUTPUT'] = $output;
         /* jump to result page */
-        header('Location: result.php');
+        header('Location: result-dev.php');
     }
 ?>
 <body>
