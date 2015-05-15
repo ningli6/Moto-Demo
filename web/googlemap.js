@@ -1,5 +1,6 @@
 var myCenter=new google.maps.LatLng(37.227799, -80.422054);
 var map;
+var markers = [];
 
 function initialize() {
   var mapProp = {
@@ -41,6 +42,10 @@ function initialize() {
 	  strokeWeight:2
 	  });
 	path.setMap(map);
+
+	  google.maps.event.addListener(map, 'click', function(event) {
+	    placeMarker(event.latLng);
+	  });
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -65,6 +70,25 @@ function setRecBounds (form) {
 	localStorage.setItem("upperLeftLng", parseFloat(ullg));
 	localStorage.setItem("lowerRightLat", parseFloat(lrla));
 	localStorage.setItem("lowerRightLng", parseFloat(lrlg));
+}
+
+function placeMarker(location) {
+  var marker = new google.maps.Marker({
+    position: location,
+    map: map,
+  });
+  var infowindow = new google.maps.InfoWindow({
+    content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+  });
+  infowindow.open(map,marker);
+  markers.push(marker);
+}
+
+// Deletes all markers in the array by removing references to them.
+function deleteMarkers() {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
 }
 
 function countDot(str) {

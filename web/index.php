@@ -62,6 +62,7 @@
         </p>
     </div>
     <!-- google map -->
+    <button type="button" class="btn btn-success" onclick="deleteMarkers();">Clear Markers</button>
     <div id="googleMap" style="width:100%; height:380px;"></div>
 
     <form role="form" method="post" id="coor-form">

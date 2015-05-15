@@ -43,7 +43,7 @@
         $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
         $_SESSION['OUTPUT'] = $output;
         /* jump to result page */
-        header('Location: result-dev.php');
+        header('Location: result.php');
     }
 ?>
 <body>
@@ -62,7 +62,8 @@
         </p>
     </div>
     <!-- google map -->
-    <div id="googleMap" style="width:500px;height:380px;"></div>
+    <button type="button" class="btn btn-success" onclick="deleteMarkers();">Clear Markers</button>
+    <div id="googleMap" style="width:100%; height:380px;"></div>
 
     <form role="form" method="post" id="coor-form">
         <div class="form-group">
