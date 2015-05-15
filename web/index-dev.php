@@ -64,22 +64,22 @@
     <!-- google map -->
     <div id="googleMap" style="width:500px;height:380px;"></div>
 
-    <form role="form" method="post">
+    <form role="form" method="post" id="coor-form">
         <div class="form-group">
             <label>Upper left latitude:</label>
-            <input type="number" class="form-control" name="ulla">
+            <input type="number" class="form-control" name="ulla" value="38">
         </div>
         <div class="form-group">
             <label>Upper left longitude:</label>
-            <input type="number" class="form-control" name="ullg">
+            <input type="number" class="form-control" name="ullg" value="-82">
         </div>
         <div class="form-group">
             <label>Lower right latitude:</label>
-            <input type="number" class="form-control" name="lrla">
+            <input type="number" class="form-control" name="lrla" value="36">
         </div>
         <div class="form-group">
             <label>Lower right longitude:</label>
-            <input type="number" class="form-control" name="lrlg">
+            <input type="number" class="form-control" name="lrlg" value="-79">
         </div>
         <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form);">Set boundary</button>
     </form>

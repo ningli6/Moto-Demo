@@ -13,7 +13,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="googlemap.js"></script>
 </head>
+
 <?php
     /* add external helper php script */
     require 'script.php';
@@ -26,7 +29,9 @@
     $channelErr = $queryErr = "";
     /* handle form submit */
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
+        if (isset($_POST["channels"]) || isset($_POST["queries"])) {
+            $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
+        }
     }
     if ($output == "Program is unable to start!") {
         $alert = "<script type='text/javascript'>window.alert('Fail to start demo')</script>";
@@ -56,6 +61,30 @@
             </cite>
         </p>
     </div>
+    <!-- google map -->
+    <div id="googleMap" style="width:100%; height:380px;"></div>
+
+    <form role="form" method="post" id="coor-form">
+        <div class="form-group">
+            <label>Upper left latitude:</label>
+            <input type="number" class="form-control" name="ulla" value="38">
+        </div>
+        <div class="form-group">
+            <label>Upper left longitude:</label>
+            <input type="number" class="form-control" name="ullg" value="-82">
+        </div>
+        <div class="form-group">
+            <label>Lower right latitude:</label>
+            <input type="number" class="form-control" name="lrla" value="36">
+        </div>
+        <div class="form-group">
+            <label>Lower right longitude:</label>
+            <input type="number" class="form-control" name="lrlg" value="-79">
+        </div>
+        <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form);">Set boundary</button>
+    </form>
+
+    <br>
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <div class="form-group">
             <label>Number of channels:</label>

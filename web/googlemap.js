@@ -1,16 +1,46 @@
 var myCenter=new google.maps.LatLng(37.227799, -80.422054);
 var map;
-// var upperLeft=new google.maps.LatLng(38,-82);
-// var upperRight=new google.maps.LatLng(38,-79);
-// var lowerLeft=new google.maps.LatLng(36,-82);
-// var lowerRight=new google.maps.LatLng(36, -79);
+
 function initialize() {
   var mapProp = {
     center:myCenter,
-    zoom:10,
+    zoom:5,
     mapTypeId:google.maps.MapTypeId.ROADMAP
   };
   map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+	var ulla = localStorage.getItem("upperLeftLat");
+    var ullg = localStorage.getItem("upperLeftLng");
+    var lrla = localStorage.getItem("lowerRightLat");
+    var lrlg = localStorage.getItem("lowerRightLng");
+	if (ulla == null) {
+		ulla = 38;
+		localStorage.setItem("upperLeftLat", ulla);
+	}
+	if (ullg == null) {
+		ullg = -82;
+		localStorage.setItem("upperLeftLng", ullg);
+	}
+	if (lrla == null) {
+		lrla = 36;
+		localStorage.setItem("lowerRightLat", lrla);
+	}
+	if (lrlg == null) {
+		lrlg = -79;
+		localStorage.setItem("lowerRightLng", lrlg);
+	}
+    var ul = new google.maps.LatLng(ulla, ullg);
+	var ur = new google.maps.LatLng(ulla, lrlg);
+	var ll = new google.maps.LatLng(lrla, ullg);
+	var lr = new google.maps.LatLng(lrla, lrlg);
+	// console.log(ul, ur, ll, lr);
+	var bounds=[ul,ur,lr,ll,ul];
+	var path=new google.maps.Polyline({
+	  path:bounds,
+	  strokeColor:"#0000FF",
+	  strokeOpacity:0.8,
+	  strokeWeight:2
+	  });
+	path.setMap(map);
 }
 google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -31,18 +61,10 @@ function setRecBounds (form) {
 	    alert("Invalid coordinates!");
 		return;
 	}
-	var ul = new google.maps.LatLng(parseFloat(ulla), parseFloat(ullg));
-	var ur = new google.maps.LatLng(parseFloat(ulla), parseFloat(lrlg));
-	var ll = new google.maps.LatLng(parseFloat(urla), parseFloat(ullg));
-	var lr = new google.maps.LatLng(parseFloat(lrla), parseFloat(lrlg));
-	var bounds=[ul,ur,lr, ll];
-	var path=new google.maps.Polyline({
-	  path:bounds,
-	  strokeColor:"#0000FF",
-	  strokeOpacity:0.8,
-	  strokeWeight:2
-	  });
-	path.setMap(map);
+	localStorage.setItem("upperLeftLat", parseFloat(ulla));
+	localStorage.setItem("upperLeftLng", parseFloat(ullg));
+	localStorage.setItem("lowerRightLat", parseFloat(lrla));
+	localStorage.setItem("lowerRightLng", parseFloat(lrlg));
 }
 
 function countDot(str) {
