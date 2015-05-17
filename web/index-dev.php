@@ -14,8 +14,123 @@
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="http://maps.googleapis.com/maps/api/js"></script>
-    <script src="googlemap.js"></script>
 </head>
+
+<script type="text/javascript">
+var myCenter=new google.maps.LatLng(37.227799, -80.422054);
+var map;
+var markers = [];
+var ulla; var ullg; var lrla; var lrlg;
+
+function initialize() {
+    var mapProp = {
+        center:myCenter,
+        zoom:5,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+    try {
+    map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+    if (ulla == null) {
+        ulla = 38;
+    }
+    if (ullg == null) {
+        ullg = -82;
+    }
+    if (lrla == null) {
+        lrla = 36;
+    }
+    if (lrlg == null) {
+        lrlg = -79;
+    }
+    var ul = new google.maps.LatLng(ulla, ullg);
+    var ur = new google.maps.LatLng(ulla, lrlg);
+    var ll = new google.maps.LatLng(lrla, ullg);
+    var lr = new google.maps.LatLng(lrla, lrlg);
+    var bounds=[ul,ur,lr,ll,ul];
+    var path=new google.maps.Polyline({
+      path:bounds,
+      strokeColor:"#0000FF",
+      strokeOpacity:0.8,
+      strokeWeight:2
+      });
+    path.setMap(map);
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng);
+    });
+    }
+    catch (err) {
+        console.log("Can't deploy google map on this page");
+    }
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+function setRecBounds (form) {
+    ulla = form.ulla.value;
+    ullg = form.ullg.value;
+    lrla = form.lrla.value;
+    lrlg = form.lrlg.value;
+    var n1 = ulla.search(/-{0,1}[0-9]+(.[0-9]+){0,1}/i);
+    var n2 = ullg.search(/-{0,1}[0-9]+(.[0-9]+){0,1}/i);
+    var n3 = lrla.search(/-{0,1}[0-9]+(.[0-9]+){0,1}/i);
+    var n4 = lrlg.search(/-{0,1}[0-9]+(.[0-9]+){0,1}/i);
+    if (n1 != 0 || n2 != 0 || n3 != 0 || n4 != 0 || 
+        (countDot(ulla) > 1) ||
+        (countDot(ullg) > 1) ||
+        (countDot(lrla) > 1) ||
+        (countDot(lrlg) > 1)) {
+        alert("Invalid coordinates!");
+        return;
+    }
+    initialize();
+}
+
+function placeMarker(location) {
+  var marker = new google.maps.Marker({
+    position: location,
+    map: map,
+  });
+  var infowindow = new google.maps.InfoWindow({
+    content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+  });
+  infowindow.open(map,marker);
+  markers.push(marker);
+}
+
+function showMarkers() {
+    if (markers.length == 0) {
+        console.log("No PU");
+        document.getElementById("markers").innerHTML = "<p>No Primary user on the map</p>";
+        return;
+    }
+    var html = "<p>";
+    for (var index = 0; index < markers.length; index++) {
+        html += markers[index].position.lat() + ', ' + markers[index].position.lng() + '<br>';
+    }
+    html += "</p>";
+    document.getElementById("markers").innerHTML = html;
+}
+
+// Deletes all markers in the array by removing references to them.
+function hideMarkers() {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+}
+
+function deleteMarkers() {
+    hideMarkers();
+    markers = [];
+    showMarkers();
+}
+
+function countDot(str) {
+    var count = 0;
+    for (var i = 0; i < str.length; i++) {
+        if (str.charAt(i) == '.') count++;
+    }
+    return count;
+}
+</script>
 
 <script type="text/javascript">
 function SelectPU(objLanguage) {
@@ -53,7 +168,9 @@ function getContent() {
     console.log(strPU);
     switch (strPU) {
     case "Specify location of PUs on this channel":
-        var str = "<button type='button' class='btn btn-success' onclick='deleteMarkers();'>Clear Markers</button><div id='googleMap' style='width:100%; height:380px;'></div>";
+        var str = "<button type='button' class='btn btn-danger' onclick='deleteMarkers();'>Clear Markers</button>";
+        str += "<button type='button' class='btn btn-warning' onclick='hideMarkers();'>Hide Markers</button>";
+        str += "<button type='button' class='btn btn-success' onclick='showMarkers();'>Show Markers</button><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -132,7 +249,7 @@ function getContent() {
     <!-- google map -->
     <div id="mapArea"></div>
 
-    <form role="form" method="post" id="coor-form">
+    <form role="form" method="post" id="coor-form" action="">
         <div class="form-group">
             <label>Upper left latitude:</label>
             <input type="number" class="form-control" name="ulla" value="38">
@@ -149,22 +266,13 @@ function getContent() {
             <label>Lower right longitude:</label>
             <input type="number" class="form-control" name="lrlg" value="-79">
         </div>
-        <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form);">Set boundary</button>
+        <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form); return false;">Set boundary</button>
     </form>
 
-    <br>
+    <!-- show location of PU -->
+    <div id="markers"></div>
+
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <div class="form-group">
-            <label>Number of channels:</label>
-            <input type="number" class="form-control" name="channels" placeholder="Enter number of channels">
-            <p class="error">
-                <?php 
-                    if ($channelErr != "")
-                        $str = "<div class='alert alert-danger'>" . $channelErr . "</div>";
-                    echo $str; 
-                ?>
-            </p>
-        </div>
         <div class="form-group">
             <label>Number of queries:</label>        
             <input type="number" class="form-control" name="queries" placeholder="Enter number of queries">

@@ -3,6 +3,8 @@ package tests;
 import java.util.Scanner;
 import java.io.File;
 import java.util.Random;
+import java.util.List;
+import java.util.LinkedList;
 
 import client.Client;
 import server.*;
@@ -13,55 +15,126 @@ import utility.*;
  */
 public class Main {
 	public static void main(String[] args) {
-		if (args.length == 0) {
-			System.out.println("Arguments required");
-			return;
-		}
-		if (args.length != 2) {
-			System.out.println("Usage: java Main Number_Of_Channels Number_of_Queries");
-			return;
-		}
+		// for (int n = 0; n < args.length; n++) {
+		// 	System.out.println(args[n]);
+		// }
+		/* usage
+		 * Java Main -a lat lon lat lon -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries
+		 */
+		GridMap map;
 		// cell size
 		double cellDegree = 0.05;
 		// multiple times for MTP
 		double mult = 5;
-		// number of PUs/Channels
-		int Number_Of_Channels = 1;
-		// query times
-		int Number_of_Queries = 50;
+		List<PU>[] init;
+		int Number_Of_Channels;
+		int Number_of_Queries;
+		System.out.println("Entry");
+		try {
+			if (!args[0].equals("-a")) {
+				System.out.println(args[0]);
+				throw new IllegalArgumentException("-a");
+			}
+			System.out.println("Initialize map...");
+			double upperleftlat = Double.parseDouble(args[1]);
+			double upperleftlng = Double.parseDouble(args[2]);
+			double lowerrightlat = Double.parseDouble(args[3]);
+			double lowerrightlng = Double.parseDouble(args[4]);
+			double ulLat = upperleftlat;
+			double ulLon = upperleftlng;
+			double urLat = upperleftlat;
+			double urLon = lowerrightlng;
+			double llLat = lowerrightlat;
+			double llLon = upperleftlng;
+			double lrLat = lowerrightlat;
+			double lrLon = lowerrightlng;
+			Location upperLeft = new Location(ulLat, ulLon);
+			Location upperRight = new Location(urLat, urLon);
+			Location lowerLeft = new Location(llLat, llLon);
+			Location lowerRight = new Location(lrLat, lrLon);
+			map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
+			System.out.println("Initialize number of channels...");
+			if (!args[5].equals("-c")) {
+				System.out.println(args[5]);
+				throw new IllegalArgumentException("-c");
+			}
+			Number_Of_Channels = Integer.parseInt(args[6]);
+			System.out.println("Initialize location of primary users...");
+			if (!args[7].equals("-C") && Number_Of_Channels > 0) throw new IllegalArgumentException("Must specify location of PU");
+			if (!args[7].equals("-C")) throw new IllegalArgumentException("-C");
+			int count = 0;
+			int i = 7;
+			while(i < args.length) {
+				if (args[i].equals("-C")) count++;
+				i++;
+			}
+			if (count != Number_Of_Channels) throw new IllegalArgumentException("Number of channels don't match");
+			init = new List[count];
+			for (int j = 0; j < init.length; j++) {
+				init[j] = new LinkedList<PU>();
+			}
+			i = 7;
+			int putchannel = -1;
+			int PUnumber = 0;
+			while(i < args.length) {
+				if (args[i].equals("-C")) {
+					putchannel++;
+					init[putchannel].add(new PU(PUnumber++, Double.parseDouble(args[++i]), Double.parseDouble(args[++i]), map));
+					i++;
+				}
+				else if (!args[i].equals("-C") && !args[i].equals("-q")) {
+					init[putchannel].add(new PU(PUnumber++, Double.parseDouble(args[i]), Double.parseDouble(args[++i]), map));
+					i++;
+				}
+				else break;
+			}
+			System.out.println("Initialize number of queries...");
+			if (i == args.length - 1) throw new IllegalArgumentException("Must speficify number of queries");
+			Number_of_Queries = Integer.parseInt(args[i + 1]);
+		}
+		catch (Exception e) {
+			System.out.println("Exception thrown:" + e);
+			System.out.println("Usage: ");
+			System.out.println("java Main -a lat lon lat lon -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries");
+			return;
+		}
+
+		// // number of PUs/Channels
+		// int Number_Of_Channels = 1;
+		// // query times
+		// int Number_of_Queries = 50;
 
 		// System.out.println("Cell size in degree: ");
 		// cellDegree = sc.nextDouble();
 		// System.out.println("Multiple times on default MTP function: ");
 		// mult = sc.nextDouble();
-		try {
-			Number_Of_Channels = Integer.parseInt(args[0]);
-			Number_of_Queries = Integer.parseInt(args[1]);
-			System.out.println("Number of channels: " + Number_Of_Channels);
-			System.out.println("Number of queries: " + Number_of_Queries);
+		// try {
+		// 	Number_Of_Channels = Integer.parseInt(args[0]);
+		// 	Number_of_Queries = Integer.parseInt(args[1]);
+		// 	System.out.println("Number of channels: " + Number_Of_Channels);
+		// 	System.out.println("Number of queries: " + Number_of_Queries);
 
-		} catch (Exception e) {
-			 System.err.println("Caught Exception: " + e.getMessage());
-			 return;
-		}
+		// } catch (Exception e) {
+		// 	 System.err.println("Caught Exception: " + e.getMessage());
+		// 	 return;
+		// }
 
-
-		double ulLat = 38;
-		double ulLon = -82;
-		double urLat = 38;
-		double urLon = -79;
-		double llLat = 36;
-		double llLon = -82;
-		double lrLat = 36;
-		double lrLon = -79;
+		// double ulLat = 38;
+		// double ulLon = -82;
+		// double urLat = 38;
+		// double urLon = -79;
+		// double llLat = 36;
+		// double llLon = -82;
+		// double lrLat = 36;
+		// double lrLon = -79;
 		/*****************************/
-		Location upperLeft = new Location(ulLat, ulLon);
-		Location upperRight = new Location(urLat, urLon);
-		Location lowerLeft = new Location(llLat, llLon);
-		Location lowerRight = new Location(lrLat, lrLon);
+		// Location upperLeft = new Location(ulLat, ulLon);
+		// Location upperRight = new Location(urLat, urLon);
+		// Location lowerLeft = new Location(llLat, llLon);
+		// Location lowerRight = new Location(lrLat, lrLon);
 
 		// initialization
-		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
+		// GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellDegree);
 		MTP.ChangeMult(mult);
 		Server.Number_Of_Channels = Number_Of_Channels;
 		Client.Number_Of_Channels = Number_Of_Channels;
@@ -79,17 +152,21 @@ public class Main {
 		 * Add a PU to the server's grid map, speficify the PU's location
 		 * The location of PU is: 47°30'00.0"N, 97°30'00.0"W
 		 */
-		PU pu0 = new PU(0, 10, 10);
-		server.addPU(pu0, 0);
+		for (int k = 0; k < Number_Of_Channels; k++)
+			for (PU pu : init[k]) 
+				server.addPU(pu, k);
 
-		PU pu1 = new PU(1, 10, 50);
-		server.addPU(pu1, 1);
+		// PU pu0 = new PU(0, 10, 10);
+		// server.addPU(pu0, 0);
 
-		PU pu2 = new PU(2, 30, 10);
-		server.addPU(pu2, 0);
+		// PU pu1 = new PU(1, 10, 50);
+		// server.addPU(pu1, 1);
 
-		PU pu3 = new PU(3, 30, 50);
-		server.addPU(pu3, 1);
+		// PU pu2 = new PU(2, 30, 10);
+		// server.addPU(pu2, 0);
+
+		// PU pu3 = new PU(3, 30, 50);
+		// server.addPU(pu3, 1);
 
 		/* debug information */
 		System.out.println("Number of PUs: " + server.getNumberOfPUs());

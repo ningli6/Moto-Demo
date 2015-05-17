@@ -70,7 +70,7 @@ public class Server {
 		// prevent pu at the same location to be added
 		// if (!set.contains(hashcode(pu_r, pu_c))) set.add(hashcode(pu_r, pu_c));
 		// else return;
-		pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
+		// pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
 		// System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
 		// for now let's say we allow pu to have the same location
