@@ -17,9 +17,65 @@
     <script src="googlemap.js"></script>
 </head>
 
+<script type="text/javascript">
+function SelectPU(objLanguage) {
+    var objMedia = document.getElementById("pus");
+    objMedia.options.length = 0;
+        objMedia.disabled = false;
+    switch (objLanguage.value) {
+    case "1":
+        objMedia.options.add(new Option("Specify location of PUs"));
+        objMedia.options.add(new Option("Specify location of PUs on this channel"));
+        break;
+    case "2":
+        objMedia.options.add(new Option("Specify location of PUs"));
+        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
+        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
+        break;
+    case "3":
+        objMedia.options.add(new Option("Specify location of PUs"));
+        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
+        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
+        objMedia.options.add(new Option("Specify location of PUs on channel 2"));
+        break;
+    default:
+        objMedia.options.add(new Option("Specify location of PUs"));
+        objMedia.disabled = true;
+        break;
+    }
+}
+</script>
+
+<script type="text/javascript">
+function getContent() {
+    var e = document.getElementById("pus");
+    var strPU = e.options[e.selectedIndex].value;
+    console.log(strPU);
+    switch (strPU) {
+    case "Specify location of PUs on this channel":
+        var str = "<button type='button' class='btn btn-success' onclick='deleteMarkers();'>Clear Markers</button><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
+        break;
+    case "Specify location of PUs on channel 0":
+        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
+        break;
+    case "Specify location of PUs on channel 1":
+        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
+        break;
+    case "Specify location of PUs on channel 2":
+        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
+        break;  
+    default:
+        document.getElementById("mapArea").innerHTML = "<p>Default choice!</p>";
+        break;
+    }
+}
+</script>
+
 <?php
     /* add external helper php script */
-    require 'script-dev.php';
+    require 'script.php';
     session_start();
     /* nuber of channels */
     $number_of_channels;
@@ -61,9 +117,20 @@
             </cite>
         </p>
     </div>
+
+    <!-- dropdown list -->
+    <select name="number_of_channels" id="channels" onchange="SelectPU(this)">
+        <option>Number of channels</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+    </select>
+    <select name="PU_on_each_channel" id="pus" disabled="disabled" onchange="if (this.selectedIndex) getContent();">
+        <option>Specify location of PUs</option>
+    </select>
+
     <!-- google map -->
-    <button type="button" class="btn btn-success" onclick="deleteMarkers();">Clear Markers</button>
-    <div id="googleMap" style="width:100%; height:380px;"></div>
+    <div id="mapArea"></div>
 
     <form role="form" method="post" id="coor-form">
         <div class="form-group">
