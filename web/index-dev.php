@@ -130,13 +130,47 @@ function countDot(str) {
     }
     return count;
 }
+
+function SendParams()
+{
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+    else
+    {// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function()
+    {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+            document.getElementById("params").innerHTML=xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("POST","ajax.php", true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
+    args += "-c " + selectVal + " -C ";
+    for (var i = 0; i < markers.length; i++) {
+        args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
+    }
+    var nq = document.getElementById("queries").value;
+    args += "-p " + nq;
+    console.log("args=" + args);
+    xmlhttp.send("args=" + args);
+    // window.alert("args: " + args);
+}
 </script>
 
 <script type="text/javascript">
+var selectVal;
 function SelectPU(objLanguage) {
     var objMedia = document.getElementById("pus");
     objMedia.options.length = 0;
         objMedia.disabled = false;
+    selectVal = objLanguage.value;
     switch (objLanguage.value) {
     case "1":
         objMedia.options.add(new Option("Specify location of PUs"));
@@ -200,11 +234,22 @@ function getContent() {
     $number_of_queries;
     /* error message */
     $channelErr = $queryErr = "";
+
     /* handle form submit */
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST["channels"]) || isset($_POST["queries"])) {
-            $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
-        }
+        // $args = $_REQUEST['args'];
+        $args = $_SESSION["args"];
+        // if (empty($args)) {
+        //     echo "Args is empty";
+        // } else {
+        //     echo $args;
+        // }
+        if (!empty($args)) 
+            $output = startDemo($args);
+        // if (isset($_POST["queries"])) {
+
+        //     // $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
+        // }
     }
     if ($output == "Program is unable to start!") {
         $alert = "<script type='text/javascript'>window.alert('Fail to start demo')</script>";
@@ -212,7 +257,7 @@ function getContent() {
     }
     else if ($output != "") {
         /* use session to store message to keep values between pages */
-        $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
+        // $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
         $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
         $_SESSION['OUTPUT'] = $output;
         /* jump to result page */
@@ -272,10 +317,11 @@ function getContent() {
     <!-- show location of PU -->
     <div id="markers"></div>
 
-    <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+    <!-- <form role="form" method="post" action="<?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> -->
+    <form role="form" method="post" action="">
         <div class="form-group">
             <label>Number of queries:</label>        
-            <input type="number" class="form-control" name="queries" placeholder="Enter number of queries">
+            <input type="number" class="form-control" name="queries" id="queries" placeholder="Enter number of queries">
             <p class="error">
                 <?php 
                     if ($queryErr != "") 
@@ -284,6 +330,12 @@ function getContent() {
                 ?>
             </p>
         </div>
+        <button type="submit" class="btn btn-default" onclick="SendParams(); return false;">Show params</button>
+    </form>
+
+    <!-- result of passed params -->
+    <div><p id="params"></p></div>
+    <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <button type="submit" class="btn btn-default">Start demo</button>
     </form>
 </div>

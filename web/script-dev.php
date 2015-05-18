@@ -15,32 +15,31 @@ function printArray($a, &$message) {
  * helper function to start java program 
  * but first need to decide if params are passed correctly
  */
-function startDemo(&$number_of_channels, &$number_of_queries, &$channelErr, &$queryErr, &$command) {
-  $output = "";
-    if (empty($_POST["channels"])) {
-      $channelErr = "Number of channels is required";
-    } else {
-     $number_of_channels = $_POST["channels"];
-      if ($number_of_channels < 1) {
-        $channelErr = "Number of channels must be positive"; 
-      }
-    }
-    if (empty($_POST["queries"])) {
-      $queryErr = "Number of queries is required";
-    } else {
-     $number_of_queries = $_POST["queries"];
-     if ($number_of_queries < 1) {
-        $queryErr = "Number of queries must be positive"; 
-     }
-    }
-    if ($number_of_channels > 0 && $number_of_queries > 0) {
-      $command = "java -cp Project tests/Main %s %s";
-      $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
-      exec($command, $output);
-    }
-    else {
-      return "Program is unable to start!";
-    }
+function startDemo($args) {
+  // $output = "";
+  //   if (empty($_POST["queries"])) {
+  //     $queryErr = "Number of queries is required";
+  //   } else {
+  //    $number_of_queries = $_POST["queries"];
+  //    if ($number_of_queries < 1) {
+  //       $queryErr = "Number of queries must be positive"; 
+  //    }
+  //   }
+  //   if ($number_of_queries > 0) {
+  //     // $command = "java -cp Project tests/Main %s %s";
+  //     $command = "java -cp Project tests/Main " + $args;
+  //     // $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
+  //     exec($command, $output);
+  //   }
+  //   else {
+  //     return "Program is unable to start!";
+  //   }
+  //   return $output;
+    $output = "";
+    $command = "java -cp Project tests/Main " + $args;
+    // $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
+    exec($command, $output);
+    if ($output == "") return "Program is unable to start!";
     return $output;
 }
 

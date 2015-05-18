@@ -182,7 +182,7 @@ public class GridMap {
 
 	// convert latitude to the index of row where the coordinate belongs 
 	public int LatToRow(double lat) {
-		if (lat < getLowerBounday() || lat > getUpperBoundary()) throw new IllegalArgumentException();
+		if (lat < getLowerBounday() || lat > getUpperBoundary()) throw new IllegalArgumentException("Latitude is out of map range");
 		int rowIndex = (int) (Math.abs(upperLeft.getLatitude() - lat) / cellDegree);
 		if (rowIndex >= number_of_rows) throw new IndexOutOfBoundsException();
 		return rowIndex;
@@ -190,7 +190,7 @@ public class GridMap {
 
 	// convert longitude to the index of col where the coordinate belongs 
 	public int LonToCol(double lon) {
-		if (lon < getLeftBoundary() || lon > getRightBoundary()) throw new IllegalArgumentException();
+		if (lon < getLeftBoundary() || lon > getRightBoundary()) throw new IllegalArgumentException("Longitude is out of map range");
 		int colIndex = (int) (Math.abs(upperLeft.getLongitude() - lon) / cellDegree);
 		if (colIndex >= number_of_cols) throw new IndexOutOfBoundsException();
 		return colIndex;

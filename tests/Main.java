@@ -182,8 +182,8 @@ public class Main {
 		for (int i = 0; i < Number_of_Queries; i++) {
 			// int newR = randr.nextInt(map.getRows());
 			// int newC = randc.nextInt(map.getCols());
-			int newR = randr.nextInt(40);
-			int newC = randc.nextInt(60);
+			int newR = randr.nextInt(map.getRows());
+			int newC = randc.nextInt(map.getCols());
 			client.setLocation(newR, newC);
 			// client.randomLocation();
 			client.query(server);
