@@ -194,7 +194,7 @@ public class Main {
 		// System.out.println("PU's location index: [" + rowPUIndex + "], [" + colPUIndex + "]");
 		/*** these functions should be update! ***/
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			client.plotInferMap(i);
+			// client.plotInferMap(i);
 			// client.printFormattedMatrix(i);
 			// client.printFormattedTable(i);
 		}

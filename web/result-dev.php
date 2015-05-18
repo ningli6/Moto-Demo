@@ -17,7 +17,7 @@
 <body>
 <div class="container">
     <?php
-        require 'script.php';
+        require 'script-dev.php';
         require 'PHPMailer/PHPMailerAutoload.php';
         session_start();
         $number_of_channels = $_SESSION['NUMBER_OF_CHANNELS'];

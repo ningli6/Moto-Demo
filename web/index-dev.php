@@ -157,7 +157,7 @@ function SendParams()
         args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
     }
     var nq = document.getElementById("queries").value;
-    args += "-p " + nq;
+    args += "-q " + nq;
     console.log("args=" + args);
     xmlhttp.send("args=" + args);
     // window.alert("args: " + args);
@@ -226,7 +226,7 @@ function getContent() {
 
 <?php
     /* add external helper php script */
-    require 'script.php';
+    // require 'script-dev.php';
     session_start();
     /* nuber of channels */
     $number_of_channels;
@@ -234,7 +234,6 @@ function getContent() {
     $number_of_queries;
     /* error message */
     $channelErr = $queryErr = "";
-
     /* handle form submit */
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // $args = $_REQUEST['args'];
@@ -244,10 +243,19 @@ function getContent() {
         // } else {
         //     echo $args;
         // }
-        if (!empty($args)) 
-            $output = startDemo($args);
+        // $log = "<script type='text/javascript'>console.log('Fail to start demo')</script>";
+        // echo $args;
+        if (!empty($args)) {
+            $output = "";
+            // $output = startDemo($args);
+            $command = "java -cp Project tests/Main " . $args;
+            // echo $command;
+            exec($command, $output);
+            if (empty($output)) 
+                $output = "Program is unable to start!";
+            // echo $output;
+        }
         // if (isset($_POST["queries"])) {
-
         //     // $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
         // }
     }
@@ -258,10 +266,13 @@ function getContent() {
     else if ($output != "") {
         /* use session to store message to keep values between pages */
         // $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
-        $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
+        // $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
         $_SESSION['OUTPUT'] = $output;
+        // echo "Jump";
         /* jump to result page */
-        header('Location: result.php');
+        $str = "<script>window.location = 'result-dev.php';</script>";
+        // header('Location:result-dev.php');
+        echo $str;
     }
 ?>
 <body>

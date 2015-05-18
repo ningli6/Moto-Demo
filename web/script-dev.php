@@ -35,8 +35,13 @@ function startDemo($args) {
   //     return "Program is unable to start!";
   //   }
   //   return $output;
+  
     $output = "";
-    $command = "java -cp Project tests/Main " + $args;
+    $command = "java -cp Project tests/Main " . $args;
+    if ($args == "") {
+        echo "Args is empty";
+    }
+    echo $command;
     // $command = sprintf($command, strval($number_of_channels), strval($number_of_queries));
     exec($command, $output);
     if ($output == "") return "Program is unable to start!";
