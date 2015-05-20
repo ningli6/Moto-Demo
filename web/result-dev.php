@@ -1,3 +1,5 @@
+<!-- This page display results of calculation -->
+
 <!DOCTYPE HTML> 
 <html lang="en-US">
 <head>

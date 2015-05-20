@@ -1,3 +1,5 @@
+<!-- This is mainly users' input page -->
+
 <!DOCTYPE HTML> 
 <html lang="en-US">
 <head>
@@ -133,6 +135,7 @@ function countDot(str) {
 
 function SendParams()
 {
+    var numberOfChannels = 1;
     var xmlhttp;
     if (window.XMLHttpRequest)
         {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -146,13 +149,13 @@ function SendParams()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
-            document.getElementById("params").innerHTML=xmlhttp.responseText;
+            // document.getElementById("params").innerHTML=xmlhttp.responseText;
         }
     }
     xmlhttp.open("POST","ajax.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
-    args += "-c " + selectVal + " -C ";
+    args += "-c " + numberOfChannels + " -C ";
     for (var i = 0; i < markers.length; i++) {
         args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
     }
@@ -160,65 +163,59 @@ function SendParams()
     args += "-q " + nq;
     console.log("args=" + args);
     xmlhttp.send("args=" + args);
+    var fstr = "args=" + args;
+    document.getElementById("confirmParam").innerHTML = fstr;
     // window.alert("args: " + args);
 }
 </script>
 
 <script type="text/javascript">
-var selectVal;
-function SelectPU(objLanguage) {
-    var objMedia = document.getElementById("pus");
-    objMedia.options.length = 0;
-        objMedia.disabled = false;
-    selectVal = objLanguage.value;
-    switch (objLanguage.value) {
-    case "1":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on this channel"));
-        break;
-    case "2":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
-        break;
-    case "3":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 2"));
-        break;
-    default:
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.disabled = true;
-        break;
-    }
-}
+    // function setBorder() {
+    //     var form = document.getElementById('region');
+    //     var str = '<form role="form" method="post" id="coor-form" action="">';
+    //     str += '<div class="col-md-12"><button type="submit" class="btn btn-primary" onclick="setRecBounds(this.form); return false;">Set boundary</button></div>';
+    //     str += '<div class="col-md-12"><br></div>'
+    //     str += '<div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" value="38"></div></div>';
+    //     str += '<div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" value="-82"></div></div>';
+    //     str += '<div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" value="36"></div></div>';
+    //     str += '<div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" value="-79"></div></div>';
+    //     str += '</form>';
+    //     form.innerHTML = str;
+    // }
 </script>
 
 <script type="text/javascript">
 function getContent() {
-    var e = document.getElementById("pus");
-    var strPU = e.options[e.selectedIndex].value;
-    console.log(strPU);
-    switch (strPU) {
-    case "Specify location of PUs on this channel":
-        var str = "<button type='button' class='btn btn-danger' onclick='deleteMarkers();'>Clear Markers</button>";
-        str += "<button type='button' class='btn btn-warning' onclick='hideMarkers();'>Hide Markers</button>";
-        str += "<button type='button' class='btn btn-success' onclick='showMarkers();'>Show Markers</button><div id='googleMap' style='width:100%; height:380px;'></div>";
+    // setBorder();
+    var e = document.getElementById("selc");
+    numberOfChannels = parseInt(e.options[e.selectedIndex].value);
+    console.log(numberOfChannels);
+    switch (numberOfChannels) {
+    case 1:
+        var str = "<button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
-    case "Specify location of PUs on channel 0":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
+    case 2:
+        var str = "<button type='button' class='btn btn-info' onclick='select1();'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='select2();'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
         break;
-    case "Specify location of PUs on channel 1":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
+    case 3:
+        var str = "<button type='button' class='btn btn-info' onclick='select1();'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='select2();'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-info' onclick='select3();'>Select location of PU(s) for channel 2</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
         break;
-    case "Specify location of PUs on channel 2":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
-        break;  
     default:
-        document.getElementById("mapArea").innerHTML = "<p>Default choice!</p>";
+        document.getElementById("mapArea").innerHTML = "<p>Unknown choice!</p>";
         break;
     }
 }
@@ -291,63 +288,85 @@ function getContent() {
         </p>
     </div>
 
-    <!-- dropdown list -->
-    <select name="number_of_channels" id="channels" onchange="SelectPU(this)">
-        <option>Number of channels</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-    </select>
-    <select name="PU_on_each_channel" id="pus" disabled="disabled" onchange="if (this.selectedIndex) getContent();">
-        <option>Specify location of PUs</option>
-    </select>
+    <!-- dropdown -->
+    <h3>Specify number of channels</h3>
+    <div class="row">
+        <form role="form">
+            <div class="form-group">
+                <div class="col-md-3">
+                <select class="form-control" id="selc" onchange="getContent();">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                </select>
+                </div>
+            </div>
+        </form>
+    </div>
 
+    <!-- anaysis region -->
+    <h3>Specify analysis region</h3>
+    <div id="region">
+        <form role="form" method="post" id="coor-form" action="">
+        <div class="col-md-12"><button type="submit" class="btn btn-primary" onclick="setRecBounds(this.form); return false;">Set boundary</button></div>
+        <div class="col-md-12"><br></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" value="38"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" value="-82"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" value="36"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" value="-79"></div></div>
+    </div>
     <!-- google map -->
-    <div id="mapArea"></div>
+    <h3>Specify location of Primary users</h3> 
+    <div id="mapArea">
+        <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>
+        <br><br>
+        <div id='googleMap' style='width:100%; height:380px;'></div>
+    </div>
 
-    <form role="form" method="post" id="coor-form" action="">
-        <div class="form-group">
-            <label>Upper left latitude:</label>
-            <input type="number" class="form-control" name="ulla" value="38">
-        </div>
-        <div class="form-group">
-            <label>Upper left longitude:</label>
-            <input type="number" class="form-control" name="ullg" value="-82">
-        </div>
-        <div class="form-group">
-            <label>Lower right latitude:</label>
-            <input type="number" class="form-control" name="lrla" value="36">
-        </div>
-        <div class="form-group">
-            <label>Lower right longitude:</label>
-            <input type="number" class="form-control" name="lrlg" value="-79">
-        </div>
-        <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form); return false;">Set boundary</button>
-    </form>
-
-    <!-- show location of PU -->
-    <div id="markers"></div>
-
+    <h3>Specify number of queries</h3>
     <!-- <form role="form" method="post" action="<?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> -->
     <form role="form" method="post" action="">
-        <div class="form-group">
-            <label>Number of queries:</label>        
-            <input type="number" class="form-control" name="queries" id="queries" placeholder="Enter number of queries">
-            <p class="error">
-                <?php 
-                    if ($queryErr != "") 
-                        $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
-                    echo $str; 
-                ?>
-            </p>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-4">
+                <input type="number" class="form-control" name="queries" id="queries" placeholder="Enter number of queries">
+                </div>
+                <p class="error">
+                    <?php 
+                        if ($queryErr != "") 
+                            $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
+                        echo $str; 
+                    ?>
+                </p>
+            </div>
         </div>
-        <button type="submit" class="btn btn-default" onclick="SendParams(); return false;">Show params</button>
+        <br>
+        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
     </form>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Parameters</h4>
+            </div>
+            <div class="modal-body">
+              <p id="confirmParam"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>   
+        </div>
+    </div>
+
+    <br><br>
     <!-- result of passed params -->
-    <div><p id="params"></p></div>
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-default">Start demo</button>
+        <button type="submit" class="btn btn-primary">Start demo</button>
     </form>
 </div>
 </body>
