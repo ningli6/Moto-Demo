@@ -1,3 +1,5 @@
+<!-- This is mainly users' input page -->
+
 <!DOCTYPE HTML> 
 <html lang="en-US">
 <head>
@@ -19,7 +21,13 @@
 <script type="text/javascript">
 var myCenter=new google.maps.LatLng(37.227799, -80.422054);
 var map;
-var markers = [];
+var numberOfChannels = 1;; var chanls = -1;
+var markers_one = [];
+var markers_two_channel0 = [];
+var markers_two_channel1 = [];
+var markers_three_channel0 = [];
+var markers_three_channel1 = [];
+var markers_three_channel2 = [];
 var ulla; var ullg; var lrla; var lrlg;
 
 function initialize() {
@@ -81,19 +89,39 @@ function setRecBounds (form) {
         alert("Invalid coordinates!");
         return;
     }
+    if (ulla - lrla < 0 || ullg - lrlg > 0) {
+        console.log("coordinates invalid");
+        alert("Invalid coordinates!");
+        return;
+    }
     initialize();
 }
 
 function placeMarker(location) {
-  var marker = new google.maps.Marker({
-    position: location,
-    map: map,
-  });
-  var infowindow = new google.maps.InfoWindow({
-    content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
-  });
-  infowindow.open(map,marker);
-  markers.push(marker);
+    console.log(numberOfChannels);
+    console.log(chanls);
+    if (numberOfChannels != 1 && chanls < 0) {
+        alert("Please specify channel first");
+        return;
+    }
+    var marker = new google.maps.Marker({
+        position: location,
+        map: map,
+    });
+    var infowindow = new google.maps.InfoWindow({
+        content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+    });
+    infowindow.open(map,marker);
+    if (numberOfChannels == 1) markers_one.push(marker);
+    if (numberOfChannels == 2) {
+        if (chanls == 0) markers_two_channel0.push(marker);
+        if (chanls == 1) markers_two_channel1.push(marker);
+    }
+    if (numberOfChannels == 3) {
+        if (chanls == 0) markers_three_channel0.push(marker);
+        if (chanls == 1) markers_three_channel1.push(marker);
+        if (chanls == 2) markers_three_channel2.push(marker);
+    }
 }
 
 function showMarkers() {
@@ -111,16 +139,53 @@ function showMarkers() {
 }
 
 // Deletes all markers in the array by removing references to them.
-function hideMarkers() {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
+function hideAllMarkers() {
+    for (var i = 0; i < markers_one.length; i++) {
+        markers_one[i].setMap(null);
+    }
+    for (var i = 0; i < markers_two_channel0.length; i++) {
+        markers_two_channel0[i].setMap(null);
+    }
+    for (var i = 0; i < markers_two_channel1.length; i++) {
+        markers_two_channel1[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel0.length; i++) {
+        markers_three_channel0[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel1.length; i++) {
+        markers_three_channel1[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel2.length; i++) {
+        markers_three_channel2[i].setMap(null);
+    }
 }
 
-function deleteMarkers() {
-    hideMarkers();
-    markers = [];
-    showMarkers();
+function resetAllMarkers() {
+    chanls = -1;
+    for (var i = 0; i < markers_one.length; i++) {
+        markers_one[i].setMap(null);
+    }
+    markers_one = [];
+    for (var i = 0; i < markers_two_channel0.length; i++) {
+        markers_two_channel0[i].setMap(null);
+    }
+    markers_two_channel0 = [];
+    for (var i = 0; i < markers_two_channel1.length; i++) {
+        markers_two_channel1[i].setMap(null);
+    }
+    markers_two_channel1 = [];
+    for (var i = 0; i < markers_three_channel0.length; i++) {
+        markers_three_channel0[i].setMap(null);
+    }
+    markers_three_channel0 = [];
+    for (var i = 0; i < markers_three_channel1.length; i++) {
+        markers_three_channel1[i].setMap(null);
+    }
+    markers_three_channel1 = [];
+    for (var i = 0; i < markers_three_channel2.length; i++) {
+        markers_three_channel2[i].setMap(null);
+    }
+    markers_three_channel2 = [];
 }
 
 function countDot(str) {
@@ -129,6 +194,13 @@ function countDot(str) {
         if (str.charAt(i) == '.') count++;
     }
     return count;
+}
+
+function markersOnChannel(markers) {
+    hideAllMarkers();
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
 }
 
 function SendParams()
@@ -146,81 +218,114 @@ function SendParams()
     {
         if (xmlhttp.readyState==4 && xmlhttp.status==200)
         {
-            document.getElementById("params").innerHTML=xmlhttp.responseText;
+            // document.getElementById("params").innerHTML=xmlhttp.responseText;
         }
     }
     xmlhttp.open("POST","ajax.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
-    args += "-c " + selectVal + " -C ";
-    for (var i = 0; i < markers.length; i++) {
-        args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
-    }
+    args += "-c " + numberOfChannels + " -C ";
+    // for (var i = 0; i < markers.length; i++) {
+    //     args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
+    // }
     var nq = document.getElementById("queries").value;
     args += "-q " + nq;
     console.log("args=" + args);
     xmlhttp.send("args=" + args);
+    var fstr = "args=" + args;
+    document.getElementById("confirmParam").innerHTML = fstr;
     // window.alert("args: " + args);
 }
 </script>
 
 <script type="text/javascript">
-var selectVal;
-function SelectPU(objLanguage) {
-    var objMedia = document.getElementById("pus");
-    objMedia.options.length = 0;
-        objMedia.disabled = false;
-    selectVal = objLanguage.value;
-    switch (objLanguage.value) {
-    case "1":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on this channel"));
+function getChannel() {
+    resetAllMarkers();
+    var e = document.getElementById("selc");
+    numberOfChannels = parseInt(e.options[e.selectedIndex].value);
+    console.log(numberOfChannels);
+    switch (numberOfChannels) {
+    case 1:
+        var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
         break;
-    case "2":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
+    case 2:
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
         break;
-    case "3":
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 0"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 1"));
-        objMedia.options.add(new Option("Specify location of PUs on channel 2"));
+    case 3:
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
         break;
     default:
-        objMedia.options.add(new Option("Specify location of PUs"));
-        objMedia.disabled = true;
+        document.getElementById("mapArea").innerHTML = "<p>Unknown choice!</p>";
         break;
     }
+}
+function selectChannel (arg) {
+    chanls = arg;
+    if (numberOfChannels == 1) markersOnChannel(markers_one);
+    if (numberOfChannels == 2 && chanls == 0) markersOnChannel(markers_two_channel0);
+    if (numberOfChannels == 2 && chanls == 1) markersOnChannel(markers_two_channel1);
+    if (numberOfChannels == 3 && chanls == 0) markersOnChannel(markers_three_channel0);
+    if (numberOfChannels == 3 && chanls == 1) markersOnChannel(markers_three_channel1);
+    if (numberOfChannels == 3 && chanls == 2) markersOnChannel(markers_three_channel2);
 }
 </script>
 
 <script type="text/javascript">
-function getContent() {
-    var e = document.getElementById("pus");
-    var strPU = e.options[e.selectedIndex].value;
-    console.log(strPU);
-    switch (strPU) {
-    case "Specify location of PUs on this channel":
-        var str = "<button type='button' class='btn btn-danger' onclick='deleteMarkers();'>Clear Markers</button>";
-        str += "<button type='button' class='btn btn-warning' onclick='hideMarkers();'>Hide Markers</button>";
-        str += "<button type='button' class='btn btn-success' onclick='showMarkers();'>Show Markers</button><div id='googleMap' style='width:100%; height:380px;'></div>";
-        document.getElementById("mapArea").innerHTML = str;
-        window.onload = initialize();
-        break;
-    case "Specify location of PUs on channel 0":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
-        break;
-    case "Specify location of PUs on channel 1":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
-        break;
-    case "Specify location of PUs on channel 2":
-        document.getElementById("mapArea").innerHTML = "<p>Good choice!</p>";
-        break;  
-    default:
-        document.getElementById("mapArea").innerHTML = "<p>Default choice!</p>";
-        break;
-    }
+function clearCounterMeasure (argument) {
+    document.getElementById("countermeasure").innerHTML = "";
+}
+
+function counterFunc1() {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="noise">Noise level:</label>';
+    str += '<input type="number" class="form-control" id="noise" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+function counterFunc2 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="polygon">Sides for convex polygon:</label>';
+    str += '<input type="number" class="form-control" id="sides" min="3" placeholder="3">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc3 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="ka">K for K-Anonymity:</label>';
+    str += '<input type="number" class="form-control" id="kanonymity" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc4 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="kc">K for K-Clustring:</label>';
+    str += '<input type="number" class="form-control" id="kclustering" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
 }
 </script>
 
@@ -233,44 +338,46 @@ function getContent() {
     /* error message */
     $channelErr = $queryErr = "";
     /* handle form submit */
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // $args = $_REQUEST['args'];
-        $args = $_SESSION["args"];
-        // if (empty($args)) {
-        //     echo "Args is empty";
-        // } else {
-        //     echo $args;
-        // }
-        // $log = "<script type='text/javascript'>console.log('Fail to start demo')</script>";
-        // echo $args;
-        if (!empty($args)) {
-            $output = "";
-            // $output = startDemo($args);
-            $command = "java -cp Project tests/Main " . $args;
-            // echo $command;
-            exec($command, $output);
-            if (empty($output)) 
-                $output = "Program is unable to start!";
-            // echo $output;
-        }
-        // if (isset($_POST["queries"])) {
-        //     // $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
-        // }
-    }
-    if ($output == "Program is unable to start!") {
-        $alert = "<script type='text/javascript'>window.alert('Fail to start demo')</script>";
-        echo $alert;
-    }
-    else if ($output != "") {
-        /* use session to store message to keep values between pages */
-        // $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
-        // $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
-        $_SESSION['OUTPUT'] = $output;
-        /* jump to result page */
-        $str = "<script>window.location = 'result.php';</script>";
-        echo $str;
-    }
+    // if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    //     // $args = $_REQUEST['args'];
+    //     $args = $_SESSION["args"];
+    //     // if (empty($args)) {
+    //     //     echo "Args is empty";
+    //     // } else {
+    //     //     echo $args;
+    //     // }
+    //     // $log = "<script type='text/javascript'>console.log('Fail to start demo')</script>";
+    //     // echo $args;
+    //     if (!empty($args)) {
+    //         $output = "";
+    //         // $output = startDemo($args);
+    //         $command = "java -cp Project tests/Main " . $args;
+    //         // echo $command;
+    //         exec($command, $output);
+    //         if (empty($output)) 
+    //             $output = "Program is unable to start!";
+    //         // echo $output;
+    //     }
+    //     // if (isset($_POST["queries"])) {
+    //     //     // $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
+    //     // }
+    // }
+    // if ($output == "Program is unable to start!") {
+    //     $alert = "<script type='text/javascript'>window.alert('Fail to start demo')</script>";
+    //     echo $alert;
+    // }
+    // else if ($output != "") {
+    //     /* use session to store message to keep values between pages */
+    //     // $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
+    //     // $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
+    //     $_SESSION['OUTPUT'] = $output;
+    //     // echo "Jump";
+    //     /* jump to result page */
+    //     $str = "<script>window.location = 'result.php';</script>";
+    //     echo $str;
+    // }
 ?>
+
 <body>
 <div class="container">
     <div class="jumbotron">
@@ -282,68 +389,114 @@ function getContent() {
         <p>
             <cite>
                 Protecting the Primary Users’ Operational Privacy in Spectrum Sharing. 
-                [2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]
+                <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
             </cite>
         </p>
     </div>
 
-    <!-- dropdown list -->
-    <select name="number_of_channels" id="channels" onchange="SelectPU(this)">
-        <option>Number of channels</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-    </select>
-    <select name="PU_on_each_channel" id="pus" disabled="disabled" onchange="if (this.selectedIndex) getContent();">
-        <option>Specify location of PUs</option>
-    </select>
+    <!-- dropdown -->
+    <h3>Specify number of channels</h3>
+    <div class="row">
+        <form role="form">
+            <div class="form-group">
+                <div class="col-md-4">
+                <select class="form-control" id="selc" onchange="getChannel();">
+                    <option selected="selected">1</option>
+                    <option>2</option>
+                    <option>3</option>
+                </select>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- anaysis region -->
+    <h3>Specify analysis region</h3>
+    <div id="region">
+        <form role="form" method="post" id="coor-form" action="">
+        <div class="col-md-12"><button type="submit" class="btn btn-primary" onclick="setRecBounds(this.form); return false;">Set boundary</button></div>
+        <div class="col-md-12"><br></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" placeholder="38"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" placeholder="-82"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" placeholder="36"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" placeholder="-79"></div></div>
+    </div>
 
     <!-- google map -->
-    <div id="mapArea"></div>
+    <h3>Specify location of Primary users</h3> 
+    <div id="mapArea">
+        <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
+        <br><br>
+        <div id='googleMap' style='width:100%; height:420px;'></div>
+    </div>
 
-    <form role="form" method="post" id="coor-form" action="">
-        <div class="form-group">
-            <label>Upper left latitude:</label>
-            <input type="number" class="form-control" name="ulla" value="38">
+    <!-- choose countermeasure -->
+    <form role="form">
+        <h3>Choose countermeasure</h2>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="0" onchange="clearCounterMeasure();">No countermeasure</label>
         </div>
-        <div class="form-group">
-            <label>Upper left longitude:</label>
-            <input type="number" class="form-control" name="ullg" value="-82">
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="1" onchange="counterFunc1();">Additive Noise</label>
         </div>
-        <div class="form-group">
-            <label>Lower right latitude:</label>
-            <input type="number" class="form-control" name="lrla" value="36">
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="2" onchange="counterFunc2();">Transfiguration</label>
         </div>
-        <div class="form-group">
-            <label>Lower right longitude:</label>
-            <input type="number" class="form-control" name="lrlg" value="-79">
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="3" onchange="counterFunc3();">K-Anonymity</label>
         </div>
-        <button type="submit" class="btn btn-default" onclick="setRecBounds(this.form); return false;">Set boundary</button>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="4" onchange="counterFunc4();">K-Clustering</label>
+        </div>
     </form>
 
-    <!-- show location of PU -->
-    <div id="markers"></div>
+    <div class="row">
+        <div class="col-md-4" id="countermeasure"></div>
+    </div>
 
-    <!-- <form role="form" method="post" action="<?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> -->
     <form role="form" method="post" action="">
-        <div class="form-group">
-            <label>Number of queries:</label>        
-            <input type="number" class="form-control" name="queries" id="queries" placeholder="Enter number of queries">
-            <p class="error">
-                <?php 
-                    if ($queryErr != "") 
-                        $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
-                    echo $str; 
-                ?>
-            </p>
+        <h3>Specify number of queries</h3>
+        <div class="row">
+            <div class="form-group">
+                <div class="col-md-4">
+                <input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">
+                </div>
+                <p class="error">
+                    <?php 
+                        if ($queryErr != "") 
+                            $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
+                        echo $str; 
+                    ?>
+                </p>
+            </div>
         </div>
-        <button type="submit" class="btn btn-default" onclick="SendParams(); return false;">Show params</button>
+        <br>
+        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
     </form>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Parameters</h4>
+            </div>
+            <div class="modal-body">
+              <p id="confirmParam"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>   
+        </div>
+    </div>
+
+    <br>
     <!-- result of passed params -->
-    <div><p id="params"></p></div>
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-default">Start demo</button>
+        <button type="submit" class="btn btn-primary">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
 </div>
 </body>

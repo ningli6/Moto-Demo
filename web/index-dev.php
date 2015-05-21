@@ -21,7 +21,13 @@
 <script type="text/javascript">
 var myCenter=new google.maps.LatLng(37.227799, -80.422054);
 var map;
-var markers = [];
+var numberOfChannels = 1;; var chanls = -1;
+var markers_one = [];
+var markers_two_channel0 = [];
+var markers_two_channel1 = [];
+var markers_three_channel0 = [];
+var markers_three_channel1 = [];
+var markers_three_channel2 = [];
 var ulla; var ullg; var lrla; var lrlg;
 
 function initialize() {
@@ -83,19 +89,39 @@ function setRecBounds (form) {
         alert("Invalid coordinates!");
         return;
     }
+    if (ulla - lrla < 0 || ullg - lrlg > 0) {
+        console.log("coordinates invalid");
+        alert("Invalid coordinates!");
+        return;
+    }
     initialize();
 }
 
 function placeMarker(location) {
-  var marker = new google.maps.Marker({
-    position: location,
-    map: map,
-  });
-  var infowindow = new google.maps.InfoWindow({
-    content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
-  });
-  infowindow.open(map,marker);
-  markers.push(marker);
+    console.log(numberOfChannels);
+    console.log(chanls);
+    if (numberOfChannels != 1 && chanls < 0) {
+        alert("Please specify channel first");
+        return;
+    }
+    var marker = new google.maps.Marker({
+        position: location,
+        map: map,
+    });
+    var infowindow = new google.maps.InfoWindow({
+        content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
+    });
+    infowindow.open(map,marker);
+    if (numberOfChannels == 1) markers_one.push(marker);
+    if (numberOfChannels == 2) {
+        if (chanls == 0) markers_two_channel0.push(marker);
+        if (chanls == 1) markers_two_channel1.push(marker);
+    }
+    if (numberOfChannels == 3) {
+        if (chanls == 0) markers_three_channel0.push(marker);
+        if (chanls == 1) markers_three_channel1.push(marker);
+        if (chanls == 2) markers_three_channel2.push(marker);
+    }
 }
 
 function showMarkers() {
@@ -113,16 +139,53 @@ function showMarkers() {
 }
 
 // Deletes all markers in the array by removing references to them.
-function hideMarkers() {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
+function hideAllMarkers() {
+    for (var i = 0; i < markers_one.length; i++) {
+        markers_one[i].setMap(null);
+    }
+    for (var i = 0; i < markers_two_channel0.length; i++) {
+        markers_two_channel0[i].setMap(null);
+    }
+    for (var i = 0; i < markers_two_channel1.length; i++) {
+        markers_two_channel1[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel0.length; i++) {
+        markers_three_channel0[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel1.length; i++) {
+        markers_three_channel1[i].setMap(null);
+    }
+    for (var i = 0; i < markers_three_channel2.length; i++) {
+        markers_three_channel2[i].setMap(null);
+    }
 }
 
-function deleteMarkers() {
-    hideMarkers();
-    markers = [];
-    showMarkers();
+function resetAllMarkers() {
+    chanls = -1;
+    for (var i = 0; i < markers_one.length; i++) {
+        markers_one[i].setMap(null);
+    }
+    markers_one = [];
+    for (var i = 0; i < markers_two_channel0.length; i++) {
+        markers_two_channel0[i].setMap(null);
+    }
+    markers_two_channel0 = [];
+    for (var i = 0; i < markers_two_channel1.length; i++) {
+        markers_two_channel1[i].setMap(null);
+    }
+    markers_two_channel1 = [];
+    for (var i = 0; i < markers_three_channel0.length; i++) {
+        markers_three_channel0[i].setMap(null);
+    }
+    markers_three_channel0 = [];
+    for (var i = 0; i < markers_three_channel1.length; i++) {
+        markers_three_channel1[i].setMap(null);
+    }
+    markers_three_channel1 = [];
+    for (var i = 0; i < markers_three_channel2.length; i++) {
+        markers_three_channel2[i].setMap(null);
+    }
+    markers_three_channel2 = [];
 }
 
 function countDot(str) {
@@ -133,9 +196,15 @@ function countDot(str) {
     return count;
 }
 
+function markersOnChannel(markers) {
+    hideAllMarkers();
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
+
 function SendParams()
 {
-    var numberOfChannels = 1;
     var xmlhttp;
     if (window.XMLHttpRequest)
         {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -170,46 +239,31 @@ function SendParams()
 </script>
 
 <script type="text/javascript">
-    // function setBorder() {
-    //     var form = document.getElementById('region');
-    //     var str = '<form role="form" method="post" id="coor-form" action="">';
-    //     str += '<div class="col-md-12"><button type="submit" class="btn btn-primary" onclick="setRecBounds(this.form); return false;">Set boundary</button></div>';
-    //     str += '<div class="col-md-12"><br></div>'
-    //     str += '<div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" value="38"></div></div>';
-    //     str += '<div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" value="-82"></div></div>';
-    //     str += '<div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" value="36"></div></div>';
-    //     str += '<div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" value="-79"></div></div>';
-    //     str += '</form>';
-    //     form.innerHTML = str;
-    // }
-</script>
-
-<script type="text/javascript">
-function getContent() {
-    // setBorder();
+function getChannel() {
+    resetAllMarkers();
     var e = document.getElementById("selc");
     numberOfChannels = parseInt(e.options[e.selectedIndex].value);
     console.log(numberOfChannels);
     switch (numberOfChannels) {
     case 1:
-        var str = "<button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 2:
-        var str = "<button type='button' class='btn btn-info' onclick='select1();'>Select location of PU(s) for channel 0</button>";
-        str += " <button type='button' class='btn btn-info' onclick='select2();'>Select location of PU(s) for channel 1</button>";
-        str += " <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 3:
-        var str = "<button type='button' class='btn btn-info' onclick='select1();'>Select location of PU(s) for channel 0</button>";
-        str += " <button type='button' class='btn btn-info' onclick='select2();'>Select location of PU(s) for channel 1</button>";
-        str += " <button type='button' class='btn btn-info' onclick='select3();'>Select location of PU(s) for channel 2</button>";
-        str += " <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>";
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
@@ -218,6 +272,60 @@ function getContent() {
         document.getElementById("mapArea").innerHTML = "<p>Unknown choice!</p>";
         break;
     }
+}
+function selectChannel (arg) {
+    chanls = arg;
+    if (numberOfChannels == 1) markersOnChannel(markers_one);
+    if (numberOfChannels == 2 && chanls == 0) markersOnChannel(markers_two_channel0);
+    if (numberOfChannels == 2 && chanls == 1) markersOnChannel(markers_two_channel1);
+    if (numberOfChannels == 3 && chanls == 0) markersOnChannel(markers_three_channel0);
+    if (numberOfChannels == 3 && chanls == 1) markersOnChannel(markers_three_channel1);
+    if (numberOfChannels == 3 && chanls == 2) markersOnChannel(markers_three_channel2);
+}
+</script>
+
+<script type="text/javascript">
+function clearCounterMeasure (argument) {
+    document.getElementById("countermeasure").innerHTML = "";
+}
+
+function counterFunc1() {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="noise">Noise level:</label>';
+    str += '<input type="number" class="form-control" id="noise" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+function counterFunc2 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="polygon">Sides for convex polygon:</label>';
+    str += '<input type="number" class="form-control" id="sides" min="3" placeholder="3">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc3 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="ka">K for K-Anonymity:</label>';
+    str += '<input type="number" class="form-control" id="kanonymity" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc4 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="kc">K for K-Clustring:</label>';
+    str += '<input type="number" class="form-control" id="kclustering" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
 }
 </script>
 
@@ -272,6 +380,7 @@ function getContent() {
         echo $str;
     }
 ?>
+
 <body>
 <div class="container">
     <div class="jumbotron">
@@ -283,7 +392,7 @@ function getContent() {
         <p>
             <cite>
                 Protecting the Primary Users’ Operational Privacy in Spectrum Sharing. 
-                [2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]
+                <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
             </cite>
         </p>
     </div>
@@ -293,9 +402,9 @@ function getContent() {
     <div class="row">
         <form role="form">
             <div class="form-group">
-                <div class="col-md-3">
-                <select class="form-control" id="selc" onchange="getContent();">
-                    <option>1</option>
+                <div class="col-md-4">
+                <select class="form-control" id="selc" onchange="getChannel();">
+                    <option selected="selected">1</option>
                     <option>2</option>
                     <option>3</option>
                 </select>
@@ -310,26 +419,50 @@ function getContent() {
         <form role="form" method="post" id="coor-form" action="">
         <div class="col-md-12"><button type="submit" class="btn btn-primary" onclick="setRecBounds(this.form); return false;">Set boundary</button></div>
         <div class="col-md-12"><br></div>
-        <div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" value="38"></div></div>
-        <div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" value="-82"></div></div>
-        <div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" value="36"></div></div>
-        <div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" value="-79"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left latitude:</label><input type="number" class="form-control" name="ulla" placeholder="38"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Upper left longitude:</label><input type="number" class="form-control" name="ullg" placeholder="-82"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right latitude:</label><input type="number" class="form-control" name="lrla" placeholder="36"></div></div>
+        <div class="col-md-6"><div class="form-group"><label>Lower right longitude:</label><input type="number" class="form-control" name="lrlg" placeholder="-79"></div></div>
     </div>
+
     <!-- google map -->
     <h3>Specify location of Primary users</h3> 
     <div id="mapArea">
-        <button type='button' class='btn btn-warning' onclick='deleteMarkers();'>Reset</button>
+        <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <br><br>
-        <div id='googleMap' style='width:100%; height:380px;'></div>
+        <div id='googleMap' style='width:100%; height:420px;'></div>
     </div>
 
-    <h3>Specify number of queries</h3>
-    <!-- <form role="form" method="post" action="<?php //echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> -->
+    <!-- choose countermeasure -->
+    <form role="form">
+        <h3>Choose countermeasure</h2>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="0" onchange="clearCounterMeasure();">No countermeasure</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="1" onchange="counterFunc1();">Additive Noise</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="2" onchange="counterFunc2();">Transfiguration</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="3" onchange="counterFunc3();">K-Anonymity</label>
+        </div>
+        <div class="radio">
+          <label><input type="radio" name="cmopt" value="4" onchange="counterFunc4();">K-Clustering</label>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-md-4" id="countermeasure"></div>
+    </div>
+
     <form role="form" method="post" action="">
+        <h3>Specify number of queries</h3>
         <div class="row">
             <div class="form-group">
                 <div class="col-md-4">
-                <input type="number" class="form-control" name="queries" id="queries" placeholder="Enter number of queries">
+                <input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">
                 </div>
                 <p class="error">
                     <?php 
@@ -363,10 +496,10 @@ function getContent() {
         </div>
     </div>
 
-    <br><br>
+    <br>
     <!-- result of passed params -->
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-primary">Start demo</button>
+        <button type="submit" class="btn btn-primary">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
 </div>
 </body>
