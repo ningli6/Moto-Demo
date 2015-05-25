@@ -17,13 +17,15 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
    <!--  // <script src="http://maps.googleapis.com/maps/api/js"></script> -->
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=drawing"></script>
+    <!-- Custom styles for this template -->
+    <link href="sticky-footer.css" rel="stylesheet">
 </head>
 
 <script type="text/javascript">
 var map;
 var drawingManager; var lastShape; var bounds;
 var myCenter = new google.maps.LatLng(37.227799, -80.422054);
-var numberOfChannels = 1;; var chanls = -1;
+var numberOfChannels = 1;; var chanls = 1;
 var markers_one = [];
 var markers_two_channel0 = [];
 var markers_two_channel1 = [];
@@ -97,6 +99,11 @@ function placeMarker(location) {
         alert("Must select location with in analysis area");
         return;
     }
+    if (chanls == -1) {
+        alert("Must select channels first");
+        return;
+    }
+
     var marker = new google.maps.Marker({
         position: location,
         map: map,
@@ -154,7 +161,7 @@ function hideAllMarkers() {
 }
 
 function resetAllMarkers() {
-    lastShape.setMap(null);
+    if (lastShape != null) lastShape.setMap(null);
     bounds = null;
     chanls = -1;
     for (var i = 0; i < markers_one.length; i++) {
@@ -241,12 +248,14 @@ function getChannel() {
     console.log(numberOfChannels);
     switch (numberOfChannels) {
     case 1:
+        console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 2:
+        console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
@@ -255,6 +264,7 @@ function getChannel() {
         window.onload = initialize();
         break;
     case 3:
+        console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
@@ -435,11 +445,11 @@ function upldLoc () {
     <div class="row">
         <form role="form">
             <div class="form-group">
-                <div class="col-md-2">
+                <div class="col-md-3">
                 <select class="form-control" id="selc" onchange="getChannel();">
-                    <option selected="selected">1</option>
-                    <option>2</option>
-                    <option>3</option>
+                    <option class="optclass" selected="selected">1</option>
+                    <option class="optclass">2</option>
+                    <option class="optclass">3</option>
                 </select>
                 </div>
             </div>
@@ -510,15 +520,19 @@ function upldLoc () {
           </div>   
         </div>
     </div>
-
-</body>
-</html>
-
     <br>
     <!-- result of passed params -->
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <button type="submit" class="btn btn-primary">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
+    <br><br>
 </div>
+
+<footer class="footer">
+    <div class="container" id="fter" style="margin-right: 55px">
+        <p class="text-muted" style="text-align: right"><a href="#">Contact us</a></p>
+    </div>
+</footer>
+
 </body>
 </html>
