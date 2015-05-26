@@ -357,19 +357,56 @@ function upldLoc () {
             </p>
         </div>
         <br>
-        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
+        <!-- <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button> -->
     </form>
 </script>
 
 <script id="form_uploadQueries" language="text">
-    <form class="form-inline" role="form" method="post" action="">
+    <form class="form-inline" role="form" method="post" action='upload.php'>
         <div class="form-group">
             <label>Browse files...</label>
-            <input type="file" class="form-control" name="queries" id="queries">
+            <input type="file" class="form-control" id="file-select" name="uploadthisfile">
         </div>
         <br><br>
-        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
+        <button type="submit" class="btn btn-success" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
     </form>
+</script>
+
+<script type="text/javascript">
+function uploadfile () {
+    var form = document.getElementById('file-form');
+    var fileSelect = document.getElementById('file-select');
+    var uploadButton = document.getElementById('upload-button');
+    // Update button text.
+    uploadButton.innerHTML = 'Uploading...';
+    // The rest of the code will go here...
+    // Get the selected files from the input.
+    var files = fileSelect.files;
+    // Create a new FormData object.
+    var formData = new FormData();
+    // Loop through each of the selected files.
+    var file = files[0];
+
+    formData.append('uploadthisfile', file, file.name);
+    // Set up the request.
+    var xhr = new XMLHttpRequest();
+    // Open the connection.
+    xhr.open('POST', 'upload.php', true);
+
+    // Set up a handler for when the request finishes.
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            alert(xhr.responseText);
+            // File(s) uploaded.
+            uploadButton.innerHTML = 'Upload';
+        } else {
+            alert('An error occurred!');
+        }
+    };
+
+    // Send the Data.
+    xhr.send(formData);
+}
 </script>
 
 <?php
