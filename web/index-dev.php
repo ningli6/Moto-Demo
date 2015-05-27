@@ -32,7 +32,6 @@ var markers_two_channel1 = [];
 var markers_three_channel0 = [];
 var markers_three_channel1 = [];
 var markers_three_channel2 = [];
-var ulla; var ullg; var lrla; var lrlg;
 
 function initialize() {
     try {
@@ -74,7 +73,7 @@ function initialize() {
 
             if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
                 bounds = lastShape.getBounds();
-                console.log(bounds.toString());
+                // console.log(bounds.toString());
             }
             map.setOptions({draggable: true});
                         drawingManager.setDrawingMode(null);
@@ -92,8 +91,8 @@ function initialize() {
 google.maps.event.addDomListener(window, 'load', initialize);
 
 function placeMarker(location) {
-    console.log(numberOfChannels);
-    console.log(chanls);
+    // console.log(numberOfChannels);
+    // console.log(chanls);
 
     if (lastShape == null || bounds == null || !bounds.contains(location)) {
         alert("Must select location with in analysis area");
@@ -163,7 +162,7 @@ function hideAllMarkers() {
 function resetAllMarkers() {
     if (lastShape != null) lastShape.setMap(null);
     bounds = null;
-    chanls = -1;
+    // chanls = -1;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
     }
@@ -204,58 +203,24 @@ function markersOnChannel(markers) {
         markers[i].setMap(map);
     }
 }
-
-function SendParams()
-{
-    var xmlhttp;
-    if (window.XMLHttpRequest)
-        {// code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
-        }
-    else
-    {// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange=function()
-    {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-            // document.getElementById("params").innerHTML=xmlhttp.responseText;
-        }
-    }
-    xmlhttp.open("POST","ajax.php", true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
-    args += "-c " + numberOfChannels + " -C ";
-    for (var i = 0; i < markers.length; i++) {
-        args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
-    }
-    var nq = document.getElementById("queries").value;
-    args += "-q " + nq;
-    console.log("args=" + args);
-    xmlhttp.send("args=" + args);
-    var fstr = "args=" + args;
-    document.getElementById("confirmParam").innerHTML = fstr;
-    // window.alert("args: " + args);
-}
 </script>
 
 <script type="text/javascript">
-function getChannel() {
+function setChannels() {
     resetAllMarkers();
     var e = document.getElementById("selc");
     numberOfChannels = parseInt(e.options[e.selectedIndex].value);
-    console.log(numberOfChannels);
+    // console.log(numberOfChannels);
     switch (numberOfChannels) {
     case 1:
-        console.log("Channel: " + numberOfChannels);
+        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 2:
-        console.log("Channel: " + numberOfChannels);
+        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
@@ -264,7 +229,7 @@ function getChannel() {
         window.onload = initialize();
         break;
     case 3:
-        console.log("Channel: " + numberOfChannels);
+        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
@@ -296,10 +261,10 @@ function clearCounterMeasure (argument) {
 
 function counterFunc1() {
     var str = "";
-    str += '<form role="form">';
+    str += '<form clas="form-inline" role="form">';
     str += '<div class="form-group">';
     str += '<label for="noise">Noise level:</label>';
-    str += '<input type="number" class="form-control" id="noise" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
+    str += '<input type="number" class="form-control" id="cmval" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
 }
@@ -308,7 +273,7 @@ function counterFunc2 () {
     str += '<form role="form">';
     str += '<div class="form-group">';
     str += '<label for="polygon">Sides for convex polygon:</label>';
-    str += '<input type="number" class="form-control" id="sides" min="3" placeholder="3">';
+    str += '<input type="number" class="form-control" id="cmval" min="3" placeholder="3">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
 }
@@ -318,7 +283,7 @@ function counterFunc3 () {
     str += '<form role="form">';
     str += '<div class="form-group">';
     str += '<label for="ka">K for K-Anonymity:</label>';
-    str += '<input type="number" class="form-control" id="kanonymity" min="1" placeholder="2">';
+    str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
 }
@@ -327,8 +292,8 @@ function counterFunc4 () {
     var str = "";
     str += '<form role="form">';
     str += '<div class="form-group">';
-    str += '<label for="kc">K for K-Clustring:</label>';
-    str += '<input type="number" class="form-control" id="kclustering" min="1" placeholder="2">';
+    str += '<label for="kc">K for K-Clustering:</label>';
+    str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
 }
@@ -373,6 +338,7 @@ function upldLoc () {
 </script>
 
 <script type="text/javascript">
+var file_name;
 function uploadfile () {
     var form = document.getElementById('file-form');
     var fileSelect = document.getElementById('file-select');
@@ -386,6 +352,7 @@ function uploadfile () {
     var formData = new FormData();
     // Loop through each of the selected files.
     var file = files[0];
+    file_name = file.name;
 
     formData.append('uploadthisfile', file, file.name);
     // Set up the request.
@@ -403,9 +370,210 @@ function uploadfile () {
             alert('An error occurred!');
         }
     };
-
     // Send the Data.
     xhr.send(formData);
+}
+</script>
+
+<script type="text/javascript">
+var channel_number;
+var analysis_region = [];
+var location_PU = []; 
+var countermeasure;
+var queries_number;
+var queries_file;
+var args;
+
+function getParams () {
+    channel_number = numberOfChannels;
+    if (channel_number <= 0 || channel_number > 3) {
+        alert("Channel number invalid! Please check your channel selection");
+        return;
+    }
+    console.log("Channel number: " + channel_number);
+    analysis_region = [];
+    if (bounds != null) {
+        analysis_region.push(bounds.getNorthEast().lat());
+        analysis_region.push(bounds.getNorthEast().lng());
+        analysis_region.push(bounds.getSouthWest().lat());
+        analysis_region.push(bounds.getSouthWest().lng());
+    }
+    if (channel_number == 1 && markers_one.length == 0) {
+        alert("No primary user on channel 1!");
+        return;
+    } 
+    if (channel_number == 2 && markers_two_channel0.length == 0 && markers_two_channel1.length == 0) {
+        alert("No primary user on channel 1 or channel 2!");
+        return;
+    } 
+    if (channel_number == 3 && markers_three_channel0.length == 0 && markers_three_channel1.length == 0 && markers_three_channel2.length == 0) {
+        alert("No primary user on channel 1, channel 2 or channel 3!");
+        return;
+    }
+
+    location_PU = [];
+    if (channel_number == 1) location_PU.push(markers_one);
+    if (channel_number == 2) {
+        location_PU.push(markers_two_channel0);
+        location_PU.push(markers_two_channel1);
+    }
+    if (channel_number == 3) {
+        location_PU.push(markers_three_channel0);
+        location_PU.push(markers_three_channel1);
+        location_PU.push(markers_three_channel2);
+    }
+
+    if (document.getElementById('cmopt0').checked) {
+        countermeasure = "NO_COUNTERMEASURE";
+    }
+    if (document.getElementById('cmopt1').checked) {
+        countermeasure = "ADDITIVE_NOISE";
+    }
+    if (document.getElementById('cmopt2').checked) {
+        countermeasure = "TRANSFIGURATION";
+    }
+    if (document.getElementById('cmopt3').checked) {
+        countermeasure = "K_ANONYMITY";
+    }
+    if (document.getElementById('cmopt4').checked) {
+        countermeasure = "K_CLUSTERING";
+    }
+
+    if (countermeasure == undefined) {
+        alert("Undefined countermeasure!");
+        return;
+    }
+
+    console.log("Countermeasure: " + countermeasure);
+
+    queries_file = null; queries_number = null;
+    if (document.getElementById("input_query0").checked) {
+        queries_number = document.getElementById("queries").value;
+        console.log("Query number: " + queries_number);
+        if (queries_number < 0 || queries_number == null) {
+            alert("Queries must be nonnegative!");
+            return;
+        }
+    }
+    if (document.getElementById("input_query1").checked) {
+        queries_file = file_name;
+        console.log("Query file: " + queries_file);
+        if (queries_file == null) {
+            alert("File name empty! Please check upload process");
+            return;
+        }
+    }
+    if (queries_number == null && queries_file == null) {
+        alert("Please specify querying method");
+        return;
+    }
+
+    args = "-a " + analysis_region[0] + " " + analysis_region[3] + " " + analysis_region[2] + " " + analysis_region[1] + " ";
+    args += "-c " + channel_number + " ";
+    for (var i = 0; i < location_PU.length; i++) {
+        args += "-C ";
+        for (var j = 0; j < location_PU[i].length; j++) {
+            args += location_PU[i][j].position.lat() + " " + location_PU[i][j].position.lng() + " ";
+        }
+    }
+
+    switch(countermeasure) {
+        case "ADDITIVE_NOISE":
+            args += "-an " + document.getElementById("cmval").value + " ";
+            break;
+        case "TRANSFIGURATION":
+            args += "-tf " + document.getElementById("cmval").value + " ";
+            break;
+        case "K_ANONYMITY":
+            args += "-ka " + document.getElementById("cmval").value + " ";
+            break;
+        case "K_CLUSTERING":
+            args += "-kc " + document.getElementById("cmval").value + " ";
+            break;
+    }
+
+    if (queries_number != null) {
+        args += "-q " + queries_number;
+    }
+    else {
+        args += "-f " + queries_file;
+    }
+
+    console.log("args=" + args);
+    // xmlhttp.send("args=" + args);
+    // document.getElementById("confirmParam").innerHTML = "args = " + args;
+    document.getElementById("wellchannel").innerHTML = channel_number;
+    var pustr = "";
+    // console.log("location_PU length: " + location_PU.length);
+    for (var i = 0; i < location_PU.length; i++) {
+        // console.log("i: " + i);
+        pustr += "Primary user on channel " + i + "<br>";
+        for (var j = 0; j < location_PU[i].length; j++) {
+            pustr += "( " + location_PU[i][j].position.lat() + ", " + location_PU[i][j].position.lng() + " ) <br>";
+        }
+    }
+    document.getElementById("wellpu").innerHTML = pustr;
+    var cmstr = "";
+    switch(countermeasure) {
+        case "ADDITIVE_NOISE":
+            cmstr += "Additive noise<br>Noise level: " + document.getElementById("cmval").value;
+            break;
+        case "TRANSFIGURATION":
+            cmstr += "Transfiguration<br>Number of sides: " + document.getElementById("cmval").value;
+            break;
+        case "K_ANONYMITY":
+            cmstr += "K anonymity<br>K: " + document.getElementById("cmval").value;
+            break;
+        case "K_CLUSTERING":
+            cmstr += "K Clustering<br>K: " + document.getElementById("cmval").value;
+            break;
+        default:
+            cmstr += "No countermeasure";
+            break;
+    }
+    document.getElementById("wellcm").innerHTML = cmstr;
+    var querystr = "";
+    if (queries_number != null) {
+        querystr = "Randomly generated location<br>Number of queries: " + queries_number;
+    }
+    else {
+        querystr = "Use location from " + queries_file;
+    }
+    document.getElementById("wellquery").innerHTML = querystr;
+}
+
+function SendParams()
+{
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        }
+    else
+    {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function()
+    {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
+        {
+            // document.getElementById("params").innerHTML=xmlhttp.responseText;
+        }
+    }
+    xmlhttp.open("POST","ajax.php", true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
+    args += "-c " + numberOfChannels + " -C ";
+    for (var i = 0; i < markers.length; i++) {
+        args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
+    }
+    var nq = document.getElementById("queries").value;
+    args += "-q " + nq;
+    console.log("args=" + args);
+    xmlhttp.send("args=" + args);
+    var fstr = "args=" + args;
+    document.getElementById("confirmParam").innerHTML = fstr;
+    // window.alert("args: " + args);
 }
 </script>
 
@@ -483,7 +651,7 @@ function uploadfile () {
         <form role="form">
             <div class="form-group">
                 <div class="col-md-3">
-                <select class="form-control" id="selc" onchange="getChannel();">
+                <select class="form-control" id="selc" onchange="setChannels();">
                     <option class="optclass" selected="selected">1</option>
                     <option class="optclass">2</option>
                     <option class="optclass">3</option>
@@ -507,19 +675,19 @@ function uploadfile () {
     <form role="form">
         <h3>Choose countermeasure</h2>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="0" onchange="clearCounterMeasure();">No countermeasure</label>
+          <label><input type="radio" id="cmopt0" name="cmopt" value=0 checked="checked" onchange="clearCounterMeasure();">No countermeasure</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="1" onchange="counterFunc1();">Additive Noise</label>
+          <label><input type="radio" id="cmopt1" name="cmopt" value=1 onchange="counterFunc1();">Additive Noise</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="2" onchange="counterFunc2();">Transfiguration</label>
+          <label><input type="radio" id="cmopt2" name="cmopt" value=2 onchange="counterFunc2();">Transfiguration</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="3" onchange="counterFunc3();">K-Anonymity</label>
+          <label><input type="radio" id="cmopt3" name="cmopt" value=3 onchange="counterFunc3();">K-Anonymity</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="4" onchange="counterFunc4();">K-Clustering</label>
+          <label><input type="radio" id="cmopt4" name="cmopt" value=4 onchange="counterFunc4();">K-Clustering</label>
         </div>
     </form>
 
@@ -530,10 +698,10 @@ function uploadfile () {
     <form role="form">
         <h3>Specify queries</h3>
         <div class="radio">
-          <label><input type="radio" name="rand_upload" value="0" onchange="randLoc();">Generate query locations randomly</label>
+          <label><input type="radio" id="input_query0" name="input_query" value="0" onchange="randLoc();">Generate query locations randomly</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="rand_upload" value="1" onchange="upldLoc();">Upload text files specifing query locations</label>
+          <label><input type="radio" id="input_query1" name="input_query" value="1" onchange="upldLoc();">Upload text files specifing query locations</label>
         </div>
     </form>
 
@@ -546,10 +714,18 @@ function uploadfile () {
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Parameters</h4>
+              <h4 class="modal-title">Confirm parameters</h4>
             </div>
             <div class="modal-body">
-              <p id="confirmParam"></p>
+                <p>Number of channels</p>
+                <div class="well" id="wellchannel"></div>
+                <p>Location of Primary users:</p>
+                <div class="well" id="wellpu"></div>
+                <p>Countermeasure</p>
+                <div class="well" id="wellcm"></div>
+                <p>Queries</p>
+                <div class="well" id="wellquery"></div>
+                <p id="confirmParam"></p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -560,7 +736,7 @@ function uploadfile () {
     <br>
     <!-- result of passed params -->
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-primary">Start demo <span class="glyphicon glyphicon-play"></span></button>
+        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getParams(); return false;">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
     <br><br>
 </div>
