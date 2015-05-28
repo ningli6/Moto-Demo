@@ -16,7 +16,7 @@
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
    <!--  // <script src="http://maps.googleapis.com/maps/api/js"></script> -->
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=drawing"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.exp&libraries=drawing"></script>
     <!-- Custom styles for this template -->
     <link href="sticky-footer.css" rel="stylesheet">
 </head>
@@ -24,7 +24,7 @@
 <script type="text/javascript">
 var map;                         // google map instance
 var drawingManager;              // helper object for drawing shapes on google map
-var lastShape; var bounds;       // rectangle object and its boundary
+var lastShape; var recRegion;       // rectangle object and its boundary
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
 var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
 var markers_one = [];            // channel for 1 channel
@@ -33,7 +33,6 @@ var markers_two_channel1 = [];   // channel 1 for 2 channels
 var markers_three_channel0 = []; // channel 0 for 3 channels
 var markers_three_channel1 = []; // channel 1 for 3 channels
 var markers_three_channel2 = []; // channel 2 for 3 channels
-
 /*
  * Initialize google map
  */
@@ -43,11 +42,13 @@ function initialize() {
         var mapProp = {
             zoom: 5,
             center: myCenter,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            disableDefaultUI: true,
-            zoomControl: true
+            // mapTypeId: google.maps.MapTypeId.ROADMAP,
+            // disableDefaultUI: false,
+            // zoomControl: true
         };
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
 
+        // create a drawing manager attached to the map to allow the user to draw markers, lines, and shapes.
         var shapeOptions = {
             strokeWeight: 1,
             strokeOpacity: 1,
@@ -57,13 +58,13 @@ function initialize() {
             strokeColor: '#3399FF',
             fillColor: '#3399FF'
         };
-
-        map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-        // create a drawing manager attached to the map to allow the user to draw markers, lines, and shapes.
         drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: null,
-            drawingControlOptions: {drawingModes: [google.maps.drawing.OverlayType.RECTANGLE]},
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: [google.maps.drawing.OverlayType.RECTANGLE]
+            },
             rectangleOptions: shapeOptions,
             map: map
         });
@@ -77,10 +78,21 @@ function initialize() {
             lastShape.type = e.type;
 
             if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-                bounds = lastShape.getBounds();
+                lastShape.setMap(map);
+                recRegion = lastShape.getBounds();
+                updatebounds(recRegion);
+                console.log(recRegion.toString());
             }
-            map.setOptions({draggable: true});
-                        drawingManager.setDrawingMode(null);
+            drawingManager.setDrawingMode(null);
+            // Add an event listener on the rectangle.
+            google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
+                lastShape = e.overlay;
+                lastShape.type = e.type;
+                recRegion = lastShape.getBounds();
+                updatebounds(recRegion);
+                console.log("Bounds changed!");
+                console.log(recRegion.toString());
+            });
         });
 
         google.maps.event.addListener(map, 'click', function(event) {
@@ -98,7 +110,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
  * Place markers on google map
  */
 function placeMarker(location) {
-    if (lastShape == null || bounds == null || !bounds.contains(location)) {
+    if (lastShape == null || recRegion == null || !recRegion.contains(location)) {
         alert("Must select location with in analysis area");
         return;
     }
@@ -153,7 +165,7 @@ function hideAllMarkers() {
  */
 function resetAllMarkers() {
     if (lastShape != null) lastShape.setMap(null);
-    bounds = null;
+    recRegion = null;
     chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
@@ -190,6 +202,17 @@ function markersOnChannel(markers) {
         markers[i].setMap(map);
     }
 }
+
+function updatebounds (recRegion) {
+    var boundstr = "<h4>Coordinates</h4>";
+    boundstr += "<div class='well'>"
+    boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
+    boundstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
+    boundstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
+    boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
+    boundstr += "</div>"
+    document.getElementById("showBounds").innerHTML = boundstr;
+}
 </script>
 
 <script type="text/javascript">
@@ -204,7 +227,7 @@ function setChannels() {
     case 1:
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -213,7 +236,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -223,7 +246,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -394,15 +417,15 @@ function getParams () {
     console.log("Channel number: " + channel_number);
     // get region boundaries
     analysis_region = [];
-    if (bounds != null) {
+    if (recRegion != null) {
         // upper lat
-        analysis_region.push(bounds.getNorthEast().lat());
+        analysis_region.push(recRegion.getNorthEast().lat());
         // right lng
-        analysis_region.push(bounds.getNorthEast().lng());
+        analysis_region.push(recRegion.getNorthEast().lng());
         // lower lat
-        analysis_region.push(bounds.getSouthWest().lat());
+        analysis_region.push(recRegion.getSouthWest().lat());
         // left lng
-        analysis_region.push(bounds.getSouthWest().lng());
+        analysis_region.push(recRegion.getSouthWest().lng());
     }
     if (channel_number == 1 && markers_one.length == 0) {
         alert("No primary user on channel 1!");
@@ -683,8 +706,9 @@ function SendParams()
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
-        <div id='googleMap' style='width:100%; height:420px;'></div>
+        <div id='map-canvas' style='width:100%; height:420px;'></div>
     </div>
+    <div id="showBounds"></div>
 
     <!-- choose countermeasure -->
     <form role="form">

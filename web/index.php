@@ -16,34 +16,39 @@
     <!-- Latest compiled JavaScript -->
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
    <!--  // <script src="http://maps.googleapis.com/maps/api/js"></script> -->
-    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=drawing"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.exp&libraries=drawing"></script>
     <!-- Custom styles for this template -->
     <link href="sticky-footer.css" rel="stylesheet">
 </head>
 
 <script type="text/javascript">
-var map;
-var drawingManager; var lastShape; var bounds;
-var myCenter = new google.maps.LatLng(37.227799, -80.422054);
-var numberOfChannels = 1;; var chanls = 1;
-var markers_one = [];
-var markers_two_channel0 = [];
-var markers_two_channel1 = [];
-var markers_three_channel0 = [];
-var markers_three_channel1 = [];
-var markers_three_channel2 = [];
-var ulla; var ullg; var lrla; var lrlg;
-
+var map;                         // google map instance
+var drawingManager;              // helper object for drawing shapes on google map
+var lastShape; var recRegion;       // rectangle object and its boundary
+var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
+var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
+var markers_one = [];            // channel for 1 channel
+var markers_two_channel0 = [];   // channel 0 for 2 channels
+var markers_two_channel1 = [];   // channel 1 for 2 channels
+var markers_three_channel0 = []; // channel 0 for 3 channels
+var markers_three_channel1 = []; // channel 1 for 3 channels
+var markers_three_channel2 = []; // channel 2 for 3 channels
+/*
+ * Initialize google map
+ */
 function initialize() {
     try {
+        // create a google map
         var mapProp = {
             zoom: 5,
             center: myCenter,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            disableDefaultUI: true,
-            zoomControl: true
+            // mapTypeId: google.maps.MapTypeId.ROADMAP,
+            // disableDefaultUI: false,
+            // zoomControl: true
         };
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
 
+        // create a drawing manager attached to the map to allow the user to draw markers, lines, and shapes.
         var shapeOptions = {
             strokeWeight: 1,
             strokeOpacity: 1,
@@ -53,13 +58,13 @@ function initialize() {
             strokeColor: '#3399FF',
             fillColor: '#3399FF'
         };
-
-        map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-
-        // create a drawing manager attached to the map to allow the user to draw markers, lines, and shapes.
         drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: null,
-            drawingControlOptions: {drawingModes: [google.maps.drawing.OverlayType.RECTANGLE]},
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: [google.maps.drawing.OverlayType.RECTANGLE]
+            },
             rectangleOptions: shapeOptions,
             map: map
         });
@@ -73,11 +78,21 @@ function initialize() {
             lastShape.type = e.type;
 
             if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-                bounds = lastShape.getBounds();
-                console.log(bounds.toString());
+                lastShape.setMap(map);
+                recRegion = lastShape.getBounds();
+                updatebounds(recRegion);
+                console.log(recRegion.toString());
             }
-            map.setOptions({draggable: true});
-                        drawingManager.setDrawingMode(null);
+            drawingManager.setDrawingMode(null);
+            // Add an event listener on the rectangle.
+            google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
+                lastShape = e.overlay;
+                lastShape.type = e.type;
+                recRegion = lastShape.getBounds();
+                updatebounds(recRegion);
+                console.log("Bounds changed!");
+                console.log(recRegion.toString());
+            });
         });
 
         google.maps.event.addListener(map, 'click', function(event) {
@@ -91,19 +106,18 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
+/*
+ * Place markers on google map
+ */
 function placeMarker(location) {
-    console.log(numberOfChannels);
-    console.log(chanls);
-
-    if (lastShape == null || bounds == null || !bounds.contains(location)) {
+    if (lastShape == null || recRegion == null || !recRegion.contains(location)) {
         alert("Must select location with in analysis area");
         return;
     }
-    if (chanls == -1) {
+    if (chanls == undefined && numberOfChannels != 1) {
         alert("Must select channels first");
         return;
     }
-
     var marker = new google.maps.Marker({
         position: location,
         map: map,
@@ -122,20 +136,6 @@ function placeMarker(location) {
         if (chanls == 1) markers_three_channel1.push(marker);
         if (chanls == 2) markers_three_channel2.push(marker);
     }
-}
-
-function showMarkers() {
-    if (markers.length == 0) {
-        console.log("No PU");
-        document.getElementById("markers").innerHTML = "<p>No Primary user on the map</p>";
-        return;
-    }
-    var html = "<p>";
-    for (var index = 0; index < markers.length; index++) {
-        html += markers[index].position.lat() + ', ' + markers[index].position.lng() + '<br>';
-    }
-    html += "</p>";
-    document.getElementById("markers").innerHTML = html;
 }
 
 // Deletes all markers in the array by removing references to them.
@@ -159,11 +159,14 @@ function hideAllMarkers() {
         markers_three_channel2[i].setMap(null);
     }
 }
-
+/*
+ * Delete all markers on the map
+ * Delete rectangle on the map
+ */
 function resetAllMarkers() {
     if (lastShape != null) lastShape.setMap(null);
-    bounds = null;
-    chanls = -1;
+    recRegion = null;
+    chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
     }
@@ -190,14 +193,9 @@ function resetAllMarkers() {
     markers_three_channel2 = [];
 }
 
-function countDot(str) {
-    var count = 0;
-    for (var i = 0; i < str.length; i++) {
-        if (str.charAt(i) == '.') count++;
-    }
-    return count;
-}
-
+/*
+ * Display markers in @markers, hinding all other markers on map
+ */
 function markersOnChannel(markers) {
     hideAllMarkers();
     for (var i = 0; i < markers.length; i++) {
@@ -205,20 +203,399 @@ function markersOnChannel(markers) {
     }
 }
 
+function updatebounds (recRegion) {
+    var boundstr = "<h4>Coordinates</h4>";
+    boundstr += "<div class='well'>"
+    boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
+    boundstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
+    boundstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
+    boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
+    boundstr += "</div>"
+    document.getElementById("showBounds").innerHTML = boundstr;
+}
+</script>
+
+<script type="text/javascript">
+/* 
+ * Dispalying google map area in accordance with user specified number of channels
+ */
+function setChannels() {
+    resetAllMarkers();
+    var e = document.getElementById("selc");
+    numberOfChannels = parseInt(e.options[e.selectedIndex].value);
+    switch (numberOfChannels) {
+    case 1:
+        var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
+        break;
+    case 2:
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
+        break;
+    case 3:
+        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
+        str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
+        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        document.getElementById("mapArea").innerHTML = str;
+        window.onload = initialize();
+        break;
+    default:
+        document.getElementById("mapArea").innerHTML = "<p>Unknown choice!</p>";
+        break;
+    }
+}
+/*
+ * When user select a channel, display only markers on that channel while hiding all others
+ */
+function selectChannel (arg) {
+    chanls = arg;
+    if (numberOfChannels == 1) markersOnChannel(markers_one);
+    if (numberOfChannels == 2 && chanls == 0) markersOnChannel(markers_two_channel0);
+    if (numberOfChannels == 2 && chanls == 1) markersOnChannel(markers_two_channel1);
+    if (numberOfChannels == 3 && chanls == 0) markersOnChannel(markers_three_channel0);
+    if (numberOfChannels == 3 && chanls == 1) markersOnChannel(markers_three_channel1);
+    if (numberOfChannels == 3 && chanls == 2) markersOnChannel(markers_three_channel2);
+}
+</script>
+
+<script type="text/javascript">
+/* 
+ * This script is used for displaying "countermeasure" div 
+ * according to user selected countermeasure
+ */
+function clearCounterMeasure (argument) {
+    document.getElementById("countermeasure").innerHTML = "";
+}
+
+function counterFunc1() {
+    var str = "";
+    str += '<form clas="form-inline" role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="noise">Noise level:</label>';
+    str += '<input type="number" class="form-control" id="cmval" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+function counterFunc2 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="polygon">Sides for convex polygon:</label>';
+    str += '<input type="number" class="form-control" id="cmval" min="3" placeholder="3">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc3 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="ka">K for K-Anonymity:</label>';
+    str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+
+function counterFunc4 () {
+    var str = "";
+    str += '<form role="form">';
+    str += '<div class="form-group">';
+    str += '<label for="kc">K for K-Clustering:</label>';
+    str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
+    str += '</div></form>';
+    document.getElementById("countermeasure").innerHTML = str;
+}
+</script>
+
+<script type="text/javascript">
+/*
+ * This script is used to display "queryingForm" div according to user's choice of query
+ */
+function randLoc () {
+    document.getElementById("queryingForm").innerHTML = document.getElementById('randomQueries').innerHTML;
+}
+function upldLoc () {
+    document.getElementById("queryingForm").innerHTML = document.getElementById('uploadQueries').innerHTML;
+}
+</script>
+
+<script id="randomQueries" language="text">
+<!-- HTML wraped as script -->
+    <form class="form-inline" role="form" method="post" action="">
+        <div class="form-group">
+            <label>Specify number of queries: </label>
+            <input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">
+            <p class="error">
+                <?php 
+                    if ($queryErr != "") 
+                        $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
+                    echo $str; 
+                ?>
+            </p>
+        </div>
+        <br>
+        <!-- <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button> -->
+    </form>
+</script>
+
+<script id="uploadQueries" language="text">
+<!-- HTML wraped as script -->
+    <form class="form-inline" role="form" method="post" action='upload.php'>
+        <div class="form-group">
+            <label>Browse files...</label>
+            <input type="file" class="form-control" id="file-select" name="uploadthisfile">
+        </div>
+        <br><br>
+        <button type="submit" class="btn btn-success" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
+    </form>
+</script>
+
+<script type="text/javascript">
+var file_name;  // file name of user uploaded text file
+function uploadfile () {
+    var form = document.getElementById('file-form');
+    var fileSelect = document.getElementById('file-select');
+    var uploadButton = document.getElementById('upload-button');
+    // Update button text.
+    uploadButton.innerHTML = 'Uploading...';
+    // Get the selected files from the input.
+    var files = fileSelect.files;
+    // Create a new FormData object.
+    var formData = new FormData();
+    // Get the file name.
+    var file = files[0];
+    file_name = file.name;
+    // Attach file in FormData
+    formData.append('uploadthisfile', file, file.name);
+    // Set up the request.
+    var xhr = new XMLHttpRequest();
+    // Open the connection.
+    xhr.open('POST', 'upload.php', true);
+
+    // Set up a handler for when the request finishes.
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            alert(xhr.responseText);
+            // File(s) uploaded.
+            uploadButton.innerHTML = 'Upload';
+        } else {
+            alert('An error occurred!');
+        }
+    };
+    // Send the Data.
+    xhr.send(formData);
+}
+</script>
+
+<script type="text/javascript">
+var channel_number;        // number of channels
+var analysis_region = [];  // region
+var location_PU = [];      // pu's location
+var countermeasure;        // countermeasure
+var queries_number;        // number of queries
+var queries_file;          // name of querying file
+var args;                  // formatted params as a argument for java program
+
+function getParams () {
+    // get number of channels
+    channel_number = numberOfChannels;
+    if (channel_number <= 0 || channel_number > 3) {
+        alert("Channel number invalid! Please check your channel selection");
+        return;
+    }
+    console.log("Channel number: " + channel_number);
+    // get region boundaries
+    analysis_region = [];
+    if (recRegion != null) {
+        // upper lat
+        analysis_region.push(recRegion.getNorthEast().lat());
+        // right lng
+        analysis_region.push(recRegion.getNorthEast().lng());
+        // lower lat
+        analysis_region.push(recRegion.getSouthWest().lat());
+        // left lng
+        analysis_region.push(recRegion.getSouthWest().lng());
+    }
+    if (channel_number == 1 && markers_one.length == 0) {
+        alert("No primary user on channel 1!");
+        return;
+    } 
+    if (channel_number == 2 && markers_two_channel0.length == 0 && markers_two_channel1.length == 0) {
+        alert("No primary user on channel 1 or channel 2!");
+        return;
+    } 
+    if (channel_number == 3 && markers_three_channel0.length == 0 && markers_three_channel1.length == 0 && markers_three_channel2.length == 0) {
+        alert("No primary user on channel 1, channel 2 or channel 3!");
+        return;
+    }
+    // get pus' location
+    location_PU = [];
+    if (channel_number == 1) location_PU.push(markers_one);
+    if (channel_number == 2) {
+        location_PU.push(markers_two_channel0);
+        location_PU.push(markers_two_channel1);
+    }
+    if (channel_number == 3) {
+        location_PU.push(markers_three_channel0);
+        location_PU.push(markers_three_channel1);
+        location_PU.push(markers_three_channel2);
+    }
+
+    // get countermeasure
+    if (document.getElementById('cmopt0').checked) {
+        countermeasure = "NO_COUNTERMEASURE";
+    }
+    if (document.getElementById('cmopt1').checked) {
+        countermeasure = "ADDITIVE_NOISE";
+    }
+    if (document.getElementById('cmopt2').checked) {
+        countermeasure = "TRANSFIGURATION";
+    }
+    if (document.getElementById('cmopt3').checked) {
+        countermeasure = "K_ANONYMITY";
+    }
+    if (document.getElementById('cmopt4').checked) {
+        countermeasure = "K_CLUSTERING";
+    }
+
+    if (countermeasure == undefined) {
+        alert("Undefined countermeasure!");
+        return;
+    }
+    console.log("Countermeasure: " + countermeasure);
+
+    // get query method
+    queries_file = null; queries_number = null;
+    if (document.getElementById("input_query0").checked) {
+        queries_number = document.getElementById("queries").value;
+        console.log("Query number: " + queries_number);
+        if (queries_number < 0 || queries_number == null) {
+            alert("Queries must be nonnegative!");
+            return;
+        }
+    }
+    if (document.getElementById("input_query1").checked) {
+        queries_file = file_name;
+        console.log("Query file: " + queries_file);
+        if (queries_file == null) {
+            alert("File name empty! Please check upload process");
+            return;
+        }
+    }
+    if (queries_number == null && queries_file == null) {
+        alert("Please specify querying method");
+        return;
+    }
+
+    // formatting params
+    args = "-a " + analysis_region[0] + " " + analysis_region[3] + " " + analysis_region[2] + " " + analysis_region[1] + " ";
+    args += "-c " + channel_number + " ";
+    for (var i = 0; i < location_PU.length; i++) {
+        args += "-C ";
+        for (var j = 0; j < location_PU[i].length; j++) {
+            args += location_PU[i][j].position.lat() + " " + location_PU[i][j].position.lng() + " ";
+        }
+    }
+
+    switch(countermeasure) {
+        case "ADDITIVE_NOISE":
+            args += "-an " + document.getElementById("cmval").value + " ";
+            break;
+        case "TRANSFIGURATION":
+            args += "-tf " + document.getElementById("cmval").value + " ";
+            break;
+        case "K_ANONYMITY":
+            args += "-ka " + document.getElementById("cmval").value + " ";
+            break;
+        case "K_CLUSTERING":
+            args += "-kc " + document.getElementById("cmval").value + " ";
+            break;
+    }
+
+    if (queries_number != null) {
+        args += "-q " + queries_number;
+    }
+    else {
+        args += "-f " + queries_file;
+    }
+    // output formatted args to console
+    console.log("args=" + args);
+    // xmlhttp.send("args=" + args);
+
+    // number of channels
+    document.getElementById("wellchannel").innerHTML = channel_number;
+    // anaysis area
+    var regionstr = "";
+    regionstr += "North latitude: " + analysis_region[0] + "<br>";
+    regionstr += "South latitude: " + analysis_region[2] + "<br>";
+    regionstr += "West longitude: " + analysis_region[3] + "<br>";
+    regionstr += "East longitude: " + analysis_region[1] + "<br>";
+    document.getElementById("wellregion").innerHTML = regionstr;
+    // location of pu
+    var pustr = "";
+    for (var i = 0; i < location_PU.length; i++) {
+        pustr += "Primary user on channel " + i + "<br>";
+        for (var j = 0; j < location_PU[i].length; j++) {
+            pustr += "( " + location_PU[i][j].position.lat() + ", " + location_PU[i][j].position.lng() + " ) <br>";
+        }
+    }
+    document.getElementById("wellpu").innerHTML = pustr;
+    // countermeasure
+    var cmstr = "";
+    switch(countermeasure) {
+        case "ADDITIVE_NOISE":
+            cmstr += "Additive noise<br>Noise level: " + document.getElementById("cmval").value;
+            break;
+        case "TRANSFIGURATION":
+            cmstr += "Transfiguration<br>Number of sides: " + document.getElementById("cmval").value;
+            break;
+        case "K_ANONYMITY":
+            cmstr += "K anonymity<br>K: " + document.getElementById("cmval").value;
+            break;
+        case "K_CLUSTERING":
+            cmstr += "K Clustering<br>K: " + document.getElementById("cmval").value;
+            break;
+        default:
+            cmstr += "No countermeasure";
+            break;
+    }
+    document.getElementById("wellcm").innerHTML = cmstr;
+    // query
+    var querystr = "";
+    if (queries_number != null) {
+        querystr = "Randomly generated location<br>Number of queries: " + queries_number;
+    }
+    else {
+        querystr = "Use location from " + queries_file;
+    }
+    document.getElementById("wellquery").innerHTML = querystr;
+}
+
 function SendParams()
 {
     var xmlhttp;
     if (window.XMLHttpRequest)
         {// code for IE7+, Firefox, Chrome, Opera, Safari
-            xmlhttp=new XMLHttpRequest();
+            xmlhttp = new XMLHttpRequest();
         }
     else
     {// code for IE6, IE5
-        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
     }
     xmlhttp.onreadystatechange=function()
     {
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
         {
             // document.getElementById("params").innerHTML=xmlhttp.responseText;
         }
@@ -238,138 +615,6 @@ function SendParams()
     document.getElementById("confirmParam").innerHTML = fstr;
     // window.alert("args: " + args);
 }
-</script>
-
-<script type="text/javascript">
-function getChannel() {
-    resetAllMarkers();
-    var e = document.getElementById("selc");
-    numberOfChannels = parseInt(e.options[e.selectedIndex].value);
-    console.log(numberOfChannels);
-    switch (numberOfChannels) {
-    case 1:
-        console.log("Channel: " + numberOfChannels);
-        var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
-        document.getElementById("mapArea").innerHTML = str;
-        window.onload = initialize();
-        break;
-    case 2:
-        console.log("Channel: " + numberOfChannels);
-        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
-        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
-        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
-        document.getElementById("mapArea").innerHTML = str;
-        window.onload = initialize();
-        break;
-    case 3:
-        console.log("Channel: " + numberOfChannels);
-        var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
-        str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
-        str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
-        str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
-        document.getElementById("mapArea").innerHTML = str;
-        window.onload = initialize();
-        break;
-    default:
-        document.getElementById("mapArea").innerHTML = "<p>Unknown choice!</p>";
-        break;
-    }
-}
-function selectChannel (arg) {
-    chanls = arg;
-    if (numberOfChannels == 1) markersOnChannel(markers_one);
-    if (numberOfChannels == 2 && chanls == 0) markersOnChannel(markers_two_channel0);
-    if (numberOfChannels == 2 && chanls == 1) markersOnChannel(markers_two_channel1);
-    if (numberOfChannels == 3 && chanls == 0) markersOnChannel(markers_three_channel0);
-    if (numberOfChannels == 3 && chanls == 1) markersOnChannel(markers_three_channel1);
-    if (numberOfChannels == 3 && chanls == 2) markersOnChannel(markers_three_channel2);
-}
-</script>
-
-<script type="text/javascript">
-function clearCounterMeasure (argument) {
-    document.getElementById("countermeasure").innerHTML = "";
-}
-
-function counterFunc1() {
-    var str = "";
-    str += '<form role="form">';
-    str += '<div class="form-group">';
-    str += '<label for="noise">Noise level:</label>';
-    str += '<input type="number" class="form-control" id="noise" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
-    str += '</div></form>';
-    document.getElementById("countermeasure").innerHTML = str;
-}
-function counterFunc2 () {
-    var str = "";
-    str += '<form role="form">';
-    str += '<div class="form-group">';
-    str += '<label for="polygon">Sides for convex polygon:</label>';
-    str += '<input type="number" class="form-control" id="sides" min="3" placeholder="3">';
-    str += '</div></form>';
-    document.getElementById("countermeasure").innerHTML = str;
-}
-
-function counterFunc3 () {
-    var str = "";
-    str += '<form role="form">';
-    str += '<div class="form-group">';
-    str += '<label for="ka">K for K-Anonymity:</label>';
-    str += '<input type="number" class="form-control" id="kanonymity" min="1" placeholder="2">';
-    str += '</div></form>';
-    document.getElementById("countermeasure").innerHTML = str;
-}
-
-function counterFunc4 () {
-    var str = "";
-    str += '<form role="form">';
-    str += '<div class="form-group">';
-    str += '<label for="kc">K for K-Clustring:</label>';
-    str += '<input type="number" class="form-control" id="kclustering" min="1" placeholder="2">';
-    str += '</div></form>';
-    document.getElementById("countermeasure").innerHTML = str;
-}
-</script>
-
-<script type="text/javascript">
-function randLoc () {
-    document.getElementById("formGoesHere").innerHTML = document.getElementById('form_numberOfQueries').innerHTML;
-}
-function upldLoc () {
-    document.getElementById("formGoesHere").innerHTML = document.getElementById('form_uploadQueries').innerHTML;
-}
-</script>
-
-<script id="form_numberOfQueries" language="text">
-    <form class="form-inline" role="form" method="post" action="">
-        <div class="form-group">
-            <label>Specify number of queries: </label>
-            <input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">
-            <p class="error">
-                <?php 
-                    if ($queryErr != "") 
-                        $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
-                    echo $str; 
-                ?>
-            </p>
-        </div>
-        <br>
-        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
-    </form>
-</script>
-
-<script id="form_uploadQueries" language="text">
-    <form class="form-inline" role="form" method="post" action="">
-        <div class="form-group">
-            <label>Browse files...</label>
-            <input type="file" class="form-control" name="queries" id="queries">
-        </div>
-        <br><br>
-        <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button>
-    </form>
 </script>
 
 <?php
@@ -418,7 +663,6 @@ function upldLoc () {
         // echo "Jump";
         /* jump to result page */
         $str = "<script>window.location = 'result.php';</script>";
-        // header('Location:result.php');
         echo $str;
     }
 ?>
@@ -428,7 +672,7 @@ function upldLoc () {
     <div class="jumbotron">
         <h2>Moto demo</h2>      
         <p>
-            This is a demo for several techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
+            This is a demo of techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
             proposed in the paper: 
         </p>
         <p>
@@ -445,7 +689,7 @@ function upldLoc () {
         <form role="form">
             <div class="form-group">
                 <div class="col-md-3">
-                <select class="form-control" id="selc" onchange="getChannel();">
+                <select class="form-control" id="selc" onchange="setChannels();">
                     <option class="optclass" selected="selected">1</option>
                     <option class="optclass">2</option>
                     <option class="optclass">3</option>
@@ -459,29 +703,28 @@ function upldLoc () {
     <h3>Specify analysis area and location of primary users</h3> 
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
-       <span class="help-block">
-            Click rectangle icon to draw analysis area
-        </span>
-        <div id='googleMap' style='width:100%; height:420px;'></div>
+        <span class="help-block">Click rectangle icon to draw analysis area</span>
+        <div id='map-canvas' style='width:100%; height:420px;'></div>
     </div>
+    <div id="showBounds"></div>
 
     <!-- choose countermeasure -->
     <form role="form">
         <h3>Choose countermeasure</h2>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="0" onchange="clearCounterMeasure();">No countermeasure</label>
+          <label><input type="radio" id="cmopt0" name="cmopt" value=0 checked="checked" onchange="clearCounterMeasure();">No countermeasure</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="1" onchange="counterFunc1();">Additive Noise</label>
+          <label><input type="radio" id="cmopt1" name="cmopt" value=1 onchange="counterFunc1();">Additive Noise</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="2" onchange="counterFunc2();">Transfiguration</label>
+          <label><input type="radio" id="cmopt2" name="cmopt" value=2 onchange="counterFunc2();">Transfiguration</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="3" onchange="counterFunc3();">K-Anonymity</label>
+          <label><input type="radio" id="cmopt3" name="cmopt" value=3 onchange="counterFunc3();">K-Anonymity</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="cmopt" value="4" onchange="counterFunc4();">K-Clustering</label>
+          <label><input type="radio" id="cmopt4" name="cmopt" value=4 onchange="counterFunc4();">K-Clustering</label>
         </div>
     </form>
 
@@ -492,14 +735,14 @@ function upldLoc () {
     <form role="form">
         <h3>Specify queries</h3>
         <div class="radio">
-          <label><input type="radio" name="rand_upload" value="0" onchange="randLoc();">Generate query locations randomly</label>
+          <label><input type="radio" id="input_query0" name="input_query" value="0" onchange="randLoc();">Generate query locations randomly</label>
         </div>
         <div class="radio">
-          <label><input type="radio" name="rand_upload" value="1" onchange="upldLoc();">Upload text files specifing query locations</label>
+          <label><input type="radio" id="input_query1" name="input_query" value="1" onchange="upldLoc();">Upload text files specifing query locations</label>
         </div>
     </form>
 
-    <div id="formGoesHere"></div>
+    <div id="queryingForm"></div>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
@@ -508,10 +751,20 @@ function upldLoc () {
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Parameters</h4>
+              <h4 class="modal-title">Confirm parameters</h4>
             </div>
             <div class="modal-body">
-              <p id="confirmParam"></p>
+                <p>Number of channels</p>
+                <div class="well" id="wellchannel"></div>
+                <p>Analysis region</p>
+                <div class="well" id="wellregion"></div>
+                <p>Location of Primary user</p>
+                <div class="well" id="wellpu"></div>
+                <p>Countermeasure</p>
+                <div class="well" id="wellcm"></div>
+                <p>Queries</p>
+                <div class="well" id="wellquery"></div>
+                <p id="confirmParam"></p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -522,7 +775,7 @@ function upldLoc () {
     <br>
     <!-- result of passed params -->
     <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-primary">Start demo <span class="glyphicon glyphicon-play"></span></button>
+        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getParams(); return false;">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
     <br><br>
 </div>
