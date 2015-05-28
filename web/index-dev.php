@@ -22,19 +22,24 @@
 </head>
 
 <script type="text/javascript">
-var map;
-var drawingManager; var lastShape; var bounds;
-var myCenter = new google.maps.LatLng(37.227799, -80.422054);
-var numberOfChannels = 1;; var chanls = 1;
-var markers_one = [];
-var markers_two_channel0 = [];
-var markers_two_channel1 = [];
-var markers_three_channel0 = [];
-var markers_three_channel1 = [];
-var markers_three_channel2 = [];
+var map;                         // google map instance
+var drawingManager;              // helper object for drawing shapes on google map
+var lastShape; var bounds;       // rectangle object and its boundary
+var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
+var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
+var markers_one = [];            // channel for 1 channel
+var markers_two_channel0 = [];   // channel 0 for 2 channels
+var markers_two_channel1 = [];   // channel 1 for 2 channels
+var markers_three_channel0 = []; // channel 0 for 3 channels
+var markers_three_channel1 = []; // channel 1 for 3 channels
+var markers_three_channel2 = []; // channel 2 for 3 channels
 
+/*
+ * Initialize google map
+ */
 function initialize() {
     try {
+        // create a google map
         var mapProp = {
             zoom: 5,
             center: myCenter,
@@ -73,7 +78,6 @@ function initialize() {
 
             if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
                 bounds = lastShape.getBounds();
-                // console.log(bounds.toString());
             }
             map.setOptions({draggable: true});
                         drawingManager.setDrawingMode(null);
@@ -90,19 +94,18 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
+/*
+ * Place markers on google map
+ */
 function placeMarker(location) {
-    // console.log(numberOfChannels);
-    // console.log(chanls);
-
     if (lastShape == null || bounds == null || !bounds.contains(location)) {
         alert("Must select location with in analysis area");
         return;
     }
-    if (chanls == -1) {
+    if (chanls == undefined && numberOfChannels != 1) {
         alert("Must select channels first");
         return;
     }
-
     var marker = new google.maps.Marker({
         position: location,
         map: map,
@@ -121,20 +124,6 @@ function placeMarker(location) {
         if (chanls == 1) markers_three_channel1.push(marker);
         if (chanls == 2) markers_three_channel2.push(marker);
     }
-}
-
-function showMarkers() {
-    if (markers.length == 0) {
-        console.log("No PU");
-        document.getElementById("markers").innerHTML = "<p>No Primary user on the map</p>";
-        return;
-    }
-    var html = "<p>";
-    for (var index = 0; index < markers.length; index++) {
-        html += markers[index].position.lat() + ', ' + markers[index].position.lng() + '<br>';
-    }
-    html += "</p>";
-    document.getElementById("markers").innerHTML = html;
 }
 
 // Deletes all markers in the array by removing references to them.
@@ -158,11 +147,14 @@ function hideAllMarkers() {
         markers_three_channel2[i].setMap(null);
     }
 }
-
+/*
+ * Delete all markers on the map
+ * Delete rectangle on the map
+ */
 function resetAllMarkers() {
     if (lastShape != null) lastShape.setMap(null);
     bounds = null;
-    // chanls = -1;
+    chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
     }
@@ -189,14 +181,9 @@ function resetAllMarkers() {
     markers_three_channel2 = [];
 }
 
-function countDot(str) {
-    var count = 0;
-    for (var i = 0; i < str.length; i++) {
-        if (str.charAt(i) == '.') count++;
-    }
-    return count;
-}
-
+/*
+ * Display markers in @markers, hinding all other markers on map
+ */
 function markersOnChannel(markers) {
     hideAllMarkers();
     for (var i = 0; i < markers.length; i++) {
@@ -206,35 +193,37 @@ function markersOnChannel(markers) {
 </script>
 
 <script type="text/javascript">
+/* 
+ * Dispalying google map area in accordance with user specified number of channels
+ */
 function setChannels() {
     resetAllMarkers();
     var e = document.getElementById("selc");
     numberOfChannels = parseInt(e.options[e.selectedIndex].value);
-    // console.log(numberOfChannels);
     switch (numberOfChannels) {
     case 1:
-        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 2:
-        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
     case 3:
-        // console.log("Channel: " + numberOfChannels);
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
-        str += "<br><br><div id='googleMap' style='width:100%; height:380px;'></div>";
+        str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
+        str += "<div id='googleMap' style='width:100%; height:420px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -243,6 +232,9 @@ function setChannels() {
         break;
     }
 }
+/*
+ * When user select a channel, display only markers on that channel while hiding all others
+ */
 function selectChannel (arg) {
     chanls = arg;
     if (numberOfChannels == 1) markersOnChannel(markers_one);
@@ -255,6 +247,10 @@ function selectChannel (arg) {
 </script>
 
 <script type="text/javascript">
+/* 
+ * This script is used for displaying "countermeasure" div 
+ * according to user selected countermeasure
+ */
 function clearCounterMeasure (argument) {
     document.getElementById("countermeasure").innerHTML = "";
 }
@@ -300,15 +296,19 @@ function counterFunc4 () {
 </script>
 
 <script type="text/javascript">
+/*
+ * This script is used to display "queryingForm" div according to user's choice of query
+ */
 function randLoc () {
-    document.getElementById("formGoesHere").innerHTML = document.getElementById('form_numberOfQueries').innerHTML;
+    document.getElementById("queryingForm").innerHTML = document.getElementById('randomQueries').innerHTML;
 }
 function upldLoc () {
-    document.getElementById("formGoesHere").innerHTML = document.getElementById('form_uploadQueries').innerHTML;
+    document.getElementById("queryingForm").innerHTML = document.getElementById('uploadQueries').innerHTML;
 }
 </script>
 
-<script id="form_numberOfQueries" language="text">
+<script id="randomQueries" language="text">
+<!-- HTML wraped as script -->
     <form class="form-inline" role="form" method="post" action="">
         <div class="form-group">
             <label>Specify number of queries: </label>
@@ -326,7 +326,8 @@ function upldLoc () {
     </form>
 </script>
 
-<script id="form_uploadQueries" language="text">
+<script id="uploadQueries" language="text">
+<!-- HTML wraped as script -->
     <form class="form-inline" role="form" method="post" action='upload.php'>
         <div class="form-group">
             <label>Browse files...</label>
@@ -338,22 +339,21 @@ function upldLoc () {
 </script>
 
 <script type="text/javascript">
-var file_name;
+var file_name;  // file name of user uploaded text file
 function uploadfile () {
     var form = document.getElementById('file-form');
     var fileSelect = document.getElementById('file-select');
     var uploadButton = document.getElementById('upload-button');
     // Update button text.
     uploadButton.innerHTML = 'Uploading...';
-    // The rest of the code will go here...
     // Get the selected files from the input.
     var files = fileSelect.files;
     // Create a new FormData object.
     var formData = new FormData();
-    // Loop through each of the selected files.
+    // Get the file name.
     var file = files[0];
     file_name = file.name;
-
+    // Attach file in FormData
     formData.append('uploadthisfile', file, file.name);
     // Set up the request.
     var xhr = new XMLHttpRequest();
@@ -376,26 +376,32 @@ function uploadfile () {
 </script>
 
 <script type="text/javascript">
-var channel_number;
-var analysis_region = [];
-var location_PU = []; 
-var countermeasure;
-var queries_number;
-var queries_file;
-var args;
+var channel_number;        // number of channels
+var analysis_region = [];  // region
+var location_PU = [];      // pu's location
+var countermeasure;        // countermeasure
+var queries_number;        // number of queries
+var queries_file;          // name of querying file
+var args;                  // formatted params as a argument for java program
 
 function getParams () {
+    // get number of channels
     channel_number = numberOfChannels;
     if (channel_number <= 0 || channel_number > 3) {
         alert("Channel number invalid! Please check your channel selection");
         return;
     }
     console.log("Channel number: " + channel_number);
+    // get region boundaries
     analysis_region = [];
     if (bounds != null) {
+        // upper lat
         analysis_region.push(bounds.getNorthEast().lat());
+        // right lng
         analysis_region.push(bounds.getNorthEast().lng());
+        // lower lat
         analysis_region.push(bounds.getSouthWest().lat());
+        // left lng
         analysis_region.push(bounds.getSouthWest().lng());
     }
     if (channel_number == 1 && markers_one.length == 0) {
@@ -410,7 +416,7 @@ function getParams () {
         alert("No primary user on channel 1, channel 2 or channel 3!");
         return;
     }
-
+    // get pus' location
     location_PU = [];
     if (channel_number == 1) location_PU.push(markers_one);
     if (channel_number == 2) {
@@ -423,6 +429,7 @@ function getParams () {
         location_PU.push(markers_three_channel2);
     }
 
+    // get countermeasure
     if (document.getElementById('cmopt0').checked) {
         countermeasure = "NO_COUNTERMEASURE";
     }
@@ -443,9 +450,9 @@ function getParams () {
         alert("Undefined countermeasure!");
         return;
     }
-
     console.log("Countermeasure: " + countermeasure);
 
+    // get query method
     queries_file = null; queries_number = null;
     if (document.getElementById("input_query0").checked) {
         queries_number = document.getElementById("queries").value;
@@ -468,6 +475,7 @@ function getParams () {
         return;
     }
 
+    // formatting params
     args = "-a " + analysis_region[0] + " " + analysis_region[3] + " " + analysis_region[2] + " " + analysis_region[1] + " ";
     args += "-c " + channel_number + " ";
     for (var i = 0; i < location_PU.length; i++) {
@@ -498,21 +506,29 @@ function getParams () {
     else {
         args += "-f " + queries_file;
     }
-
+    // output formatted args to console
     console.log("args=" + args);
     // xmlhttp.send("args=" + args);
-    // document.getElementById("confirmParam").innerHTML = "args = " + args;
+
+    // number of channels
     document.getElementById("wellchannel").innerHTML = channel_number;
+    // anaysis area
+    var regionstr = "";
+    regionstr += "North latitude: " + analysis_region[0] + "<br>";
+    regionstr += "South latitude: " + analysis_region[2] + "<br>";
+    regionstr += "West longitude: " + analysis_region[3] + "<br>";
+    regionstr += "East longitude: " + analysis_region[1] + "<br>";
+    document.getElementById("wellregion").innerHTML = regionstr;
+    // location of pu
     var pustr = "";
-    // console.log("location_PU length: " + location_PU.length);
     for (var i = 0; i < location_PU.length; i++) {
-        // console.log("i: " + i);
         pustr += "Primary user on channel " + i + "<br>";
         for (var j = 0; j < location_PU[i].length; j++) {
             pustr += "( " + location_PU[i][j].position.lat() + ", " + location_PU[i][j].position.lng() + " ) <br>";
         }
     }
     document.getElementById("wellpu").innerHTML = pustr;
+    // countermeasure
     var cmstr = "";
     switch(countermeasure) {
         case "ADDITIVE_NOISE":
@@ -532,6 +548,7 @@ function getParams () {
             break;
     }
     document.getElementById("wellcm").innerHTML = cmstr;
+    // query
     var querystr = "";
     if (queries_number != null) {
         querystr = "Randomly generated location<br>Number of queries: " + queries_number;
@@ -634,7 +651,7 @@ function SendParams()
     <div class="jumbotron">
         <h2>Moto demo</h2>      
         <p>
-            This is a demo for several techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
+            This is a demo of techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
             proposed in the paper: 
         </p>
         <p>
@@ -665,9 +682,7 @@ function SendParams()
     <h3>Specify analysis area and location of primary users</h3> 
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
-       <span class="help-block">
-            Click rectangle icon to draw analysis area
-        </span>
+        <span class="help-block">Click rectangle icon to draw analysis area</span>
         <div id='googleMap' style='width:100%; height:420px;'></div>
     </div>
 
@@ -705,7 +720,7 @@ function SendParams()
         </div>
     </form>
 
-    <div id="formGoesHere"></div>
+    <div id="queryingForm"></div>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
@@ -719,7 +734,9 @@ function SendParams()
             <div class="modal-body">
                 <p>Number of channels</p>
                 <div class="well" id="wellchannel"></div>
-                <p>Location of Primary users:</p>
+                <p>Analysis region</p>
+                <div class="well" id="wellregion"></div>
+                <p>Location of Primary user</p>
                 <div class="well" id="wellpu"></div>
                 <p>Countermeasure</p>
                 <div class="well" id="wellcm"></div>
