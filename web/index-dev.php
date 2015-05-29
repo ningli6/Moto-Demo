@@ -21,6 +21,14 @@
     <link href="sticky-footer.css" rel="stylesheet">
 </head>
 
+<style type="text/css">
+#cmval, #queries {
+    border-left-width: 1px;
+    margin-left: 10px;  
+    text-align: center;
+}
+</style>
+
 <script type="text/javascript">
 var map;                         // google map instance
 var drawingManager;              // helper object for drawing shapes on google map
@@ -277,18 +285,18 @@ function clearCounterMeasure (argument) {
 
 function counterFunc1() {
     var str = "";
-    str += '<form clas="form-inline" role="form">';
-    str += '<div class="form-group">';
-    str += '<label for="noise">Noise level:</label>';
-    str += '<input type="number" class="form-control" id="cmval" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
+    str += '<form class="form-inline" role="form">';
+    str += '<div class="form-group" style="width: 50%">';
+    str += '<label for="additive_noise">Noise Level:  </label>';
+    str += '<input type="number" class="form-control" id="cmval" style="width: 30%" min="0.0" max="1.0" step="0.1" placeholder="0.5">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
 }
 function counterFunc2 () {
     var str = "";
-    str += '<form role="form">';
+    str += '<form class="form-inline" role="form">';
     str += '<div class="form-group">';
-    str += '<label for="polygon">Sides for convex polygon:</label>';
+    str += '<label for="polygon">Sides for convex polygon:  </label>';
     str += '<input type="number" class="form-control" id="cmval" min="3" placeholder="3">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
@@ -296,9 +304,9 @@ function counterFunc2 () {
 
 function counterFunc3 () {
     var str = "";
-    str += '<form role="form">';
+    str += '<form class="form-inline" role="form">';
     str += '<div class="form-group">';
-    str += '<label for="ka">K for K-Anonymity:</label>';
+    str += '<label for="ka">K for K-Anonymity:  </label>';
     str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
@@ -306,9 +314,9 @@ function counterFunc3 () {
 
 function counterFunc4 () {
     var str = "";
-    str += '<form role="form">';
+    str += '<form class="form-inline" role="form">';
     str += '<div class="form-group">';
-    str += '<label for="kc">K for K-Clustering:</label>';
+    str += '<label for="kc">K for K-Clustering:  </label>';
     str += '<input type="number" class="form-control" id="cmval" min="1" placeholder="2">';
     str += '</div></form>';
     document.getElementById("countermeasure").innerHTML = str;
@@ -401,6 +409,7 @@ var countermeasure;        // countermeasure
 var queries_number;        // number of queries
 var queries_file;          // name of querying file
 var args;                  // formatted params as a argument for java program
+var email;                 // send result to this email
 
 function getParams () {
     // get number of channels
@@ -576,6 +585,16 @@ function getParams () {
     }
     document.getElementById("wellquery").innerHTML = querystr;
 
+    // email
+    var emailstr ="";
+    email = document.getElementById("email").value;
+    if (email == "" || email == null || email == undefined) {
+        emailstr = "Please provide your email address! Demo result will be sent to this address.";
+        return;
+    }
+    emailstr = email;
+    document.getElementById("wellemail").innerHTML = emailstr;
+
     /* if everything works well, start modal */
     $('#myModal').modal({
         backdrop: true,
@@ -602,20 +621,9 @@ function SendParams()
             // document.getElementById("params").innerHTML=xmlhttp.responseText;
         }
     }
-    xmlhttp.open("POST","ajax.php", true);
+    xmlhttp.open("POST","result-dev.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    var args = "-a " + ulla + " " + ullg + " " + lrla + " " + lrlg + " ";
-    args += "-c " + numberOfChannels + " -C ";
-    for (var i = 0; i < markers.length; i++) {
-        args += markers[i].position.lat() + " " + markers[i].position.lng() + " ";
-    }
-    var nq = document.getElementById("queries").value;
-    args += "-q " + nq;
-    console.log("args=" + args);
     xmlhttp.send("args=" + args);
-    var fstr = "args=" + args;
-    document.getElementById("confirmParam").innerHTML = fstr;
-    // window.alert("args: " + args);
 }
 </script>
 
@@ -688,23 +696,19 @@ function SendParams()
     </div>
 
     <!-- dropdown -->
-    <h3>Specify number of channels</h3>
-    <div class="row">
-        <form role="form">
-            <div class="form-group">
-                <div class="col-md-2 col-sm-2 col-xs-3">
-                <select class="form-control" id="selc" onchange="setChannels();">
-                    <option class="optclass" selected="selected">1</option>
-                    <option class="optclass">2</option>
-                    <option class="optclass">3</option>
-                </select>
-                </div>
-            </div>
-        </form>
-    </div>
+    <h4>Specify number of channels</h4>
+    <form role="form">
+        <div class="form-group">
+            <select class="form-control" id="selc" style="width: 15%"></style> onchange="setChannels();">
+                <option class="optclass" selected="selected">1</option>
+                <option class="optclass">2</option>
+                <option class="optclass">3</option>
+            </select>
+        </div>
+    </form>
 
     <!-- google map -->
-    <h3>Specify analysis area and location of primary users</h3> 
+    <h4>Specify analysis area and location of primary users</h4> 
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
@@ -714,7 +718,7 @@ function SendParams()
 
     <!-- choose countermeasure -->
     <form role="form">
-        <h3>Choose countermeasure</h3>
+        <h4>Choose countermeasure</h4>
         <div class="radio">
           <label><input type="radio" id="cmopt0" name="cmopt" value=0 checked="checked" onchange="clearCounterMeasure();">No countermeasure</label>
         </div>
@@ -732,12 +736,10 @@ function SendParams()
         </div>
     </form>
 
-    <div class="row">
-        <div class="col-md-4" id="countermeasure"></div>
-    </div>
+    <div id="countermeasure"></div>
 
     <form role="form">
-        <h3>Specify queries</h3>
+        <h4>Specify queries</h4>
         <div class="radio">
           <label><input type="radio" id="input_query0" name="input_query" value="0" onchange="randLoc();">Generate query locations randomly</label>
         </div>
@@ -747,6 +749,14 @@ function SendParams()
     </form>
 
     <div id="queryingForm"></div>
+
+    <form class="form-inline" role="form">
+        <h4>Send result to this email</h4>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" style="margin-left: 10px" id="email" placeholder="example@vt.edu">
+        </div>
+    </form>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
@@ -768,7 +778,8 @@ function SendParams()
                 <div class="well" id="wellcm"></div>
                 <h4>Queries</h4>
                 <div class="well" id="wellquery"></div>
-                <p id="confirmParam"></p>
+                <h4>Email</h4>
+                <div class="well" id="wellemail"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" onclick="sendParams();">Launch</button>
@@ -779,15 +790,13 @@ function SendParams()
     </div>
     <br>
     <!-- result of passed params -->
-    <form role="form" method="post" action="">
-        <button type="submit" class="btn btn-primary" onclick="getParams(); return false;">Start demo <span class="glyphicon glyphicon-play"></span></button>
-    </form>
-    <br><br>
+    <button type="submit" class="btn btn-primary btn-lg" style="float: right;" onclick="getParams();">Start demo <span class="glyphicon glyphicon-play"></span></button>
+    <br><br><br><br>
 </div>
 
 <footer class="footer">
     <div class="container" id="fter" style="margin-right: 55px">
-        <p class="text-muted" style="text-align: right"><a href="#">Contact us</a></p>
+        <p class="text-muted" style="text-align: right"><a href="#" style="padding-right: 10px;">Contact us</a></p>
     </div>
 </footer>
 
