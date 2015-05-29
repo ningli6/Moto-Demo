@@ -758,7 +758,7 @@ function SendParams()
                 <div class="well" id="wellchannel"></div>
                 <p>Analysis region</p>
                 <div class="well" id="wellregion"></div>
-                <p>Location of Primary user</p>
+                <p>Location of primary users</p>
                 <div class="well" id="wellpu"></div>
                 <p>Countermeasure</p>
                 <div class="well" id="wellcm"></div>

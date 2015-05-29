@@ -24,7 +24,7 @@
 <script type="text/javascript">
 var map;                         // google map instance
 var drawingManager;              // helper object for drawing shapes on google map
-var lastShape; var recRegion;       // rectangle object and its boundary
+var lastShape; var recRegion;    // rectangle object and its boundary
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
 var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
 var markers_one = [];            // channel for 1 channel
@@ -42,9 +42,6 @@ function initialize() {
         var mapProp = {
             zoom: 5,
             center: myCenter,
-            // mapTypeId: google.maps.MapTypeId.ROADMAP,
-            // disableDefaultUI: false,
-            // zoomControl: true
         };
         map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
 
@@ -68,7 +65,7 @@ function initialize() {
             rectangleOptions: shapeOptions,
             map: map
         });
-
+        // Add an event listener on the drawingManager for drawing complete
         google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
             if (lastShape != undefined) {
                 lastShape.setMap(null);
@@ -84,7 +81,7 @@ function initialize() {
                 console.log(recRegion.toString());
             }
             drawingManager.setDrawingMode(null);
-            // Add an event listener on the rectangle.
+            // Add an event listener on the rectangle for bounds change
             google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
                 lastShape = e.overlay;
                 lastShape.type = e.type;
@@ -94,7 +91,7 @@ function initialize() {
                 console.log(recRegion.toString());
             });
         });
-
+        // Add an event listener on the map for click
         google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
         });
@@ -345,7 +342,6 @@ function upldLoc () {
             </p>
         </div>
         <br>
-        <!-- <button type="submit" class="btn btn-success" data-toggle="modal" data-target="#myModal" onclick="SendParams(); return false;">Confirm parameters</button> -->
     </form>
 </script>
 
@@ -355,9 +351,8 @@ function upldLoc () {
         <div class="form-group">
             <label>Browse files...</label>
             <input type="file" class="form-control" id="file-select" name="uploadthisfile">
+            <button type="submit" class="btn btn-default" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
         </div>
-        <br><br>
-        <button type="submit" class="btn btn-success" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
     </form>
 </script>
 
@@ -428,15 +423,15 @@ function getParams () {
         analysis_region.push(recRegion.getSouthWest().lng());
     }
     if (channel_number == 1 && markers_one.length == 0) {
-        alert("No primary user on channel 1!");
+        alert("Please define working channel and location for primary user!");
         return;
     } 
     if (channel_number == 2 && markers_two_channel0.length == 0 && markers_two_channel1.length == 0) {
-        alert("No primary user on channel 1 or channel 2!");
+        alert("Please define working channel and location for primary user!");
         return;
     } 
     if (channel_number == 3 && markers_three_channel0.length == 0 && markers_three_channel1.length == 0 && markers_three_channel2.length == 0) {
-        alert("No primary user on channel 1, channel 2 or channel 3!");
+        alert("Please define working channel and location for primary user!");
         return;
     }
     // get pus' location
@@ -476,12 +471,12 @@ function getParams () {
     console.log("Countermeasure: " + countermeasure);
 
     // get query method
-    queries_file = null; queries_number = null;
     if (document.getElementById("input_query0").checked) {
         queries_number = document.getElementById("queries").value;
         console.log("Query number: " + queries_number);
-        if (queries_number < 0 || queries_number == null) {
-            alert("Queries must be nonnegative!");
+        console.log(typeof queries_number);
+        if (queries_number == "") {
+            alert("Please specify number of queries!");
             return;
         }
     }
@@ -489,7 +484,7 @@ function getParams () {
         queries_file = file_name;
         console.log("Query file: " + queries_file);
         if (queries_file == null) {
-            alert("File name empty! Please check upload process");
+            alert("Please upload a text file containing location information");
             return;
         }
     }
@@ -580,6 +575,13 @@ function getParams () {
         querystr = "Use location from " + queries_file;
     }
     document.getElementById("wellquery").innerHTML = querystr;
+
+    /* if everything works well, start modal */
+    $('#myModal').modal({
+        backdrop: true,
+        keyboard: true,
+        show: true
+    })
 }
 
 function SendParams()
@@ -690,7 +692,7 @@ function SendParams()
     <div class="row">
         <form role="form">
             <div class="form-group">
-                <div class="col-md-3">
+                <div class="col-md-2 col-sm-2 col-xs-3">
                 <select class="form-control" id="selc" onchange="setChannels();">
                     <option class="optclass" selected="selected">1</option>
                     <option class="optclass">2</option>
@@ -712,7 +714,7 @@ function SendParams()
 
     <!-- choose countermeasure -->
     <form role="form">
-        <h3>Choose countermeasure</h2>
+        <h3>Choose countermeasure</h3>
         <div class="radio">
           <label><input type="radio" id="cmopt0" name="cmopt" value=0 checked="checked" onchange="clearCounterMeasure();">No countermeasure</label>
         </div>
@@ -753,31 +755,32 @@ function SendParams()
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title">Confirm parameters</h4>
+              <h3 class="modal-title">Confirm parameters</h3>
             </div>
             <div class="modal-body">
-                <p>Number of channels</p>
+                <h4>Number of channels</h4>
                 <div class="well" id="wellchannel"></div>
-                <p>Analysis region</p>
+                <h4>Analysis region</h4>
                 <div class="well" id="wellregion"></div>
-                <p>Location of Primary user</p>
+                <h4>Location of primary users</h4>
                 <div class="well" id="wellpu"></div>
-                <p>Countermeasure</p>
+                <h4>Countermeasure</h4>
                 <div class="well" id="wellcm"></div>
-                <p>Queries</p>
+                <h4>Queries</h4>
                 <div class="well" id="wellquery"></div>
                 <p id="confirmParam"></p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="sendParams();">Launch</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>   
         </div>
     </div>
     <br>
     <!-- result of passed params -->
-    <form role="form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getParams(); return false;">Start demo <span class="glyphicon glyphicon-play"></span></button>
+    <form role="form" method="post" action="">
+        <button type="submit" class="btn btn-primary" onclick="getParams(); return false;">Start demo <span class="glyphicon glyphicon-play"></span></button>
     </form>
     <br><br>
 </div>
