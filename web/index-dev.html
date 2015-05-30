@@ -341,13 +341,6 @@ function upldLoc () {
         <div class="form-group">
             <label>Specify number of queries: </label>
             <input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">
-            <p class="error">
-                <?php 
-                    if ($queryErr != "") 
-                        $str = "<div class='alert alert-danger'>" . $queryErr . "</div>";
-                    echo $str; 
-                ?>
-            </p>
         </div>
         <br>
     </form>
@@ -483,7 +476,6 @@ function getParams () {
     if (document.getElementById("input_query0").checked) {
         queries_number = document.getElementById("queries").value;
         console.log("Query number: " + queries_number);
-        console.log(typeof queries_number);
         if (queries_number == "") {
             alert("Please specify number of queries!");
             return;
@@ -499,6 +491,17 @@ function getParams () {
     }
     if (queries_number == null && queries_file == null) {
         alert("Please specify querying method");
+        return;
+    }
+
+    // get email
+    email = document.getElementById("email").value;
+    if (email == "" || email == null || email == undefined) {
+        alert("Please provide your email address! Demo result will be sent to this address.");
+        return;
+    }
+    if (!validateEmail(email)) {
+        alert("Email address not valid!");
         return;
     }
 
@@ -537,6 +540,7 @@ function getParams () {
     console.log("args=" + args);
     // xmlhttp.send("args=" + args);
 
+    /* fill in wells */
     // number of channels
     document.getElementById("wellchannel").innerHTML = channel_number;
     // anaysis area
@@ -586,14 +590,7 @@ function getParams () {
     document.getElementById("wellquery").innerHTML = querystr;
 
     // email
-    var emailstr ="";
-    email = document.getElementById("email").value;
-    if (email == "" || email == null || email == undefined) {
-        emailstr = "Please provide your email address! Demo result will be sent to this address.";
-        return;
-    }
-    emailstr = email;
-    document.getElementById("wellemail").innerHTML = emailstr;
+    document.getElementById("wellemail").innerHTML = email;
 
     /* if everything works well, start modal */
     $('#myModal').modal({
@@ -603,7 +600,13 @@ function getParams () {
     })
 }
 
-function SendParams()
+function validateEmail(email) {
+    var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+    // var re = [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?;
+    return re.test(email);
+}
+
+function sendParams()
 {
     var xmlhttp;
     if (window.XMLHttpRequest)
@@ -619,65 +622,23 @@ function SendParams()
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
         {
             // document.getElementById("params").innerHTML=xmlhttp.responseText;
+            alert("Demo has been started successfully! Please check your email later for result.\nThanks for using!");
+            // reload page
+            window.location = 'index-dev.html';
+        }
+        if (xmlhttp.readyState == 4 && xmlhttp.status != 200)
+        {
+            // document.getElementById("params").innerHTML=xmlhttp.responseText;
+            alert("Sorry. Failed to start demo. " + xmlhttp.status);
+            // reload page
+            window.location = 'index-dev.html';
         }
     }
     xmlhttp.open("POST","result-dev.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.send("args=" + args);
+    xmlhttp.send("args=" + args + "&Email=" + email);
 }
 </script>
-
-<?php
-    /* add external helper php script */
-    // require 'script-dev.php';
-    session_start();
-    /* nuber of channels */
-    $number_of_channels;
-    /* nuber of queries */
-    $number_of_queries;
-    /* error message */
-    $channelErr = $queryErr = "";
-    /* handle form submit */
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // $args = $_REQUEST['args'];
-        $args = $_SESSION["args"];
-        // if (empty($args)) {
-        //     echo "Args is empty";
-        // } else {
-        //     echo $args;
-        // }
-        // $log = "<script type='text/javascript'>console.log('Fail to start demo')</script>";
-        // echo $args;
-        if (!empty($args)) {
-            $output = "";
-            // $output = startDemo($args);
-            $command = "java -cp Project tests/Main " . $args;
-            // echo $command;
-            exec($command, $output);
-            if (empty($output)) 
-                $output = "Program is unable to start!";
-            // echo $output;
-        }
-        // if (isset($_POST["queries"])) {
-        //     // $output = startDemo($number_of_channels, $number_of_queries, $channelErr, $queryErr);
-        // }
-    }
-    if ($output == "Program is unable to start!") {
-        $alert = "<script type='text/javascript'>window.alert('Fail to start demo')</script>";
-        echo $alert;
-    }
-    else if ($output != "") {
-        /* use session to store message to keep values between pages */
-        // $_SESSION['NUMBER_OF_CHANNELS'] = $number_of_channels;
-        // $_SESSION['NUMBER_OF_QUERIES'] = $number_of_queries;
-        $_SESSION['OUTPUT'] = $output;
-        // echo "Jump";
-        /* jump to result page */
-        $str = "<script>window.location = 'result-dev.php';</script>";
-        // header('Location:result-dev.php');
-        echo $str;
-    }
-?>
 
 <body>
 <div class="container">
