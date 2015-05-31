@@ -10,23 +10,31 @@ public class Boot {
 		if (!bp.isCountermeasure()) {
 			// startDemo(bp);
 		}
-		switch(bp.countermeasure()) {
-			case "ADDITIVENOISE": 
-				// startDemoWithAN(bp);
-				break;
-			case "TRANSFIGURATION": 
-				// startDemoWithAN(bp);
-				break;
-			case "KANONYMITY": 
-				// startDemoWithAN(bp);
-				break;
-			case "KCLUSTERING": 
-				// startDemoWithAN(bp);
-				break;
-			default:
+		else {
+			if (bp.countermeasure() == null) {
 				System.out.println("FAILED");
 				return;
+			}
+			else {
+				switch(bp.countermeasure()) {
+					case "ADDITIVENOISE": 
+						// startDemoWithAN(bp);
+						break;
+					case "TRANSFIGURATION": 
+						// startDemoWithAN(bp);
+						break;
+					case "KANONYMITY": 
+						// startDemoWithAN(bp);
+						break;
+					case "KCLUSTERING": 
+						// startDemoWithAN(bp);
+						break;
+					default:
+						System.out.println("FAILED");
+						return;
+				}
+			}
 		}
-		System.out.println("Succeeded");
+		System.out.println("OK");
 	}
 }

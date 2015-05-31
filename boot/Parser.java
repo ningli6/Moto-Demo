@@ -2,26 +2,19 @@ package boot;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Parser {
-	// private String params;
-	// private BootParams bootParams;
-
-	// public Parser(String s) {
-	// 	this.params = s;
-	// 	bootParams = parse(params);
-	// }
-
-	// public String getParams() {
-	// 	return params;
-	// }
-
-	// public BootParams getBootParams() {
-	// 	return bootParams;
-	// }
+	public static Map<String, String> cmswitch;
 
 	public static BootParams parse(String[] args) {
 		if (args == null) return null;
+		if (cmswitch == null) {
+			cmswitch = new HashMap<String, String>();
+			cmswitch.put("-an", "ADDITIVENOISE"); cmswitch.put("-tf", "TRANSFIGURATION");
+			cmswitch.put("-ka", "KANONYMITY"); cmswitch.put("-kc", "KCLUSTERING");
+		}
 		BootParams bootParams = new BootParams();
 		try {
 			if (!args[0].equals("-a")) {
@@ -55,25 +48,47 @@ public class Parser {
 			while(i < args.length) {
 				if (args[i].equals("-C")) {
 					putchannel++;
+					if (args[i + 1].equals("-C")) {
+						i++;
+						continue;
+					}
 					init[putchannel].add(new LatLng(Double.parseDouble(args[++i]), Double.parseDouble(args[++i])));
 					i++;
 				}
-				else if (!args[i].equals("-C") && !args[i].equals("-q")) {
+				else if (!args[i].equals("-C") && !args[i].equals("-q") && !args[i].equals("-f") && !cmswitch.containsKey(args[i])) {
 					init[putchannel].add(new LatLng(Double.parseDouble(args[i]), Double.parseDouble(args[++i])));
 					i++;
 				}
 				else break;
 			}
 			bootParams.setPUonChannels(init);
-			if (i == args.length - 1) throw new IllegalArgumentException("Must speficify number of queries");
-			bootParams.setNumberOfQueries(Integer.parseInt(args[i + 1]));
+			if (i == args.length) throw new IllegalArgumentException("Invalid ending");
+			if (cmswitch.containsKey(args[i])) {
+				bootParams.setCountermeasure(cmswitch.get(args[i++]));
+				bootParams.setCMParam(Double.parseDouble(args[i++]));
+			}
+			if (i == args.length) throw new IllegalArgumentException("Invalid ending");
+			if (args[i].equals("-f")) {
+				bootParams.useFile(args[++i]);
+			}
+			else if (args[i].equals("-q")){
+				bootParams.setNumberOfQueries(Integer.parseInt(args[++i]));
+			}
+			else {
+				throw new IllegalArgumentException("Invalid ending");
+			}
 			return bootParams;
 		}
 		catch (Exception e) {
 			System.out.println("Exception thrown:" + e);
 			System.out.println("Usage: ");
-			System.out.println("java Main -a lat lon lat lon -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries");
+			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries");
 			return null;
 		}
+	}
+
+	public static void main(String[] args) {
+		BootParams bp = Parser.parse(args);
+		bp.printParams();
 	}
 }

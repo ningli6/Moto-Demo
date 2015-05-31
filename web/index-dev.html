@@ -474,12 +474,10 @@ function getParams () {
         alert("Undefined countermeasure!");
         return;
     }
-    console.log("Countermeasure: " + countermeasure);
 
     // get query method
     if (document.getElementById("input_query0").checked) {
         queries_number = document.getElementById("queries").value;
-        console.log("Query number: " + queries_number);
         if (queries_number == "") {
             alert("Please specify number of queries!");
             return;
@@ -487,7 +485,6 @@ function getParams () {
     }
     if (document.getElementById("input_query1").checked) {
         queries_file = file_name;
-        console.log("Query file: " + queries_file);
         if (queries_file == null) {
             alert("Please upload a text file containing location information");
             return;
@@ -542,7 +539,6 @@ function getParams () {
     }
     // output formatted args to console
     console.log("args=" + args);
-    // xmlhttp.send("args=" + args);
 
     /* fill in wells */
     // number of channels
@@ -625,8 +621,13 @@ function sendParams()
     {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
         {
-            // document.getElementById("params").innerHTML=xmlhttp.responseText;
-            alert("Demo has been started successfully! Please check your email later for result.\nThanks for using!");
+            var res = xmlhttp.responseText;
+            if (res == "OK") {
+                alert("Demo has been started successfully! Please check your email later for result.\nThanks for using!");
+            }
+            else {
+                alert("Demo failed. " + res);
+            }
             // reload page
             window.location = 'index-dev.html';
         }
