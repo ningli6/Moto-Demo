@@ -1,3 +1,0 @@
-java tests/autoTestKClustering 2
-java tests/autoTestKClustering 10
-java tests/autoTest
