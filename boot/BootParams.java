@@ -10,7 +10,7 @@ public class BootParams {
 	private double WestLng;
 	private List<LatLng>[] PUList;
 	private boolean isCountermeasure;
-	private String countermeasure;
+	private String countermeasure = "NOCOUNTERMEASURE";
 	private double counterParamD = -1;
 	private int counterParamI = -1;
 	private int number_of_queries = -1;

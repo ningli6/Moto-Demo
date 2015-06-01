@@ -14,7 +14,7 @@ import client.Client;
 
 public class Server {
 	public static double PMAX = 1;
-	public static int Number_Of_Channels = 1;
+	public int Number_Of_Channels = 1;
 	// Server has an instance of GridMap
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;

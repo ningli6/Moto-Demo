@@ -1,34 +1,47 @@
 package demo;
 
+import boot.*;
+
 public class RunnableInterface implements Runnable {
-   private Thread t;
-   private String threadName;
-   
-   public RunnableInterface(String name){
-       threadName = name;
-       // System.out.println("Creating " +  threadName );
-   }
-   public void run() {
-      // System.out.println("Running " +  threadName );
-      try {
-         for(int i = 4; i > 0; i--) {
-            System.out.println("Thread: " + threadName + ", " + i);
-            // Let the thread sleep for a while.
-            Thread.sleep(50);
-         }
-     } catch (InterruptedException e) {
-         System.out.println("Thread " +  threadName + " interrupted.");
-     }
-     System.out.println("Thread " +  threadName + " exiting.");
-   }
-   
-   public void start ()
-   {
-      System.out.println("Starting " +  threadName );
-      if (t == null)
-      {
-         t = new Thread (this, threadName);
-         t.start();
-      }
-   }
+    private Thread t;
+    private String threadName;
+    private BootParams bootParams;
+
+    public RunnableInterface(BootParams bp){
+        this.bootParams = bp;
+        threadName = bp.countermeasure();
+        System.out.println("Creating " +  threadName );
+    }
+    public void run() {
+        System.out.println("Running " +  threadName );
+        try {
+            switch (threadName) {
+                case "NOCOUNTERMEASURE":
+                    RunNoCountermeasure runNoCountermeasure = new RunNoCountermeasure(bootParams);
+                    runNoCountermeasure.run();
+                    break;
+                case "ADDITIVENOISE":
+                    break;
+                case "TRANSFIGURATION":
+                    break;
+                case "KANONYMITY":
+                    break;                                    
+                case "KCLUSTERING":
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Thread " +  threadName + " interrupted.");
+        }
+        System.out.println("Thread " +  threadName + " exiting.");
+    }
+
+    public void start ()
+    {
+        System.out.println("Starting " +  threadName );
+        if (t == null)
+        {
+            t = new Thread (this, threadName);
+            t.start();
+        }
+    }
 }

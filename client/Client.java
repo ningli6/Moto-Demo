@@ -13,7 +13,7 @@ import server.*;
 
 public class Client {
 	public static final double PMAX = 1;
-	public static int Number_Of_Channels = 1;
+	public int Number_Of_Channels = 1;
 	// location of the SU
 	private Location location;
 	private int indexOfRow;

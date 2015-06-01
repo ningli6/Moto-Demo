@@ -10,36 +10,14 @@ public class Boot {
 			System.out.println("FAILED");
 			return;
 		}
-		if (!bp.isCountermeasure()) {
-			R = new RunnableInterface("NOCOUNTERMEASURE");
+		if (bp.isCountermeasure() && bp.countermeasure().equals("NOCOUNTERMEASURE")) {
+			System.out.println("FAILED");
+			return;
 		}
-		else {
-			if (bp.countermeasure() == null) {
-				System.out.println("FAILED");
-				return;
-			}
-			else {
-				switch(bp.countermeasure()) {
-					case "ADDITIVENOISE": 
-						R = new RunnableInterface("ADDITIVENOISE");
-						break;
-					case "TRANSFIGURATION": 
-						R = new RunnableInterface("TRANSFIGURATION");
-						break;
-					case "KANONYMITY": 
-						R = new RunnableInterface("KANONYMITY");
-						break;
-					case "KCLUSTERING": 
-						R = new RunnableInterface("KCLUSTERING");
-						break;
-					default:
-						System.out.println("FAILED");
-						return;
-				}
-			}
-		}
+		R = new RunnableInterface(bp);
 		if (R == null) {
-			System.out.println("FAILED"); return;
+			System.out.println("FAILED");
+			return;
 		}
 	    R.start();
 		System.out.println("OK");
