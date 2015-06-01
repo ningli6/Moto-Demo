@@ -1,4 +1,3 @@
-<!-- This page start java program and send out email -->
 <?php
     require 'PHPMailer/PHPMailerAutoload.php';
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -7,9 +6,11 @@
         /* start java program */
         $command = "java -cp Project boot/Boot " . $args;
         /* indicate if program has started successfully */
-        $output = "OK";
-        // exec($command, $output);
-        if ($output != "OK") die("Program failed to start!");
+        $output = ""; 
+        exec($command, $output);
+        if ($output[0] != "OK") {
+            die("Demo failed to start! ");
+        }
         /* email message */
         $receiver = $_REQUEST['Email'];
         if ($receiver == "") die("Empty email address");
@@ -49,5 +50,13 @@
         } else {
             return "OK";
         }
+    }
+
+    function printArray($a, &$message) {
+        foreach($a as $x => $x_value) {
+          // echo $x_value;
+          // echo "<br>";
+          $message .= ($x_value .= "<br>");
+      }
     }
 ?>
