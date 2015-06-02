@@ -25,6 +25,14 @@ public class Parser {
 			bootParams.setSouthLat(Double.parseDouble(args[3]));
 			bootParams.setWestLng(Double.parseDouble(args[2]));
 			bootParams.setEastLng(Double.parseDouble(args[4]));
+			System.out.println("NorthLat: " + args[1]);
+			System.out.println("parse NorthLat: " + Double.parseDouble(args[1]));
+			System.out.println("SouthLat: " + args[3]);
+			System.out.println("parse SouthLat: " + Double.parseDouble(args[3]));
+			System.out.println("WestLng: " + args[2]);
+			System.out.println("parse WestLng: " + Double.parseDouble(args[2]));
+			System.out.println("EastLng: " + args[4]);
+			System.out.println("parse EastLng: " + Double.parseDouble(args[4]));
 			if (!args[5].equals("-c")) {
 				System.out.println(args[5]);
 				throw new IllegalArgumentException("-c");

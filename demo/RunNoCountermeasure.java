@@ -19,6 +19,7 @@ public class RunNoCountermeasure {
 	}
 
 	public void run() {
+		bootParams.printParams();
 		/* initialize number of channels */
 		int Number_Of_Channels = bootParams.getNumberOfChannels();
 
@@ -40,7 +41,7 @@ public class RunNoCountermeasure {
 		/* initialize server */
 		Server server = new Server(map);
 		/* Specify number of channels for server */
-		server.Number_Of_Channels = Number_Of_Channels;
+		server.setNumberOfChannels(Number_Of_Channels);
 
 		/* Add a PU to the server's grid map */
 		int PUid = 0;
@@ -48,6 +49,7 @@ public class RunNoCountermeasure {
 			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
 			for (LatLng ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
+				System.out.println("k: " + k);
 				server.addPU(pu, k);
 			}
 		}
@@ -61,7 +63,7 @@ public class RunNoCountermeasure {
 		Client client = new Client(0, 0, map);
 
 		/* Specify number of channels for client */
-		client.Number_Of_Channels = Number_Of_Channels;
+		client.setNumberOfChannels(Number_Of_Channels);
 
 		/* Assume that we use random location for queries now */
 		int Number_of_Queries = bootParams.getNumberOfQueries();

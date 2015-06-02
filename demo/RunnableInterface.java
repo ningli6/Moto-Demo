@@ -11,6 +11,7 @@ public class RunnableInterface implements Runnable {
         this.bootParams = bp;
         threadName = bp.countermeasure();
         System.out.println("Creating " +  threadName );
+        // this.bootParams.printParams();
     }
     public void run() {
         System.out.println("Running " +  threadName );
@@ -31,6 +32,7 @@ public class RunnableInterface implements Runnable {
             }
         } catch (Exception e) {
             System.out.println("Thread " +  threadName + " interrupted.");
+            e.printStackTrace();
         }
         System.out.println("Thread " +  threadName + " exiting.");
     }

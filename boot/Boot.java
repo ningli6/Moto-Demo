@@ -5,6 +5,7 @@ import demo.*;
 public class Boot {
 	public static void main(String[] args) {
 		BootParams bp = Parser.parse(args);
+		// bp.printParams();
 		RunnableInterface R;
 		if (bp == null) {
 			System.out.println("FAILED");

@@ -14,7 +14,7 @@ import client.Client;
 
 public class Server {
 	public static double PMAX = 1;
-	public int Number_Of_Channels = 1;
+	int Number_Of_Channels = -1; // only visible within its own package
 	// Server has an instance of GridMap
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;
@@ -36,12 +36,19 @@ public class Server {
 	public Server(GridMap map) {
 		this.map = map;
 		this.Number_Of_PUs = 0;
-		// set = new LinkedList<PU>();
-		channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
+		set = new HashSet<Integer>();
+	}
+
+	public void setNumberOfChannels(int c) {
+		this.Number_Of_Channels = c;
+		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_List[i] = new LinkedList<PU>();
 		}
-		set = new HashSet<Integer>();
+	}
+
+	public int getNumberOfChannels() {
+		return Number_Of_Channels;
 	}
 
 	// add pu to one of channels
