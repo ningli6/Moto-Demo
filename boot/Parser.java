@@ -85,6 +85,10 @@ public class Parser {
 			else {
 				throw new IllegalArgumentException("Invalid ending");
 			}
+			if (i++ == args.length) throw new IllegalArgumentException("Invalid ending");
+			if (args[i].equals("-e")) {
+				bootParams.setEmail(args[++i]);
+			}
 			return bootParams;
 		}
 		catch (Exception e) {

@@ -502,7 +502,7 @@ function getParams () {
         return;
     }
     if (!validateEmail(email)) {
-        alert("Email address not valid!");
+        alert("Email address is not valid!");
         return;
     }
 
@@ -537,6 +537,9 @@ function getParams () {
     else {
         args += "-f " + queries_file;
     }
+
+    args += " -e " + email;
+
     // output formatted args to console
     console.log("args=" + args);
 

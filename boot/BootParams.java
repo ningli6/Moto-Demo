@@ -113,6 +113,14 @@ public class BootParams {
 		this.fileName = file;
 	}
 
+	public void setEmail(String e) {
+		this.email = e;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
 	public void printParams() {
 		System.out.println("Number of channels: " + number_of_channels);
 		System.out.println("Analysis region: ");
