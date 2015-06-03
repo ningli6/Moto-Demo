@@ -93,5 +93,8 @@ public class RunNoCountermeasure {
 		for (int i = 0; i < IC.length; i++) {
 			System.out.println("Channel " + i + " : " + IC[i]);
 		}
+
+		/* if everything works all right, send email */
+		JavaRunCommand.sendEmail(bootParams.getEmail(), "Congratulation! Everything works!");
 	}
 }
