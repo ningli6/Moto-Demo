@@ -19,6 +19,10 @@ for i in range(2, len(sys.argv)):
 	message += str(sys.argv[i]) + " "
 message = message.rstrip()
 
+import datetime
+message += "\n"
+message += str(datetime.datetime.now())
+
 # Import smtplib for the actual sending function
 import smtplib
 
@@ -33,7 +37,7 @@ you = recv
 
 # me == the sender's email address
 # you == the recipient's email address
-msg['Subject'] = 'Test'
+msg['Subject'] = 'Python Send Email Test'
 msg['From'] = me
 msg['To'] = you
 

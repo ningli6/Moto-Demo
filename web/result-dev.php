@@ -12,16 +12,14 @@
             die("Demo failed to start! ");
         }
         /* email message */
-        $receiver = $_REQUEST['Email'];
+        $receiver = "ningli@vt.edu";
         if ($receiver == "") die("Empty email address");
         $emailResult = "";
         $emailResult = sendTo($receiver, $command);
-        if ($emailResult == "OK") {
-            echo "OK";
-        }
-        else {
+        if ($emailResult != "OK") {
             die("Sending email failed. " . $emailResult);
         }
+        echo "OK";
     }
 
     /* helper funtion for parsing an email */
@@ -50,13 +48,5 @@
         } else {
             return "OK";
         }
-    }
-
-    function printArray($a, &$message) {
-        foreach($a as $x => $x_value) {
-          // echo $x_value;
-          // echo "<br>";
-          $message .= ($x_value .= "<br>");
-      }
     }
 ?>

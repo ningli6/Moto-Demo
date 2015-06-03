@@ -10,11 +10,11 @@ public class RunnableInterface implements Runnable {
     public RunnableInterface(BootParams bp){
         this.bootParams = bp;
         threadName = bp.countermeasure();
-        System.out.println("Creating " +  threadName );
+        // System.out.println("Creating " +  threadName );
         // this.bootParams.printParams();
     }
     public void run() {
-        System.out.println("Running " +  threadName );
+        // System.out.println("Running " +  threadName );
         try {
             switch (threadName) {
                 case "NOCOUNTERMEASURE":
@@ -39,7 +39,7 @@ public class RunnableInterface implements Runnable {
 
     public void start ()
     {
-        System.out.println("Starting " +  threadName );
+        // System.out.println("Starting " +  threadName );
         if (t == null)
         {
             t = new Thread (this, threadName);
