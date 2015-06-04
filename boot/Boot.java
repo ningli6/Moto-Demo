@@ -15,12 +15,18 @@ public class Boot {
 			System.out.println("FAILED");
 			return;
 		}
+		/* countermeasure not implemented */
+		if (bp.isCountermeasure()) {
+			System.out.println("NOT IMPLEMENTED");
+			return;
+		}
 		R = new RunnableInterface(bp);
 		if (R == null) {
 			System.out.println("FAILED");
 			return;
 		}
-	    R.start();
+		/* start program, return ok */
 		System.out.println("OK");
+	    R.start();
 	}
 }

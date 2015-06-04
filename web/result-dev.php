@@ -8,17 +8,20 @@
         /* indicate if program has started successfully */
         $output = ""; 
         exec($command, $output);
+        if ($output[0] == "NOT IMPLEMENTED") {
+            die("Sorry. This countermeasure has not been implemented yet! ");
+        }
         if ($output[0] != "OK") {
             die("Demo failed to start! ");
         }
         /* email message */
-        $receiver = "ningli@vt.edu";
-        if ($receiver == "") die("Empty email address");
-        $emailResult = "";
-        $emailResult = sendTo($receiver, $command);
-        if ($emailResult != "OK") {
-            die("Sending email failed. " . $emailResult);
-        }
+        // $receiver = "ningli@vt.edu";
+        // if ($receiver == "") die("Empty email address");
+        // $emailResult = "";
+        // $emailResult = sendTo($receiver, $command);
+        // if ($emailResult != "OK") {
+        //     die("Sending email failed. " . $emailResult);
+        // }
         echo "OK";
     }
 

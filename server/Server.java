@@ -74,13 +74,7 @@ public class Server {
 			System.out.println("PU's location is out out index");
 			return;
 		}
-		// prevent pu at the same location to be added
-		// if (!set.contains(hashcode(pu_r, pu_c))) set.add(hashcode(pu_r, pu_c));
-		// else return;
-		// pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
-		// System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
-		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
 			channels_List[channel].add(pu);
 			pu.attachToServer(this);

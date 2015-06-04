@@ -122,6 +122,7 @@ public class BootParams {
 	}
 
 	public void printParams() {
+		System.out.println("Print parameters");
 		System.out.println("Number of channels: " + number_of_channels);
 		System.out.println("Analysis region: ");
 		System.out.println("North latitude: " + NorthLat);
@@ -150,7 +151,46 @@ public class BootParams {
 			System.out.println("Number of Queries: " + number_of_queries);
 		}
 		System.out.println("Email to: " + email);
+		System.out.println();
 	}
 
-
+	public String paramsToString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("*****Print_parameters*****#");
+		sb.append("#");
+		sb.append("Number_of_channels:_" + number_of_channels + "#");
+		sb.append("#");
+		sb.append("Analysis_region:#");
+		sb.append("North_latitude:_" + NorthLat + "#");
+		sb.append("South_latitude:_" + SouthLat + "#");
+		sb.append("West_longitude:_" + WestLng + "#");
+		sb.append("East_longitude:_" + EastLng + "#");
+		sb.append("#");
+		sb.append("Location_of_PU:#");
+		int len = PUList.length;
+		for (int i = 0; i < len; i++) {
+			sb.append("Channel_" + i + ":#");
+			for (LatLng ll : PUList[i]) {
+				sb.append("[" + ll.getLat() + ",_" + ll.getLng() + "]#");
+			}
+			sb.append("#");
+		}
+		if (!isCountermeasure) {
+			sb.append("Countermeasure:_" + "No_countermeausre#");
+		}
+		else {
+			sb.append("Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "#");
+		}
+		sb.append("#");
+		if (number_of_queries < 0) {
+			sb.append("Upload_file:_" + fileName + "#");
+		}
+		else {
+			sb.append("Number_of_Queries:_" + number_of_queries + "#");
+		}
+		sb.append("#");
+		sb.append("Email_to:_" + email + "#");
+		sb.append("#");
+		return sb.toString();
+	}
 }

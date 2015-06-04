@@ -10,14 +10,6 @@
         if ($output[0] != "OK") {
             die("Demo failed to start! ");
         }
-        /* email message */
-        $receiver = "ningli@vt.edu";
-        if ($receiver == "") die("Empty email address");
-        $emailResult = "";
-        $emailResult = sendTo($receiver, $command);
-        if ($emailResult != "OK") {
-            die("Sending email failed. " . $emailResult);
-        }
         echo "OK";
     }
 ?>

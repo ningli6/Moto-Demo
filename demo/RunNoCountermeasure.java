@@ -21,6 +21,8 @@ public class RunNoCountermeasure {
 	public void run() {
 		try {
 			bootParams.printParams();
+			StringBuilder message = new StringBuilder();
+			message.append(bootParams.paramsToString());
 			/* initialize number of channels */
 			int Number_Of_Channels = bootParams.getNumberOfChannels();
 
@@ -31,6 +33,8 @@ public class RunNoCountermeasure {
 			Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 			GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
 
+			message.append("Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
+			message.append("Map_rows:_" + map.getRows() + ",_Map_cols:_" + map.getCols() + "#");
 			/* debug information */
 			System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
 			System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
@@ -50,11 +54,12 @@ public class RunNoCountermeasure {
 				List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
 				for (LatLng ll : LatLngList) {
 					PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
-					System.out.println("k: " + k);
+					// System.out.println("k: " + k);
 					server.addPU(pu, k);
 				}
 			}
 
+			message.append("Number_of_PUs:_" + server.getNumberOfPUs() + "#");
 			/* debug information */
 			System.out.println("Number of PUs: " + server.getNumberOfPUs());
 			server.printInfoChannel();
@@ -92,11 +97,12 @@ public class RunNoCountermeasure {
 			/* compute IC */
 			double[] IC = client.computeIC(server);
 			for (int i = 0; i < IC.length; i++) {
+				message.append("Channel_" + i + "_:_" + IC[i] + "#");
 				System.out.println("Channel " + i + " : " + IC[i]);
 			}
 
 			/* if everything works all right, send email */
-			JavaRunCommand.sendEmail(bootParams.getEmail(), "Congratulation! Everything works!");
+			JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString());
 		} catch (Exception e) {
 			String err = "Error! Program throws an exception!";
 			JavaRunCommand.sendEmail(bootParams.getEmail(), err);

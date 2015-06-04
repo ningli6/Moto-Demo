@@ -11,7 +11,6 @@ public class RunnableInterface implements Runnable {
         this.bootParams = bp;
         threadName = bp.countermeasure();
         // System.out.println("Creating " +  threadName );
-        // this.bootParams.printParams();
     }
     public void run() {
         // System.out.println("Running " +  threadName );
@@ -22,12 +21,16 @@ public class RunnableInterface implements Runnable {
                     runNoCountermeasure.run();
                     break;
                 case "ADDITIVENOISE":
+                    System.out.println("NOT IMPLEMENTED");
                     break;
                 case "TRANSFIGURATION":
+                    System.out.println("NOT IMPLEMENTED");
                     break;
                 case "KANONYMITY":
+                    System.out.println("NOT IMPLEMENTED");
                     break;                                    
                 case "KCLUSTERING":
+                    System.out.println("NOT IMPLEMENTED");
                     break;
             }
         } catch (Exception e) {

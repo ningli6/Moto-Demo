@@ -9,15 +9,18 @@ Use this method as an alternative
 # Import sys for taking in arguments
 import sys
 
-# print 'args len: ' , len(sys.argv)
-# for i in range(0, len(sys.argv)):
-# 	print str(sys.argv[i])
+print 'args len: ' , len(sys.argv)
+for i in range(0, len(sys.argv)):
+	print str(sys.argv[i])
 
 recv = sys.argv[1]
-message = ""
-for i in range(2, len(sys.argv)):
-	message += str(sys.argv[i]) + " "
-message = message.rstrip()
+message = sys.argv[2]
+message = message.replace("_", " ");
+message = message.replace("#", "\n");
+
+# for i in range(2, len(sys.argv)):
+# 	message += str(sys.argv[i]) + " "
+# message = message.rstrip()
 
 import datetime
 message += "\n"
@@ -51,5 +54,5 @@ print ''
 print '#####send email to user#####'
 print 'From: ', me
 print 'To: ', you
-print 'Message: ', message
+print message
 print 'OK'

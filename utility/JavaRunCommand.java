@@ -7,6 +7,7 @@ public class JavaRunCommand {
     public static boolean sendEmail(String recv, String message) {
         String s = null;
         try {
+            System.out.println(message);
             // run the Unix "ps -ef" command
             // using the Runtime exec method:
             Process p = Runtime.getRuntime().exec("python /var/www/html/Project/python/send.py " + recv + " " + message);
@@ -38,6 +39,6 @@ public class JavaRunCommand {
     }
  
     public static void main(String args[]) {
-        // JavaRunCommand.sendEmail(args[0]);
+        JavaRunCommand.sendEmail("ningli@vt.edu", "Life\nis\ngood");
     }
 }
