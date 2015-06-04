@@ -23,8 +23,8 @@ message = message.replace("#", "\n");
 # message = message.rstrip()
 
 import datetime
-message += "\n"
-message += str(datetime.datetime.now())
+message += "\n\n"
+message += ('Current time: ' + str(datetime.datetime.now()))
 
 # Import smtplib for the actual sending function
 import smtplib

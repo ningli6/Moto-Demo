@@ -183,6 +183,26 @@ public class Server {
 		}
 	}
 
+	// print infomation about channel
+	public String infoChannelToString() {
+		StringBuilder sb = new StringBuilder();
+		if (channels_List == null) {
+			sb.append("Initialize_server_first#");
+		}
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sb.append("Channel_[" + i + "]:_");
+			int len = sb.length();
+			for (PU pu : channels_List[i]) {
+				sb.append("pu_" + pu.getID() + ",_");
+			}
+			if (sb.length() != len) {
+				sb.delete(sb.length() - 2, sb.length());
+			}
+			sb.append("#");
+		}
+		return sb.toString();
+	}
+
     // MTP function
 	private double MTP(double distance) {
 		// System.out.println("Distance between PU and SU is: " + distance + " km");

@@ -33,10 +33,10 @@ public class RunNoCountermeasure {
 			Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 			GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
 
-			message.append("Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
-			message.append("Map_rows:_" + map.getRows() + ",_Map_cols:_" + map.getCols() + "#");
+			message.append("*****Program_output*****#");
+			message.append("#Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
 			/* debug information */
-			System.out.println("Map length: " + map.getLength() + " km, Map height: " + map.getHeight() + " km");
+			System.out.println("map length: " + map.getLength() + " km, map height: " + map.getHeight() + " km");
 			System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
 			map.showBoundary();
 
@@ -59,10 +59,13 @@ public class RunNoCountermeasure {
 				}
 			}
 
+			message.append("#PU_information:#");
 			message.append("Number_of_PUs:_" + server.getNumberOfPUs() + "#");
 			/* debug information */
 			System.out.println("Number of PUs: " + server.getNumberOfPUs());
+			message.append(server.infoChannelToString());
 			server.printInfoChannel();
+			message.append("#");
 			System.out.println();
 
 			// initiliza a client
@@ -87,6 +90,10 @@ public class RunNoCountermeasure {
 			client.updateWhich();
 			server.printInfoPU();
 
+			message.append("Querying_information:#");
+			message.append(client.updateWhichToString());
+
+
 			/*** these functions should be update! ***/
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				// client.plotInferMap(i);
@@ -96,6 +103,7 @@ public class RunNoCountermeasure {
 
 			/* compute IC */
 			double[] IC = client.computeIC(server);
+			message.append("#IC_for_each_channel:#");
 			for (int i = 0; i < IC.length; i++) {
 				message.append("Channel_" + i + "_:_" + IC[i] + "#");
 				System.out.println("Channel " + i + " : " + IC[i]);
