@@ -192,7 +192,7 @@ public class InferMap extends GridMap {
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} finally {
-			System.out.println("Greatest value: " + max);
+			// System.out.println("Greatest value: " + max);
 			System.out.println("Printing ends");
 		}
 	}
@@ -204,15 +204,19 @@ public class InferMap extends GridMap {
 		try {
 			PrintWriter out = new PrintWriter(file);
 			System.out.println("Start printing... ");
-			out.println("LAT LON P");
+			// out.println("LAT LON P");
+			out.println("ROW COL P");
 			for (int i = 0; i < getRows(); i++) {
 				for (int j = 0; j < getCols(); j++) {
-					out.println(RowToLat(i) + " " + LonToCol(j) + " " + p[i][j]);
+					out.println(i + " " + j + " " + p[i][j]);
+					// out.println(RowToLat(i) + " " + ColToLon(j) + " " + p[i][j]);
 				}
 			}
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
 			System.out.println("Printing ends");
 		}

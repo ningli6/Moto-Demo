@@ -78,12 +78,11 @@ public class RunNoCountermeasure {
 			int Number_of_Queries = bootParams.getNumberOfQueries();
 			if (Number_of_Queries == -1) {
 				// read from file
+				Number_of_Queries = 500;
 			}
-			else {
-				for (int i = 0; i < Number_of_Queries; i++) {
-					client.randomLocation();
-					client.query(server);
-				}
+			for (int i = 0; i < Number_of_Queries; i++) {
+				client.randomLocation();
+				client.query(server);
 			}
 
 			/* debug information */
@@ -95,25 +94,28 @@ public class RunNoCountermeasure {
 
 
 			/*** these functions should be update! ***/
+			InferMap.directory = "/var/www/html/Project/output/";
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				// client.plotInferMap(i);
 				// client.printFormattedMatrix(i);
-				// client.printFormattedTable(i);
+				client.printFormattedTable(i);
 			}
 
 			/* compute IC */
 			double[] IC = client.computeIC(server);
-			message.append("#IC_for_each_channel:#");
+			message.append("IC_for_each_channel:#");
 			for (int i = 0; i < IC.length; i++) {
 				message.append("Channel_" + i + "_:_" + IC[i] + "#");
 				System.out.println("Channel " + i + " : " + IC[i]);
 			}
 
 			/* if everything works all right, send email */
-			JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString());
+			/* comment out to run offline */
+			// JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString());
 		} catch (Exception e) {
 			String err = "Error! Program throws an exception!";
-			JavaRunCommand.sendEmail(bootParams.getEmail(), err);
+			/* comment out to run offline */
+			// JavaRunCommand.sendEmail(bootParams.getEmail(), err);
 		}
 	}
 }
