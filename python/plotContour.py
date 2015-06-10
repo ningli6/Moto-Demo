@@ -8,6 +8,7 @@ import math
 import MercatorProjection
 import scipy.interpolate as inter
 import scipy.ndimage
+from pylab import *
 
 def latLonToMeters(Slat, Nlat, Wlng, Elng):
 	pi = math.pi
@@ -103,15 +104,22 @@ for i in range(0, 1280):
 
 # save image
 img = urllib.urlopen(url)
-with open('/Users/ningli/Desktop/map.png', 'w') as f:
+# use this onlie
+path = '/var/www/html/Project/output/map.png'
+# use this offline
+# path = '/Users/ningli/Desktop/Project/output/map.png'
+with open(path, 'w') as f:
     f.write(img.read())
 # read image
-im = plt.imread('/Users/ningli/Desktop/map.png')
+im = plt.imread(path)
 implot = plt.imshow(im)
 
 # overlay
 cs = plt.contourf(extMatrix)
 plt.colorbar(cs)
-plt.xlabel('columns')
-plt.ylabel('rows')
-plt.show()
+# save image
+# use this offline
+# plt.savefig('/Users/ningli/Desktop/figure.png')
+# use this online
+plt.savefig('/var/www/html/Project/output/ec2-user_Demo_probability_0.png')
+# plt.show()

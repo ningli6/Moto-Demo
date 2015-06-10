@@ -37,6 +37,25 @@ public class JavaRunCommand {
             return false;
         }
     }
+
+    public static boolean generatePlot() {
+        try {
+            // using the Runtime exec method:
+            Process p = Runtime.getRuntime().exec("python /var/www/html/Project/python/plotContour.py");
+            int r = p.waitFor();
+            return r == 0;
+        }
+        catch (IOException e) {
+            System.out.println("exception happened - here's what I know: ");
+            e.printStackTrace();
+            return false;
+        }
+        catch (InterruptedException e) {
+            System.out.println("exception happened - here's what I know: ");
+            e.printStackTrace();
+            return false;
+        }
+    }
  
     public static void main(String args[]) {
         JavaRunCommand.sendEmail("ningli@vt.edu", "Life\nis\ngood");
