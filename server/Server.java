@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.File;
 
 import utility.*;
 import client.Client;
@@ -20,6 +23,7 @@ public class Server {
 	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
 	private HashSet<Integer> set;
+	public static String directory;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
 		public NumberOfPUsMismatchException(String message) {
@@ -156,6 +160,26 @@ public class Server {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			for (PU pu : channels_List[i]) {
 				pu.printInfo();
+			}
+		}
+	}
+
+	public void printPUAllChannel() {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			File file = new File(directory + "demoTable_" + i + "_pu.txt");
+			try {
+				PrintWriter out = new PrintWriter(file);
+				System.out.println("Start printing PU's location and index... ");
+				for (PU pu: channels_List[i]) {
+					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
+				}
+				out.close (); // this is necessary
+			} catch (FileNotFoundException e) {
+				System.err.println("FileNotFoundException: " + e.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				System.out.println("Printing ends");
 			}
 		}
 	}

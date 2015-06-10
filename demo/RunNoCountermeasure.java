@@ -96,6 +96,8 @@ public class RunNoCountermeasure {
 			/*** these functions should be update! ***/
 			// InferMap.directory = "/var/www/html/Project/output/";
 			InferMap.directory = "/Users/ningli/Desktop/Project/output/";
+			Server.directory = "/Users/ningli/Desktop/Project/output/";
+			server.printPUAllChannel();
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				client.plotInferMap(i);
 				client.printFormattedTable(i);
