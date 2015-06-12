@@ -3,6 +3,7 @@ This script can be used to send emails
 We don't need this as long as PHPMailer works fine
 Use this method as an alternative
 ''' 
+print 'Sending email...'
 
 # Import sys for taking in arguments
 import sys
@@ -14,9 +15,9 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 import datetime
 
-print 'args len: ' , len(sys.argv)
-for i in range(0, len(sys.argv)):
-	print str(sys.argv[i])
+# print 'args len: ' , len(sys.argv)
+# for i in range(0, len(sys.argv)):
+# 	print str(sys.argv[i])
 
 recv = sys.argv[1]
 message = sys.argv[2]
@@ -52,9 +53,9 @@ s = smtplib.SMTP('localhost')
 s.sendmail(me, [you], msg.as_string())
 s.quit()
 
-print ''
-print '#####send email to user#####'
-print 'From: ', me
-print 'To: ', you
-print message
-print 'OK'
+# print ''
+# print '#####send email to user#####'
+# print 'From: ', me
+# print 'To: ', you
+# print message
+# print 'OK'

@@ -92,13 +92,16 @@ public class RunNoCountermeasure {
 			message.append("Querying_information:#");
 			message.append(client.updateWhichToString());
 
-
 			/*** these functions should be update! ***/
 			InferMap.directory = "/var/www/html/Project/output/";
 			Server.directory = "/var/www/html/Project/output/";
 			// InferMap.directory = "/Users/ningli/Desktop/Project/output/";
 			// Server.directory = "/Users/ningli/Desktop/Project/output/";
+			
+			/* print location of pu of different channel in seperate file */
 			server.printPUAllChannel();
+
+			/* print ic matrix, bounds, rows/cols of different channel in seperate file */
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				/* comment this out to run online */
 				// client.plotInferMap(i);
@@ -118,14 +121,16 @@ public class RunNoCountermeasure {
 			if (!JavaRunCommand.generatePlot()) {
 				throw new Exception("Unable to generate plots");
 			}
-			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
-				throw new Exception("Unable to send email");
-			}
+			System.out.println("Generating plots successfully!");
+			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+			// 	throw new Exception("Unable to send email");
+			// }
 		} catch (Exception e) {
-			String err = "Error! Program throws an exception! ";
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			// e.printStackTrace();
 			/* comment out to run offline */
-			JavaRunCommand.sendEmail(bootParams.getEmail(), err);
+			// JavaRunCommand.sendEmail(bootParams.getEmail(), err);
+			return;
 		}
 	}
 }

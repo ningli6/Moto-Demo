@@ -1,6 +1,8 @@
 '''
 Try to plot contourf from output data then overlay on google map
 '''
+print 'Generating plots...'
+
 import numpy as np
 import matplotlib.pyplot as plt
 import urllib
@@ -22,23 +24,28 @@ def latLonToMeters(Slat, Nlat, Wlng, Elng):
 	return [x1, x2, y1, y2]
 
 # read in data from text file
-f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_bounds.txt' , 'r')
+# f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_bounds.txt' , 'r')
+f = open ( '/var/www/html/Project/output/demoTable_0_bounds.txt' , 'r')
+
 input = [ map(float, line.split()) for line in f ]
 Nlat = input[0][0]
 Slat = input[0][1]
 Wlng = input[0][2]
 Elng = input[0][3]
 
-f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_rowcol.txt' , 'r')
+# f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_rowcol.txt' , 'r')
+f = open ( '/var/www/html/Project/output/demoTable_0_rowcol.txt' , 'r')
 input = [ map(float, line.split()) for line in f ]
 rows = int(input[0][0])
 cols = int(input[0][1])
 
-f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_pu.txt' , 'r')
+# f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0_pu.txt' , 'r')
+f = open ( '/var/www/html/Project/output/demoTable_0_pu.txt' , 'r')
 input = [ map(float, line.split()) for line in f ]
 markers = input
 
-f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0.txt' , 'r')
+# f = open ( '/Users/ningli/Desktop/Project/output/demoTable_0.txt' , 'r')
+f = open ( '/var/www/html/Project/output/demoTable_0.txt' , 'r')
 input = [ map(float, line.split()) for line in f ]
 # reconstruct matrix format of input data
 data = [[input[i * cols + j][2] for j in range(0, cols)] for i in range(0, rows)]
@@ -93,7 +100,6 @@ grid_z = scipy.ndimage.zoom(data, [((float)(newRows))/rows, ((float)(newCols))/c
 startRow = 640 - (len(grid_z) / 2)
 startCol = 640 - (len(grid_z[0]) / 2)
 extMatrix = [[0 for i in range(0, 1280)] for j in range(0, 1280)]
-# print extMatrix
 for i in range(startRow, startRow + len(grid_z)):
 	for j in range(startCol, startCol + len(grid_z[0])):
 		extMatrix[i][j] = grid_z[i - startRow][j - startCol]
