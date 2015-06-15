@@ -11,6 +11,7 @@ import MercatorProjection
 import scipy.interpolate as inter
 import scipy.ndimage
 from pylab import *
+import urllib2
 
 def latLonToMeters(Slat, Nlat, Wlng, Elng):
 	pi = math.pi
@@ -109,7 +110,7 @@ for i in range(0, 1280):
 			extMatrix[i][j] = np.nan;
 
 # save image
-img = urllib.urlopen(url)
+img = urllib2.urlopen(url)
 # use this onlie
 path = '/var/www/html/Project/output/map.png'
 # use this offline

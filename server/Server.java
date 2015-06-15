@@ -166,10 +166,8 @@ public class Server {
 
 	public void printPUAllChannel() {
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			System.out.println("server.printPUAllChannel");
 			File file = new File(directory + "demoTable_" + i + "_pu.txt");
 			try {
-				System.out.println("enter try");
 				PrintWriter out = new PrintWriter(file);
 				for (PU pu: channels_List[i]) {
 					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());

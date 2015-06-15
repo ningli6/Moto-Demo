@@ -56,5 +56,3 @@ s.starttls()
 s.login('AKIAJKR7IGWULDP7ULQQ', 'Ar88H0SSaP4/K5wM+SJ/FEYxKDfNaYbv9nePs66YpLXU')
 s.sendmail(me, you, msg.as_string())
 s.quit()
-
-print("Mail Sent")
