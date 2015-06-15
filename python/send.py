@@ -1,7 +1,5 @@
 '''
 This script can be used to send emails
-We don't need this as long as PHPMailer works fine
-Use this method as an alternative
 ''' 
 print 'Sending email...'
 
@@ -13,13 +11,18 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
+# Import data module
 import datetime
 
-# print 'args len: ' , len(sys.argv)
-# for i in range(0, len(sys.argv)):
-# 	print str(sys.argv[i])
+# # print 'args len: ' , len(sys.argv)
+# # for i in range(0, len(sys.argv)):
+# # 	print str(sys.argv[i])
 
+# receiver
 recv = sys.argv[1]
+print 'Send to: ', recv
+
+# construct message
 message = sys.argv[2]
 message = message.replace("_", " ");
 message = message.replace("#", "\n");
@@ -27,13 +30,12 @@ message += "\n\n"
 message += ('Current time: ' + str(datetime.datetime.now()))
 
 # Create a text/plain message
-msg = MIMEMultipart()
-
+msg = MIMEMultipart('multipart')
+# text
 txt = MIMEText(message, 'plain')
-msg.attach(message)
-
+msg.attach(txt)
+# image
 fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-# Open the files in binary mode.
 fp = open(fileName, 'rb')
 img = MIMEImage(fp.read())
 fp.close()
@@ -41,21 +43,18 @@ msg.attach(img)
 
 # me == the sender's email address
 # you == the recipient's email address
-me = 'ningli@ec2-52-24-22-108.us-west-2.compute.amazonaws.com'
+me = 'ningli@vt.edu'
 you = recv
-msg['Subject'] = 'Python Send Email Test'
+msg['Subject'] = 'AWS SES Test'
 msg['From'] = me
 msg['To'] = you
 
-# Send the message via our own SMTP server, but don't include the
-# envelope header.
-s = smtplib.SMTP('localhost')
-s.sendmail(me, [you], msg.as_string())
+# Send the message via SMTP server
+s = smtplib.SMTP(host='email-smtp.us-west-2.amazonaws.com', port='587')
+s.ehlo()
+s.starttls()
+s.login('AKIAJKR7IGWULDP7ULQQ', 'Ar88H0SSaP4/K5wM+SJ/FEYxKDfNaYbv9nePs66YpLXU')
+s.sendmail(me, you, msg.as_string())
 s.quit()
 
-# print ''
-# print '#####send email to user#####'
-# print 'From: ', me
-# print 'To: ', you
-# print message
-# print 'OK'
+print("Mail Sent")

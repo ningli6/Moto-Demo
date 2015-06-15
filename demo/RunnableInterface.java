@@ -13,7 +13,7 @@ public class RunnableInterface implements Runnable {
         // System.out.println("Creating " +  threadName );
     }
     public void run() {
-        // System.out.println("Running " +  threadName );
+        System.out.println("Running " +  threadName );
         try {
             switch (threadName) {
                 case "NOCOUNTERMEASURE":

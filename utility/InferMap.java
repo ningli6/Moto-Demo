@@ -200,10 +200,10 @@ public class InferMap extends GridMap {
 	// the output will be tables that specified in the sample data
 	public void printInRequiredFormat(int id) {
 		if (directory == null || directory.length() == 0) return;
+		System.out.println("Start printing data... ");
 		File file = new File(directory + "demoTable_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing data... ");
 			// out.println("ROW COL P");
 			for (int i = 0; i < getRows(); i++) {
 				for (int j = 0; j < getCols(); j++) {
@@ -213,37 +213,37 @@ public class InferMap extends GridMap {
 			}
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
+			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			System.out.println("Printing ends");
 		}
 
+		System.out.println("Start printing number of rows and cols... ");
 		file = new File(directory + "demoTable_" + id + "_rowcol.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing number of rows and cols... ");
 			// out.println("ROWS COLS");
 			out.println(getRows() + " " + getCols());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
+			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			System.out.println("Printing ends");
 		}
 
+		System.out.println("Start printing boundaries... ");
 		file = new File(directory + "demoTable_" + id + "_bounds.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing boundaries... ");
 			// out.println("NLAT SLAT WLNG ELNG");
 			out.println(getUpperBoundary() + " " + getLowerBounday() + " " + getLeftBoundary() + " " + getRightBoundary());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
+			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

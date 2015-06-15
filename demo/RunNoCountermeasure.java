@@ -19,8 +19,10 @@ public class RunNoCountermeasure {
 	}
 
 	public void run() {
+		System.out.println("Simulation start!");
 		try {
-			bootParams.printParams();
+			/* debug information */
+			// bootParams.printParams();
 			StringBuilder message = new StringBuilder();
 			message.append(bootParams.paramsToString());
 			/* initialize number of channels */
@@ -36,9 +38,9 @@ public class RunNoCountermeasure {
 			message.append("*****Program_output*****#");
 			message.append("#Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
 			/* debug information */
-			System.out.println("map length: " + map.getLength() + " km, map height: " + map.getHeight() + " km");
-			System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
-			map.showBoundary();
+			// System.out.println("map length: " + map.getLength() + " km, map height: " + map.getHeight() + " km");
+			// System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
+			// map.showBoundary();
 
 			/* change MTP scale */
 			MTP.ChangeMult(multitimes);
@@ -62,11 +64,13 @@ public class RunNoCountermeasure {
 			message.append("#PU_information:#");
 			message.append("Number_of_PUs:_" + server.getNumberOfPUs() + "#");
 			/* debug information */
-			System.out.println("Number of PUs: " + server.getNumberOfPUs());
+			// System.out.println("Number of PUs: " + server.getNumberOfPUs());
 			message.append(server.infoChannelToString());
-			server.printInfoChannel();
+			/* debug information */
+			// server.printInfoChannel();
 			message.append("#");
-			System.out.println();
+			/* debug information */
+			// System.out.println();
 
 			// initiliza a client
 			Client client = new Client(0, 0, map);
@@ -86,8 +90,8 @@ public class RunNoCountermeasure {
 			}
 
 			/* debug information */
-			client.updateWhich();
-			server.printInfoPU();
+			// client.updateWhich();
+			// server.printInfoPU();
 
 			message.append("Querying_information:#");
 			message.append(client.updateWhichToString());
@@ -98,10 +102,12 @@ public class RunNoCountermeasure {
 			// InferMap.directory = "/Users/ningli/Desktop/Project/output/";
 			// Server.directory = "/Users/ningli/Desktop/Project/output/";
 			
-			/* print location of pu of different channel in seperate file */
+			/* PRINT pus' location
+			   print location of pu of different channel in seperate file */
 			server.printPUAllChannel();
 
-			/* print ic matrix, bounds, rows/cols of different channel in seperate file */
+			/* PRINT data, bounds, rows/cols
+			   print ic matrix, bounds, rows/cols of different channel in seperate file */
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				/* comment this out to run online */
 				// client.plotInferMap(i);
@@ -113,18 +119,18 @@ public class RunNoCountermeasure {
 			message.append("IC_for_each_channel:#");
 			for (int i = 0; i < IC.length; i++) {
 				message.append("Channel_" + i + "_:_" + IC[i] + "#");
-				System.out.println("Channel " + i + " : " + IC[i]);
+				// System.out.println("Channel " + i + " : " + IC[i]);
 			}
 
-			/* if everything works all right, send email */
-			/* comment out to run offline */
+			/* if everything works all right, generate plots and then send email */
 			if (!JavaRunCommand.generatePlot()) {
 				throw new Exception("Unable to generate plots");
 			}
 			System.out.println("Generating plots successfully!");
-			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
-			// 	throw new Exception("Unable to send email");
-			// }
+			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+				throw new Exception("Unable to send email");
+			}
+			System.out.println("Sending email successfully!");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			// e.printStackTrace();
