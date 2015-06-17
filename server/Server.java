@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.File;
 
 import utility.*;
 import client.Client;
@@ -14,12 +17,13 @@ import client.Client;
 
 public class Server {
 	public static double PMAX = 1;
-	public static int Number_Of_Channels = 1;
+	int Number_Of_Channels = -1; // only visible within its own package
 	// Server has an instance of GridMap
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
 	private HashSet<Integer> set;
+	public static String directory;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
 		public NumberOfPUsMismatchException(String message) {
@@ -36,12 +40,19 @@ public class Server {
 	public Server(GridMap map) {
 		this.map = map;
 		this.Number_Of_PUs = 0;
-		// set = new LinkedList<PU>();
-		channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
+		set = new HashSet<Integer>();
+	}
+
+	public void setNumberOfChannels(int c) {
+		this.Number_Of_Channels = c;
+		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_List[i] = new LinkedList<PU>();
 		}
-		set = new HashSet<Integer>();
+	}
+
+	public int getNumberOfChannels() {
+		return Number_Of_Channels;
 	}
 
 	// add pu to one of channels
@@ -67,13 +78,7 @@ public class Server {
 			System.out.println("PU's location is out out index");
 			return;
 		}
-		// prevent pu at the same location to be added
-		// if (!set.contains(hashcode(pu_r, pu_c))) set.add(hashcode(pu_r, pu_c));
-		// else return;
-		// pu.setLocation(map.RowToLat(pu_r), map.ColToLon(pu_c));
-		// System.out.println("pu: " + map.RowToLat(pu_r) + ", " + map.ColToLon(pu_c));
 		// check if location is in the rectangle area
-		// for now let's say we allow pu to have the same location
 		if (map.withInBoundary(pu.getLocation())) {
 			channels_List[channel].add(pu);
 			pu.attachToServer(this);
@@ -159,6 +164,26 @@ public class Server {
 		}
 	}
 
+	public void printPUAllChannel() {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			File file = new File(directory + "demoTable_" + i + "_pu.txt");
+			try {
+				PrintWriter out = new PrintWriter(file);
+				for (PU pu: channels_List[i]) {
+					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
+				}
+				out.close (); // this is necessary
+			} catch (FileNotFoundException e) {
+				System.err.println("FileNotFoundException: " + e.getMessage());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			finally {
+				System.out.println("Printing ends");
+			}
+		}
+	}
+
 	public void reset() {
 		if (channels_List == null) return;
 		for (int i = 0; i < Number_Of_Channels; i++) {
@@ -180,6 +205,26 @@ public class Server {
 			}
 			System.out.println();
 		}
+	}
+
+	// print infomation about channel
+	public String infoChannelToString() {
+		StringBuilder sb = new StringBuilder();
+		if (channels_List == null) {
+			sb.append("Initialize_server_first#");
+		}
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sb.append("Channel_[" + i + "]:_");
+			int len = sb.length();
+			for (PU pu : channels_List[i]) {
+				sb.append("pu_" + pu.getID() + ",_");
+			}
+			if (sb.length() != len) {
+				sb.delete(sb.length() - 2, sb.length());
+			}
+			sb.append("#");
+		}
+		return sb.toString();
 	}
 
     // MTP function

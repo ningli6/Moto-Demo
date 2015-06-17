@@ -136,18 +136,9 @@ public class Location {
 	}
 
 	public void setLocation(double lat, double lon) {
-		// if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 		latitude = lat;
 		longitude = lon;
 	}
-
-	// public void setLocation(int r, int c) {
-	// 	if (r < 0 || r >= map.getRows() || c < 0 || c >= map.getCols()) throw new IndexOutOfBoundsException();
-	// 	indexOfRow = r;
-	// 	indexOfCol = c;
-	// 	latitude = map.getLatitude(r);
-	// 	longitude = map.getLongitude(c);
-	// }
 
 	public void setLocation(String lat, String lon) {
 		// use regular expression to check formation of input string

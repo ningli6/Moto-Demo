@@ -225,11 +225,13 @@ function updatebounds (recRegion) {
  * Dispalying google map area in accordance with user specified number of channels
  */
 function setChannels() {
+    console.log("Set channels!");
     resetAllMarkers();
     var e = document.getElementById("selc");
     numberOfChannels = parseInt(e.options[e.selectedIndex].value);
     switch (numberOfChannels) {
     case 1:
+        console.log("Number of channels: 1");
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
         str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
@@ -237,6 +239,7 @@ function setChannels() {
         window.onload = initialize();
         break;
     case 2:
+        console.log("Number of channels: 2");
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
@@ -246,6 +249,7 @@ function setChannels() {
         window.onload = initialize();
         break;
     case 3:
+        console.log("Number of channels: 3");
         var str = "<button type='button' class='btn btn-info' onclick='selectChannel(0);'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
@@ -470,12 +474,10 @@ function getParams () {
         alert("Undefined countermeasure!");
         return;
     }
-    console.log("Countermeasure: " + countermeasure);
 
     // get query method
     if (document.getElementById("input_query0").checked) {
         queries_number = document.getElementById("queries").value;
-        console.log("Query number: " + queries_number);
         if (queries_number == "") {
             alert("Please specify number of queries!");
             return;
@@ -483,7 +485,6 @@ function getParams () {
     }
     if (document.getElementById("input_query1").checked) {
         queries_file = file_name;
-        console.log("Query file: " + queries_file);
         if (queries_file == null) {
             alert("Please upload a text file containing location information");
             return;
@@ -501,7 +502,7 @@ function getParams () {
         return;
     }
     if (!validateEmail(email)) {
-        alert("Email address not valid!");
+        alert("Email address is not valid!");
         return;
     }
 
@@ -536,9 +537,11 @@ function getParams () {
     else {
         args += "-f " + queries_file;
     }
+
+    args += " -e " + email;
+
     // output formatted args to console
     console.log("args=" + args);
-    // xmlhttp.send("args=" + args);
 
     /* fill in wells */
     // number of channels
@@ -602,7 +605,6 @@ function getParams () {
 
 function validateEmail(email) {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-    // var re = [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?;
     return re.test(email);
 }
 
@@ -621,8 +623,13 @@ function sendParams()
     {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200)
         {
-            // document.getElementById("params").innerHTML=xmlhttp.responseText;
-            alert("Demo has been started successfully! Please check your email later for result.\nThanks for using!");
+            var res = xmlhttp.responseText;
+            if (res == "OK") {
+                alert("Demo has been started successfully! Please check your email later for result.\nThanks for using!");
+            }
+            else {
+                alert("Demo failed. " + res);
+            }
             // reload page
             window.location = 'index-dev.html';
         }
@@ -636,7 +643,7 @@ function sendParams()
     }
     xmlhttp.open("POST","result-dev.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.send("args=" + args + "&Email=" + email);
+    xmlhttp.send("args=" + args);
 }
 </script>
 
@@ -654,13 +661,14 @@ function sendParams()
                 <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
             </cite>
         </p>
+        <p>Life is good!</p>
     </div>
 
     <!-- dropdown -->
     <h4>Specify number of channels</h4>
     <form role="form">
         <div class="form-group">
-            <select class="form-control" id="selc" style="width: 15%"></style> onchange="setChannels();">
+            <select class="form-control" id="selc" style="width: 15%" onchange="setChannels();">
                 <option class="optclass" selected="selected">1</option>
                 <option class="optclass">2</option>
                 <option class="optclass">3</option>

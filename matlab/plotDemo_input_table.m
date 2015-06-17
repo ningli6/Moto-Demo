@@ -1,17 +1,20 @@
+% First we need to specifying number of rows and columns,
+% path and name for text file, output path for plots.
+
 % info for output files
-userid = 'ning';
-filename = 'Demo';
+% userid = 'ning';
+% filename = 'Demo';
 
 % same setting as java program does. Hard coded for now.
-latStart = 45;
-latEnd = 50;
-LongStart = -100;
-LongEnd = -95;
-PU_Lat = 46;
-PU_Lon = -96;
-cellSize = 0.1;
-rows = 5 / cellSize;
-cols = 5 / cellSize;
+% latStart = 45;
+% latEnd = 50;
+% LongStart = -100;
+% LongEnd = -95;
+% PU_Lat = 46;
+% PU_Lon = -96;
+% cellSize = 0.1;
+% rows = 5 / cellSize;
+% cols = 5 / cellSize;
 
 importNumber = '3';
 % import data from a text file

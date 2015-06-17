@@ -13,7 +13,7 @@ import server.*;
 
 public class Client {
 	public static final double PMAX = 1;
-	public static int Number_Of_Channels = 1;
+	int Number_Of_Channels = 1;
 	// location of the SU
 	private Location location;
 	private int indexOfRow;
@@ -41,24 +41,7 @@ public class Client {
 	public Client(double lat, double lon, GridMap map) {
 		if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException();
 		this.map = map;
-		rand = new Random();
 		location = new Location(lat, lon);
-		count = new int[Number_Of_Channels];
-		inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
-		for (int i = 0; i < Number_Of_Channels; i++)
-			if (!inferMap[i].withInBoundary(location)) 
-				System.out.println("SU's location for channel" + i + "is not in the range of map area");
-	}
-
-	public Client(GridMap map) {
-		inferMap = new InferMap[Number_Of_Channels];
-		this.map = map;
-		count = new int[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
-		for (int i = 0; i < Number_Of_Channels; i++)
-			if (!inferMap[i].withInBoundary(location)) 
-				System.out.println("SU's location for channel" + i + "is not in the range of map area");
 	}
 
 	public Client(int r, int c, GridMap map) {
@@ -66,12 +49,17 @@ public class Client {
 		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
 		this.map = map;
 		location = new Location(map.RowToLat(r), map.ColToLon(c));
-		count = new int[Number_Of_Channels];
-		inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
-		for (int i = 0; i < Number_Of_Channels; i++)
-			if (!inferMap[i].withInBoundary(location)) 
-				System.out.println("SU's location for channel" + i + "is not in the range of map area");
+	}
+
+	public int getNumberOfChannels() {
+		return Number_Of_Channels;
+	}
+
+	public void setNumberOfChannels(int c) {
+		this.Number_Of_Channels = c;
+		this.count = new int[Number_Of_Channels];
+		this.inferMap = new InferMap[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, this.map);
 	}
 
 	public void setLocation(double lat, double lon) {
@@ -209,6 +197,15 @@ public class Client {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
 		}
+	}
+
+	public String updateWhichToString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times#");
+		}
+		sb.append("#");
+		return sb.toString();
 	}
 
 	public void reset() {
