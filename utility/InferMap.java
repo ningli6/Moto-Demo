@@ -204,7 +204,7 @@ public class InferMap extends GridMap {
 		File file = new File(directory + "demoTable_" + id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			// out.println("ROW COL P");
+			out.println("ROW COL P");
 			for (int i = 0; i < getRows(); i++) {
 				for (int j = 0; j < getCols(); j++) {
 					out.println(i + " " + j + " " + p[i][j]);
@@ -224,7 +224,7 @@ public class InferMap extends GridMap {
 		file = new File(directory + "demoTable_" + id + "_rowcol.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			// out.println("ROWS COLS");
+			out.println("ROWS COLS");
 			out.println(getRows() + " " + getCols());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
@@ -239,7 +239,7 @@ public class InferMap extends GridMap {
 		file = new File(directory + "demoTable_" + id + "_bounds.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			// out.println("NLAT SLAT WLNG ELNG");
+			out.println("NLAT SLAT WLNG ELNG");
 			out.println(getUpperBoundary() + " " + getLowerBounday() + " " + getLeftBoundary() + " " + getRightBoundary());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {

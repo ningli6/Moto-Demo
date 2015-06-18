@@ -169,6 +169,7 @@ public class Server {
 			File file = new File(directory + "demoTable_" + i + "_pu.txt");
 			try {
 				PrintWriter out = new PrintWriter(file);
+				out.println("LAT LNG RI CI");
 				for (PU pu: channels_List[i]) {
 					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
 				}

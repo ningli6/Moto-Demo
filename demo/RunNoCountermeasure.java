@@ -97,10 +97,12 @@ public class RunNoCountermeasure {
 			message.append(client.updateWhichToString());
 
 			/*** these functions should be update! ***/
-			InferMap.directory = "/var/www/html/Project/output/";
-			Server.directory = "/var/www/html/Project/output/";
+			// InferMap.directory = "/var/www/html/Project/output/";
+			// Server.directory = "/var/www/html/Project/output/";
 			// InferMap.directory = "/Users/ningli/Desktop/Project/output/";
 			// Server.directory = "/Users/ningli/Desktop/Project/output/";
+			InferMap.directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+			Server.directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
 			
 			/* PRINT pus' location
 			   print location of pu of different channel in seperate file */
@@ -110,7 +112,7 @@ public class RunNoCountermeasure {
 			   print ic matrix, bounds, rows/cols of different channel in seperate file */
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				/* comment this out to run online */
-				// client.plotInferMap(i);
+				client.plotInferMap(i);
 				client.printFormattedTable(i);
 			}
 
@@ -123,14 +125,14 @@ public class RunNoCountermeasure {
 			}
 
 			/* if everything works all right, generate plots and then send email */
-			if (!JavaRunCommand.generatePlot()) {
-				throw new Exception("Unable to generate plots");
-			}
-			System.out.println("Generating plots successfully!");
-			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
-				throw new Exception("Unable to send email");
-			}
-			System.out.println("Sending email successfully!");
+			// if (!JavaRunCommand.generatePlot()) {
+			// 	throw new Exception("Unable to generate plots");
+			// }
+			// System.out.println("Generating plots successfully!");
+			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+			// 	throw new Exception("Unable to send email");
+			// }
+			// System.out.println("Sending email successfully!");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			// e.printStackTrace();
