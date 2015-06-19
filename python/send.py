@@ -35,11 +35,11 @@ msg = MIMEMultipart('multipart')
 txt = MIMEText(message, 'plain')
 msg.attach(txt)
 # image
-fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-fp = open(fileName, 'rb')
-img = MIMEImage(fp.read())
-fp.close()
-msg.attach(img)
+# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
+# fp = open(fileName, 'rb')
+# img = MIMEImage(fp.read())
+# fp.close()
+# msg.attach(img)
 
 # me == the sender's email address
 # you == the recipient's email address

@@ -8,7 +8,7 @@ public class JavaRunCommand {
         String s = null;
         try {
             // using the Runtime exec method:
-            Process p = Runtime.getRuntime().exec("python /var/www/html/Project/python/send.py " + recv + " " + message);
+            Process p = Runtime.getRuntime().exec("python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + recv + " " + message);
              
             BufferedReader stdInput = new BufferedReader(new
                  InputStreamReader(p.getInputStream()));

@@ -1,0 +1,6 @@
+del "C:\Users\Administrator\Desktop\motoDemo\boot\*.class"
+del "C:\Users\Administrator\Desktop\motoDemo\client\*.class"
+del "C:\Users\Administrator\Desktop\motoDemo\demo\*.class"
+del "C:\Users\Administrator\Desktop\motoDemo\server\*.class"
+del "C:\Users\Administrator\Desktop\motoDemo\utility\*.class"
+del "C:\Users\Administrator\Desktop\motoDemo\utility\geometry\*.class"

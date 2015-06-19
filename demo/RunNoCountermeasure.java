@@ -112,7 +112,7 @@ public class RunNoCountermeasure {
 			   print ic matrix, bounds, rows/cols of different channel in seperate file */
 			for (int i = 0; i < Number_Of_Channels; i++) {
 				/* comment this out to run online */
-				client.plotInferMap(i);
+				// client.plotInferMap(i);
 				client.printFormattedTable(i);
 			}
 
@@ -129,10 +129,10 @@ public class RunNoCountermeasure {
 			// 	throw new Exception("Unable to generate plots");
 			// }
 			// System.out.println("Generating plots successfully!");
-			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
-			// 	throw new Exception("Unable to send email");
-			// }
-			// System.out.println("Sending email successfully!");
+			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+				throw new Exception("Unable to send email");
+			}
+			System.out.println("Sending email successfully!");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			// e.printStackTrace();
