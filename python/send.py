@@ -36,16 +36,17 @@ txt = MIMEText(message, 'plain')
 msg.attach(txt)
 # image
 # fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-# fp = open(fileName, 'rb')
-# img = MIMEImage(fp.read())
-# fp.close()
-# msg.attach(img)
+fileName = 'C:\Users\Administrator\Desktop\motoPlot\ec2-user_Demo_probability_0.png'
+fp = open(fileName, 'rb')
+img = MIMEImage(fp.read())
+fp.close()
+msg.attach(img)
 
 # me == the sender's email address
 # you == the recipient's email address
 me = 'ningli@vt.edu'
 you = recv
-msg['Subject'] = 'AWS SES Test'
+msg['Subject'] = 'Moto demo'
 msg['From'] = me
 msg['To'] = you
 

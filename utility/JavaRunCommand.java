@@ -40,7 +40,9 @@ public class JavaRunCommand {
         String s = null;
         try {
             // using the Runtime exec method:
-            Process p = Runtime.getRuntime().exec("python /var/www/html/Project/python/plotContour.py");
+            String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic";
+            // Process p = Runtime.getRuntime().exec("python /var/www/html/Project/python/plotContour.py");
+            Process p = Runtime.getRuntime().exec(cmd);
             int r = p.waitFor();
 
             BufferedReader stdInput = new BufferedReader(new

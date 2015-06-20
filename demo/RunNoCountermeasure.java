@@ -125,10 +125,10 @@ public class RunNoCountermeasure {
 			}
 
 			/* if everything works all right, generate plots and then send email */
-			// if (!JavaRunCommand.generatePlot()) {
-			// 	throw new Exception("Unable to generate plots");
-			// }
-			// System.out.println("Generating plots successfully!");
+			if (!JavaRunCommand.generatePlot()) {
+				throw new Exception("Unable to generate plots");
+			}
+			System.out.println("Generating plots successfully!");
 			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
 				throw new Exception("Unable to send email");
 			}

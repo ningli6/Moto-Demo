@@ -10,13 +10,13 @@
         if ($output[0] == "NOT IMPLEMENTED") {
             die("Sorry. This countermeasure has not been implemented yet! ");
         }
-        if ($output[0] != "OK") {
-            die("Demo failed to start! ");
-        }
-        echo "OK";
-        // $op = $command . "<br>";
-        // printArray($output, $op);
-        // echo $op;
+        // if ($output[0] != "OK") {
+        //     die("Demo failed to start! ");
+        // }
+        // echo "OK";
+        $op = $command . "<br>";
+        printArray($output, $op);
+        echo $op;
     }
 
     function printArray($a, &$message) {
