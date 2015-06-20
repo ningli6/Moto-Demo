@@ -1,3 +1,6 @@
+function [] = runPlot()
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
 % info for output files
 filename = 'Demo';
 userid = 'ec2-user';
@@ -93,7 +96,7 @@ plot(markers(:, 2), markers(:, 1), 'r*', 'MarkerSize', 20);
 % %     plot(markers(i, 1) ,markers(i, 2),'r*','MarkerSize',20);
 % end
 % drwa google map
-plot_google_map('maptype','hybrid','APIKey','AIzaSyDMSjokr-3WVHSYtZeW5xM2gI6uO8BkiMI');
+% plot_google_map('maptype','hybrid','APIKey','AIzaSyDMSjokr-3WVHSYtZeW5xM2gI6uO8BkiMI');
 % colormap default;
 hold off;
 
@@ -105,3 +108,6 @@ print('-dpng',name);
 
 % close figure
 close all;
+
+end
+
