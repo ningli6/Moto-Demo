@@ -22,8 +22,11 @@ import datetime
 recv = sys.argv[1]
 print 'Send to: ', recv
 
+# Number of channel
+nc = int(sys.argv[2])
+
 # construct message
-message = sys.argv[2]
+message = sys.argv[3]
 message = message.replace("_", " ");
 message = message.replace("#", "\n");
 message += "\n\n"
@@ -35,12 +38,13 @@ msg = MIMEMultipart('multipart')
 txt = MIMEText(message, 'plain')
 msg.attach(txt)
 # image
-# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-fileName = 'C:\Users\Administrator\Desktop\motoPlot\ec2-user_Demo_probability_0.png'
-fp = open(fileName, 'rb')
-img = MIMEImage(fp.read())
-fp.close()
-msg.attach(img)
+for i in range(nc):
+	# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
+	fileName = 'C:\Users\Administrator\Desktop\motoPlot\ec2-user_Demo_probability_' + str(i) + '.png'
+	fp = open(fileName, 'rb')
+	img = MIMEImage(fp.read())
+	fp.close()
+	msg.attach(img)
 
 # me == the sender's email address
 # you == the recipient's email address

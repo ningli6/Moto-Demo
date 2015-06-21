@@ -7,11 +7,13 @@ class getmagic
    {
       Class1 theMagic = null;
 
+      if (args.length != 1) throw new IllegalArgumentException();
+
       try
       {
          theMagic = new Class1();
 
-         theMagic.runPlot();
+         theMagic.runPlot(Integer.valueOf(args[0]));
          System.out.println("Success!");
       }
       catch (Exception e)

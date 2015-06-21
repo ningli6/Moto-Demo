@@ -125,11 +125,25 @@ public class RunNoCountermeasure {
 			}
 
 			/* if everything works all right, generate plots and then send email */
-			if (!JavaRunCommand.generatePlot()) {
+			/* 
+			 * Update this function :
+			 * boolean generatePlot(int number_of_channels) 
+			 */
+			// if (!JavaRunCommand.generatePlot()) {
+			// 	throw new Exception("Unable to generate plots");
+			// }
+			if (!JavaRunCommand.generatePlot(Number_Of_Channels)) {
 				throw new Exception("Unable to generate plots");
 			}
 			System.out.println("Generating plots successfully!");
-			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+			/* 
+			 * Update this function :
+			 * boolean sendEmail(String addr, String message, int number_of_channels) 
+			 */
+			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
+			// 	throw new Exception("Unable to send email");
+			// }
+			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString(), Number_Of_Channels)) {
 				throw new Exception("Unable to send email");
 			}
 			System.out.println("Sending email successfully!");
