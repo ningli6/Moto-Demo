@@ -5,20 +5,20 @@ userid = 'ec2-user';
 % import data from a text file
 channelID = '0';
 
-% importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '.txt'];
-importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
+importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '.txt'];
+% importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
 import = importdata(importName);
 A = import.data;
-% importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_rowcol.txt'];
-importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_rowcol.txt'];
+importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_rowcol.txt'];
+% importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_rowcol.txt'];
 import = importdata(importName);
 B = import.data;
-% importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_bounds.txt'];
-importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_bounds.txt'];
+importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_bounds.txt'];
+% importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_bounds.txt'];
 import = importdata(importName);
 C = import.data;
-% importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_pu.txt'];
-importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
+importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_pu.txt'];
+% importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
 import = importdata(importName);
 D = import.data;
 
@@ -99,8 +99,8 @@ hold off;
 
 % Output the contours into pdf and png file
 fileextension = '.png';
-% name = ['/Users/ningli/Desktop/Project/output/', userid, '_', filename, '_probability_', channelID, fileextension];
-name = ['C:\Users\Administrator\Desktop\motoPlot\', userid, '_', filename, '_probability_', channelID, fileextension];
+name = ['/Users/ningli/Desktop/Project/output/', userid, '_', filename, '_probability_', channelID, fileextension];
+% name = ['C:\Users\Administrator\Desktop\motoPlot\', userid, '_', filename, '_probability_', channelID, fileextension];
 print('-dpng',name);
 
 % close figure

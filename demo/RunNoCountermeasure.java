@@ -124,7 +124,7 @@ public class RunNoCountermeasure {
 				// System.out.println("Channel " + i + " : " + IC[i]);
 			}
 			message.append("</p>");
-			message.append("<br><p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_presented_as_red_markers.</p>");
+			message.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_presented_as_red_markers.</p>");
 
 			/* if everything works all right, generate plots and then send email */
 			/* 

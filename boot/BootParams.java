@@ -183,7 +183,7 @@ public class BootParams {
 			sb.append("Upload_file:_" + fileName + "<br>");
 		}
 		else {
-			sb.append("<p>Number_of_Queries:_" + number_of_queries + "</p>");
+			sb.append("<p>Number_of_queries:_" + number_of_queries + "</p>");
 		}
 		// sb.append("#");
 		// sb.append("Email_to:_" + email + "#");

@@ -204,7 +204,6 @@ public class Client {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times<br>");
 		}
-		sb.append("<br>");
 		return sb.toString();
 	}
 
