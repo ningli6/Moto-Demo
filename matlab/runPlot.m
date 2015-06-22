@@ -1,7 +1,6 @@
 function [] = runPlot(nc)
     % info for output files
-    filename = 'Demo';
-    userid = 'ec2-user';
+    filename = 'Simulation_result';
 
     for channel = 1 : nc
         % import data from a text file
@@ -77,7 +76,7 @@ function [] = runPlot(nc)
         % plot on google map
         figure();
         contourf(x2, y2, copy);
-        title('Input interpolation by griddata');
+        title('Probability distribution');
         xlabel('longitude');
         ylabel('latitude');
         % plot color bar
@@ -102,7 +101,7 @@ function [] = runPlot(nc)
         % Output the contours into pdf and png file
         fileextension = '.png';
         % name = ['/Users/ningli/Desktop/Project/output/', userid, '_', filename, '_probability_', channelID, fileextension];
-        name = ['C:\Users\Administrator\Desktop\motoPlot\', userid, '_', filename, '_probability_', channelID, fileextension];
+        name = ['C:\Users\Administrator\Desktop\motoPlot\', filename, '_channel_', channelID, fileextension];
         print('-dpng',name);
 
         % close figure

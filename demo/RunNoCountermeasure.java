@@ -35,8 +35,8 @@ public class RunNoCountermeasure {
 			Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 			GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
 
-			message.append("*****Program_output*****#");
-			message.append("#Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
+			message.append("<h3>Simlation_result</h3>");
+			// message.append("#Map_length:_" + map.getLength() + "_km,_Map_height:_" + map.getHeight() + "_km#");
 			/* debug information */
 			// System.out.println("map length: " + map.getLength() + " km, map height: " + map.getHeight() + " km");
 			// System.out.println("map rows: " + map.getRows() + ", map cols: " + map.getCols());
@@ -61,14 +61,14 @@ public class RunNoCountermeasure {
 				}
 			}
 
-			message.append("#PU_information:#");
-			message.append("Number_of_PUs:_" + server.getNumberOfPUs() + "#");
+			message.append("<p>Distribution_of_primary_users:<br>");
+			message.append("Number_of_PUs:_" + server.getNumberOfPUs() + "<br>");
 			/* debug information */
 			// System.out.println("Number of PUs: " + server.getNumberOfPUs());
 			message.append(server.infoChannelToString());
 			/* debug information */
 			// server.printInfoChannel();
-			message.append("#");
+			message.append("</p>");
 			/* debug information */
 			// System.out.println();
 
@@ -93,9 +93,9 @@ public class RunNoCountermeasure {
 			// client.updateWhich();
 			// server.printInfoPU();
 
-			message.append("Querying_information:#");
+			message.append("<p>Querying_information:<br>");
 			message.append(client.updateWhichToString());
-
+			message.append("</p>");
 			/*** these functions should be update! ***/
 			// InferMap.directory = "/var/www/html/Project/output/";
 			// Server.directory = "/var/www/html/Project/output/";
@@ -118,11 +118,13 @@ public class RunNoCountermeasure {
 
 			/* compute IC */
 			double[] IC = client.computeIC(server);
-			message.append("IC_for_each_channel:#");
+			message.append("<p>Inaccuracy_for_each_channel:<br>");
 			for (int i = 0; i < IC.length; i++) {
-				message.append("Channel_" + i + "_:_" + IC[i] + "#");
+				message.append("Channel_" + i + ":_" + IC[i] + "<br>");
 				// System.out.println("Channel " + i + " : " + IC[i]);
 			}
+			message.append("</p>");
+			message.append("<br><p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_presented_as_red_markers.</p>");
 
 			/* if everything works all right, generate plots and then send email */
 			/* 

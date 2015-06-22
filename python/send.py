@@ -28,19 +28,19 @@ nc = int(sys.argv[2])
 # construct message
 message = sys.argv[3]
 message = message.replace("_", " ");
-message = message.replace("#", "\n");
-message += "\n\n"
-message += ('Current time: ' + str(datetime.datetime.now()))
+
+html = '<html><head><style>h3,p, span {color: black}</style></head><body>' + message + '</body></html>'
+
 
 # Create a text/plain message
 msg = MIMEMultipart('multipart')
 # text
-txt = MIMEText(message, 'plain')
+txt = MIMEText(html, 'html')
 msg.attach(txt)
 # image
 for i in range(nc):
 	# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-	fileName = 'C:\Users\Administrator\Desktop\motoPlot\ec2-user_Demo_probability_' + str(i) + '.png'
+	fileName = 'C:\Users\Administrator\Desktop\motoPlot\Simulation_result_channel_' + str(i) + '.png'
 	fp = open(fileName, 'rb')
 	img = MIMEImage(fp.read())
 	fp.close()

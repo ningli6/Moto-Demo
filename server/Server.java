@@ -212,7 +212,7 @@ public class Server {
 	public String infoChannelToString() {
 		StringBuilder sb = new StringBuilder();
 		if (channels_List == null) {
-			sb.append("Initialize_server_first#");
+			sb.append("Initialize_server_first<br>");
 		}
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			sb.append("Channel_[" + i + "]:_");
@@ -223,7 +223,7 @@ public class Server {
 			if (sb.length() != len) {
 				sb.delete(sb.length() - 2, sb.length());
 			}
-			sb.append("#");
+			sb.append("<br>");
 		}
 		return sb.toString();
 	}

@@ -156,41 +156,38 @@ public class BootParams {
 
 	public String paramsToString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("*****Print_parameters*****#");
-		sb.append("#");
-		sb.append("Number_of_channels:_" + number_of_channels + "#");
-		sb.append("#");
-		sb.append("Analysis_region:#");
-		sb.append("North_latitude:_" + NorthLat + "#");
-		sb.append("South_latitude:_" + SouthLat + "#");
-		sb.append("West_longitude:_" + WestLng + "#");
-		sb.append("East_longitude:_" + EastLng + "#");
-		sb.append("#");
-		sb.append("Location_of_PU:#");
+		sb.append("<h3>Input_parameters</h3>");
+		sb.append("<p>Number_of_channels:_" + number_of_channels + "</p>");
+		sb.append("<p>Analysis_region:<br>");
+		sb.append("North_latitude_:" + NorthLat + "<br>");
+		sb.append("South_latitude_:" + SouthLat + "<br>");
+		sb.append("West_longitude_:" + WestLng + "<br>");
+		sb.append("East_longitude_:" + EastLng + "<br>");
+		sb.append("</p>");
+		sb.append("<p>Location_of_PU:<br>");
 		int len = PUList.length;
 		for (int i = 0; i < len; i++) {
-			sb.append("Channel_" + i + ":#");
+			sb.append("Channel_" + i + ":<br>");
 			for (LatLng ll : PUList[i]) {
-				sb.append("[" + ll.getLat() + ",_" + ll.getLng() + "]#");
+				sb.append("[" + ll.getLat() + ",_" + ll.getLng() + "]<br>");
 			}
-			sb.append("#");
+			sb.append("</p>");
 		}
 		if (!isCountermeasure) {
-			sb.append("Countermeasure:_" + "No_countermeausre#");
+			sb.append("<p>Countermeasure:_" + "No_countermeausre</p>");
 		}
 		else {
-			sb.append("Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "#");
+			sb.append("Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "<br>");
 		}
-		sb.append("#");
 		if (number_of_queries < 0) {
-			sb.append("Upload_file:_" + fileName + "#");
+			sb.append("Upload_file:_" + fileName + "<br>");
 		}
 		else {
-			sb.append("Number_of_Queries:_" + number_of_queries + "#");
+			sb.append("<p>Number_of_Queries:_" + number_of_queries + "</p>");
 		}
-		sb.append("#");
-		sb.append("Email_to:_" + email + "#");
-		sb.append("#");
+		// sb.append("#");
+		// sb.append("Email_to:_" + email + "#");
+		// sb.append("#");
 		return sb.toString();
 	}
 }
