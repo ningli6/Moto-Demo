@@ -22,16 +22,27 @@ public class Server {
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
+	@SuppressWarnings("unused")
 	private HashSet<Integer> set;
 	public static String directory;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public NumberOfPUsMismatchException(String message) {
 			super(message);
 		}
 	}
 
 	public class ClientOutOfMapException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public ClientOutOfMapException(String message) {
 			super(message);
 		}
@@ -43,6 +54,7 @@ public class Server {
 		set = new HashSet<Integer>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setNumberOfChannels(int c) {
 		this.Number_Of_Channels = c;
 		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
@@ -101,7 +113,9 @@ public class Server {
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		LinkedList<Response> response_list = new LinkedList<Response>();
+		@SuppressWarnings("unused")
 		double final_res_power = -1;
+		@SuppressWarnings("unused")
 		int final_res_id = -1;
 		for (LinkedList<PU> list : channels_List) {
 			Collections.shuffle(list);
@@ -238,6 +252,7 @@ public class Server {
 	}
 
 	/* This hash function works as long as j is smaller than 100000 */
+	@SuppressWarnings("unused")
 	private int hashcode(int i, int j) {
 		return 100000 * i + j;
 	}

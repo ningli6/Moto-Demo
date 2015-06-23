@@ -65,5 +65,6 @@ public class Polygon {
 			System.out.println(poly.inPolygon(new Point(x, y)));
 			count = 0;
 		}
+		sc.close();
 	}
 }

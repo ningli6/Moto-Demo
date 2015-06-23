@@ -1,10 +1,7 @@
 package server;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Collections;
-
-import utility.*;
+import utility.GridMap;
+import utility.Response;
 import client.Client;
 
 /*
@@ -27,7 +24,7 @@ public class ServerAdditiveNoise extends Server{
 
 	public ServerAdditiveNoise(GridMap map, double noise) {
 		super(map);
-		this.noise = noise;
+		ServerAdditiveNoise.noise = noise;
 		actual_lies = 0;
 		expected_lies = (int) Math.round(Number_Of_Queries * noise / NOISE_DECREASE_STEP);
 	}

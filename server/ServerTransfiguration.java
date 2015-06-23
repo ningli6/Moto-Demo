@@ -11,6 +11,7 @@ public class ServerTransfiguration extends Server{
 	public static int NUMBER_OF_SIDES = 3;
 	private List<PolyPU>[] channels_poly_List;
 
+	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map) {
 		super(map);
 		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
@@ -19,6 +20,7 @@ public class ServerTransfiguration extends Server{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map, int number_of_sides) {
 		super(map);
 		NUMBER_OF_SIDES = number_of_sides;
@@ -59,7 +61,9 @@ public class ServerTransfiguration extends Server{
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		List<Response> response_list = new LinkedList<Response>();
+		@SuppressWarnings("unused")
 		double final_res_power = -1;
+		@SuppressWarnings("unused")
 		int final_res_id = -1;
 		for (List<PolyPU> list : channels_poly_List) {
 			Collections.shuffle(list);

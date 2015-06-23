@@ -1,13 +1,11 @@
 package utility;
 
-import java.text.DecimalFormat;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import java.io.PrintWriter;
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.text.DecimalFormat;
+
+import javax.swing.JFrame;
 
 /*
  * InferMap is the grid map that attackers use to infer PU's location

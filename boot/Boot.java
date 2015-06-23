@@ -21,10 +21,7 @@ public class Boot {
 			return;
 		}
 		R = new RunnableInterface(bp);
-		if (R == null) {
-			System.out.println("FAILED");
-			return;
-		}
+
 		/* start program, return ok */
 		System.out.println("OK");
 	    R.start();

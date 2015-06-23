@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Parser {
 	public static Map<String, String> cmswitch;
 
+	@SuppressWarnings("unchecked")
 	public static BootParams parse(String[] args) {
 		if (args == null) return null;
 		if (cmswitch == null) {

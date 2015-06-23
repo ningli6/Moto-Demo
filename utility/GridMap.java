@@ -15,8 +15,10 @@ public class GridMap {
 	private Location lowerRight;
 	// lat & lon coordinate boundary
 	private double upperLat;
+	@SuppressWarnings("unused")
 	private double lowerLat;
 	private double leftLon;
+	@SuppressWarnings("unused")
 	private double rightLon;
 	// length of the map
 	private double length = -1;
@@ -30,6 +32,10 @@ public class GridMap {
 	private double averDist;
 
 	public class coordinatesOutOfBoundsException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public coordinatesOutOfBoundsException(String message) {
 			super(message);
 		}

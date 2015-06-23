@@ -71,26 +71,14 @@ public class PU {
 	}
 
 	public void setID(int id) {
-		if (this == null) {
-			System.out.println("Initialize PU first");
-			return;
-		}
 		this.id = id;
 	}
 
 	public int getID() {
-		if (this == null) {
-			System.out.println("Initialize PU first");
-			return -1;
-		}
 		return id;
 	}
 
 	public void setChannelID(int cid) {
-		if (this == null) {
-			System.out.println("Initialize PU first");
-			return;
-		}
 		if (cid < 0) {
 			System.out.println("Channel ID must be positive");
 			return;
@@ -99,10 +87,6 @@ public class PU {
 	}
 
 	public int getChannelID() {
-		if (this == null) {
-			System.out.println("Initialize PU first");
-			return -1;
-		}
 		if (channelID == -1) {
 			System.out.println("Set channel ID first");
 			return -1;

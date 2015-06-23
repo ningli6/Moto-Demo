@@ -1,15 +1,19 @@
 package client;
 
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Random;
 
-import utility.*;
-import server.*;
+import server.Server;
 /*
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
  */
+import utility.GridMap;
+import utility.InferMap;
+import utility.Location;
+import utility.MTP;
+import utility.PU;
+import utility.Response;
 
 public class Client {
 	public static final double PMAX = 1;
@@ -29,6 +33,10 @@ public class Client {
 	private Random rand;
 
 	public class NumberOfChannelsMismatchException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public NumberOfChannelsMismatchException(String message) {
 			super(message);
 		}

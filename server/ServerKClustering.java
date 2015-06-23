@@ -14,6 +14,10 @@ public class ServerKClustering extends Server {
 	private List<Cluster>[] cluster_list;   /* list for clusters on each channel */
 
 	public class UnitTestException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public UnitTestException() {
 			super();
 		}
@@ -22,6 +26,7 @@ public class ServerKClustering extends Server {
 		}
 	}
 	/* initialize server */
+	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map) {
 		super(map);
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
@@ -33,10 +38,11 @@ public class ServerKClustering extends Server {
 	}
 
 	/* initialize server with number of k specified*/
+	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map, int k) {
 		super(map);
 		if (k <= 0) throw new IllegalArgumentException();
-		this.K = k;
+		ServerKClustering.K = k;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
@@ -59,7 +65,7 @@ public class ServerKClustering extends Server {
 				/* each pu is itself a cluster */
 				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
 				/* do nothing if number of pus is smaller than K */
-				if (size <= this.K) {
+				if (size <= ServerKClustering.K) {
 					System.out.println("K is greater than or equal to the number of pus in that channel");
 					virtual_List[i] = channels_List[i];
 					continue;
@@ -82,7 +88,7 @@ public class ServerKClustering extends Server {
 				// System.out.println("After sorting... size: " + compare.size());
 				// for (Pair p : compare) p.printPair();
 				/* while (number of clusters) > k do */
-				while(cluster_list[i].size() > this.K) {
+				while(cluster_list[i].size() > ServerKClustering.K) {
 					/* Choose the smallest value dij from array D. */
 					Pair min = compare.pop();
 					/* debug 
@@ -172,7 +178,9 @@ public class ServerKClustering extends Server {
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
 		List<Response> response_list = new LinkedList<Response>();// linkedlist that saves responses
+		@SuppressWarnings("unused")
 		double final_res_power = -1;
+		@SuppressWarnings("unused")
 		int final_res_id = -1;
 		int channel_id = 0;
 		for (List<PU> list : virtual_List) {

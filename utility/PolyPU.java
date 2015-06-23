@@ -1,15 +1,14 @@
 package utility;
 
-import java.util.HashMap;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import java.io.PrintWriter;
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 
-import utility.geometry.*;
+import javax.swing.JFrame;
+
+import utility.geometry.Point;
+import utility.geometry.Polygon;
 
 /*
  * A pu class that has polygon contours
@@ -142,6 +141,7 @@ public class PolyPU {
 		int blue = -1;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
+				@SuppressWarnings("unused")
 				int code = hashcode(i, j);
 				p[i][j] = response(i, j);
 				if (p[i][j] == MTP.P_0) { // gray

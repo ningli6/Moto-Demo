@@ -14,6 +14,11 @@ public class ServerKAnonymity extends Server {
 	private int Number_Of_Virtual_PUs;
 
 	public class NumberOfChannelsMismatchException extends RuntimeException {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public NumberOfChannelsMismatchException() {
 			super();
 		}
@@ -23,19 +28,21 @@ public class ServerKAnonymity extends Server {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public ServerKAnonymity(GridMap map) {
 		super(map);
-		this.K = 3;
+		ServerKAnonymity.K = 3;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
 		Number_Of_Virtual_PUs = 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	public ServerKAnonymity(GridMap map, int k) {
 		super(map);
 		if (k <= 0) throw new IllegalArgumentException();
-		this.K = k;
+		ServerKAnonymity.K = k;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
@@ -43,7 +50,7 @@ public class ServerKAnonymity extends Server {
 	}
 
 	public void kAnonymity() {
-		if (getNumberOfPUs() == 0 || this.K == 1) {
+		if (getNumberOfPUs() == 0 || ServerKAnonymity.K == 1) {
 			System.out.println("No need to convert to virtual pu");
 			virtual_List = channels_List;
 			updateNumbersOfVirtualPUs();
@@ -53,7 +60,7 @@ public class ServerKAnonymity extends Server {
 		List<PU> tmpGroup;
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			while (!channels_List[i].isEmpty()) {
-				if (channels_List[i].size() <= this.K) {
+				if (channels_List[i].size() <= ServerKAnonymity.K) {
 					virtual_List[i].add(findVirtualPU(channels_List[i], i));
 					channels_List[i].clear();
 				}
@@ -63,7 +70,7 @@ public class ServerKAnonymity extends Server {
 					Collections.sort(channels_List[i], axle.DIST_ORDER);
 					tmpGroup = new LinkedList<PU>();
 					tmpGroup.add(axle);
-					for (int j = 0; j < this.K - 1; j++)
+					for (int j = 0; j < ServerKAnonymity.K - 1; j++)
 						tmpGroup.add(channels_List[i].pop()); // remove first
 					virtual_List[i].add(findVirtualPU(tmpGroup, i));
 					System.out.println();
@@ -98,7 +105,7 @@ public class ServerKAnonymity extends Server {
 	/* It's not a easy to implement linear time algorithm, use brute force here */
 	private PU findVirtualPU(List<PU> list, int channel_id) {
 		if (list == null) throw new NullPointerException();
-		if (list.size() > this.K) throw new IllegalArgumentException();
+		if (list.size() > ServerKAnonymity.K) throw new IllegalArgumentException();
 		if (channel_id < 0 || channel_id >= Number_Of_Channels) throw new IllegalArgumentException();
 		double min_max_radius = Double.POSITIVE_INFINITY;
 		PU virtualPU = new PU();
@@ -129,7 +136,9 @@ public class ServerKAnonymity extends Server {
 		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
 		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
 		List<Response> response_list = new LinkedList<Response>();// linkedlist that saves responses
+		@SuppressWarnings("unused")
 		double final_res_power = -1;
+		@SuppressWarnings("unused")
 		int final_res_id = -1;
 		int channel_id = 0;
 		for (List<PU> list : virtual_List) {
