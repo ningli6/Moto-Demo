@@ -25,8 +25,10 @@ print 'Send to: ', recv
 # Number of channel
 nc = int(sys.argv[2])
 
+ICvsQ = (sys.argv[3])
+
 # construct message
-message = sys.argv[3]
+message = sys.argv[4]
 message = message.replace("_", " ");
 
 html = '<html><head><style>h3,p, span {color: black}</style></head><body>' + message + '</body></html>'
@@ -45,6 +47,14 @@ for i in range(nc):
 	img = MIMEImage(fp.read())
 	fp.close()
 	msg.attach(img)
+
+if (ICvsQ == 'YICvsQ'):
+	fileName = 'C:\Users\Administrator\Desktop\motoPlot\ICvsQ.png'
+	fp = open(fileName, 'rb')
+	img = MIMEImage(fp.read())
+	fp.close()
+	msg.attach(img)
+
 
 # me == the sender's email address
 # you == the recipient's email address

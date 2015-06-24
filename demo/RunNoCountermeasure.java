@@ -132,8 +132,10 @@ public class RunNoCountermeasure {
 			message.append("</p>");
 			message.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_presented_as_red_markers.</p>");
 
+			boolean ICvsQ = false;
 			/* Compute IC vs Query at certain points and plot */
-			if (Number_of_Queries > 100) {
+			if (Number_of_Queries >= 100) {
+				ICvsQ = true;
 				String dict = "C:\\Users\\Administrator\\Desktop\\motoData\\";
 				File file = new File(dict + "averageIC_NoCountermeasure.txt");
 				System.out.println("Start to compute average IC...");
@@ -190,7 +192,7 @@ public class RunNoCountermeasure {
 					System.out.println("Printing average IC for each query...");
 					for (List<Double> listOnChannel : rlist) {
 						for (double d : listOnChannel) {
-							out.print(d + " ");
+							out.print((int) d + " ");
 						}
 						out.println();
 					}
@@ -208,9 +210,9 @@ public class RunNoCountermeasure {
 			/* if everything works all right, generate plots and then send email */
 			/* 
 			 * Update this function :
-			 * boolean generatePlot(int number_of_channels) 
+			 * boolean generatePlot(int number_of_channels, boolean ICvsQ) 
 			 */
-			if (!JavaRunCommand.generatePlot(Number_Of_Channels)) {
+			if (!JavaRunCommand.generatePlot(Number_Of_Channels, ICvsQ)) {
 				throw new Exception("Unable to generate plots");
 			}
 			System.out.println("Generating plots successfully!");
@@ -218,7 +220,7 @@ public class RunNoCountermeasure {
 			 * Update this function :
 			 * boolean sendEmail(String addr, String message, int number_of_channels) 
 			 */
-			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString(), Number_Of_Channels)) {
+			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString(), Number_Of_Channels, ICvsQ)) {
 				throw new Exception("Unable to send email");
 			}
 			System.out.println("Sending email successfully!");
