@@ -6,6 +6,10 @@ import client.*;
 import server.*;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+import java.io.File;
 
 public class RunNoCountermeasure {
 	private BootParams bootParams;
@@ -13,6 +17,7 @@ public class RunNoCountermeasure {
 	public static double cellsize = 0.05; // in degree
 	// multiple times for MTP
 	public static double multitimes = 5;
+	public static int points = 5;
 
 	public RunNoCountermeasure(BootParams bp) {
 		this.bootParams = bp;
@@ -84,6 +89,7 @@ public class RunNoCountermeasure {
 				// read from file
 				Number_of_Queries = 500;
 			}
+			System.out.println("Start querying...");
 			for (int i = 0; i < Number_of_Queries; i++) {
 				client.randomLocation();
 				client.query(server);
@@ -126,14 +132,84 @@ public class RunNoCountermeasure {
 			message.append("</p>");
 			message.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_presented_as_red_markers.</p>");
 
+			/* Compute IC vs Query at certain points and plot */
+			if (Number_of_Queries > 100) {
+				String dict = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+				File file = new File(dict + "averageIC_NoCountermeasure.txt");
+				System.out.println("Start to compute average IC...");
+				int gap = Number_of_Queries / points;
+				// compute number of integer
+				int base = 1;
+				int tmp = gap;
+				while(tmp / base > 0) {
+					base *= 10;
+				}
+				gap = (gap / (base / 10)) * (base / 10);
+				List<Integer> qlist = new ArrayList<Integer>();
+				@SuppressWarnings("unchecked")
+				List<Double>[] rlist = (ArrayList<Double>[]) new ArrayList[Number_Of_Channels];
+				for (int i = 0; i < rlist.length; i++) {
+					rlist[i] = new ArrayList<Double>();
+				}
+				qlist.add(0);
+				for (int i = 1; i <= points + 1; i++) qlist.add(gap * i);
+				try {
+					PrintWriter out = new PrintWriter(file);
+					System.out.println("Printing number of queries...");
+					for (Integer q : qlist) {
+						out.print(q + " ");
+					}
+					out.println();					
+					int repeat = 10;
+					/* start query, each is done for 'repeat' times and compute average */
+					for (int q : qlist) {
+						System.out.println("Number of queries: " + q);
+						double[] sumIC = new double[Number_Of_Channels];
+						// make queries for certain times
+						for (int i = 0; i < repeat; i++) {
+							client.reset();
+							server.reset();
+							for (int j = 0; j < q; j++) {
+								client.randomLocation();
+								client.query(server);
+							}
+							IC = client.computeIC(server);
+							int k = 0;
+							for (double ic : IC) {
+								sumIC[k] += ic;
+								k++;
+							}
+						}
+						// compute average
+						int cid = 0;
+						for (double ic : sumIC) {
+							rlist[cid].add(ic / repeat);
+							cid++;
+						}
+					}
+					System.out.println("Printing average IC for each query...");
+					for (List<Double> listOnChannel : rlist) {
+						for (double d : listOnChannel) {
+							out.print(d + " ");
+						}
+						out.println();
+					}
+					out.close (); // this is necessary
+				} catch (FileNotFoundException e) {
+					System.err.println("FileNotFoundException: " + e.getMessage());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				finally {
+					System.out.println("Printing ends");
+				}
+			} 
+
 			/* if everything works all right, generate plots and then send email */
 			/* 
 			 * Update this function :
 			 * boolean generatePlot(int number_of_channels) 
 			 */
-			// if (!JavaRunCommand.generatePlot()) {
-			// 	throw new Exception("Unable to generate plots");
-			// }
 			if (!JavaRunCommand.generatePlot(Number_Of_Channels)) {
 				throw new Exception("Unable to generate plots");
 			}
@@ -142,9 +218,6 @@ public class RunNoCountermeasure {
 			 * Update this function :
 			 * boolean sendEmail(String addr, String message, int number_of_channels) 
 			 */
-			// if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString())) {
-			// 	throw new Exception("Unable to send email");
-			// }
 			if (!JavaRunCommand.sendEmail(bootParams.getEmail(), message.toString(), Number_Of_Channels)) {
 				throw new Exception("Unable to send email");
 			}
