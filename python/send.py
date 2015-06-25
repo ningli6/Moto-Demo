@@ -39,6 +39,8 @@ msg = MIMEMultipart('multipart')
 # text
 txt = MIMEText(html, 'html')
 msg.attach(txt)
+
+
 # image
 for i in range(nc):
 	# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'

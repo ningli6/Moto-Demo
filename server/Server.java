@@ -179,6 +179,7 @@ public class Server {
 	}
 
 	public void printPUAllChannel() {
+		System.out.println("Start printing pus...");
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			File file = new File(directory + "demoTable_" + i + "_pu.txt");
 			try {

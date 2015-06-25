@@ -21,7 +21,8 @@ public class RunnableInterface implements Runnable {
                     runNoCountermeasure.run();
                     break;
                 case "ADDITIVENOISE":
-                    System.out.println("NOT IMPLEMENTED");
+                    RunAdditiveNoise runAdditiveNoise = new RunAdditiveNoise(bootParams);
+                    runAdditiveNoise.run();
                     break;
                 case "TRANSFIGURATION":
                     System.out.println("NOT IMPLEMENTED");

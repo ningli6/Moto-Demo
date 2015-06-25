@@ -174,20 +174,17 @@ public class BootParams {
 			sb.append("</p>");
 		}
 		if (!isCountermeasure) {
-			sb.append("<p>Countermeasure:_" + "No_countermeausre</p>");
+			sb.append("<p>Countermeasure:_No_countermeausre</p>");
 		}
 		else {
-			sb.append("Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "<br>");
+			sb.append("<p>Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "</p>");
 		}
 		if (number_of_queries < 0) {
-			sb.append("Upload_file:_" + fileName + "<br>");
+			sb.append("<p>Upload_file:_" + fileName + "</p>");
 		}
 		else {
 			sb.append("<p>Number_of_queries:_" + number_of_queries + "</p>");
 		}
-		// sb.append("#");
-		// sb.append("Email_to:_" + email + "#");
-		// sb.append("#");
 		return sb.toString();
 	}
 }

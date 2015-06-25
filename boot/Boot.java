@@ -16,10 +16,10 @@ public class Boot {
 			return;
 		}
 		/* countermeasure not implemented */
-		if (bp.isCountermeasure()) {
-			System.out.println("NOT IMPLEMENTED");
-			return;
-		}
+//		if (bp.isCountermeasure()) {
+//			System.out.println("NOT IMPLEMENTED");
+//			return;
+//		}
 		R = new RunnableInterface(bp);
 
 		/* start program, return ok */

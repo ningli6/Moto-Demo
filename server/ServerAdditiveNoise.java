@@ -64,6 +64,5 @@ public class ServerAdditiveNoise extends Server{
 	public void reset() {
 		super.reset();
 		actual_lies = 0;
-		// Number_Of_Queries = -1;
 	}
 }

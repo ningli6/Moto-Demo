@@ -5,12 +5,6 @@ Show relation between IC and query for each channel
 import matplotlib.pyplot as plt
 import sys
 
-print 'Plotting IC vs Q...'
-
-# print 'args len: ' , len(sys.argv)
-# for i in range(0, len(sys.argv)):
-# 	print str(sys.argv[i])
-
 path = "C:/Users/Administrator/Desktop/motoData/" + sys.argv[1]
 output = 'C:/Users/Administrator/Desktop/motoPlot/'
 label = ['channel 0', 'channel 1', 'channe 2']
