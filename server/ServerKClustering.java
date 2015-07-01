@@ -28,7 +28,7 @@ public class ServerKClustering extends Server {
 	/* initialize server */
 	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map) {
-		super(map);
+		super(map, 1);
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
 			virtual_List[i] = new LinkedList<PU>();
@@ -40,7 +40,7 @@ public class ServerKClustering extends Server {
 	/* initialize server with number of k specified*/
 	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map, int k) {
-		super(map);
+		super(map, 1);
 		if (k <= 0) throw new IllegalArgumentException();
 		ServerKClustering.K = k;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];

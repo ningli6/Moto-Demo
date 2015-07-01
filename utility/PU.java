@@ -59,7 +59,6 @@ public class PU {
 		this.location = new Location(lat, lng);
 		this.indexOfRow = map.LatToRow(lat);
 		this.indexOfCol = map.LonToCol(lng);
-		// System.out.println("row: " + indexOfRow + ", col: " + indexOfCol);
 	}
 
 	public void attachToServer(Server server) {

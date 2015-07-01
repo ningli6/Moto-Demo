@@ -3,7 +3,6 @@ package server;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -22,8 +21,6 @@ public class Server {
 	protected GridMap map;
 	protected LinkedList<PU>[] channels_List;
 	private int Number_Of_PUs;
-	@SuppressWarnings("unused")
-	private HashSet<Integer> set;
 	public static String directory;
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
@@ -48,10 +45,15 @@ public class Server {
 		}
 	}
 
-	public Server(GridMap map) {
+	@SuppressWarnings("unchecked")
+	public Server(GridMap map, int noc) {
 		this.map = map;
 		this.Number_Of_PUs = 0;
-		set = new HashSet<Integer>();
+		this.Number_Of_Channels = noc;
+		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			channels_List[i] = new LinkedList<PU>();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -178,10 +180,9 @@ public class Server {
 		}
 	}
 
-	public void printPUAllChannel() {
-		System.out.println("Start printing pus...");
+	public void printPUAllChannel(String dir) {
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			File file = new File(directory + "demoTable_" + i + "_pu.txt");
+			File file = new File(dir + "demoTable_" + i + "_pu.txt");
 			try {
 				PrintWriter out = new PrintWriter(file);
 				out.println("LAT LNG RI CI");
@@ -195,7 +196,6 @@ public class Server {
 				e.printStackTrace();
 			}
 			finally {
-				System.out.println("Printing ends");
 			}
 		}
 	}
@@ -224,7 +224,7 @@ public class Server {
 	}
 
 	// print infomation about channel
-	public String infoChannelToString() {
+	public String puOnChannelToString() {
 		StringBuilder sb = new StringBuilder();
 		if (channels_List == null) {
 			sb.append("Initialize_server_first<br>");

@@ -91,9 +91,4 @@ public class Parser {
 			return null;
 		}
 	}
-
-	public static void main(String[] args) {
-		BootParams bp = Parser.parse(args);
-		bp.printParams();
-	}
 }

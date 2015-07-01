@@ -2,26 +2,43 @@ package demo;
 
 import boot.*;
 
+/**
+ * Handle multiple simulation requests by generating new threads for each
+ */
+
 public class RunnableInterface implements Runnable {
     private Thread t;
     private String threadName;
     private BootParams bootParams;
+    private double cellsize;
+    private double mtpScale;
+    private int interval;
+    private String directory;
 
-    public RunnableInterface(BootParams bp){
+    public RunnableInterface(BootParams bp, double cs, double scale, int inter, String dir){
         this.bootParams = bp;
-        threadName = bp.countermeasure();
-        // System.out.println("Creating " +  threadName );
+        threadName = bp.getCountermeasure();
+        this.cellsize = cs;
+        this.mtpScale = scale;
+        this.interval = inter;
+        this.directory = dir;
     }
+
+    /**
+     * According to the name of different countermeasure,
+     * call different routine
+     */
+    @Override
     public void run() {
         System.out.println("Running " +  threadName );
         try {
             switch (threadName) {
                 case "NOCOUNTERMEASURE":
-                    RunNoCountermeasure runNoCountermeasure = new RunNoCountermeasure(bootParams);
+                    RunNoCountermeasure runNoCountermeasure = new RunNoCountermeasure(bootParams, cellsize, mtpScale, interval, directory);
                     runNoCountermeasure.run();
                     break;
                 case "ADDITIVENOISE":
-                    RunAdditiveNoise runAdditiveNoise = new RunAdditiveNoise(bootParams);
+                    RunAdditiveNoise runAdditiveNoise = new RunAdditiveNoise(bootParams, cellsize, mtpScale, interval, directory);
                     runAdditiveNoise.run();
                     break;
                 case "TRANSFIGURATION":
@@ -43,7 +60,6 @@ public class RunnableInterface implements Runnable {
 
     public void start ()
     {
-        // System.out.println("Starting " +  threadName );
         if (t == null)
         {
             t = new Thread (this, threadName);

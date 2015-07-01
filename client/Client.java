@@ -59,6 +59,17 @@ public class Client {
 		location = new Location(map.RowToLat(r), map.ColToLon(c));
 	}
 
+	public Client(int r, int c, GridMap map, int noc) {
+		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
+		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
+		this.map = map;
+		location = new Location(map.RowToLat(r), map.ColToLon(c));
+		this.Number_Of_Channels = noc;
+		this.count = new int[Number_Of_Channels];
+		this.inferMap = new InferMap[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, this.map);
+	}
+
 	public int getNumberOfChannels() {
 		return Number_Of_Channels;
 	}
@@ -207,7 +218,7 @@ public class Client {
 		}
 	}
 
-	public String updateWhichToString() {
+	public String countChannelUpdateToString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times<br>");
@@ -250,6 +261,26 @@ public class Client {
 		inferMap[i].printInRequiredFormat(i);
 	}
 
+	/* print probability on all channels */
+	public void printProbability(String dir) {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			inferMap[i].printProbability(dir);
+		}
+	}
+
+	/* print number of rows * cols */
+	public void printRC(String dir) {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			inferMap[i].printRC(dir);
+		}
+	}
+
+	public void printBounds(String dir) {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			inferMap[i].printBounds(dir);
+		}
+	}
+	
 	/* print client index position in one line */
 	public void printClientPosition() {
 		System.out.println("Client=> r: " + indexOfRow + ", c: " + indexOfCol);

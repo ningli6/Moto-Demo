@@ -470,6 +470,11 @@ function getParams () {
         countermeasure = "K_CLUSTERING";
     }
 
+    if (countermeasure == "ADDITIVE_NOISE" && (document.getElementById('cmval').value > 1 || document.getElementById('cmval').value < 0)) {
+        alert("Noise level should be in the range from 0 to 1 inclusively");
+        return;
+    }
+
     if (countermeasure == undefined) {
         alert("Undefined countermeasure!");
         return;

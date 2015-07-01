@@ -248,4 +248,61 @@ public class InferMap extends GridMap {
 			System.out.println("Printing ends");
 		}
 	}
+
+	// print probablity
+	public void printProbability(String dir) {
+		if (dir == null || dir.length() == 0) return;
+		// System.out.println("Start printing probability... ");
+		File file = new File(dir + "demoTable_" + this.id + ".txt");
+		try {
+			PrintWriter out = new PrintWriter(file);
+			out.println("ROW COL P");
+			for (int i = 0; i < getRows(); i++) {
+				for (int j = 0; j < getCols(); j++) {
+					out.println(i + " " + j + " " + p[i][j]);
+				}
+			}
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// System.out.println("Printing ends");
+		}
+	}
+
+	public void printRC(String dir) {
+		// TODO Auto-generated method stub
+		File file = new File(dir + "demoTable_" + id + "_rowcol.txt");
+		try {
+			PrintWriter out = new PrintWriter(file);
+			out.println("ROWS COLS");
+			out.println(getRows() + " " + getCols());
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+//			System.out.println("Printing ends");
+		}
+	}
+
+	public void printBounds(String dir) {
+		// TODO Auto-generated method stub
+		File file = new File(dir + "demoTable_" + id + "_bounds.txt");
+		try {
+			PrintWriter out = new PrintWriter(file);
+			out.println("NLAT SLAT WLNG ELNG");
+			out.println(getUpperBoundary() + " " + getLowerBounday() + " " + getLeftBoundary() + " " + getRightBoundary());
+			out.close (); // this is necessary
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+//			System.out.println("Printing ends");
+		}
+	}
 }

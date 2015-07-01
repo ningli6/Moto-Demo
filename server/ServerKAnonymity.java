@@ -30,7 +30,7 @@ public class ServerKAnonymity extends Server {
 
 	@SuppressWarnings("unchecked")
 	public ServerKAnonymity(GridMap map) {
-		super(map);
+		super(map, 1);
 		ServerKAnonymity.K = 3;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++)
@@ -40,7 +40,7 @@ public class ServerKAnonymity extends Server {
 
 	@SuppressWarnings("unchecked")
 	public ServerKAnonymity(GridMap map, int k) {
-		super(map);
+		super(map, 1);
 		if (k <= 0) throw new IllegalArgumentException();
 		ServerKAnonymity.K = k;
 		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];

@@ -13,7 +13,7 @@ public class ServerTransfiguration extends Server{
 
 	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map) {
-		super(map);
+		super(map, 1);
 		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			channels_poly_List[i] = new LinkedList<PolyPU>();
@@ -22,7 +22,7 @@ public class ServerTransfiguration extends Server{
 
 	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map, int number_of_sides) {
-		super(map);
+		super(map, 1);
 		NUMBER_OF_SIDES = number_of_sides;
 		if (NUMBER_OF_SIDES < 3) throw new IllegalArgumentException("Number of sides must be at least 3"); 
 		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];

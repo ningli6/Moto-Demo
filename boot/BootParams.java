@@ -71,7 +71,7 @@ public class BootParams {
 		return isCountermeasure;
 	}
 
-	public String countermeasure() {
+	public String getCountermeasure() {
 		return countermeasure;
 	}
 
