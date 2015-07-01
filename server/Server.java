@@ -115,10 +115,6 @@ public class Server {
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		LinkedList<Response> response_list = new LinkedList<Response>();
-		@SuppressWarnings("unused")
-		double final_res_power = -1;
-		@SuppressWarnings("unused")
-		int final_res_id = -1;
 		for (LinkedList<PU> list : channels_List) {
 			Collections.shuffle(list);
 			PU minPU = null;

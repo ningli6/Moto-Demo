@@ -30,25 +30,27 @@ public class ServerTransfiguration extends Server{
 			channels_poly_List[i] = new LinkedList<PolyPU>();
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public ServerTransfiguration(GridMap map, int noc, int number_of_sides) {
+		super(map, noc);
+		NUMBER_OF_SIDES = number_of_sides; 
+		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			channels_poly_List[i] = new LinkedList<PolyPU>();
+		}
+	}
 
 	public void transfigure() {
 		if (getNumberOfPUs() == 0) return;
 		int channel = 0;
 		for (List<PU> list : channels_List) {
 			for (PU pu: list) {
-				System.out.println("Transfigure: " + pu.getID() + " on channel: " + channel);
+//				System.out.println("Transfigure: " + pu.getID() + " on channel: " + channel);
 				channels_poly_List[channel].add(new PolyPU(pu, NUMBER_OF_SIDES));
 			}
 			channel++;
 		}
-		// for (List<PolyPU> list : channels_poly_List) {
-		// 	for (PolyPU ppu: list) {
-		// 		// preCompute
-		// 		ppu.printPreCompute();
-		// 		// originalCompute
-		// 		ppu.printOriginCompute();
-		// 	}
-		// }
 	}
 
 	// @override

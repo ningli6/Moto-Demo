@@ -21,11 +21,16 @@ public class CmpPlot {
 				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_AdditiveNoise.txt";
 				break;
+				case "TRANSFIGURATION":
+				fileName = "averageIC_NoCountermeasure.txt";
+				cmpName = "cmp_Transfiguration.txt";
 			}
 
 			String cmd;
 			if (cm == "NOCOUNTERMEASURE") 
 				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + fileName;
+			else if (cm =="TRANSFIGURATION")
+				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwithCmpChopHead.py " + fileName + " " + cmpName; // chop query at 0
 			else 
 				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwithCmp.py " + fileName + " " + cmpName;
 			Process p = Runtime.getRuntime().exec(cmd);

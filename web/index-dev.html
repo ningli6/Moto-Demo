@@ -475,6 +475,16 @@ function getParams () {
         return;
     }
 
+    if (countermeasure == "TRANSFIGURATION" && document.getElementById('cmval').value < 3) {
+        alert("Sides for polygon should be greater than 2");
+        return;
+    }
+
+    if (countermeasure == "TRANSFIGURATION" && !(document.getElementById('cmval').value % 1 === 0)) {
+        alert("Sides for polygon must be an integer");
+        return;
+    }
+
     if (countermeasure == undefined) {
         alert("Undefined countermeasure!");
         return;

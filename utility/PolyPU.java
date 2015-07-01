@@ -71,7 +71,6 @@ public class PolyPU {
 				int code = hashcode(i, j);
 				if (polygon.inPolygon(indexTodist(i, j)) && !hashmap.containsKey(code))
 					hashmap.put(code, power);
-				// System.out.println();
 			}
 		}
 	}
@@ -116,7 +115,11 @@ public class PolyPU {
 	public double response(int i, int j) {
 		if (i < 0 || j < 0 || i >= map.getRows() || j >= map.getCols()) throw new IndexOutOfBoundsException();
 		int code = hashcode(i, j);
-		if (hashmap.containsKey(code)) return hashmap.get(code);
+		if (hashmap.containsKey(code)) {
+			/* debug */
+//			System.out.println("Find match!");
+			return hashmap.get(code);
+		}
 		return MTP.P_100;
 	}
 

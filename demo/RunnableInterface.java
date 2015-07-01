@@ -42,7 +42,8 @@ public class RunnableInterface implements Runnable {
                     runAdditiveNoise.run();
                     break;
                 case "TRANSFIGURATION":
-                    System.out.println("NOT IMPLEMENTED");
+                	RunTransfiguration runTransfiguration = new RunTransfiguration(bootParams, cellsize, mtpScale, interval, directory);
+                	runTransfiguration.run();
                     break;
                 case "KANONYMITY":
                     System.out.println("NOT IMPLEMENTED");

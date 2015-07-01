@@ -29,8 +29,8 @@ public class Simulation {
 	Server server;
 	Client client;
 	double[] IC;           // ic for single simulation
-	boolean icq;           // if query is greater than 100, icq is set to true
-	boolean gMap;
+	boolean icq;           // whether to include ic vs q, if query is greater than 100, icq is set to true
+	boolean gMap;          // whether to include google map in email
 	List<Integer> qlist;   // queries for multiple simulation
 	List<Double>[] rlist;  // ic for multiple simulation
 	String directory;      // output dir
@@ -111,7 +111,10 @@ public class Simulation {
 
 	public void multipleSimulation() {
 		System.out.println("Start computing average IC...");
-		if (noq < 100) return;
+		if (noq < 100) {
+			icq = false;
+			return;
+		}
 		icq = true;
 		Client mclient = new Client(0, 0, map, noc);
 		double[] mIC = new double[noc];
