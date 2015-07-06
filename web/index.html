@@ -17,6 +17,7 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
    <!--  // <script src="http://maps.googleapis.com/maps/api/js"></script> -->
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.exp&libraries=drawing"></script>
+    <script type="text/javascript" src="v3_ll_grat.js"></script>
     <!-- Custom styles for this template -->
     <link href="sticky-footer.css" rel="stylesheet">
 </head>
@@ -49,6 +50,7 @@ function initialize() {
         // create a google map
         var mapProp = {
             zoom: 5,
+            maxZoom: 9,
             center: myCenter,
         };
         map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
@@ -97,8 +99,11 @@ function initialize() {
                 updatebounds(recRegion);
                 console.log("Bounds changed!");
                 console.log(recRegion.toString());
+                checkSize(recRegion);
             });
+            checkSize(recRegion);
         });
+
         // Add an event listener on the map for click
         google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
@@ -110,6 +115,23 @@ function initialize() {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
+/**
+ * Check grid size of anaysisi area
+ */
+function checkSize(recRegion) {
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.05);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.05);
+    if (rows < 10 || cols < 10) {
+        console.log("Rows: " + rows + ", Cols: " + cols);
+        console.log("Selected area is too small.");
+        alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
+        window.onload = initialize();
+    }
+    else {
+        console.log("Rows: " + rows + ", Cols: " + cols);
+    }
+}
 
 /*
  * Place markers on google map
@@ -130,7 +152,21 @@ function placeMarker(location) {
     var infowindow = new google.maps.InfoWindow({
         content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
     });
-    infowindow.open(map,marker);
+    infowindow.open(map, marker);
+
+    var protectionCircle = {
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map,
+      center: location,
+      radius: 25000
+    };
+    var pc = new google.maps.Circle(protectionCircle);
+
+
     if (numberOfChannels == 1) markers_one.push(marker);
     if (numberOfChannels == 2) {
         if (chanls == 0) markers_two_channel0.push(marker);
@@ -141,6 +177,10 @@ function placeMarker(location) {
         if (chanls == 1) markers_three_channel1.push(marker);
         if (chanls == 2) markers_three_channel2.push(marker);
     }
+}
+
+function drawGrids() {
+    console.log("Zoom level: " + map.getZoom());
 }
 
 // Deletes all markers in the array by removing references to them.
@@ -620,7 +660,6 @@ function getParams () {
 
 function validateEmail(email) {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-    // var re = [a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?;
     return re.test(email);
 }
 
@@ -677,6 +716,7 @@ function sendParams()
                 <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
             </cite>
         </p>
+        <p>Life is good!</p>
     </div>
 
     <!-- dropdown -->
