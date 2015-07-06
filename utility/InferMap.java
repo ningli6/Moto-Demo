@@ -57,21 +57,17 @@ public class InferMap extends GridMap {
 		// index for client's position
 		int rowIndex = client.getRowIndex();
 		int colIndex = client.getColIndex();
-
-		/**
-		 * Debug: location of client in perspective of infer map
-		 */
-		 System.out.println("In infermap: " + rowIndex + ", " + colIndex);
 		
 		/* debug information */
 		System.out.println("***Update****");
 		// see d1 and d2
 		System.out.println("d1: " + d1 + " d2: " + d2);
-		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
-		// for testing
+		// see channel
+		System.out.println("on channel: " + id);
+
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
 		/* debug information */
-		// System.out.println("updateLength: " + updateLength);
+		System.out.println("updateLength: " + updateLength);
 
 		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
 		if (startRow < 0) startRow = 0;
@@ -95,7 +91,7 @@ public class InferMap extends GridMap {
 			}
 		}
 		/* debug information */
-		// System.out.println("Number of G is: " + G);
+		 System.out.println("Number of G: " + G);
 		if (G != 0) {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {

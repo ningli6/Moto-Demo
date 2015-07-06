@@ -56,6 +56,7 @@ public class Simulation {
 		map.showBoundary();
 		System.out.println("Map rows: " + map.getRows());
 		System.out.println("Map cols: " + map.getCols());
+		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
 
 
 		/* initialize number of channels */

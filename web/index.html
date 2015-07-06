@@ -37,11 +37,17 @@ var lastShape; var recRegion;    // rectangle object and its boundary
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
 var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
 var markers_one = [];            // channel for 1 channel
+var circles_one = [];
 var markers_two_channel0 = [];   // channel 0 for 2 channels
+var circles_two_channel0 = []; 
 var markers_two_channel1 = [];   // channel 1 for 2 channels
+var circles_two_channel1 = []; 
 var markers_three_channel0 = []; // channel 0 for 3 channels
+var circles_three_channel0 = []; 
 var markers_three_channel1 = []; // channel 1 for 3 channels
+var circles_three_channel1 = []; 
 var markers_three_channel2 = []; // channel 2 for 3 channels
+var circles_three_channel2 = []; 
 /*
  * Initialize google map
  */
@@ -108,6 +114,7 @@ function initialize() {
         google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng);
         });
+
     }
     catch (err) {
         console.log("Can't deploy google map on this page");
@@ -162,20 +169,38 @@ function placeMarker(location) {
       fillOpacity: 0.35,
       map: map,
       center: location,
-      radius: 25000
+      radius: 25000    // meters
     };
     var pc = new google.maps.Circle(protectionCircle);
 
 
-    if (numberOfChannels == 1) markers_one.push(marker);
+    if (numberOfChannels == 1) {
+        markers_one.push(marker);
+        circles_one.push(pc);
+    }
     if (numberOfChannels == 2) {
-        if (chanls == 0) markers_two_channel0.push(marker);
-        if (chanls == 1) markers_two_channel1.push(marker);
+        if (chanls == 0) {
+            markers_two_channel0.push(marker);
+            circles_two_channel0.push(pc);
+        }
+        if (chanls == 1) {
+            markers_two_channel1.push(marker);
+            circles_two_channel1.push(pc);
+        }
     }
     if (numberOfChannels == 3) {
-        if (chanls == 0) markers_three_channel0.push(marker);
-        if (chanls == 1) markers_three_channel1.push(marker);
-        if (chanls == 2) markers_three_channel2.push(marker);
+        if (chanls == 0) {
+            markers_three_channel0.push(marker);
+            circles_three_channel0.push(pc);
+        }
+        if (chanls == 1) {
+            markers_three_channel1.push(marker);
+            circles_three_channel1.push(pc);
+        }
+        if (chanls == 2) {
+            markers_three_channel2.push(marker);
+            circles_three_channel2.push(pc);
+        }
     }
 }
 
@@ -187,26 +212,34 @@ function drawGrids() {
 function hideAllMarkers() {
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
+        circles_one[i].setMap(null);
     }
     for (var i = 0; i < markers_two_channel0.length; i++) {
         markers_two_channel0[i].setMap(null);
+        circles_two_channel0[i].setMap(null);
     }
     for (var i = 0; i < markers_two_channel1.length; i++) {
         markers_two_channel1[i].setMap(null);
+        circles_two_channel1[i].setMap(null);
     }
     for (var i = 0; i < markers_three_channel0.length; i++) {
         markers_three_channel0[i].setMap(null);
+        circles_three_channel0[i].setMap(null);
     }
     for (var i = 0; i < markers_three_channel1.length; i++) {
         markers_three_channel1[i].setMap(null);
+        circles_three_channel1[i].setMap(null);
     }
     for (var i = 0; i < markers_three_channel2.length; i++) {
         markers_three_channel2[i].setMap(null);
+        circles_three_channel2[i].setMap(null);
     }
 }
+
 /*
  * Delete all markers on the map
  * Delete rectangle on the map
+ * Delete circles on the map
  */
 function resetAllMarkers() {
     if (lastShape != null) lastShape.setMap(null);
@@ -214,37 +247,54 @@ function resetAllMarkers() {
     chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
+        circles_one[i].setMap(null);
     }
     markers_one = [];
+    circles_one = [];
     for (var i = 0; i < markers_two_channel0.length; i++) {
         markers_two_channel0[i].setMap(null);
+        circles_two_channel0[i].setMap(null);
     }
     markers_two_channel0 = [];
+    circles_two_channel0 = [];
     for (var i = 0; i < markers_two_channel1.length; i++) {
         markers_two_channel1[i].setMap(null);
+        circles_two_channel1[i].setMap(null);
     }
     markers_two_channel1 = [];
+    circles_two_channel1 = [];
     for (var i = 0; i < markers_three_channel0.length; i++) {
         markers_three_channel0[i].setMap(null);
+        circles_three_channel0[i].setMap(null);
     }
     markers_three_channel0 = [];
+    circles_three_channel0 = [];
     for (var i = 0; i < markers_three_channel1.length; i++) {
         markers_three_channel1[i].setMap(null);
+        circles_three_channel1[i].setMap(null);
     }
     markers_three_channel1 = [];
+    circles_three_channel1 = [];
     for (var i = 0; i < markers_three_channel2.length; i++) {
         markers_three_channel2[i].setMap(null);
+        circles_three_channel2[i].setMap(null);
     }
     markers_three_channel2 = [];
+    circles_three_channel2 = [];
 }
 
 /*
  * Display markers in @markers, hinding all other markers on map
  */
 function markersOnChannel(markers) {
-    hideAllMarkers();
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
+    }
+}
+
+function circlesOnChannel(circles) {
+    for (var i = 0; i < circles.length; i++) {
+        circles[i].setMap(map);
     }
 }
 
@@ -309,12 +359,31 @@ function setChannels() {
  */
 function selectChannel (arg) {
     chanls = arg;
-    if (numberOfChannels == 1) markersOnChannel(markers_one);
-    if (numberOfChannels == 2 && chanls == 0) markersOnChannel(markers_two_channel0);
-    if (numberOfChannels == 2 && chanls == 1) markersOnChannel(markers_two_channel1);
-    if (numberOfChannels == 3 && chanls == 0) markersOnChannel(markers_three_channel0);
-    if (numberOfChannels == 3 && chanls == 1) markersOnChannel(markers_three_channel1);
-    if (numberOfChannels == 3 && chanls == 2) markersOnChannel(markers_three_channel2);
+    hideAllMarkers();
+    if (numberOfChannels == 1) {
+        markersOnChannel(markers_one);
+        circlesOnChannel(circles_one);
+    }
+    if (numberOfChannels == 2 && chanls == 0) {
+        markersOnChannel(markers_two_channel0);
+        circlesOnChannel(circles_two_channel0);
+    }
+    if (numberOfChannels == 2 && chanls == 1) {
+        markersOnChannel(markers_two_channel1);
+        circlesOnChannel(circles_two_channel1);
+    }
+    if (numberOfChannels == 3 && chanls == 0) {
+        markersOnChannel(markers_three_channel0);
+        circlesOnChannel(circles_three_channel0);
+    }
+    if (numberOfChannels == 3 && chanls == 1) {
+        markersOnChannel(markers_three_channel1);
+        circlesOnChannel(circles_three_channel1);
+    }
+    if (numberOfChannels == 3 && chanls == 2) {
+        markersOnChannel(markers_three_channel2);
+        circlesOnChannel(circles_three_channel2);
+    }
 }
 </script>
 
