@@ -56,15 +56,6 @@ public class Server {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setNumberOfChannels(int c) {
-		this.Number_Of_Channels = c;
-		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_List[i] = new LinkedList<PU>();
-		}
-	}
-
 	public int getNumberOfChannels() {
 		return Number_Of_Channels;
 	}
@@ -106,7 +97,13 @@ public class Server {
 		return map;
 	}
 
-	// resonse to the query
+	/**
+	 * Server responses to client
+	 * For each channel, it chooses minimum response
+	 * Finally it returns max response among all channels
+	 * @param client
+	 * @return
+	 */
 	public Response response(Client client) {
 		// response with (-1, -1) means no transmit power available
 		if (client == null) throw new NullPointerException("Querying client does not exist");
@@ -128,7 +125,7 @@ public class Server {
 					minPower = resPower;
 				}
 			}
-			// if one of channels is empty, then minPU would be null
+			// if one of channels is empty, then minPU would be null, just don't add it
 			if (minPU != null) response_list.add(new Response(minPU, minPower));
 		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
@@ -137,7 +134,10 @@ public class Server {
 		return Collections.max(response_list);
 	}
 
-	// cheat
+	/**
+	 * Return the pu list
+	 * @return
+	 */
 	public List<PU>[] getChannelsList() {
 		if (channels_List == null) {
 			System.out.println("Initialize Server first");

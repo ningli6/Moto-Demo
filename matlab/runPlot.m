@@ -46,48 +46,39 @@ function [] = runPlot(nc)
         for i = 1: rows
             for j = 1 : cols
                 M(i, j) = A(j + cols * (i - 1), 3);
-%                 if (i == 21 && j == 40)
-%                     disp(M(i, j));
-%                 end
-                if (M(i, j)) == 0
-                    M(i, j) = NaN;
+            end
+        end
+        
+        % interpolate data
+        Vq = interp2(M);
+        [mR, mC] = size(Vq);
+        for i = 1: mR
+            for j = 1 : mC
+                if Vq(i, j) == 0
+                    Vq(i, j) = NaN;
                 end
             end
         end
 
-        x = (LongStart):((LongEnd - LongStart)/(cols - 1)):(LongEnd);
-        y = (latStart):((latEnd - latStart)/(rows - 1)):(latEnd);
-%         x2 = (LongStart):((LongEnd - LongStart)/(2 * cols - 1)):(LongEnd);
-%         y2 = (latStart):((latEnd - latStart)/(2 * rows - 1)):(latEnd);
-%         [X,Y] = meshgrid(x, y);
-%         [X2,Y2] = meshgrid(x2, y2);
-%         vq = interp2(X,Y,M,X2,Y2);
-%         [m,n] = size(vq);
-% 
-%         copy = vq;
-%         for i = 1: m
-%             for j = 1 : n
-%                 if copy(i, j) == 0
-% %                     copy(i, j) = NaN;
-%                 end
-%             end
-%         end
+
+        x = (LongStart):((LongEnd - LongStart)/(mC - 1)):(LongEnd);
+        y = (latStart):((latEnd - latStart)/(mR - 1)):(latEnd);
 
         % plot on google map
         figure();
 %         contourf(x2, y2, copy);
-        contourf(x, y, M);
+        contourf(x, y, Vq);
         title(['Probability distribution for channel ', channelID]);
         xlabel('longitude');
         ylabel('latitude');
         % plot color bar
 %         caxis([0.4, 0.6]);
-        caxis auto;
-        colorbar;
-        % contourcmap('jet', 'Colorbar', 'on', ...
-        %    'Location', 'vertical', ...
-        %    'ColorAlignment', 'center',...
-        %    'TitleString', 'Probability value');
+%         caxis auto;
+%         colorbar;
+        contourcmap('jet', 'Colorbar', 'on', ...
+           'Location', 'vertical', ...
+           'ColorAlignment', 'center',...
+           'TitleString', 'Probability value');
         hold on;
         % plot location of pu
         plot(markers(:, 2), markers(:, 1), 'r*', 'MarkerSize', 20);

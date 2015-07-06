@@ -26,9 +26,7 @@ public class Client {
 	private InferMap[] inferMap;
 	// count the number for each channel for updating
 	private int[] count;
-	// cheat
 	private List<PU>[] channels_List;
-	// public int[] check = new int[4];
 	private Random rand;
 
 	public class NumberOfChannelsMismatchException extends RuntimeException {
@@ -133,8 +131,9 @@ public class Client {
 	 * Compute inaccuracy of inferred matrix
 	 * @return i th element are ic value for i th channel
 	 */
-	public double[] computeIC() {
+	public double[] computeIC(Server server) {
 		double[] IC = new double[Number_Of_Channels];
+		this.channels_List = server.getChannelsList();
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			/* debug 
 			 * check server has returned correct list of pu to client */

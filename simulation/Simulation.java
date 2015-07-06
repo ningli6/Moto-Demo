@@ -117,12 +117,13 @@ public class Simulation {
 			/**
 			 * Debug: See client's new location
 			 */
+			System.out.println("***Query***");
 			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
 			client.query(server);
 		}
 
 		/* compute IC */
-		IC = client.computeIC();
+		IC = client.computeIC(server);
 	}
 
 	public void multipleSimulation() {
@@ -157,7 +158,7 @@ public class Simulation {
 					mclient.randomLocation();
 					mclient.query(server);
 				}
-				mIC = mclient.computeIC();
+				mIC = mclient.computeIC(server);
 				int k = 0;
 				for (double ic : mIC) {
 					sumIC[k] += ic;

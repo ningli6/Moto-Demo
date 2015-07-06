@@ -39,9 +39,9 @@ public class InferMap extends GridMap {
 	 * @param d2        update range, probability of area in between d1 and d2 will increase
 	 */
 	public void update(Client client, double d1, double d2) {
-		Location location = client.getLocation();
-		if (location == null) return;
-		if (!withInBoundary(location)) {
+		Location clientLocation = client.getLocation();
+		if (clientLocation == null) return;
+		if (!withInBoundary(clientLocation)) {
 			System.out.println("Invalid location");
 			return;
 		}
@@ -83,20 +83,17 @@ public class InferMap extends GridMap {
 
 		// temporary location for each cell
 		Location tmpCell = new Location();
-		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
+		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++) {
 			for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 				// assume that PU is located at the center of cell
-				tmpCell.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-				double distance = tmpCell.distTo(location);
+				tmpCell.setLocation(RowToLat(i), ColToLon(j));
+				double distance = tmpCell.distTo(clientLocation);
 				if (distance < d1) {
 					p[i][j] = 0;
-					if (i == 20 && j == 39) {
-						System.out.println("Distance between client and pu's cell: " + distance);
-						throw new IllegalArgumentException("Cell of pu is set to 0");
-					}
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
+		}
 		/* debug information */
 		// System.out.println("Number of G is: " + G);
 		if (G != 0) {
@@ -104,7 +101,7 @@ public class InferMap extends GridMap {
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 					// assume that PU is located at the center of cell
 					tmpCell.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-					double distance = tmpCell.distTo(location);
+					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
 						/* debug information */
