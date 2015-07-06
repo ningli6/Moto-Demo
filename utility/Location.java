@@ -185,4 +185,11 @@ public class Location {
 	public void printLocation() {
 		System.out.println("( " + latitude + ", " + longitude + " )");
 	}
+
+	// see if distTo is correct
+	public static void main(String[] args) {
+		Location l1 = new Location(37.8054, -81.4471);
+		Location l2 = new Location(36.2442, -77.9205);
+		System.out.println(l1.distTo(l2));
+	}
 }

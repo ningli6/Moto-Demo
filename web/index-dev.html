@@ -130,7 +130,21 @@ function placeMarker(location) {
     var infowindow = new google.maps.InfoWindow({
         content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
     });
-    infowindow.open(map,marker);
+    infowindow.open(map, marker);
+
+    var protectionCircle = {
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35,
+      map: map,
+      center: location,
+      radius: 25000
+    };
+    var pc = new google.maps.Circle(protectionCircle);
+
+
     if (numberOfChannels == 1) markers_one.push(marker);
     if (numberOfChannels == 2) {
         if (chanls == 0) markers_two_channel0.push(marker);
@@ -665,7 +679,7 @@ function sendParams()
 <body>
 <div class="container">
     <div class="jumbotron">
-        <h2>Moto demo dev</h2>      
+        <h2>Moto demo Dev</h2>      
         <p>
             This is a demo of techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
             proposed in the paper: 
