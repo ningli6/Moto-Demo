@@ -50,6 +50,14 @@ public class Simulation {
 		Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 		this.map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
 
+		/* debug 
+		 * See number of rows & cols in the map
+		 */
+		map.showBoundary();
+		System.out.println("Map rows: " + map.getRows());
+		System.out.println("Map cols: " + map.getCols());
+
+
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 
@@ -65,6 +73,10 @@ public class Simulation {
 			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
 			for (LatLng ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
+				/**
+				 * Debug: See pu's row & col index
+				 */
+				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
 				server.addPU(pu, k);
 			}
 		}
@@ -102,11 +114,15 @@ public class Simulation {
 		/* run simulation for once */
 		for (int i = 0; i < noq; i++) {
 			client.randomLocation();
+			/**
+			 * Debug: See client's new location
+			 */
+			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
 			client.query(server);
 		}
 
 		/* compute IC */
-		IC = client.computeIC(server);
+		IC = client.computeIC();
 	}
 
 	public void multipleSimulation() {
@@ -141,7 +157,7 @@ public class Simulation {
 					mclient.randomLocation();
 					mclient.query(server);
 				}
-				mIC = mclient.computeIC(server);
+				mIC = mclient.computeIC();
 				int k = 0;
 				for (double ic : mIC) {
 					sumIC[k] += ic;

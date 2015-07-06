@@ -120,10 +120,10 @@ public class Server {
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+				System.out.println("Distance between client and pu [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
-				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
-				if (resPower <= minPower) {
+				System.out.println("Response power according to MTP:" + resPower);
+				if (resPower <= minPower) { // find the minimun for each channel
 					minPU = pu;
 					minPower = resPower;
 				}

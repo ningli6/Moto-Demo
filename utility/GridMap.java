@@ -98,10 +98,12 @@ public class GridMap {
 	public double getHeight() {
 		return height;
 	}
+	
 	// number of number_of_rows for the map
 	public int getRows() {
 		return number_of_rows;
 	}
+	
 	// number of number_of_cols for the map
 	public int getCols() {
 		return number_of_cols;

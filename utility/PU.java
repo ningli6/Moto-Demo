@@ -12,7 +12,8 @@ public class PU {
 	public final Comparator<PU> DIST_ORDER = new distOrder(); // can this be static
 	private int id = -1;
 	private int channelID = -1;
-	private Location location = null;
+	private Location location = null; // actual location
+	private Location cellLocation = null;
 	private int indexOfRow = 0;
 	private int indexOfCol = 0;
 	/* debugging purpose */
@@ -54,11 +55,24 @@ public class PU {
 		indexOfCol = c;
 	}
 
+	/**
+	 * Initialize primary user
+	 * @param  id  [pu's id]
+	 * @param  lat [lat]
+	 * @param  lng [lng]
+	 * @param  map [map that pu is working on]
+	 */
 	public PU(int id, double lat, double lng, GridMap map) {
 		this.id = id;
 		this.location = new Location(lat, lng);
 		this.indexOfRow = map.LatToRow(lat);
 		this.indexOfCol = map.LonToCol(lng);
+		this.cellLocation = new Location(map.RowToLat(indexOfRow), map.ColToLon(indexOfCol));
+		/* debug 
+		 * compare location & cell location
+		 */
+		location.printLocation();
+		cellLocation.printLocation();
 	}
 
 	public void attachToServer(Server server) {
@@ -141,8 +155,8 @@ public class PU {
 	}
 
 	public Location getLocation() {
-		if (location == null) throw new NullPointerException("Location for PU has not yet been initialized");
-		return location;
+		if (location == null || cellLocation == null) throw new NullPointerException("Location for PU has not yet been initialized");
+		return cellLocation;
 	}
 
 	public double getLatitude() {

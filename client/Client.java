@@ -23,7 +23,6 @@ public class Client {
 	private int indexOfRow;
 	private int indexOfCol;
 	// inferMap of the SU for each channel
-	private GridMap map;
 	private InferMap[] inferMap;
 	// count the number for each channel for updating
 	private int[] count;
@@ -44,63 +43,27 @@ public class Client {
 			super();
 		}
 	}
-	
-	// constructor
-	public Client(double lat, double lon, GridMap map) {
-		if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException();
-		this.map = map;
-		location = new Location(lat, lon);
-	}
-
-	public Client(int r, int c, GridMap map) {
-		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
-		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		this.map = map;
-		location = new Location(map.RowToLat(r), map.ColToLon(c));
-	}
 
 	public Client(int r, int c, GridMap map, int noc) {
 		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
 		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		this.map = map;
-		location = new Location(map.RowToLat(r), map.ColToLon(c));
+		this.location = new Location(map.RowToLat(r), map.ColToLon(c));
 		this.Number_Of_Channels = noc;
 		this.count = new int[Number_Of_Channels];
 		this.inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, this.map);
-	}
-
-	public int getNumberOfChannels() {
-		return Number_Of_Channels;
-	}
-
-	public void setNumberOfChannels(int c) {
-		this.Number_Of_Channels = c;
-		this.count = new int[Number_Of_Channels];
-		this.inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, this.map);
-	}
-
-	public void setLocation(double lat, double lon) {
-		if (location == null) System.out.println("Initialize location first");
-		else location.setLocation(lat, lon);
-	}
-
-	public void setLocation(String lat, String lon) {
-		if (location == null) System.out.println("Initialize location first");
-		else location.setLocation(lat, lon);
+		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
 	}
 
 	public void setLocation(int r, int c) {
-		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
-		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		location.setLocation(map.RowToLat(r), map.ColToLon(c));
+		if (r < 0 || r >= inferMap[0].getRows()) throw new IllegalArgumentException("SU's location is out out index");
+		if (c < 0 || c >= inferMap[0].getCols()) throw new IllegalArgumentException("SU's location is out out index");
+		location.setLocation(inferMap[0].RowToLat(r), inferMap[0].ColToLon(c));
 	}
 
 	public void randomLocation() {
 		rand = new Random();
-		int newR = rand.nextInt(map.getRows());
-		int newC = rand.nextInt(map.getCols());
+		int newR = rand.nextInt(inferMap[0].getRows());
+		int newC = rand.nextInt(inferMap[0].getCols());
 		setLocation(newR, newC);
 		indexOfRow = newR;
 		indexOfCol = newC;
@@ -145,7 +108,7 @@ public class Client {
 		double d1 = -1; double d2 = -1;
 		if (power == 0) {
 			d1 = MTP.d0;
-			d2 = MTP.d1 ;
+			d2 = MTP.d1;
 		}
 		else if (power == 0.5 * PMAX) {
 			d1 = MTP.d1;
@@ -163,22 +126,16 @@ public class Client {
 			throw new IllegalArgumentException();
 		}
 		count[channelID]++;
-		inferMap[channelID].update(this.location, d1, d2);
+		inferMap[channelID].update(this, d1, d2);
 	}
 
-	public double[] computeIC(Server server) {
-		if (server == null) return null;
-		channels_List = server.getChannelsList();
-		if (channels_List == null) return null;
-		if (Number_Of_Channels != channels_List.length)
-			throw new NumberOfChannelsMismatchException();
+	/**
+	 * Compute inaccuracy of inferred matrix
+	 * @return i th element are ic value for i th channel
+	 */
+	public double[] computeIC() {
 		double[] IC = new double[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			if (channels_List[i].size() == 0) {
-				System.out.println("channel " + i + " has no PU");
-				IC[i] = Double.POSITIVE_INFINITY;
-				continue;
-			}
 			/* debug 
 			 * check server has returned correct list of pu to client */
 			// System.out.println("CLient=> list size: " + channels_List[i].size());
@@ -211,13 +168,11 @@ public class Client {
 		return minDist;
 	}
 
-	/* debug information */
-	public void updateWhich() {
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
-		}
-	}
-
+	/**
+	 * Part of message in the email
+	 * Record number of times each channels is updated
+	 * @return string that include information about number of time each channel is updated
+	 */
 	public String countChannelUpdateToString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < Number_Of_Channels; i++) {
@@ -226,6 +181,9 @@ public class Client {
 		return sb.toString();
 	}
 
+	/**
+	 * Reset infer matrix back to 0.5
+	 */
 	public void reset() {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			count[i] = 0;
@@ -243,46 +201,34 @@ public class Client {
 		inferMap[i].visualize();
 	}
 
-	/*
-	 * This function output the probability matrix in matrix form
+	/**
+	 * Print probability matrix of ALL channels
+	 * @param dir   output path
 	 */
-	public void printFormattedMatrix(int i) {
-		if (i < 0 || i > Number_Of_Channels) 
-			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
-		inferMap[i].printoutMatrix(i);
-	}
-
-	/*
-	 * This function output the probability matrix as a column in the table
-	 */
-	public void printFormattedTable(int i) {
-		if (i < 0 || i > Number_Of_Channels) 
-			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
-		inferMap[i].printInRequiredFormat(i);
-	}
-
-	/* print probability on all channels */
 	public void printProbability(String dir) {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			inferMap[i].printProbability(dir);
 		}
 	}
 
-	/* print number of rows * cols */
+	/**
+	 * Print number of rows & cols
+	 * @param dir   output path
+	 */
 	public void printRC(String dir) {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			inferMap[i].printRC(dir);
 		}
 	}
 
+	/**
+	 * Print map boundaries
+	 * @param dir   output path
+	 */
 	public void printBounds(String dir) {
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			inferMap[i].printBounds(dir);
 		}
 	}
-	
-	/* print client index position in one line */
-	public void printClientPosition() {
-		System.out.println("Client=> r: " + indexOfRow + ", c: " + indexOfCol);
-	}
+
 }

@@ -82,7 +82,7 @@ public class SimTransfiguration extends Simulation {
 		}
 
 		/* compute IC */
-		IC = client.computeIC(cmServer);
+		IC = client.computeIC();
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class SimTransfiguration extends Simulation {
 					mclient.randomLocation();
 					mclient.query(cmServer);
 				}
-				double[] mIC = mclient.computeIC(cmServer);
+				double[] mIC = mclient.computeIC();
 				int k = 0;
 				for (double ic : mIC) {
 					sumIC[k] += ic;

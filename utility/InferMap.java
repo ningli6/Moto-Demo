@@ -3,9 +3,10 @@ package utility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 
 import javax.swing.JFrame;
+
+import client.Client;
 
 /*
  * InferMap is the grid map that attackers use to infer PU's location
@@ -13,11 +14,15 @@ import javax.swing.JFrame;
  * to each cell representing the probability of existence of PU
  */
 public class InferMap extends GridMap {
-	// probability map
-	private int id;
-	private double[][] p;
-	public static String directory;
+	private int id;                      // channel id
+	private double[][] p;                // probability matrix
+	public static String directory;      // output path
 
+	/**
+	 * Construct a probability map with 0.5 for each cell
+	 * @param id    channel id
+	 * @param map   grid map that inherents from parent class
+	 */
 	public InferMap(int id, GridMap map) {
 		super(map);
 		this.id = id;
@@ -27,18 +32,14 @@ public class InferMap extends GridMap {
 				p[i][j] = 0.5;
 	}
 
-	// initialize each entry to be 0.5
-	public InferMap(int id, Location ul, Location ur, Location ll, Location lr, double cd) {
-		super(ul, ur, ll, lr, cd);
-		this.id = id;
-		p = new double[getRows()][getCols()];
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
-				p[i][j] = 0.5;
-	}
-
-	// updates the matrix based on response from server
-	public void update(Location location, double d1, double d2) {
+	/**
+	 * Update probabilities for infer map
+	 * @param client    current location for client
+	 * @param d1        update range, area with d1 is set to 0
+	 * @param d2        update range, probability of area in between d1 and d2 will increase
+	 */
+	public void update(Client client, double d1, double d2) {
+		Location location = client.getLocation();
 		if (location == null) return;
 		if (!withInBoundary(location)) {
 			System.out.println("Invalid location");
@@ -53,15 +54,19 @@ public class InferMap extends GridMap {
 		if (cd <= 0) return;
 		double upperBoundary = getUpperBoundary();
 		double leftBoundary = getLeftBoundary();
-		int rowIndex = LatToRow(location.getLatitude());
-		int colIndex = LonToCol(location.getLongitude());
+		// index for client's position
+		int rowIndex = client.getRowIndex();
+		int colIndex = client.getColIndex();
+
+		/**
+		 * Debug: location of client in perspective of infer map
+		 */
+		 System.out.println("In infermap: " + rowIndex + ", " + colIndex);
 		
 		/* debug information */
-		// System.out.println("***Update****");
-		// System.out.println("d1: " + d1 + " d2: " + d2);
-		// System.out.println("center: ");
-		// location.printLocation();
-		// System.out.println("[" + rowIndex + "][" + colIndex + "]");
+		System.out.println("***Update****");
+		// see d1 and d2
+		System.out.println("d1: " + d1 + " d2: " + d2);
 		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
 		// for testing
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
@@ -76,14 +81,19 @@ public class InferMap extends GridMap {
 		// System.out.println("startRow: " + startRow);
 		// System.out.println("startCol: " + startCol);
 
-		Location loc = new Location();
+		// temporary location for each cell
+		Location tmpCell = new Location();
 		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 			for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 				// assume that PU is located at the center of cell
-				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-				double distance = loc.distTo(location);
+				tmpCell.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
+				double distance = tmpCell.distTo(location);
 				if (distance < d1) {
 					p[i][j] = 0;
+					if (i == 20 && j == 39) {
+						System.out.println("Distance between client and pu's cell: " + distance);
+						throw new IllegalArgumentException("Cell of pu is set to 0");
+					}
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
@@ -93,8 +103,8 @@ public class InferMap extends GridMap {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 					// assume that PU is located at the center of cell
-					loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-					double distance = loc.distTo(location);
+					tmpCell.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
+					double distance = tmpCell.distTo(location);
 					if (distance >= d1 && distance < d2) {
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
 						/* debug information */
@@ -110,25 +120,13 @@ public class InferMap extends GridMap {
 		return p;
 	}
 
-	public Location getLocation(int r, int c) {
-		return super.getLocation(r, c);
-	}
-
+	/**
+	 * Rest infer matrix back to 0.5
+	 */
 	public void resetMap() {
 		for (int i = 0; i < getRows(); i++) 
 			for (int j = 0; j < getCols(); j++)
 				p[i][j] = 0.5;
-	}
-
-	// print the probability matrix
-	// obsolete
-	public void print() {
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getCols(); j++) {
-				System.out.print(new DecimalFormat(".000").format(p[i][j]) + " ");
-			}
-			System.out.println();
-		}
 	}
 
 	// visualize results
@@ -170,89 +168,12 @@ public class InferMap extends GridMap {
 		// System.out.println("Greater than 0.5:" + greater);
 	}
 
-	// the output will be matrix
-	public void printoutMatrix(int id) {
-		if (directory == null || directory.length() == 0) return;
-		// String text = "Output";
-		File file = new File(directory + "demoMatrix_" + id + ".txt");
-		double max = 0;
-		try {
-			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing... ");
-			for (int i = 0; i < getRows(); i++) {
-				for (int j = 0; j < getCols(); j++) {
-					out.print(p[i][j] + " ");
-					if (p[i][j] > max) max = p[i][j];
-				}
-				out.println();
-			}
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
-		} finally {
-			// System.out.println("Greatest value: " + max);
-			System.out.println("Printing ends");
-		}
-	}
-
-	// the output will be tables that specified in the sample data
-	public void printInRequiredFormat(int id) {
-		if (directory == null || directory.length() == 0) return;
-		System.out.println("Start printing data... ");
-		File file = new File(directory + "demoTable_" + id + ".txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			out.println("ROW COL P");
-			for (int i = 0; i < getRows(); i++) {
-				for (int j = 0; j < getCols(); j++) {
-					out.println(i + " " + j + " " + p[i][j]);
-					// out.println(RowToLat(i) + " " + ColToLon(j) + " " + p[i][j]);
-				}
-			}
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			System.out.println("Printing ends");
-		}
-
-		System.out.println("Start printing number of rows and cols... ");
-		file = new File(directory + "demoTable_" + id + "_rowcol.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			out.println("ROWS COLS");
-			out.println(getRows() + " " + getCols());
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			System.out.println("Printing ends");
-		}
-
-		System.out.println("Start printing boundaries... ");
-		file = new File(directory + "demoTable_" + id + "_bounds.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			out.println("NLAT SLAT WLNG ELNG");
-			out.println(getUpperBoundary() + " " + getLowerBounday() + " " + getLeftBoundary() + " " + getRightBoundary());
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			System.out.println("Printing ends");
-		}
-	}
-
-	// print probablity
+	/**
+	 * Print infer map's probability map
+	 * @param dir     output path
+	 */
 	public void printProbability(String dir) {
 		if (dir == null || dir.length() == 0) return;
-		// System.out.println("Start printing probability... ");
 		File file = new File(dir + "demoTable_" + this.id + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
@@ -267,13 +188,14 @@ public class InferMap extends GridMap {
 			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			// System.out.println("Printing ends");
 		}
 	}
 
+	/**
+	 * Print number of rows & cols
+	 * @param dir  output path
+	 */
 	public void printRC(String dir) {
-		// TODO Auto-generated method stub
 		File file = new File(dir + "demoTable_" + id + "_rowcol.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
@@ -284,13 +206,14 @@ public class InferMap extends GridMap {
 			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-//			System.out.println("Printing ends");
-		}
+		} 
 	}
 
+	/**
+	 * Print map boundaries
+	 * @param dir  output path
+	 */ 
 	public void printBounds(String dir) {
-		// TODO Auto-generated method stub
 		File file = new File(dir + "demoTable_" + id + "_bounds.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
@@ -301,8 +224,6 @@ public class InferMap extends GridMap {
 			System.out.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-//			System.out.println("Printing ends");
 		}
 	}
 }

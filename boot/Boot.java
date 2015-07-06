@@ -13,7 +13,8 @@ public class Boot {
 	public static double cellsize = 0.05;
 	public static double mtpScale = 5;
 	public static int interval = 5;
-	public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+	// public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+	public static String directory = "/Users/ningli/Desktop/motoData/";
 
 	public static void main(String[] args) {
 		BootParams bp = Parser.parse(args);

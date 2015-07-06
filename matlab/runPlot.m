@@ -6,19 +6,19 @@ function [] = runPlot(nc)
         % import data from a text file
         channelID = num2str(channel - 1);
 
-        importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '.txt'];
+        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '.txt'];
 %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
         import = importdata(importName);
         A = import.data;
-        importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_rowcol.txt'];
+        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_rowcol.txt'];
 %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_rowcol.txt'];
         import = importdata(importName);
         B = import.data;
-        importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_bounds.txt'];
+        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_bounds.txt'];
 %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_bounds.txt'];
         import = importdata(importName);
         C = import.data;
-        importName = ['/Users/ningli/Desktop/Project/output/demoTable_', channelID, '_pu.txt'];
+        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_pu.txt'];
 %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
         import = importdata(importName);
         D = import.data;
@@ -46,36 +46,43 @@ function [] = runPlot(nc)
         for i = 1: rows
             for j = 1 : cols
                 M(i, j) = A(j + cols * (i - 1), 3);
+%                 if (i == 21 && j == 40)
+%                     disp(M(i, j));
+%                 end
+                if (M(i, j)) == 0
+                    M(i, j) = NaN;
+                end
             end
         end
 
         x = (LongStart):((LongEnd - LongStart)/(cols - 1)):(LongEnd);
         y = (latStart):((latEnd - latStart)/(rows - 1)):(latEnd);
-        x2 = (LongStart):((LongEnd - LongStart)/(2 * cols - 1)):(LongEnd);
-        y2 = (latStart):((latEnd - latStart)/(2 * rows - 1)):(latEnd);
-        [X,Y] = meshgrid(x, y);
-        [X2,Y2] = meshgrid(x2, y2);
-        vq = interp2(X,Y,M,X2,Y2);
-        [m,n] = size(vq);
-
-        copy = vq;
-        for i = 1: m
-            for j = 1 : n
-                if copy(i, j) == 0
-                    copy(i, j) = NaN;
-                end
-            end
-        end
+%         x2 = (LongStart):((LongEnd - LongStart)/(2 * cols - 1)):(LongEnd);
+%         y2 = (latStart):((latEnd - latStart)/(2 * rows - 1)):(latEnd);
+%         [X,Y] = meshgrid(x, y);
+%         [X2,Y2] = meshgrid(x2, y2);
+%         vq = interp2(X,Y,M,X2,Y2);
+%         [m,n] = size(vq);
+% 
+%         copy = vq;
+%         for i = 1: m
+%             for j = 1 : n
+%                 if copy(i, j) == 0
+% %                     copy(i, j) = NaN;
+%                 end
+%             end
+%         end
 
         % plot on google map
         figure();
-        contourf(x2, y2, copy);
+%         contourf(x2, y2, copy);
+        contourf(x, y, M);
         title(['Probability distribution for channel ', channelID]);
         xlabel('longitude');
         ylabel('latitude');
         % plot color bar
-        caxis([0.4, 0.6]);
-%         caxis auto;
+%         caxis([0.4, 0.6]);
+        caxis auto;
         colorbar;
         % contourcmap('jet', 'Colorbar', 'on', ...
         %    'Location', 'vertical', ...
@@ -94,7 +101,7 @@ function [] = runPlot(nc)
 
         % Output the contours into pdf and png file
         fileextension = '.png';
-        name = ['/Users/ningli/Desktop/Project/output/', filename, '_channel_', channelID, fileextension];
+        name = ['/Users/ningli/Desktop/motoPlot/', filename, '_channel_', channelID, fileextension];
 %         name = ['C:\Users\Administrator\Desktop\motoPlot\', filename, '_channel_', channelID, fileextension];
         print('-dpng',name);
 
