@@ -108,6 +108,13 @@ public class GridMap {
 	public int getCols() {
 		return number_of_cols;
 	}
+	
+	/**
+	 * Return total number of cells
+	 */
+	public long getNumberOfCells() {
+		return number_of_rows * number_of_cols;
+	}
 
 	public double getCellDegree() {
 		return cellDegree;

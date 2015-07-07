@@ -57,7 +57,8 @@ public class Simulation {
 		System.out.println("Map rows: " + map.getRows());
 		System.out.println("Map cols: " + map.getCols());
 		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
-
+		System.out.println("Total cells: " + map.getNumberOfCells());
+		System.out.println("Initial p: " + 1.0 / map.getNumberOfCells());
 
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();

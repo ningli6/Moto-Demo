@@ -49,13 +49,44 @@ function [] = runPlot(nc)
             end
         end
         
+% count sum of M
+        sum = 0;
+        for i = 1: rows
+            for j = 1 : cols
+                sum = sum + M(i, j);
+            end
+        end
+        disp(sum);
+        
         % interpolate data
         Vq = interp2(M);
         [mR, mC] = size(Vq);
+%         for i = 1: mR
+%             for j = 1 : mC
+%                 if Vq(i, j) == 0
+%                     Vq(i, j) = NaN;
+%                 end
+%             end
+%         end
+        
+        fakeMatrix = zeros(mR, mC);
+        maxVal = max(max(Vq));
+        minVal = 1;
+        for i = 1: mR
+            for j = 1 : mC
+                if Vq(i, j) ~= 0 && Vq(i, j) < minVal
+                    minVal = Vq(i, j);
+                end
+            end
+        end
+        level = 10;
+        interval = (maxVal - minVal) / level;
         for i = 1: mR
             for j = 1 : mC
                 if Vq(i, j) == 0
-                    Vq(i, j) = NaN;
+                    fakeMatrix(i, j) = NaN;
+                else
+                    fakeMatrix(i, j) = (Vq(i, j) - minVal) / interval;
                 end
             end
         end
@@ -67,7 +98,8 @@ function [] = runPlot(nc)
         % plot on google map
         figure();
 %         contourf(x2, y2, copy);
-        contourf(x, y, Vq);
+%         contourf(x, y, Vq);
+        contourf(x, y, fakeMatrix);
         title(['Probability distribution for channel ', channelID]);
         xlabel('longitude');
         ylabel('latitude');

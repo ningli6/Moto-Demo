@@ -16,6 +16,7 @@ import client.Client;
 public class InferMap extends GridMap {
 	private int id;                      // channel id
 	private double[][] p;                // probability matrix
+	private double totalP;
 	public static String directory;      // output path
 
 	/**
@@ -29,7 +30,10 @@ public class InferMap extends GridMap {
 		p = new double[getRows()][getCols()];
 		for (int i = 0; i < getRows(); i++) 
 			for (int j = 0; j < getCols(); j++)
-				p[i][j] = 0.5;
+//				p[i][j] = 0.5;
+				p[i][j] = 1.0 / getNumberOfCells();
+		totalP = getTotalP();
+		if (!checkTotalP()) throw new IllegalArgumentException("Probability doesn't add up to 1");
 	}
 
 	/**
@@ -39,6 +43,7 @@ public class InferMap extends GridMap {
 	 * @param d2        update range, probability of area in between d1 and d2 will increase
 	 */
 	public void update(Client client, double d1, double d2) {
+		// probability over the map should sum to 1
 		Location clientLocation = client.getLocation();
 		if (clientLocation == null) return;
 		if (!withInBoundary(clientLocation)) {
@@ -52,8 +57,7 @@ public class InferMap extends GridMap {
 		int G = 0;
 		double cd = getCellDegree();
 		if (cd <= 0) return;
-		double upperBoundary = getUpperBoundary();
-		double leftBoundary = getLeftBoundary();
+
 		// index for client's position
 		int rowIndex = client.getRowIndex();
 		int colIndex = client.getColIndex();
@@ -85,6 +89,7 @@ public class InferMap extends GridMap {
 				tmpCell.setLocation(RowToLat(i), ColToLon(j));
 				double distance = tmpCell.distTo(clientLocation);
 				if (distance < d1) {
+					totalP -= p[i][j];
 					p[i][j] = 0;
 				}
 				if (distance >= d1 && distance < d2) G++;
@@ -96,7 +101,7 @@ public class InferMap extends GridMap {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 					// assume that PU is located at the center of cell
-					tmpCell.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
+					tmpCell.setLocation(RowToLat(i), ColToLon(j));
 					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
@@ -105,10 +110,41 @@ public class InferMap extends GridMap {
 					}
 				}
 		}
-		// System.out.println("***Update over****");
-		// System.out.println("");
+		// adjust p so that they add up to 1
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getCols(); j++) {
+				p[i][j] /= totalP;
+			}
+		}
+		totalP = getTotalP();
+		System.out.println("Total p: " + totalP);
+		/**
+		 * Debug: check if the total probability add up to 1
+		 */
+		if (!checkTotalP()) throw new IllegalArgumentException("Probability doesn't add up to 1");
 	}
 
+	private boolean checkTotalP() {
+		double sum = 0.0;
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getCols(); j++) {
+				sum += p[i][j];
+			}
+		}
+		double epsilon = 0.01;
+		return Math.abs(sum - 1) < epsilon;
+	}
+	
+	private double getTotalP() {
+		double sum = 0.0;
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getCols(); j++) {
+				sum += p[i][j];
+			}
+		}
+		return sum;
+	}
+	
 	public double[][] getProbabilityMatrix() {
 		return p;
 	}
@@ -117,9 +153,13 @@ public class InferMap extends GridMap {
 	 * Rest infer matrix back to 0.5
 	 */
 	public void resetMap() {
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
-				p[i][j] = 0.5;
+		for (int i = 0; i < getRows(); i++)  {
+			for (int j = 0; j < getCols(); j++) {
+				p[i][j] = 1.0 / getNumberOfCells();
+//				p[i][j] = 0.5;
+			}
+		}
+		totalP = getTotalP();
 	}
 
 	// visualize results
