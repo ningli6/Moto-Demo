@@ -7,19 +7,19 @@ function [] = runPlot(nc)
         channelID = num2str(channel - 1);
 
         importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
+        %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
         import = importdata(importName);
         A = import.data;
         importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_rowcol.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_rowcol.txt'];
+        %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_rowcol.txt'];
         import = importdata(importName);
         B = import.data;
         importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_bounds.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_bounds.txt'];
+        %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_bounds.txt'];
         import = importdata(importName);
         C = import.data;
         importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_pu.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
+        %         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
         import = importdata(importName);
         D = import.data;
 
@@ -49,77 +49,57 @@ function [] = runPlot(nc)
             end
         end
         
-% count sum of M
-        sum = 0;
+        % enlarge probability difference
+        enlargeMat = zeros(rows, cols);
+        maxVal = max(max(M));  % find max val
+        minVal = 1;            % find min val
         for i = 1: rows
             for j = 1 : cols
-                sum = sum + M(i, j);
-            end
-        end
-        disp(sum);
-        
-        % interpolate data
-        Vq = interp2(M);
-        [mR, mC] = size(Vq);
-%         for i = 1: mR
-%             for j = 1 : mC
-%                 if Vq(i, j) == 0
-%                     Vq(i, j) = NaN;
-%                 end
-%             end
-%         end
-        
-        fakeMatrix = zeros(mR, mC);
-        maxVal = max(max(Vq));
-        minVal = 1;
-        for i = 1: mR
-            for j = 1 : mC
-                if Vq(i, j) ~= 0 && Vq(i, j) < minVal
-                    minVal = Vq(i, j);
+                if M(i, j) ~= 0 && M(i, j) < minVal
+                    minVal = M(i, j);
                 end
             end
         end
-        level = 10;
+        level = 10;            % segment level
         interval = (maxVal - minVal) / level;
-        for i = 1: mR
-            for j = 1 : mC
-                if Vq(i, j) == 0
-                    fakeMatrix(i, j) = NaN;
+        for i = 1: rows
+            for j = 1 : cols
+                if M(i, j) == 0
+                    enlargeMat(i, j) = NaN;     % set to nan if 0
+                elseif interval ~= 0            % do not enlarge if interval is 0
+                    enlargeMat(i, j) = fix((M(i, j) - minVal) / interval);
                 else
-                    fakeMatrix(i, j) = (Vq(i, j) - minVal) / interval;
+                    enlargeMat(i, j) = M(i, j);
                 end
             end
         end
 
+        % axis
+        x = (LongStart):((LongEnd - LongStart)/(cols - 1)):(LongEnd);
+        y = (latStart):((latEnd - latStart)/(rows - 1)):(latEnd);
 
-        x = (LongStart):((LongEnd - LongStart)/(mC - 1)):(LongEnd);
-        y = (latStart):((latEnd - latStart)/(mR - 1)):(latEnd);
-
-        % plot on google map
+        % plot probability
         figure();
-%         contourf(x2, y2, copy);
-%         contourf(x, y, Vq);
-        contourf(x, y, fakeMatrix);
-        title(['Probability distribution for channel ', channelID]);
-        xlabel('longitude');
-        ylabel('latitude');
-        % plot color bar
-%         caxis([0.4, 0.6]);
-%         caxis auto;
-%         colorbar;
+        hold on;
+        h = pcolor(x, y, enlargeMat);
+        set(h,'Edgecolor', 'interp');
+        
+        % color bar
         contourcmap('jet', 'Colorbar', 'on', ...
            'Location', 'vertical', ...
            'ColorAlignment', 'center',...
            'TitleString', 'Probability value');
-        hold on;
+       
+        % title and label
+        title(['Probability distribution for channel ', channelID]);
+        xlabel('longitude');
+        ylabel('latitude');
+       
         % plot location of pu
-        plot(markers(:, 2), markers(:, 1), 'r*', 'MarkerSize', 20);
-        % for i = 1 : tr
-        % %     plot(markers(i, 1) ,markers(i, 2),'r*','MarkerSize',20);
-        % end
-        % drwa google map
-        plot_google_map('maptype','hybrid','APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA');
-        % colormap default;
+        plot(markers(:, 2), markers(:, 1), 'y*', 'MarkerSize', 20);
+
+        % draw google map
+        plot_google_map('maptype','hybrid', 'alpha', 1, 'APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA');
         hold off;
 
         % Output the contours into pdf and png file
@@ -127,8 +107,8 @@ function [] = runPlot(nc)
         name = ['/Users/ningli/Desktop/motoPlot/', filename, '_channel_', channelID, fileextension];
 %         name = ['C:\Users\Administrator\Desktop\motoPlot\', filename, '_channel_', channelID, fileextension];
         print('-dpng',name);
-
+        
         % close figure
-%         close all;
+        close all;
     end
 end
