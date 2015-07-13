@@ -16,7 +16,6 @@ import client.Client;
 public class InferMap extends GridMap {
 	private int id;                      // channel id
 	private double[][] p;                // probability matrix
-	private double totalP;
 	public static String directory;      // output path
 
 	/**
@@ -28,12 +27,11 @@ public class InferMap extends GridMap {
 		super(map);
 		this.id = id;
 		p = new double[getRows()][getCols()];
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
-//				p[i][j] = 0.5;
-				p[i][j] = 1.0 / getNumberOfCells();
-		totalP = getTotalP();
-		if (!checkTotalP()) throw new IllegalArgumentException("Probability doesn't add up to 1");
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getCols(); j++) {
+				p[i][j] = 0.5;
+			}
+		}
 	}
 
 	/**
@@ -89,7 +87,6 @@ public class InferMap extends GridMap {
 				tmpCell.setLocation(RowToLat(i), ColToLon(j));
 				double distance = tmpCell.distTo(clientLocation);
 				if (distance < d1) {
-					totalP -= p[i][j];
 					p[i][j] = 0;
 				}
 				if (distance >= d1 && distance < d2) G++;
@@ -104,47 +101,15 @@ public class InferMap extends GridMap {
 					tmpCell.setLocation(RowToLat(i), ColToLon(j));
 					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
-						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
+//						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (0.01 * G));
+						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (G));
 						/* debug information */
 						// System.out.println("p" + "[" + i + "]" + "[" + j + "] = " + p[i][j]);
 					}
 				}
 		}
-		// adjust p so that they add up to 1
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getCols(); j++) {
-				p[i][j] /= totalP;
-			}
-		}
-		totalP = getTotalP();
-		System.out.println("Total p: " + totalP);
-		/**
-		 * Debug: check if the total probability add up to 1
-		 */
-		if (!checkTotalP()) throw new IllegalArgumentException("Probability doesn't add up to 1");
 	}
 
-	private boolean checkTotalP() {
-		double sum = 0.0;
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getCols(); j++) {
-				sum += p[i][j];
-			}
-		}
-		double epsilon = 0.01;
-		return Math.abs(sum - 1) < epsilon;
-	}
-	
-	private double getTotalP() {
-		double sum = 0.0;
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getCols(); j++) {
-				sum += p[i][j];
-			}
-		}
-		return sum;
-	}
-	
 	public double[][] getProbabilityMatrix() {
 		return p;
 	}
@@ -155,11 +120,9 @@ public class InferMap extends GridMap {
 	public void resetMap() {
 		for (int i = 0; i < getRows(); i++)  {
 			for (int j = 0; j < getCols(); j++) {
-				p[i][j] = 1.0 / getNumberOfCells();
-//				p[i][j] = 0.5;
+				p[i][j] = 0.5;
 			}
 		}
-		totalP = getTotalP();
 	}
 
 	// visualize results
@@ -251,7 +214,7 @@ public class InferMap extends GridMap {
 		try {
 			PrintWriter out = new PrintWriter(file);
 			out.println("NLAT SLAT WLNG ELNG");
-			out.println(getUpperBoundary() + " " + getLowerBounday() + " " + getLeftBoundary() + " " + getRightBoundary());
+			out.println(getTopBound() + " " + getBotBound() + " " + getWestBound() + " " + getEastBound());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
 			System.out.println("FileNotFoundException: " + e.getMessage());

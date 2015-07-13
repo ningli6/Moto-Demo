@@ -34,15 +34,15 @@ public class RunnableInterface implements Runnable {
         try {
             switch (threadName) {
                 case "NOCOUNTERMEASURE":
-                    RunNoCountermeasure runNoCountermeasure = new RunNoCountermeasure(bootParams, cellsize, mtpScale, interval, directory);
+                    DemoNoCountermeasure runNoCountermeasure = new DemoNoCountermeasure(bootParams, cellsize, mtpScale, interval, directory);
                     runNoCountermeasure.run();
                     break;
                 case "ADDITIVENOISE":
-                    RunAdditiveNoise runAdditiveNoise = new RunAdditiveNoise(bootParams, cellsize, mtpScale, interval, directory);
+                    DemoAdditiveNoise runAdditiveNoise = new DemoAdditiveNoise(bootParams, cellsize, mtpScale, interval, directory);
                     runAdditiveNoise.run();
                     break;
                 case "TRANSFIGURATION":
-                	RunTransfiguration runTransfiguration = new RunTransfiguration(bootParams, cellsize, mtpScale, interval, directory);
+                	DemoTransfiguration runTransfiguration = new DemoTransfiguration(bootParams, cellsize, mtpScale, interval, directory);
                 	runTransfiguration.run();
                     break;
                 case "KANONYMITY":

@@ -190,7 +190,7 @@ public class SimTransfiguration extends Simulation {
 	public void plot() {
 		if (!feasible) return;
     	System.out.println("Plotting probability distribution on Google Map...");
-		if (!MatPlot.plot(noc)) {
+		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
 			System.out.println("Plotting failed");
 		}
 		if (icq) { // this is set to true if noq is greater than 100

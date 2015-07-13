@@ -13,8 +13,8 @@ public class Boot {
 	public static double cellsize = 0.005;     // cell size in degree, about 0.5 km
 	public static double mtpScale = 1;        // MTP function
 	public static int interval = 5;           // number of internal points of querying
-	// public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
-	public static String directory = "/Users/ningli/Desktop/motoData/";
+	public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+//	public static String directory = "/Users/ningli/Desktop/motoData/";
 
 	public static void main(String[] args) {
 		BootParams bp = Parser.parse(args);

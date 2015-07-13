@@ -180,11 +180,11 @@ public class Simulation {
 		System.out.println("Start printing probability...");
 		client.printProbability(directory);
 
-		System.out.println("Start printing number of rows and cols...");
-		client.printRC(directory);
-
-		System.out.println("Start printing boundaries...");
-		client.printBounds(directory);
+//		System.out.println("Start printing number of rows and cols...");
+//		client.printRC(directory);
+//
+//		System.out.println("Start printing boundaries...");
+//		client.printBounds(directory);
 		
 		System.out.println("Start printing location of primary users...");
 		server.printPUAllChannel(directory);
@@ -240,7 +240,7 @@ public class Simulation {
 
 	public void plot() {
     	System.out.println("Plotting probability distribution on Google Map...");
-		if (!MatPlot.plot(noc)) {
+		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
 			System.out.println("Plotting failed");
 		}
 		if (icq) { // this is set to true if noq is greater than 100
