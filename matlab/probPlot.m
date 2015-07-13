@@ -23,13 +23,13 @@ function [] = probPlot(varargin)
         % import data from a text file
         channelID = num2str(channel - 1);
 
-        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
+        % importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '.txt'];
+        importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '.txt'];
         import = importdata(importName);
         A = import.data;
         
-        importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_pu.txt'];
-%         importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
+        % importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_pu.txt'];
+        importName = ['C:\Users\Administrator\Desktop\motoData\demoTable_', channelID, '_pu.txt'];
         import = importdata(importName);
         D = import.data;
 
@@ -111,8 +111,8 @@ function [] = probPlot(varargin)
 
         % Output the contours into pdf and png file
         fileextension = '.png';
-        name = ['/Users/ningli/Desktop/motoPlot/', filename, '_channel_', channelID, fileextension];
-%         name = ['C:\Users\Administrator\Desktop\motoPlot\', filename, '_channel_', channelID, fileextension];
+        % name = ['/Users/ningli/Desktop/motoPlot/', filename, '_channel_', channelID, fileextension];
+        name = ['C:\Users\Administrator\Desktop\motoPlot\', filename, '_channel_', channelID, fileextension];
         print('-dpng',name);
 
         % close figure
