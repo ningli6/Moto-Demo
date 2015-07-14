@@ -33,11 +33,13 @@
 <script type="text/javascript">
 var map;                         // google map instance
 var drawingManager;              // helper object for drawing shapes on google map
-var lastShape; var recRegion;    // rectangle object and its boundary
+var rect;                        // google.maps.Rectangle class
+var recRegion;                   // rectangle boundary, google.maps.LatLngBounds class
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
-var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
-var markers_one = [];            // channel for 1 channel
-var circles_one = [];
+var numberOfChannels = 1;        // number of channels
+var chanls;                      // user selected channel
+var markers_one = [];            // makers list for 1 channel
+var circles_one = [];            // circles list for 1 channel
 var markers_two_channel0 = [];   // channel 0 for 2 channels
 var circles_two_channel0 = []; 
 var markers_two_channel1 = [];   // channel 1 for 2 channels
@@ -48,6 +50,8 @@ var markers_three_channel1 = []; // channel 1 for 3 channels
 var circles_three_channel1 = []; 
 var markers_three_channel2 = []; // channel 2 for 3 channels
 var circles_three_channel2 = []; 
+var latLines = [];
+var lngLines = [];
 /*
  * Initialize google map
  */
@@ -56,8 +60,8 @@ function initialize() {
         // create a google map
         var mapProp = {
             zoom: 5,
-            maxZoom: 9,
-            center: myCenter,
+            maxZoom: 10,
+            center: myCenter
         };
         map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
 
@@ -65,11 +69,11 @@ function initialize() {
         var shapeOptions = {
             strokeWeight: 1,
             strokeOpacity: 1,
-            fillOpacity: 0.2,
+            fillOpacity: 0.1,
             editable: true,
             clickable: false,
             strokeColor: '#3399FF',
-            fillColor: '#3399FF'
+            // fillColor: '#3399FF'
         };
         drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: null,
@@ -83,31 +87,38 @@ function initialize() {
         });
         // Add an event listener on the drawingManager for drawing complete
         google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-            if (lastShape != undefined) {
-                lastShape.setMap(null);
+            // remove previous area
+            if (rect != undefined) {
+                rect.setMap(null);
             }
 
-            lastShape = e.overlay;
-            lastShape.type = e.type;
+            rect = e.overlay;
+            rect.type = e.type;
 
-            if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-                lastShape.setMap(map);
-                recRegion = lastShape.getBounds();
+            if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
+                rect.setMap(map);
+                recRegion = rect.getBounds();
                 updatebounds(recRegion);
                 console.log(recRegion.toString());
             }
+            // restore cursor to hand
             drawingManager.setDrawingMode(null);
             // Add an event listener on the rectangle for bounds change
             google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
-                lastShape = e.overlay;
-                lastShape.type = e.type;
-                recRegion = lastShape.getBounds();
+                rect = e.overlay;
+                rect.type = e.type;
+                recRegion = rect.getBounds();
                 updatebounds(recRegion);
-                console.log("Bounds changed!");
                 console.log(recRegion.toString());
-                checkSize(recRegion);
+                clearGrids();
+                drawGrids(recRegion);
+                // checkSize(recRegion);
             });
-            checkSize(recRegion);
+            // check if area is too small
+            // checkSize(recRegion);
+            // draw grid lines
+            clearGrids();
+            drawGrids(recRegion);
         });
 
         // Add an event listener on the map for click
@@ -133,18 +144,17 @@ function checkSize(recRegion) {
         console.log("Rows: " + rows + ", Cols: " + cols);
         console.log("Selected area is too small.");
         alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
+        clearGrids();
         window.onload = initialize();
     }
-    else {
-        console.log("Rows: " + rows + ", Cols: " + cols);
-    }
+    console.log("Zoom level: " + map.getZoom());
 }
 
 /*
  * Place markers on google map
  */
 function placeMarker(location) {
-    if (lastShape == null || recRegion == null || !recRegion.contains(location)) {
+    if (rect == null || recRegion == null || !recRegion.contains(location)) {
         alert("Must select location with in analysis area");
         return;
     }
@@ -172,7 +182,6 @@ function placeMarker(location) {
       radius: 25000    // meters
     };
     var pc = new google.maps.Circle(protectionCircle);
-
 
     if (numberOfChannels == 1) {
         markers_one.push(marker);
@@ -204,8 +213,52 @@ function placeMarker(location) {
     }
 }
 
-function drawGrids() {
-    console.log("Zoom level: " + map.getZoom());
+/**
+ * Show grid cells in analysis area
+ */
+function drawGrids(recRegion) {
+    var nLat = recRegion.getNorthEast().lat();
+    var sLat = recRegion.getSouthWest().lat();
+    var eLng = recRegion.getNorthEast().lng();
+    var wLng = recRegion.getSouthWest().lng();
+    // north east lat/lng is bigger
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.005);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.005);
+    for (var i = 1; i <= rows; i++) {
+        latLines.push(new google.maps.Polyline({
+            map: map,
+            path: [new google.maps.LatLng(nLat - i * 0.005, eLng),
+                   new google.maps.LatLng(nLat - i * 0.005, wLng)],
+            geodesic: false,
+            strokeColor: '#3399FF',
+            strokeOpacity: 0.9,
+            strokeWeight: 0.2
+        }));
+    }
+    // only works if not across +/- 180
+    for (var i = 1; i <= cols; i++) {
+        lngLines.push(new google.maps.Polyline({
+            map: map,
+            path: [new google.maps.LatLng(nLat, wLng + i * 0.005),
+                   new google.maps.LatLng(sLat, wLng + i * 0.005)],
+            geodesic: false,
+            strokeColor: '#3399FF',
+            strokeOpacity: 0.9,
+            strokeWeight: 0.2
+        }));
+    }
+    console.log("Rows: " + rows + ", Cols: " + cols);
+}
+
+function clearGrids() {
+    for (var i = 0; i < latLines.length; i++) {
+        latLines[i].setMap(null);
+    }
+    for (var i = 0; i < lngLines.length; i++) {
+        lngLines[i].setMap(null);
+    }
+    latLines = [];
+    lngLines = [];
 }
 
 // Deletes all markers in the array by removing references to them.
@@ -242,7 +295,7 @@ function hideAllMarkers() {
  * Delete circles on the map
  */
 function resetAllMarkers() {
-    if (lastShape != null) lastShape.setMap(null);
+    if (rect != null) rect.setMap(null);
     recRegion = null;
     chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
@@ -281,6 +334,7 @@ function resetAllMarkers() {
     }
     markers_three_channel2 = [];
     circles_three_channel2 = [];
+    clearGrids();
 }
 
 /*
@@ -324,7 +378,7 @@ function setChannels() {
         console.log("Number of channels: 1");
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -334,7 +388,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -345,7 +399,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -805,7 +859,7 @@ function sendParams()
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
-        <div id='map-canvas' style='width:100%; height:420px;'></div>
+        <div id='map-canvas' style='width:100%; height:500px;'></div>
     </div>
     <div id="showBounds"></div>
 
