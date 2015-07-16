@@ -24,7 +24,7 @@ function setChannels() {
         break;
     case 2:
         console.log("Number of channels: 2");
-        var str = "<button type='button' class='btn btn-info' onclick='chanls = 0;'>Select location of PU(s) for channel 0</button>";
+        var str = "<button type='button' id = 'tryBut' class='btn btn-info' onclick='chanls = 0;'>Select location of PU(s) for channel 0</button>";
         str += " <button type='button' class='btn btn-info' onclick='chanls = 1;'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'

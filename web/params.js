@@ -6,6 +6,7 @@ var channel_number;        // number of channels
 var analysis_region = [];  // region
 var location_PU = [];      // pu's location
 var countermeasure;        // countermeasure
+var cmVal;                 // value for countermeasure
 var queries_number;        // number of queries
 var queries_file;          // name of querying file
 var args;                  // formatted params as a argument for java program
@@ -54,38 +55,42 @@ function getParams () {
         location_PU.push(markers_three_channel2);
     }
 
-    // get countermeasure
+    // get countermeasure and cm value
     if (document.getElementById('cmopt0').checked) {
         countermeasure = "NO_COUNTERMEASURE";
     }
     if (document.getElementById('cmopt1').checked) {
         countermeasure = "ADDITIVE_NOISE";
+        cmVal = document.getElementById('cmval1').value;
+        if (cmVal > 1 || cmVal < 0) {
+            alert("Noise level should be in the range from 0 to 1 inclusively");
+            return;
+        }
     }
     if (document.getElementById('cmopt2').checked) {
         countermeasure = "TRANSFIGURATION";
+        cmVal = document.getElementById('cmval2').value;
+        if (cmVal < 3 || !(cmVal % 1 === 0)) {
+            alert("Sides for polygon should be an integer greater than 2");
+            return;
+        }
     }
     if (document.getElementById('cmopt3').checked) {
         countermeasure = "K_ANONYMITY";
+        cmVal = document.getElementById('cmval3').value;
+        if (cmVal < 0 || !(cmVal % 1 === 0)) {
+            alert("K for k anonymity should be an positive integer");
+            return;
+        }
     }
     if (document.getElementById('cmopt4').checked) {
         countermeasure = "K_CLUSTERING";
+        cmVal = document.getElementById('cmval4').value;
+        if (cmVal < 0 || !(cmVal % 1 === 0)) {
+            alert("K for k clustering should be an positive integer");
+            return;
+        }
     }
-
-    if (countermeasure == "ADDITIVE_NOISE" && (document.getElementById('cmval').value > 1 || document.getElementById('cmval').value < 0)) {
-        alert("Noise level should be in the range from 0 to 1 inclusively");
-        return;
-    }
-
-    if (countermeasure == "TRANSFIGURATION" && document.getElementById('cmval').value < 3) {
-        alert("Sides for polygon should be greater than 2");
-        return;
-    }
-
-    if (countermeasure == "TRANSFIGURATION" && !(document.getElementById('cmval').value % 1 === 0)) {
-        alert("Sides for polygon must be an integer");
-        return;
-    }
-
     if (countermeasure == undefined) {
         alert("Undefined countermeasure!");
         return;
@@ -134,16 +139,16 @@ function getParams () {
 
     switch(countermeasure) {
         case "ADDITIVE_NOISE":
-            args += "-an " + document.getElementById("cmval").value + " ";
+            args += "-an " + cmVal + " ";
             break;
         case "TRANSFIGURATION":
-            args += "-tf " + document.getElementById("cmval").value + " ";
+            args += "-tf " + cmVal + " ";
             break;
         case "K_ANONYMITY":
-            args += "-ka " + document.getElementById("cmval").value + " ";
+            args += "-ka " + cmVal + " ";
             break;
         case "K_CLUSTERING":
-            args += "-kc " + document.getElementById("cmval").value + " ";
+            args += "-kc " + cmVal + " ";
             break;
     }
 
@@ -182,16 +187,16 @@ function getParams () {
     var cmstr = "";
     switch(countermeasure) {
         case "ADDITIVE_NOISE":
-            cmstr += "Additive noise<br>Noise level: " + document.getElementById("cmval").value;
+            cmstr += "Additive noise<br>Noise level: " + cmVal;
             break;
         case "TRANSFIGURATION":
-            cmstr += "Transfiguration<br>Number of sides: " + document.getElementById("cmval").value;
+            cmstr += "Transfiguration<br>Number of sides: " + cmVal;
             break;
         case "K_ANONYMITY":
-            cmstr += "K anonymity<br>K: " + document.getElementById("cmval").value;
+            cmstr += "K anonymity<br>K: " + cmVal;
             break;
         case "K_CLUSTERING":
-            cmstr += "K Clustering<br>K: " + document.getElementById("cmval").value;
+            cmstr += "K Clustering<br>K: " + cmVal;
             break;
         default:
             cmstr += "No countermeasure";

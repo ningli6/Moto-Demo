@@ -46,7 +46,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </p>
     </div>
 
-    <!-- dropdown -->
+    <!-- dropdown specifying channels -->
     <h4>Specify number of channels</h4>
     <form role="form">
         <div class="form-group">
@@ -65,29 +65,50 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <span class="help-block">Click rectangle icon to draw analysis area</span>
         <div id='map-canvas' style='width:100%; height:500px;'></div>
     </div>
+
     <div id="showBounds"></div>
 
     <!-- choose countermeasure -->
-    <form role="form">
-        <h4>Choose countermeasure</h4>
-        <div class="radio">
-          <label><input type="radio" id="cmopt0" name="cmopt" value=0 checked="checked" onchange="clearCounterMeasure();">No countermeasure</label>
+    <h4>Specify countermeasure</h4>
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="cmopt0" name="cmradio" value=0 checked="checked" onchange="disableInputs();">No countermeasure</label>
+            </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" id="cmopt1" name="cmopt" value=1 onchange="counterFunc1();">Additive Noise</label>
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+              <label><input type="radio" id="cmopt1" name="cmradio" value=1 onchange="enableInput(1);">Additive Noise</label>
+            </div>
+            <div class="col-sm-10"> 
+                <input type="number" class="form-control" id="cmval1" min="0.0" max="1.0" step="0.1" placeholder="Noise level" style="text-align:center;" disabled>
+            </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" id="cmopt2" name="cmopt" value=2 onchange="counterFunc2();">Transfiguration</label>
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="cmopt2" name="cmradio" value=2 onchange="enableInput(2);">Transfiguration</label>
+            </div>
+            <div class="col-sm-10"> 
+                <input type="number" class="form-control" id="cmval2" min="3" placeholder="Sides for convex polygon" style="text-align:center;" disabled>
+            </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" id="cmopt3" name="cmopt" value=3 onchange="counterFunc3();">K-Anonymity</label>
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="cmopt3" name="cmradio" value=3 onchange="enableInput(3);">K-Anonymity</label>
+            </div>
+            <div class="col-sm-10"> 
+                <input type="number" class="form-control" id="cmval3" min="1" placeholder="K for K-Anonymity" style="text-align:center;" disabled>
+            </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" id="cmopt4" name="cmopt" value=4 onchange="counterFunc4();">K-Clustering</label>
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="cmopt4" name="cmradio" value=4 onchange="enableInput(4);">K-Clustering</label>
+            </div>
+            <div class="col-sm-10"> 
+                <input type="number" class="form-control" id="cmval4" min="1" placeholder="K for K-Clustering" style="text-align:center;" disabled>
+            </div>
         </div>
     </form>
-
-    <div id="countermeasure"></div>
 
     <form role="form">
         <h4>Specify queries</h4>
