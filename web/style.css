@@ -51,3 +51,9 @@ a:active {
     background-color:transparent;
     text-decoration:underline;
 }
+
+#cmval, #queries {
+    border-left-width: 1px;
+    margin-left: 10px;  
+    text-align: center;
+}

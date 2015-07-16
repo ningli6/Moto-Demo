@@ -33,11 +33,13 @@
 <script type="text/javascript">
 var map;                         // google map instance
 var drawingManager;              // helper object for drawing shapes on google map
-var lastShape; var recRegion;    // rectangle object and its boundary
+var rect;                        // google.maps.Rectangle class
+var recRegion;                   // rectangle boundary, google.maps.LatLngBounds class
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
-var numberOfChannels = 1;; var chanls; // number of channels & user selected channel
-var markers_one = [];            // channel for 1 channel
-var circles_one = [];
+var numberOfChannels = 1;        // number of channels [1, 3]
+var chanls = 0;                  // user selected channel [0, 2]
+var markers_one = [];            // makers list for 1 channel
+var circles_one = [];            // circles list for 1 channel
 var markers_two_channel0 = [];   // channel 0 for 2 channels
 var circles_two_channel0 = []; 
 var markers_two_channel1 = [];   // channel 1 for 2 channels
@@ -48,6 +50,8 @@ var markers_three_channel1 = []; // channel 1 for 3 channels
 var circles_three_channel1 = []; 
 var markers_three_channel2 = []; // channel 2 for 3 channels
 var circles_three_channel2 = []; 
+var latLines = [];
+var lngLines = [];
 /*
  * Initialize google map
  */
@@ -57,7 +61,7 @@ function initialize() {
         var mapProp = {
             zoom: 5,
             maxZoom: 9,
-            center: myCenter,
+            center: myCenter
         };
         map = new google.maps.Map(document.getElementById("map-canvas"), mapProp);
 
@@ -65,11 +69,11 @@ function initialize() {
         var shapeOptions = {
             strokeWeight: 1,
             strokeOpacity: 1,
-            fillOpacity: 0.2,
+            fillOpacity: 0.1,
             editable: true,
             clickable: false,
             strokeColor: '#3399FF',
-            fillColor: '#3399FF'
+            // fillColor: '#3399FF'
         };
         drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: null,
@@ -83,31 +87,42 @@ function initialize() {
         });
         // Add an event listener on the drawingManager for drawing complete
         google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-            if (lastShape != undefined) {
-                lastShape.setMap(null);
+            // remove previous area
+            if (rect != undefined) {
+                rect.setMap(null);
             }
 
-            lastShape = e.overlay;
-            lastShape.type = e.type;
+            rect = e.overlay;
+            rect.type = e.type;
 
-            if (lastShape.type == google.maps.drawing.OverlayType.RECTANGLE) {
-                lastShape.setMap(map);
-                recRegion = lastShape.getBounds();
-                updatebounds(recRegion);
+            if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
+                rect.setMap(map);
+                recRegion = rect.getBounds();
+                updateBounds(recRegion);
                 console.log(recRegion.toString());
             }
+            // restore cursor to hand
             drawingManager.setDrawingMode(null);
             // Add an event listener on the rectangle for bounds change
             google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
-                lastShape = e.overlay;
-                lastShape.type = e.type;
-                recRegion = lastShape.getBounds();
-                updatebounds(recRegion);
-                console.log("Bounds changed!");
+                rect = e.overlay;
+                rect.type = e.type;
+                recRegion = rect.getBounds();
+                updateBounds(recRegion);
                 console.log(recRegion.toString());
-                checkSize(recRegion);
+                clearGrids();
+                if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
+                    if (rect != undefined) rect.setMap(null);
+                    recRegion = undefined;
+                }
+                else drawGrids(recRegion);
             });
-            checkSize(recRegion);
+            clearGrids();
+            if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
+                if (rect != undefined) rect.setMap(null);
+                recRegion = undefined;
+            }
+            else drawGrids(recRegion);
         });
 
         // Add an event listener on the map for click
@@ -127,52 +142,109 @@ google.maps.event.addDomListener(window, 'load', initialize);
  * Check grid size of anaysisi area
  */
 function checkSize(recRegion) {
-    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.05);
-    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.05);
-    if (rows < 10 || cols < 10) {
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.005);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.005);
+    if (rows < 50 || cols < 50) {
         console.log("Rows: " + rows + ", Cols: " + cols);
-        console.log("Selected area is too small.");
         alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
-        window.onload = initialize();
+        return false;
     }
-    else {
-        console.log("Rows: " + rows + ", Cols: " + cols);
+    console.log("Zoom level: " + map.getZoom());
+    return true;
+}
+
+function checkCoverage(recRegion) {
+    for (var i = 0; i < markers_one.length; i++) {
+        if (!recRegion.contains(markers_one[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
     }
+    for (var i = 0; i < markers_two_channel0.length; i++) {
+        if (!recRegion.contains(markers_two_channel0[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
+    }
+    for (var i = 0; i < markers_two_channel1.length; i++) {
+        if (!recRegion.contains(markers_two_channel1[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
+    }
+    for (var i = 0; i < markers_three_channel0.length; i++) {
+        if (!recRegion.contains(markers_three_channel0[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
+    }
+    for (var i = 0; i < markers_three_channel1.length; i++) {
+        if (!recRegion.contains(markers_three_channel1[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
+    }
+    for (var i = 0; i < markers_three_channel2.length; i++) {
+        if (!recRegion.contains(markers_three_channel2[i].getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            return false;
+        }
+    }
+    return true;
 }
 
 /*
  * Place markers on google map
  */
 function placeMarker(location) {
-    if (lastShape == null || recRegion == null || !recRegion.contains(location)) {
-        alert("Must select location with in analysis area");
+    if (numberOfChannels == 1) {
+        chanls = 0;
+    }
+    if (chanls == undefined) {
+        alert("Please specify channel first.");
         return;
     }
-    if (chanls == undefined && numberOfChannels != 1) {
-        alert("Must select channels first");
-        return;
+    var color;
+    var img;
+    switch(chanls) {
+        case 0:
+            color = '#FF0000'
+            img = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000';
+            break;
+        case 1:
+            color = '#FFDB00'
+            img = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FFFF00';
+            break;
+        case 2:
+            color = '#00CC00'
+            img = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|00CC00';
+            break;
     }
     var marker = new google.maps.Marker({
         position: location,
         map: map,
+        icon: img
     });
     var infowindow = new google.maps.InfoWindow({
         content: 'Latitude: ' + location.lat() + '<br>Longitude: ' + location.lng()
     });
-    infowindow.open(map, marker);
+
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(map,marker);
+    });
 
     var protectionCircle = {
-      strokeColor: '#FF0000',
+      strokeColor: color,
       strokeOpacity: 0.8,
       strokeWeight: 2,
-      fillColor: '#FF0000',
+      fillColor: color,
       fillOpacity: 0.35,
       map: map,
+      clickable: false,
       center: location,
       radius: 25000    // meters
     };
     var pc = new google.maps.Circle(protectionCircle);
-
 
     if (numberOfChannels == 1) {
         markers_one.push(marker);
@@ -202,38 +274,63 @@ function placeMarker(location) {
             circles_three_channel2.push(pc);
         }
     }
+
+    if (rect != undefined && recRegion != undefined) {
+        if (!recRegion.contains(marker.getPosition())) {
+            alert("Analysis area need to cover all primary users.");
+            if (rect != null) rect.setMap(null);
+            recRegion = undefined;
+            clearGrids();
+        }
+    }
 }
 
-function drawGrids() {
-    console.log("Zoom level: " + map.getZoom());
+/**
+ * Show grid cells in analysis area
+ */
+function drawGrids(recRegion) {
+    var nLat = recRegion.getNorthEast().lat();
+    var sLat = recRegion.getSouthWest().lat();
+    var eLng = recRegion.getNorthEast().lng();
+    var wLng = recRegion.getSouthWest().lng();
+    // north east lat/lng is bigger
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.005);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.005);
+    for (var i = 1; i <= rows; i++) {
+        latLines.push(new google.maps.Polyline({
+            map: map,
+            path: [new google.maps.LatLng(nLat - i * 0.005, eLng),
+                   new google.maps.LatLng(nLat - i * 0.005, wLng)],
+            geodesic: false,
+            strokeColor: '#3399FF',
+            strokeOpacity: 0.9,
+            strokeWeight: 0.2
+        }));
+    }
+    // only works if not across +/- 180
+    for (var i = 1; i <= cols; i++) {
+        lngLines.push(new google.maps.Polyline({
+            map: map,
+            path: [new google.maps.LatLng(nLat, wLng + i * 0.005),
+                   new google.maps.LatLng(sLat, wLng + i * 0.005)],
+            geodesic: false,
+            strokeColor: '#3399FF',
+            strokeOpacity: 0.9,
+            strokeWeight: 0.2
+        }));
+    }
+    console.log("Rows: " + rows + ", Cols: " + cols);
 }
 
-// Deletes all markers in the array by removing references to them.
-function hideAllMarkers() {
-    for (var i = 0; i < markers_one.length; i++) {
-        markers_one[i].setMap(null);
-        circles_one[i].setMap(null);
+function clearGrids() {
+    for (var i = 0; i < latLines.length; i++) {
+        latLines[i].setMap(null);
     }
-    for (var i = 0; i < markers_two_channel0.length; i++) {
-        markers_two_channel0[i].setMap(null);
-        circles_two_channel0[i].setMap(null);
+    for (var i = 0; i < lngLines.length; i++) {
+        lngLines[i].setMap(null);
     }
-    for (var i = 0; i < markers_two_channel1.length; i++) {
-        markers_two_channel1[i].setMap(null);
-        circles_two_channel1[i].setMap(null);
-    }
-    for (var i = 0; i < markers_three_channel0.length; i++) {
-        markers_three_channel0[i].setMap(null);
-        circles_three_channel0[i].setMap(null);
-    }
-    for (var i = 0; i < markers_three_channel1.length; i++) {
-        markers_three_channel1[i].setMap(null);
-        circles_three_channel1[i].setMap(null);
-    }
-    for (var i = 0; i < markers_three_channel2.length; i++) {
-        markers_three_channel2[i].setMap(null);
-        circles_three_channel2[i].setMap(null);
-    }
+    latLines = [];
+    lngLines = [];
 }
 
 /*
@@ -242,8 +339,8 @@ function hideAllMarkers() {
  * Delete circles on the map
  */
 function resetAllMarkers() {
-    if (lastShape != null) lastShape.setMap(null);
-    recRegion = null;
+    if (rect != undefined) rect.setMap(null);
+    recRegion = undefined;
     chanls = undefined;
     for (var i = 0; i < markers_one.length; i++) {
         markers_one[i].setMap(null);
@@ -281,24 +378,11 @@ function resetAllMarkers() {
     }
     markers_three_channel2 = [];
     circles_three_channel2 = [];
+    clearGrids();
+    clearBounds();
 }
 
-/*
- * Display markers in @markers, hinding all other markers on map
- */
-function markersOnChannel(markers) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(map);
-    }
-}
-
-function circlesOnChannel(circles) {
-    for (var i = 0; i < circles.length; i++) {
-        circles[i].setMap(map);
-    }
-}
-
-function updatebounds (recRegion) {
+function updateBounds(recRegion) {
     var boundstr = "<h4>Coordinates</h4>";
     boundstr += "<div class='well'>"
     boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
@@ -307,6 +391,10 @@ function updatebounds (recRegion) {
     boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
     boundstr += "</div>"
     document.getElementById("showBounds").innerHTML = boundstr;
+}
+
+function clearBounds() {
+    document.getElementById("showBounds").innerHTML = "";
 }
 </script>
 
@@ -322,9 +410,10 @@ function setChannels() {
     switch (numberOfChannels) {
     case 1:
         console.log("Number of channels: 1");
+        chanls = 1
         var str = "<button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -334,7 +423,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(1);'>Select location of PU(s) for channel 1</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -345,7 +434,7 @@ function setChannels() {
         str += " <button type='button' class='btn btn-info' onclick='selectChannel(2);'>Select location of PU(s) for channel 2</button>";
         str += " <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>";
         str += '<span class="help-block">Click rectangle icon to draw analysis area</span>'
-        str += "<div id='map-canvas' style='width:100%; height:420px;'></div>";
+        str += "<div id='map-canvas' style='width:100%; height:500px;'></div>";
         document.getElementById("mapArea").innerHTML = str;
         window.onload = initialize();
         break;
@@ -359,31 +448,6 @@ function setChannels() {
  */
 function selectChannel (arg) {
     chanls = arg;
-    hideAllMarkers();
-    if (numberOfChannels == 1) {
-        markersOnChannel(markers_one);
-        circlesOnChannel(circles_one);
-    }
-    if (numberOfChannels == 2 && chanls == 0) {
-        markersOnChannel(markers_two_channel0);
-        circlesOnChannel(circles_two_channel0);
-    }
-    if (numberOfChannels == 2 && chanls == 1) {
-        markersOnChannel(markers_two_channel1);
-        circlesOnChannel(circles_two_channel1);
-    }
-    if (numberOfChannels == 3 && chanls == 0) {
-        markersOnChannel(markers_three_channel0);
-        circlesOnChannel(circles_three_channel0);
-    }
-    if (numberOfChannels == 3 && chanls == 1) {
-        markersOnChannel(markers_three_channel1);
-        circlesOnChannel(circles_three_channel1);
-    }
-    if (numberOfChannels == 3 && chanls == 2) {
-        markersOnChannel(markers_three_channel2);
-        circlesOnChannel(circles_three_channel2);
-    }
 }
 </script>
 
@@ -520,23 +584,21 @@ var email;                 // send result to this email
 function getParams () {
     // get number of channels
     channel_number = numberOfChannels;
-    if (channel_number <= 0 || channel_number > 3) {
-        alert("Channel number invalid! Please check your channel selection");
+    // get region boundaries
+    if (rect == undefined || recRegion == undefined) {
+        alert("Please draw anaysis area. Make sure it covers all primary users.");
         return;
     }
-    console.log("Channel number: " + channel_number);
-    // get region boundaries
     analysis_region = [];
-    if (recRegion != null) {
-        // upper lat
-        analysis_region.push(recRegion.getNorthEast().lat());
-        // right lng
-        analysis_region.push(recRegion.getNorthEast().lng());
-        // lower lat
-        analysis_region.push(recRegion.getSouthWest().lat());
-        // left lng
-        analysis_region.push(recRegion.getSouthWest().lng());
-    }
+    // upper lat
+    analysis_region.push(recRegion.getNorthEast().lat());
+    // right lng
+    analysis_region.push(recRegion.getNorthEast().lng());
+    // lower lat
+    analysis_region.push(recRegion.getSouthWest().lat());
+    // left lng
+    analysis_region.push(recRegion.getSouthWest().lng());
+
     if (channel_number == 1 && markers_one.length == 0) {
         alert("Please define working channel and location for primary user!");
         return;
@@ -785,7 +847,6 @@ function sendParams()
                 <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
             </cite>
         </p>
-        <p>Life is good!</p>
     </div>
 
     <!-- dropdown -->
@@ -805,7 +866,7 @@ function sendParams()
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
-        <div id='map-canvas' style='width:100%; height:420px;'></div>
+        <div id='map-canvas' style='width:100%; height:500px;'></div>
     </div>
     <div id="showBounds"></div>
 
