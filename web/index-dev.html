@@ -66,19 +66,24 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <div id='map-canvas' style='width:100%; height:500px;'></div>
     </div>
 
-    <div id="showBounds"></div>
+    <!-- analysis bounds -->
+    <!-- Not sure if this is necessary -->
+<!--     <div class="well">
+        <div id="showBounds">Analysis area is not specified</div>
+    </div> -->
 
     <!-- choose countermeasure -->
+    <br>
     <h4>Specify countermeasure</h4>
     <form class="form-horizontal" role="form">
         <div class="form-group">
             <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt0" name="cmradio" value=0 checked="checked" onchange="disableInputs();">No countermeasure</label>
+                <label><input type="radio" id="cmopt0" name="cmradio" checked="checked" onchange="disableInputs();">No countermeasure</label>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-2 radio">
-              <label><input type="radio" id="cmopt1" name="cmradio" value=1 onchange="enableInput(1);">Additive Noise</label>
+              <label><input type="radio" id="cmopt1" name="cmradio" onchange="enableInput(1);">Additive Noise</label>
             </div>
             <div class="col-sm-10"> 
                 <input type="number" class="form-control" id="cmval1" min="0.0" max="1.0" step="0.1" placeholder="Noise level" style="text-align:center;" disabled>
@@ -86,7 +91,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </div>
         <div class="form-group">
             <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt2" name="cmradio" value=2 onchange="enableInput(2);">Transfiguration</label>
+                <label><input type="radio" id="cmopt2" name="cmradio" onchange="enableInput(2);">Transfiguration</label>
             </div>
             <div class="col-sm-10"> 
                 <input type="number" class="form-control" id="cmval2" min="3" placeholder="Sides for convex polygon" style="text-align:center;" disabled>
@@ -94,7 +99,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </div>
         <div class="form-group">
             <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt3" name="cmradio" value=3 onchange="enableInput(3);">K-Anonymity</label>
+                <label><input type="radio" id="cmopt3" name="cmradio" onchange="enableInput(3);">K-Anonymity</label>
             </div>
             <div class="col-sm-10"> 
                 <input type="number" class="form-control" id="cmval3" min="1" placeholder="K for K-Anonymity" style="text-align:center;" disabled>
@@ -102,7 +107,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </div>
         <div class="form-group">
             <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt4" name="cmradio" value=4 onchange="enableInput(4);">K-Clustering</label>
+                <label><input type="radio" id="cmopt4" name="cmradio" onchange="enableInput(4);">K-Clustering</label>
             </div>
             <div class="col-sm-10"> 
                 <input type="number" class="form-control" id="cmval4" min="1" placeholder="K for K-Clustering" style="text-align:center;" disabled>
@@ -110,17 +115,30 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </div>
     </form>
 
-    <form role="form">
-        <h4>Specify queries</h4>
-        <div class="radio">
-          <label><input type="radio" id="input_query0" name="input_query" value="0" onchange="randLoc();">Generate query locations randomly</label>
+    <!-- Choose method of queries -->
+    <h4>Specify queries</h4>
+    <form class="form-horizontal" role="form">
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="input_query0" name="input_query" onchange="enableRandomQueries();" checked>Random queries</label>
+            </div>
+            <div class="col-sm-10"> 
+                <input type="number" class="form-control" id="randomQuery" placeholder="Number of queries" min="1" step="100" style="text-align:center;">
+            </div>
         </div>
-        <div class="radio">
-          <label><input type="radio" id="input_query1" name="input_query" value="1" onchange="upldLoc();">Upload text files specifing query locations</label>
+        <div class="form-group">
+            <div class="col-sm-2 radio">
+                <label><input type="radio" id="input_query1" name="input_query" onchange="disableRandomQueries();">Upload query location</label>
+            </div>
+            <div class="col-sm-5">
+                <input type="file" class="col-sm-5 form-control" id="file-select" name="uploadthisfile">
+            </div>
+            <div class="col-sm-5">
+                <button type="submit" class="btn btn-default" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
+            </div>
         </div>
     </form>
 
-    <div id="queryingForm"></div>
 
     <form class="form-inline" role="form">
         <h4>Send result to this email</h4>

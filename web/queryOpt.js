@@ -5,28 +5,12 @@
 // file name of user uploaded text file
 var file_name;  
 
-// html code for queryingForm with randomly generated queries
-var randQueries = '';
-randQueries += '<form class="form-inline" role="form" method="post" action="">';
-randQueries += '<div class="form-group">';
-randQueries += '<label>Specify number of queries: </label>';
-randQueries += '<input type="number" class="form-control" name="queries" id="queries" placeholder="100" min="1" step="100">';
-randQueries += '</div><br></form>';
-
-// html code for queryingForm with uploaded queries
-var uploadQueries = '';
-uploadQueries += '<form class="form-inline" role="form" method="post" action="upload.php">';
-uploadQueries += '<div class="form-group">';
-uploadQueries += '<label>Browse files...</label>';
-uploadQueries += '<input type="file" class="form-control" id="file-select" name="uploadthisfile">';
-uploadQueries += '<button type="submit" class="btn btn-default" id="upload-button" onclick="uploadfile(); return false;">Upload</button>';
-uploadQueries += '</div></form>';
-
-function randLoc () {
-    document.getElementById("queryingForm").innerHTML = randQueries;
+function disableRandomQueries () {
+    document.getElementById("randomQuery").disabled = true;
 }
-function upldLoc () {
-    document.getElementById("queryingForm").innerHTML = uploadQueries;
+
+function enableRandomQueries () {
+    document.getElementById("randomQuery").disabled = false;
 }
 
 function uploadfile () {

@@ -22,8 +22,8 @@ var markers_three_channel1 = []; // channel 1 for 3 channels
 var circles_three_channel1 = []; 
 var markers_three_channel2 = []; // channel 2 for 3 channels
 var circles_three_channel2 = []; 
-var latLines = [];
-var lngLines = [];
+var latLines = [];               // horizontal lines for grids
+var lngLines = [];               // vertical lines for grids
 
 /*
  * Initialize google map
@@ -70,7 +70,7 @@ function initialize() {
         if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
             rect.setMap(map);
             recRegion = rect.getBounds();
-            updateBounds(recRegion);
+            // updateBounds(recRegion);
             console.log(recRegion.toString());
         }
         // restore cursor to hand
@@ -80,7 +80,7 @@ function initialize() {
             rect = e.overlay;
             rect.type = e.type;
             recRegion = rect.getBounds();
-            updateBounds(recRegion);
+            // updateBounds(recRegion);
             console.log(recRegion.toString());
             clearGrids();
             if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
@@ -353,27 +353,25 @@ function resetAllMarkers() {
     markers_three_channel2 = [];
     circles_three_channel2 = [];
     clearGrids();
-    clearBounds();
+    // clearBounds();
 }
 
 /**
  * Update div showBounds, that display information about analysis boundary
  * @param  {google.maps.LatLngBounds} recRegion [analysis boundary]
  */
-function updateBounds(recRegion) {
-    var boundstr = "<h4>Coordinates</h4>";
-    boundstr += "<div class='well'>"
-    boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
-    boundstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
-    boundstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
-    boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
-    boundstr += "</div>"
-    document.getElementById("showBounds").innerHTML = boundstr;
-}
+// function updateBounds(recRegion) {
+//     var boundstr = "";
+//     boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
+//     boundstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
+//     boundstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
+//     boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
+//     document.getElementById("showBounds").innerHTML = boundstr;
+// }
 
 /**
  * Clear div showBounds
  */
-function clearBounds() {
-    document.getElementById("showBounds").innerHTML = "";
-}
+// function clearBounds() {
+//     document.getElementById("showBounds").innerHTML = "";
+// }

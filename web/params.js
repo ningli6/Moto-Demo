@@ -98,20 +98,24 @@ function getParams () {
 
     // get query method
     if (document.getElementById("input_query0").checked) {
-        queries_number = document.getElementById("queries").value;
-        if (queries_number == "") {
+        queries_number = document.getElementById("randomQuery").value;
+        if (queries_number == undefined) {
             alert("Please specify number of queries!");
+            return;
+        }
+        if (queries_number <= 0 || queries_number % 1 != 0) {
+            alert("Number of queries should be a positive integer");
             return;
         }
     }
     if (document.getElementById("input_query1").checked) {
         queries_file = file_name;
-        if (queries_file == null) {
+        if (queries_file == undefined) {
             alert("Please upload a text file containing location information");
             return;
         }
     }
-    if (queries_number == null && queries_file == null) {
+    if (queries_number == undefined && queries_file == undefined) {
         alert("Please specify querying method");
         return;
     }
@@ -119,7 +123,7 @@ function getParams () {
     // get email
     email = document.getElementById("email").value;
     if (email == "" || email == null || email == undefined) {
-        alert("Please provide your email address! Demo result will be sent to this address.");
+        alert("Please provide your email address! Simulation result will be sent to this address.");
         return;
     }
     if (!validateEmail(email)) {
