@@ -4,62 +4,51 @@ import java.util.List;
 import java.util.Random;
 
 import server.Server;
-/*
- * Client represents an attacker. It has its own location and a inference map
- * It uses results from queries to update inference map
- */
-import utility.GridMap;
 import utility.InferMap;
 import utility.Location;
 import utility.MTP;
 import utility.PU;
 import utility.Response;
+/*
+ * Client represents an attacker. It has its own location and a inference map
+ * It uses results from queries to update inference map
+ */
 
 public class Client {
 	public static final double PMAX = 1;
-	int Number_Of_Channels = 1;
+	int Number_Of_Channels = 1;       // number of channels
 	// location of the SU
 	private Location location;
-	private int indexOfRow;
-	private int indexOfCol;
-	// inferMap of the SU for each channel
-	private InferMap[] inferMap;
-	// count the number for each channel for updating
-	private int[] count;
-	private List<PU>[] channels_List;
-	private Random rand;
-
-	public class NumberOfChannelsMismatchException extends RuntimeException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public NumberOfChannelsMismatchException(String message) {
-			super(message);
-		}
-		public NumberOfChannelsMismatchException() {
-			super();
-		}
-	}
-
-	public Client(int r, int c, GridMap map, int noc) {
-		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
-		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		this.location = new Location(map.RowToLat(r), map.ColToLon(c));
-		this.Number_Of_Channels = noc;
+	private int indexOfRow = -1;
+	private int indexOfCol = -1;
+	private int[] count;              // count the number for each channel for updating
+	private InferMap[] inferMap;      // inferMap for each channel
+	private List<PU>[] channels_List; // channel list from pu
+	
+	/**
+	 * Use server to initialize client, 
+	 * but client does not keep server instance or its pu's information
+	 * @param server
+	 */
+	public Client(Server server) {
+		this.Number_Of_Channels = server.getNumberOfChannels();
+		this.location = new Location();
 		this.count = new int[Number_Of_Channels];
 		this.inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, map);
+		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, server.getMap());
+		this.channels_List = server.getChannelsList();
 	}
 
 	public void setLocation(int r, int c) {
 		if (r < 0 || r >= inferMap[0].getRows()) throw new IllegalArgumentException("SU's location is out out index");
 		if (c < 0 || c >= inferMap[0].getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		location.setLocation(inferMap[0].RowToLat(r), inferMap[0].ColToLon(c));
+		location.setLocation(inferMap[0].rowToLat(r), inferMap[0].colToLng(c));
+		indexOfRow = r;
+		indexOfCol = c;
 	}
 
 	public void randomLocation() {
-		rand = new Random();
+		Random rand = new Random();
 		int newR = rand.nextInt(inferMap[0].getRows());
 		int newC = rand.nextInt(inferMap[0].getCols());
 		setLocation(newR, newC);
@@ -81,27 +70,17 @@ public class Client {
 
 	// send a query to server
 	public void query(Server server) {
-		if (inferMap == null) {
-			System.out.println("Initialize infermap first");
-			return;
-		}
 		if (server == null) return;
 		Response res = server.response(this);
 		if (res == null) return;
-		double power = res.getPower();
-		int channelID = res.getChannelID();
-		/* debug */
-		// System.out.println("Server response: " + power + ", dist to pu: " + res.getPU().getLocation().distTo(this.location));
-		if (power < 0) {
-			System.out.println("Channel unavailable");
-			return;
-		}
+		double power = res.getPower();      // response power
+		int channelID = res.getChannelID(); // channel id
 		// client will know that no one is responding
 		if (channelID < 0) {
 			System.out.println("No PU responses within the map");
 			return;
 		}
-		/* debug information */
+		// pu records how many times it has been chosen to response
 		res.getPU().sendResponse();
 		double d1 = -1; double d2 = -1;
 		if (power == 0) {
@@ -123,6 +102,7 @@ public class Client {
 		else {
 			throw new IllegalArgumentException();
 		}
+		// client records how many times a channel is updated
 		count[channelID]++;
 		inferMap[channelID].update(this, d1, d2);
 	}
@@ -131,9 +111,8 @@ public class Client {
 	 * Compute inaccuracy of inferred matrix
 	 * @return i th element are ic value for i th channel
 	 */
-	public double[] computeIC(Server server) {
+	public double[] computeIC() {
 		double[] IC = new double[Number_Of_Channels];
-		this.channels_List = server.getChannelsList();
 		for (int i = 0; i < Number_Of_Channels; i++) {
 			/* debug 
 			 * check server has returned correct list of pu to client */
@@ -188,16 +167,6 @@ public class Client {
 			count[i] = 0;
 			inferMap[i].resetMap();
 		}
-	}
-
-	/*
-	 * This function plot the result in a colorpan for visualization
-	 */
-	public void plotInferMap(int i) {
-		if (i < 0 || i > Number_Of_Channels) 
-			throw new IllegalArgumentException("Query channels must be positive but less than the number of channels in the system");
-		// inferMap.print();
-		inferMap[i].visualize();
 	}
 
 	/**

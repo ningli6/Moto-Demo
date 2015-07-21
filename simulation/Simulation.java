@@ -19,23 +19,21 @@ import boot.LatLng;
 
 public class Simulation {
 	BootParams bootParams; // params
-	double cellsize;
-	double mtpScale;
-	int interval;         
+	double cellsize;       // cell size in degree
+	double mtpScale;       // control MTP function's protection zoo
+	int interval;          // how many querying points from 0 to noq
 	StringBuilder content; // for email
 	GridMap map;
 	int noc;               // number of channels
 	int noq;               // number of queries
 	Server server;
 	Client client;
-	double[] IC;           // ic for single simulation
+	double[] IC;           // ic for single simulation, may include this information in email
 	boolean icq;           // whether to include ic vs q, if query is greater than 100, icq is set to true
 	boolean gMap;          // whether to include google map in email
-	List<Integer> qlist;   // queries for multiple simulation
-	List<Double>[] rlist;  // ic for multiple simulation
+	Map<Integer, double[]> icMap; // associate ic to number of queries
 	String directory;      // output dir
 
-	@SuppressWarnings("unchecked")
 	public Simulation(BootParams bp, double cs, double scale, int inter, String dir) {
 		this.bootParams = bp;
 		this.cellsize = cs;
@@ -53,19 +51,18 @@ public class Simulation {
 		/* debug 
 		 * See number of rows & cols in the map
 		 */
-		map.showBoundary();
-		System.out.println("Map rows: " + map.getRows());
-		System.out.println("Map cols: " + map.getCols());
-		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
-		System.out.println("Total cells: " + map.getNumberOfCells());
-		System.out.println("Initial p: " + 1.0 / map.getNumberOfCells());
+//		map.showBoundary();
+//		System.out.println("Map rows: " + map.getRows());
+//		System.out.println("Map cols: " + map.getCols());
+//		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
+//		System.out.println("Total cells: " + map.getNumberOfCells());
 
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 
 		/* initialize MTP scale */
 		MTP.ChangeMult(mtpScale);
-
+		
 		/* initialize server */
 		server = new Server(map, noc);
 
@@ -75,16 +72,13 @@ public class Simulation {
 			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
 			for (LatLng ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
-				/**
-				 * Debug: See pu's row & col index
-				 */
-				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
+//				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
 				server.addPU(pu, k);
 			}
 		}
 
 		/* initialize a client */
-		client = new Client(0, 0, map, noc);
+		client = new Client(server);
 
 		/* initialize query locations */
 		noq = bootParams.getNumberOfQueries();
@@ -93,18 +87,13 @@ public class Simulation {
 		IC = null;
 
 		/* whether to plot ic vs q */
-		icq = false;
+		icq = noq >= 50 ? true : false;
 		
 		/* whether to plot google map */
 		gMap = true;
 
-		/* initialize qlist & rlist */
-		qlist = new ArrayList<Integer>();
-
-		rlist = (ArrayList<Double>[]) new ArrayList[noc];
-		for (int i = 0; i < rlist.length; i++) {
-			rlist[i] = new ArrayList<Double>();
-		}
+		/* associate ic to number of queries */
+		icMap = new HashMap<Integer, double[]>();
 
 		/* initialize email content */
 		content = new StringBuilder(bootParams.paramsToString());
@@ -112,96 +101,99 @@ public class Simulation {
 
 	public void singleSimulation() {
 		System.out.println("Start querying...");
-
-		/* run simulation for once */
-		for (int i = 0; i < noq; i++) {
+		icq = false;
+		/* run simulation for one time */
+		for (int i = 1; i <= noq; i++) {
 			client.randomLocation();
 			/**
 			 * Debug: See client's new location
 			 */
-			System.out.println("***Query***");
-			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
+//			System.out.println("***Query***");
+//			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
 			client.query(server);
 		}
-
-		/* compute IC */
-		IC = client.computeIC(server);
+		IC = client.computeIC();
+		printSingle();
 	}
 
 	public void multipleSimulation() {
 		System.out.println("Start computing average IC...");
-		if (noq < 100) {
+		// update icq
+		if (noq < 50) {
 			icq = false;
 			return;
 		}
 		icq = true;
-		Client mclient = new Client(0, 0, map, noc);
-		double[] mIC = new double[noc];
+		// reset server and client
+		server.reset();
+		// create a new client instead of using the old one, which is saved for email to use
+		Client multclient = new Client(server);
+		// compute query points
 		int gap = noq / interval;
-		// compute number of integer
 		int base = 1;
 		int tmp = gap;
 		while(tmp / base > 0) {
 			base *= 10;
 		}
 		gap = (gap / (base / 10)) * (base / 10);
-		qlist.add(0);
-		for (int i = 1; i <= interval + 1; i++) qlist.add(gap * i);
-		int repeat = 10;
-		/* start query, each is done for 'repeat' times and compute average */
-		for (int q : qlist) {
-			System.out.println("Number of queries: " + q);
-			double[] sumIC = new double[noc];
-			// make queries for certain times
-			for (int i = 0; i < repeat; i++) {
-				mclient.reset();
-				server.reset();
-				for (int j = 0; j < q; j++) {
-					mclient.randomLocation();
-					mclient.query(server);
-				}
-				mIC = mclient.computeIC(server);
-				int k = 0;
-				for (double ic : mIC) {
-					sumIC[k] += ic;
-					k++;
-				}
-			}
-			// compute average
-			int cid = 0;
-			for (double ic : sumIC) {
-				rlist[cid].add(ic / repeat);
-				cid++;
-			}
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>();
+		for (int i = 0; i <= interval + 1; i++) {
+			qlist.add(gap * i);
+			icMap.put(gap * i, new double[noc]);
 		}
+		int maxQ = qlist.get(qlist.size() - 1);
+		int repeat = 10;
+		/* run simulation for multiple times */
+		icMap.put(0, multclient.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repeat; rep++){
+			for (int i = 1; i <= maxQ; i++) {
+				multclient.randomLocation();
+				multclient.query(server);
+				if (icMap.containsKey(i)){
+					double[] newIC = multclient.computeIC();
+					double[] sum = icMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repeat; // avoid overflow
+					}
+					icMap.put(i, sum);
+				}
+			}
+			multclient.reset(); // set infer matrix to 0.5
+		}
+		printMultiple();
 	}
 
+	/**
+	 * Print text file
+	 * Probability matrix and location of pu on each channel
+	 */
 	public void printSingle() {
 		System.out.println("Start printing probability...");
 		client.printProbability(directory);
-
-//		System.out.println("Start printing number of rows and cols...");
-//		client.printRC(directory);
-//
-//		System.out.println("Start printing boundaries...");
-//		client.printBounds(directory);
 		
 		System.out.println("Start printing location of primary users...");
 		server.printPUAllChannel(directory);
 	}
 
+	/**
+	 * Print text file
+	 * IC vs Query
+	 */
 	public void printMultiple() {
 		System.out.println("Start printing average IC...");
 		File file = new File(directory + "averageIC_NoCountermeasure.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
+			List<Integer> qlist = new ArrayList<Integer>(icMap.keySet());
+			Collections.sort(qlist);
 			for (Integer q : qlist) {
 				out.print(q + " ");
 			}
 			out.println();	
-			for (List<Double> listOnChannel : rlist) {
-				for (double d : listOnChannel) {
-					out.print((int) d + " ");
+			for (int i = 0; i < noc; i++) {
+				for (int q : qlist) {
+					out.print((int) icMap.get(q)[i] + " ");
 				}
 				out.println();
 			}
@@ -230,7 +222,7 @@ public class Simulation {
 			}
 		}
 		sb.append("</p>");
-		sb.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_marked_as_red_stars.</p>");
+		sb.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_marked_as_yellow_stars.</p>");
 		return sb.toString();
 	}
 
@@ -240,9 +232,11 @@ public class Simulation {
 
 	public void plot() {
     	System.out.println("Plotting probability distribution on Google Map...");
-		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-			System.out.println("Plotting failed");
-		}
+    	for (int i = 0; i < noc; i++) {
+    		if (!MatPlot.plot(i, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
+    			System.out.println("Plotting failed");
+    		}
+    	}
 		if (icq) { // this is set to true if noq is greater than 100
 			System.out.println("Plotting average inacurracy...");
 			if (!CmpPlot.plot("NOCOUNTERMEASURE")) {

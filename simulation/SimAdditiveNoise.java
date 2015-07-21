@@ -94,7 +94,7 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		feasible = true;
 		gMap = true;
-		IC = client.computeIC(server);
+		IC = client.computeIC();
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class SimAdditiveNoise extends Simulation {
 					i--;
 					continue;
 				}
-				double[] mIC = mclient.computeIC(server);
+				double[] mIC = mclient.computeIC();
 				int k = 0;
 				for (double ic : mIC) {
 					sumIC[k] += ic;

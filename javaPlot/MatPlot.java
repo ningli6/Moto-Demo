@@ -1,5 +1,9 @@
 package javaPlot;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+
 
 public class MatPlot {
 	/**
@@ -23,6 +27,7 @@ public class MatPlot {
 	        Process p = Runtime.getRuntime().exec(cmd);
 	        int r = p.waitFor();
 	        
+	        /* uncomment these code to see matlab output */
 //			BufferedReader stdInput = new BufferedReader(new
 //						InputStreamReader(p.getInputStream()));
 //	

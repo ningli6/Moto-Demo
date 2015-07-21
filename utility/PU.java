@@ -8,17 +8,15 @@ import server.*;
  * Right now it just has location information.
  */
 public class PU {
-	/* may not need id for pu in future versioin */
 	public final Comparator<PU> DIST_ORDER = new distOrder(); // can this be static
-	private int id = -1;
-	private int channelID = -1;
-	private Location location = null; // actual location
-	private Location cellLocation = null;
+	private int id = -1;                      // pu id
+	private int channelID = -1;               // channel id
+	// location
+	private Location cellLocation;
 	private int indexOfRow = 0;
 	private int indexOfCol = 0;
-	/* debugging purpose */
-	private int number_of_response = 0;
-	private Server server = null;
+	private int number_of_response = 0;       // record times being chosen to response
+	private Server server;                    // server instance 
 	/* used by k-anonymity */
 	private double baseRadius = 0;
 	/* used by k-clustering */
@@ -40,21 +38,6 @@ public class PU {
 
 	}
 
-	public PU(PU p) {
-		if (p == null) throw new NullPointerException();
-		this.id = p.getID();
-		this.channelID = p.getChannelID();
-		this.location = p.getLocation();
-		this.server = p.getServer();
-		this.baseRadius = p.getRadius();
-	}
-	
-	public PU(int id, int r, int c) {
-		this.id = id;
-		indexOfRow = r;
-		indexOfCol = c;
-	}
-
 	/**
 	 * Initialize primary user
 	 * @param  id  [pu's id]
@@ -64,15 +47,9 @@ public class PU {
 	 */
 	public PU(int id, double lat, double lng, GridMap map) {
 		this.id = id;
-		this.location = new Location(lat, lng);
-		this.indexOfRow = map.LatToRow(lat);
-		this.indexOfCol = map.LonToCol(lng);
-		this.cellLocation = new Location(map.RowToLat(indexOfRow), map.ColToLon(indexOfCol));
-		/* debug 
-		 * compare location & cell location
-		 */
-		location.printLocation();
-		cellLocation.printLocation();
+		this.indexOfRow = map.latToRow(lat);
+		this.indexOfCol = map.lngToCol(lng);
+		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);
 	}
 
 	public void attachToServer(Server server) {
@@ -107,37 +84,19 @@ public class PU {
 		return channelID;
 	}
 
-	/* client will call this method if that pu is updated
-	 * for debugging purpose
+	/**
+	 * client will call this method if that pu is chosn to updated
 	 */
 	public void sendResponse() {
 		number_of_response++;
 	}
 
-	/* 
+	/**
 	 * clear number of response 
 	 * used by additive noise 
 	 */
 	public void reset() {
 		number_of_response = 0;
-	}
-
-	public void setLocation(Location location) {
-		if (location == null) {
-			System.out.println("PU's location cannot be set to null");
-			return;
-		}
-		this.location = location;
-	}
-
-	public void setLocation(double lat, double lon) {
-		if (location == null) location = new Location(lat, lon);
-		else location.setLocation(lat, lon);
-	}
-
-	public void setLocation(String lat, String lon) {
-		if (location == null) location = new Location(lat, lon);
-		else location.setLocation(lat, lon);
 	}
 
 	public void setIndices(int r, int c) {
@@ -155,30 +114,28 @@ public class PU {
 	}
 
 	public Location getLocation() {
-		if (location == null || cellLocation == null) throw new NullPointerException("Location for PU has not yet been initialized");
+		if (cellLocation == null) throw new NullPointerException("Location for PU has not yet been initialized");
 		return cellLocation;
 	}
 
 	public double getLatitude() {
-		if (location == null) return 0;
-		return location.getLatitude();
+		return cellLocation.getLatitude();
 	}
 
 	public double getLongitude() {
-		if (location == null) return 0;
-		return location.getLongitude();
+		return cellLocation.getLongitude();
 	}
 
 	public double distTo(PU pu) {
 		if (pu == null) throw new NullPointerException();
 		if (pu == this) return 0;
-		if (this.location == null) throw new NullPointerException("Location for PU has not yet been initialized");
-		return this.location.distTo(pu.getLocation());
+		if (this.cellLocation == null) throw new NullPointerException("Location for PU has not yet been initialized");
+		return this.cellLocation.distTo(pu.getLocation());
 	}
 
 	private void indexToLocation() {
 		if (this.server == null) throw new NullPointerException("Attach to server first");
-		this.location = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
+		this.cellLocation = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
 	}
 
 	/* used by k-anonymity and k-clustering */
@@ -209,12 +166,12 @@ public class PU {
 	}
 
 	public void printLocation() {
-		if (location == null) {
+		if (cellLocation == null) {
 			System.out.println("PU has no location information");
 			return;
 		}
 		printIndexLocation();
-		location.printLocation();
+		cellLocation.printLocation();
 	}
 
 	public void printIndexLocation() {

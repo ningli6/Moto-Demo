@@ -58,7 +58,7 @@ public class ServerTransfiguration extends Server{
 		// System.out.println("override");
 		// response with (-1, -1) means no transmit power available
 		if (client == null) return new Response(-1, -1);
-		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
+		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);

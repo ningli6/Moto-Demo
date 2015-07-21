@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import javax.swing.JFrame;
-
 import client.Client;
 
 /*
@@ -48,28 +46,28 @@ public class InferMap extends GridMap {
 			System.out.println("Invalid location");
 			return;
 		}
-		if (d1 < 0 || d2 < 0) {
+		if (d1 < 0 || d2 < 0 || d1 > d2) {
 			System.out.println("Invalid parameters");
 			return;
 		}
+		
+		// parameter used in updating formula
 		int G = 0;
-		double cd = getCellDegree();
-		if (cd <= 0) return;
 
 		// index for client's position
 		int rowIndex = client.getRowIndex();
 		int colIndex = client.getColIndex();
 		
 		/* debug information */
-		System.out.println("***Update****");
-		// see d1 and d2
-		System.out.println("d1: " + d1 + " d2: " + d2);
-		// see channel
-		System.out.println("on channel: " + id);
+//		System.out.println("***Update****");
+//		// see d1 and d2
+//		System.out.println("d1: " + d1 + " d2: " + d2);
+//		// see channel
+//		System.out.println("on channel: " + id);
 
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
 		/* debug information */
-		System.out.println("updateLength: " + updateLength);
+//		System.out.println("updateLength: " + updateLength);
 
 		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
 		if (startRow < 0) startRow = 0;
@@ -84,7 +82,7 @@ public class InferMap extends GridMap {
 		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++) {
 			for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 				// assume that PU is located at the center of cell
-				tmpCell.setLocation(RowToLat(i), ColToLon(j));
+				tmpCell.setLocation(rowToLat(i), colToLng(j));
 				double distance = tmpCell.distTo(clientLocation);
 				if (distance < d1) {
 					p[i][j] = 0;
@@ -93,12 +91,12 @@ public class InferMap extends GridMap {
 			}
 		}
 		/* debug information */
-		 System.out.println("Number of G: " + G);
+//		 System.out.println("Number of G: " + G);
 		if (G != 0) {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
 					// assume that PU is located at the center of cell
-					tmpCell.setLocation(RowToLat(i), ColToLon(j));
+					tmpCell.setLocation(rowToLat(i), colToLng(j));
 					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
 //						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (0.01 * G));
@@ -123,45 +121,6 @@ public class InferMap extends GridMap {
 				p[i][j] = 0.5;
 			}
 		}
-	}
-
-	// visualize results
-	public void visualize() {
-		// boolean greater = false;
-		int rows = getRows();
-		int cols = getCols();
-		int[] data = new int[rows * cols];
-		int red = -1;
-		int green = -1;
-		int blue = -1;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				if (p[i][j] == 0.5) { // gray
-					red = 128;
-					green = 128;
-					blue = 128;
-				}
-				else if (p[i][j] == 0) { // white
-					red = 255;
-					green = 255;
-					blue = 255;
-				}
-				else { // > 0.5, black
-					red = 0;
-					green = 0;
-					blue = 0;
-					// greater = true;
-					// throw new IllegalArgumentException();
-				}
-				data[j + cols * i] = (red << 16) | (green << 8) | blue;
-			}
-		}
-		JFrame frame = new JFrame("ColorPan " + id);
-		frame.getContentPane().add(new ColorPan(data, cols, rows));
-		frame.setSize(cols, rows);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		// System.out.println("Greater than 0.5:" + greater);
 	}
 
 	/**

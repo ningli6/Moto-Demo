@@ -6,9 +6,9 @@ package utility;
  * hide pu's information to enhance privacy.
  */
 public class Response implements Comparable<Response> {
-	private double power = -1;
-	private int channelID = -1;
-	private PU pu = null; // pu that makes response
+	private PU pu = null;         // pu that makes response
+	private double power = -1;    // response power
+	private int channelID = -1;   // responser id
 
 	public Response(PU pu, double power) {
 		this.pu = pu;
@@ -16,10 +16,15 @@ public class Response implements Comparable<Response> {
 		this.channelID = pu.getChannelID();
 	}
 
+	/**
+	 * Use to construct (-1, PMAX) indicating that no pu on the map
+	 * @param channelID
+	 * @param power
+	 */
 	public Response(int channelID, double power) {
-		this.channelID = channelID;
 		this.pu = null;
 		this.power = power;
+		this.channelID = channelID;
 	}
 
 	public int getChannelID() {

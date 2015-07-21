@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-import javax.swing.JFrame;
-
 import utility.geometry.Point;
 import utility.geometry.Polygon;
 
@@ -130,53 +128,6 @@ public class PolyPU {
 	/* This hash function works as long as j is smaller than 100000 */
 	public static int hashcode(int i, int j) {
 		return 100000 * i + j;
-	}
-
-	/* Following three methods are used for visualize/plot protection contours */
-	/* call only after transfiguration */
-	public void visualPreCompute() {
-		int rows = map.getRows();
-		int cols = map.getCols();
-		double[][] p = new double[rows][cols];
-		int[] data = new int[rows * cols];
-		int red = -1;
-		int green = -1;
-		int blue = -1;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				@SuppressWarnings("unused")
-				int code = hashcode(i, j);
-				p[i][j] = response(i, j);
-				if (p[i][j] == MTP.P_0) { // gray
-					red = 255;
-					green = 255;
-					blue = 255;
-				}
-				else if (p[i][j] == MTP.P_50) { // white
-					red = 180;
-					green = 180;
-					blue = 180;
-				}
-				else if (p[i][j] == MTP.P_75) { // white
-					red = 100;
-					green = 100;
-					blue = 100;
-				}
-				else { // > 0.5, black
-					red = 0;
-					green = 0;
-					blue = 0;
-					// greater = true;
-					// throw new IllegalArgumentException();
-				}
-				data[j + cols * i] = (red << 16) | (green << 8) | blue;
-			}
-		}
-		JFrame frame = new JFrame("Pre compute " + pu.getID());
-		frame.getContentPane().add(new ColorPan(data, cols, rows));
-		frame.setSize(cols, rows);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
 	}
 
 	public void printPreCompute() {

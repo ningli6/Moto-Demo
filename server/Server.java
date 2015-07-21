@@ -34,17 +34,6 @@ public class Server {
 		}
 	}
 
-	public class ClientOutOfMapException extends RuntimeException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ClientOutOfMapException(String message) {
-			super(message);
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public Server(GridMap map, int noc) {
 		this.map = map;
@@ -102,14 +91,12 @@ public class Server {
 	 * For each channel, it chooses minimum response
 	 * Finally it returns max response among all channels
 	 * @param client
-	 * @return
+	 * @return (-1, PMAX) if no PU on the map
 	 */
 	public Response response(Client client) {
-		// response with (-1, -1) means no transmit power available
 		if (client == null) throw new NullPointerException("Querying client does not exist");
-		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
+		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
-		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		LinkedList<Response> response_list = new LinkedList<Response>();
 		for (LinkedList<PU> list : channels_List) {
@@ -117,10 +104,10 @@ public class Server {
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				System.out.println("Distance between client and pu [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+//				System.out.println("Distance between client and pu [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
-				System.out.println("Response power according to MTP:" + resPower);
-				if (resPower <= minPower) { // find the minimun for each channel
+//				System.out.println("Response power according to MTP:" + resPower);
+				if (resPower <= minPower) { // find the minimum for each channel
 					minPU = pu;
 					minPower = resPower;
 				}
@@ -130,7 +117,6 @@ public class Server {
 		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
 		Collections.shuffle(response_list);
-		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
 		return Collections.max(response_list);
 	}
 
@@ -196,6 +182,9 @@ public class Server {
 		}
 	}
 
+	/**
+	 * clear response records for all pu on the server
+	 */
 	public void reset() {
 		if (channels_List == null) return;
 		for (int i = 0; i < Number_Of_Channels; i++) {

@@ -181,14 +181,14 @@ public class GridMap {
 	}
 	
 	// get lat & lon according to given number_of_rows & number_of_cols index
-	public double RowToLat(int r) {
+	public double rowToLat(int r) {
 		if (r < 0 || r >= number_of_rows) throw new IllegalArgumentException();
 		double newLat = upperLat - 0.5 * cellDegree - r * cellDegree;
 		if (newLat < getBotBound() || newLat > getTopBound()) throw new coordinatesOutOfBoundsException();
 		return newLat;
 	}
 
-	public double ColToLon(int c) {
+	public double colToLng(int c) {
 		if (c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
 		double newLon = leftLon + 0.5 * cellDegree + c * cellDegree;
 		if (newLon < getWestBound() || newLon > getEastBound()) throw new coordinatesOutOfBoundsException();
@@ -196,7 +196,7 @@ public class GridMap {
 	}
 
 	// convert latitude to the index of row where the coordinate belongs 
-	public int LatToRow(double lat) {
+	public int latToRow(double lat) {
 		if (lat < getBotBound() || lat > getTopBound()) throw new IllegalArgumentException("Latitude is out of map range");
 		int rowIndex = (int) (Math.abs(topLeft.getLatitude() - lat) / cellDegree);
 		if (rowIndex >= number_of_rows) throw new IndexOutOfBoundsException();
@@ -204,7 +204,7 @@ public class GridMap {
 	}
 
 	// convert longitude to the index of col where the coordinate belongs 
-	public int LonToCol(double lon) {
+	public int lngToCol(double lon) {
 		if (lon < getWestBound() || lon > getEastBound()) throw new IllegalArgumentException("Longitude is out of map range");
 		int colIndex = (int) (Math.abs(topLeft.getLongitude() - lon) / cellDegree);
 		if (colIndex >= number_of_cols) throw new IndexOutOfBoundsException();
@@ -213,7 +213,6 @@ public class GridMap {
 
 	public Location getLocation(int r, int c) {
 		if (r < 0 || r >= number_of_rows || c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
-		return new Location(upperLat - 0.5 * cellDegree - r * cellDegree, 
-			leftLon + 0.5 * cellDegree + c * cellDegree);
+		return new Location(rowToLat(r), colToLng(c));
 	}
 }

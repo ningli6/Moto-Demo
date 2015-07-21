@@ -175,7 +175,7 @@ public class ServerKClustering extends Server {
 		 * client position */
 		// client.printClientPosition();
 		if (client == null) throw new NullPointerException("Querying client does not exist");
-		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
+		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
 		List<Response> response_list = new LinkedList<Response>();// linkedlist that saves responses
 		@SuppressWarnings("unused")
