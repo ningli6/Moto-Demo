@@ -10,7 +10,7 @@ import demo.*;
  */
 public class Boot {
 	/* initial settings */
-	public static double cellsize = 0.005;     // cell size in degree, about 0.5 km
+	public static double cellsize = 0.005;    // cell size in degree, about 0.5 km
 	public static double mtpScale = 1;        // MTP function
 	public static int interval = 5;           // number of internal points of querying
 	public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";

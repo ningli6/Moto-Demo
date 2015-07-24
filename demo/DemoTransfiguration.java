@@ -19,12 +19,12 @@ public class DemoTransfiguration {
 		/* run different queries for multiple times and compute average ic */ 
 		if (sim.isFeasible()) sim.multipleSimulation();
 		/* print probability and location of pu for each channel */
-		if (sim.isFeasible()) sim.printSingle();
+		if (sim.isFeasible()) sim.printSingle(null, null, null);
 		/* print average ic for different queries */
-		if (sim.isFeasible()) sim.printMultiple();
+		if (sim.isFeasible()) sim.printMultiple(null, null, null, null);
 		/* plot probability on google map and IC vs Q */
-		if (sim.isFeasible()) sim.plot();
+		if (sim.isFeasible()) sim.plot(null, null, null);
 		/* send email */
-		sim.sendEmail();
+		sim.sendEmail(null, null);
 	}
 }

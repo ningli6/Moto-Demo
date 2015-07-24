@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javaPlot.CmpPlot;
 import javaPlot.MatPlot;
+import server.Server;
 import server.ServerTransfiguration;
 import utility.PU;
 import boot.BootParams;
@@ -126,15 +128,15 @@ public class SimTransfiguration extends Simulation {
 	}
 
 	@Override
-	public void printSingle() {
+	public void printSingle(Server server, Client client, String dir) {
 		if (!feasible) return;
-		super.printSingle();
+		super.printSingle(server, client, dir);
 	}
 
 	@Override
-	public void printMultiple() {
+	public void printMultiple(List<Integer> qlist, Map<Integer, double[]> icMap, String dir, String fileName) {
 		if (!feasible) return;
-		super.printMultiple();
+		super.printMultiple(qlist, icMap, dir, fileName);
 		File file = new File(directory + "cmp_Transfiguration.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
@@ -187,7 +189,7 @@ public class SimTransfiguration extends Simulation {
 	}
 
 	@Override
-	public void plot() {
+	public void plot(boolean plotGoogleMap, boolean iCvsQ, String countermeasure) {
 		if (!feasible) return;
     	System.out.println("Plotting probability distribution on Google Map...");
 		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {

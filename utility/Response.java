@@ -49,6 +49,15 @@ public class Response implements Comparable<Response> {
 		return pu;
 	}
 
+	/**
+	 * Decrease power value for 1 level
+	 * full power -> 75% power
+	 * 75% power -> 50% power
+	 * 50% power -> 0% power
+	 * 0% power -> can't decrease anymore
+	 * @param step   decrease level, default is 1
+	 * @return       true if decrease succeeded
+	 */
 	public boolean decrease(int step) {
 		if (power == MTP.P_0) return false;
 		if (power == MTP.P_50) power = MTP.P_0;

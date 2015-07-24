@@ -71,6 +71,10 @@ public class BootParams {
 		return isCountermeasure;
 	}
 
+	/**
+	 * Get name of countermeasure
+	 * @return String of the name of countermeasure
+	 */
 	public String getCountermeasure() {
 		return countermeasure;
 	}
@@ -83,6 +87,10 @@ public class BootParams {
 		countermeasure = cm;
 	}
 
+	/**
+	 * Get value for the countermeasure
+	 * @return
+	 */
 	public double getCMParam() {
 		if (counterParamI != -1) return (double) counterParamI;
 		return counterParamD;

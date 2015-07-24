@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javaPlot.CmpPlot;
 import javaPlot.MatPlot;
+import server.Server;
 import server.ServerAdditiveNoise;
 import utility.PU;
 import boot.BootParams;
@@ -15,27 +18,26 @@ import boot.LatLng;
 import client.Client;
 
 public class SimAdditiveNoise extends Simulation {
-	private String counterMeasure;
-	private double noiseLevel;
-	private ServerAdditiveNoise cmServer;
-	private int maxIteration;
-	private List<Double>[] cmList;  // ic for multiple simulation with countermeasure
-	private int repeat = 10;        // repeat for each number of query
-	private boolean feasible;
+	private String countermeasure;        // name of countermeasure
+	private double noiseLevel;            // noise level, [0, 1]
+	private ServerAdditiveNoise cmServer; // instance of countermeasure server
+	private int maxIteration;             // max attempts to reach noise level
+	private boolean feasible;             // whether this noise level is feasible
+	Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
 
-	@SuppressWarnings("unchecked")
 	public SimAdditiveNoise(BootParams bp, double cs, double scale, int inter, String dir) {
-		/* call parent instructor */
+		/* call parent constructor */
 		super(bp, cs, scale, inter, dir);
 
 		/* initialize countermeasure */
-		this.counterMeasure = bootParams.getCountermeasure();
+		this.countermeasure = bootParams.getCountermeasure();
 
 		/* initialize noise level */
 		this.noiseLevel = bootParams.getCMParam();
 
 		/* initialize server with additive noise */
 		cmServer = new ServerAdditiveNoise(map, noc, noq, noiseLevel);
+		/* add pu to cmServer */
 		int PUid = 0;
 		for (int k = 0; k < noc; k++) {
 			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
@@ -45,14 +47,11 @@ public class SimAdditiveNoise extends Simulation {
 			}
 		}
 
-		/* initialize max iter */
+		/* initialize max number of attempts */
 		maxIteration = 20;
 
-		/* initialize cm list */
-		cmList = (ArrayList<Double>[]) new ArrayList[noc];
-		for (int i = 0; i < cmList.length; i++) {
-			cmList[i] = new ArrayList<Double>();
-		}
+		/* initialize hashmap for query-ic with countermeasure */
+		icCMMap = new HashMap<Integer, double[]>();
 
 		/* initialize feasibility */
 		feasible = false;
@@ -60,129 +59,127 @@ public class SimAdditiveNoise extends Simulation {
 
 	@Override
 	public void singleSimulation() {
+		icq = false;           // do not include ic vs q
 		if (noiseLevel < 0 || noiseLevel > 1) {
 			System.out.println("Noise level must be in range 0 to 1.");
-			feasible = false;   // do not print & multiple simulations
-			gMap = false;       // do not include google map in the email
-			icq = false;        // do not include ic vs q
+			feasible = false;   // do not execute following simulations
 			return;
 		}
 		System.out.println("Start querying...");
+		
+		/* initialize a client */
+		Client client = new Client(cmServer);
 
 		/* run simulation for once */
-		while(maxIteration > 0) {
+		int attempts = maxIteration;
+		while(attempts > 0) {
+			// clear client's probability map to 0.5
+			client.reset();
+			// set actual lies back to 0
+			cmServer.reset();
 			for (int i = 0; i < noq; i++) {
 				client.randomLocation();
 				client.query(cmServer);
 			}
 			if (cmServer.reachNoiseLevel()) {
 				System.out.println("Noise level satisfied!");
+//				System.out.println("Actual lies: " + cmServer.getNumberOfLies() + " Expected lies: " + cmServer.getExpectedLies());
 				break;
 			}
-			// clear client's probability map to 0.5
-			client.reset();
-			// set actual lies back to 0
-			cmServer.reset();
-			maxIteration--;
+			attempts--;
+			System.out.println("Noise level not satisfied, try again");
 		}
 		/* if can't reach noise requirement within 20 attempts, return */
-		if (maxIteration == 0) {
-			gMap = false;       // do not include google map in the email
-			feasible = false;   // do not print & multiple simulations
+		if (attempts == 0) {
+			feasible = false;   // do not execute following simulations
 			System.out.println("Noise level is set too high. Requirement can't be reached within 20 attempts.");
 			return;
 		}
-		feasible = true;
-		gMap = true;
+		feasible = true;        // noise level is feasible, proceed
 		IC = client.computeIC();
+		
+		/* debug */
+		for (List<PU> puList : cmServer.getChannelsList()) {
+			for (PU pu : puList){
+				pu.printInfo();
+			}
+		}
+		client.countChannel();
+		System.out.println("IC: ");
+		for (double d : IC){
+			System.out.print((int)d + " ");
+		}
+		System.out.println();
+		
+		printSingle(cmServer, client, directory);
 	}
 
 	@Override
 	public void multipleSimulation() {
+		if (!feasible) {
+			System.out.println("Noise level is not feasible.");
+			icq = false;
+			return;
+		}
+		if (noq < 50) {
+			icq = false;
+			return;
+		}
+		icq = true;
+		
+		/* run multiple simulation without countermeasure */
 		super.multipleSimulation();
-		if (!icq) return; // number of query is less than 100 times
-		/**
-		 * use a new client for multiple simulation, 
-		 * the old one should be saved for printing probability
-		 * however we can reuse this client since we don't need its infer result 
-		 */
-		Client mclient = new Client(0, 0, map, noc); 
 		System.out.println("Start computing average IC with additive noise...");
-		/* start query, each is done for 'repeat' times then compute average */
-		for (int q : qlist) {
+		Client multclient = new Client(cmServer);
+		// compute query points
+		int gap = noq / interval;
+		int base = 1;
+		int tmp = gap;
+		while(tmp / base > 0) {
+			base *= 10;
+		}
+		gap = (gap / (base / 10)) * (base / 10);
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>();
+		for (int i = 0; i <= interval + 1; i++) {
+			qlist.add(gap * i);
+			icCMMap.put(gap * i, new double[noc]);
+		}
+		/* run simulation for multiple times */
+		for (int q : qlist) {             // for each query number
 			System.out.println("Number of queries: " + q);
-			double[] sumIC = new double[noc];
-			// update expected lies according to new query
-			cmServer.updateLiesNeeded(q);
-			// make queries for certain times
-			int count = 40;
-			for (int i = 0; i < repeat; i++) {
-				count--;
-				if (count == 0) {
-					System.out.println("Noise requirement can't be satisfied within 40 attempts");
-					feasible = false; // do not print
-					gMap = false;     // do not include google map in the email
-					icq = false;      // do not include ic vs q
-					return;
-				}
-				// reset infermap to 0.5
-				mclient.reset();
-				// reset actual lies to 0
-				cmServer.reset();
+			cmServer.updateLiesNeeded(q); // update expected number of lies
+			int attempts = maxIteration;  // with in maxIteration, must succeed once
+			int succeed = 0;              // number of successful attempts
+			while (attempts > 0 && succeed < repeat) {
+				multclient.reset();       // reset matrix to 0.5
+				cmServer.reset();         // rest actual lies to 0
 				for (int j = 0; j < q; j++) {
-					mclient.randomLocation();
-					mclient.query(cmServer);
+					multclient.randomLocation();
+					multclient.query(cmServer);
 				}
 				if (!cmServer.reachNoiseLevel()) {
 					System.out.println("Noise condition is not satisfied, try again");
-					i--;
-					continue;
+					attempts--; // noise level not reached, bad attempt
 				}
-				double[] mIC = mclient.computeIC();
-				int k = 0;
-				for (double ic : mIC) {
-					sumIC[k] += ic;
-					k++;
+				else {
+					double[] newIC = multclient.computeIC();
+					double[] sum = icCMMap.get(q);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repeat; // avoid overflow
+					}
+					icCMMap.put(q, sum);
+					succeed++; // succeed
+					attempts = maxIteration;  // have another [maxIteration] times for next success
 				}
 			}
-			// compute average
-			int cid = 0;
-			for (double ic : sumIC) {
-				cmList[cid].add(ic / repeat);
-				cid++;
+			if (attempts == 0) { // can't reach noise level in [maxIteration] attempts
+				feasible = false;
+				icq = false;
+				return;
 			}
 		}
-	}
-
-	@Override
-	public void printSingle() {
-		if (!feasible) return;
-		super.printSingle();
-	}
-
-	@Override
-	public void printMultiple() {
-		if (!feasible) return;
-		super.printMultiple();
-		File file = new File(directory + "cmp_AdditiveNoise.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			for (Integer q : qlist) {
-				out.print(q + " ");
-			}
-			out.println();	
-			for (List<Double> listOnChannel : cmList) {
-				for (double d : listOnChannel) {
-					out.print((int) d + " ");
-				}
-				out.println();
-			}
-			out.close (); // this is necessary	
-		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
+		printMultiple(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
 	}
 
 	private String buildMessage() {
@@ -200,7 +197,7 @@ public class SimAdditiveNoise extends Simulation {
 			return sb.toString();
 		}
 		sb.append("<p>Querying_information:<br>");
-		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
+//		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
 		sb.append("</p>");
 		if (IC != null) {
 			sb.append("<p>Inaccuracy_for_each_channel:<br>");
@@ -218,25 +215,25 @@ public class SimAdditiveNoise extends Simulation {
 		return content.append(buildMessage()).toString();
 	}
 
-	@Override
-	public void plot() {
-    	System.out.println("Plotting probability distribution on Google Map...");
-		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-			System.out.println("Plotting failed");
-		}
-		if (icq) { // this is set to true if noq is greater than 100
-			System.out.println("Plotting average inacurracy...");
-			if (!CmpPlot.plot("ADDITIVENOISE")) {
-				System.out.println("Plotting failed");
-			}
-		}
-	}
-
+	/**
+	 * Is the given noise level a practical one for this simulation
+	 * @return true if noise requirement can be reached 
+	 */
 	public boolean isFeasible() {
 		return feasible;
 	}
+	
+	/**
+	 * Whether to plot ic vs q
+	 * @return if not feasible, return false
+	 */
+	@Override
+	public boolean plotICvsQuery() {
+		if (!feasible) return false;
+		return icq;
+	}
 
 	public String getCountermeasure() {
-		return counterMeasure;
+		return countermeasure;
 	}
 }

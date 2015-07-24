@@ -7,15 +7,15 @@ import java.io.InputStreamReader;
 public class SendEmail {  
 	/**
 	 * Api for sending email
-	 * @param from sender
-	 * @param to   receiver
-	 * @param message 
-	 * @param noc  number of channels
-	 * @param icq  whether to plot ic vs q
-	 * @param gmap whether to plot google map
-	 * @return true if everything works
+	 * @param from       sender
+	 * @param to         receiver
+	 * @param message    email content
+	 * @param noc        number of channels
+	 * @param gmap       whether to plot google map
+	 * @param icq        whether to plot ic vs q
+	 * @return           true if everything works
 	 */
-	public static boolean send(String from, String to, String message, int noc, boolean icq, boolean gmap) {
+	public static boolean send(String from, String to, String message, int noc, boolean gmap, boolean icq) {
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
 		if (message == null || message.length() == 0) return false;
 		if (noc < 0) return false;

@@ -15,13 +15,12 @@ import client.Client;
  */
 
 public class Server {
-	public static double PMAX = 1;
-	int Number_Of_Channels = -1; // only visible within its own package
-	// Server has an instance of GridMap
-	protected GridMap map;
-	protected LinkedList<PU>[] channels_List;
-	private int Number_Of_PUs;
-	public static String directory;
+	public static double PMAX = 1;   // max value for transmit power
+	public static String directory;  // output directory
+	int Number_Of_Channels = -1;     // number of channels
+	int Number_Of_PUs;               // number of primary users
+	GridMap map;                     // instance of grid map
+	LinkedList<PU>[] channels_List;  // channel list containing primary users
 
 	public class NumberOfPUsMismatchException extends RuntimeException {
 		/**
@@ -100,7 +99,7 @@ public class Server {
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		LinkedList<Response> response_list = new LinkedList<Response>();
 		for (LinkedList<PU> list : channels_List) {
-			Collections.shuffle(list);
+			Collections.shuffle(list); // for each list, minimum responses can have more than one, this guarantee randomness
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
@@ -112,7 +111,7 @@ public class Server {
 					minPower = resPower;
 				}
 			}
-			// if one of channels is empty, then minPU would be null, just don't add it
+			// if one of channels is empty, don't add it
 			if (minPU != null) response_list.add(new Response(minPU, minPower));
 		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.

@@ -27,7 +27,7 @@ public class Client {
 	
 	/**
 	 * Use server to initialize client, 
-	 * but client does not keep server instance or its pu's information
+	 * but client does not keep server instance
 	 * @param server
 	 */
 	public Client(Server server) {
@@ -157,6 +157,15 @@ public class Client {
 			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times<br>");
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Print information: each channel is updated how many times
+	 */
+	public void countChannel() {
+		for (int i = 0; i < Number_Of_Channels; i++) {
+			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
+		}
 	}
 
 	/**

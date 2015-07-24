@@ -18,21 +18,20 @@ import boot.BootParams;
 import boot.LatLng;
 
 public class Simulation {
+	String directory;      // output dir
 	BootParams bootParams; // params
 	double cellsize;       // cell size in degree
 	double mtpScale;       // control MTP function's protection zoo
 	int interval;          // how many querying points from 0 to noq
-	StringBuilder content; // for email
-	GridMap map;
+	GridMap map;           // instance of grid map
+	Server server;         // instance of base server
 	int noc;               // number of channels
 	int noq;               // number of queries
-	Server server;
-	Client client;
+	int repeat;            // number of repetition for multiple simulations
 	double[] IC;           // ic for single simulation, may include this information in email
 	boolean icq;           // whether to include ic vs q, if query is greater than 100, icq is set to true
-	boolean gMap;          // whether to include google map in email
 	Map<Integer, double[]> icMap; // associate ic to number of queries
-	String directory;      // output dir
+	StringBuilder content; // for email
 
 	public Simulation(BootParams bp, double cs, double scale, int inter, String dir) {
 		this.bootParams = bp;
@@ -77,20 +76,17 @@ public class Simulation {
 			}
 		}
 
-		/* initialize a client */
-		client = new Client(server);
-
 		/* initialize query locations */
 		noq = bootParams.getNumberOfQueries();
+		
+		/* initialize number of repetition */
+		repeat = 10;
 
 		/* initialize ic */
 		IC = null;
 
 		/* whether to plot ic vs q */
-		icq = noq >= 50 ? true : false;
-		
-		/* whether to plot google map */
-		gMap = true;
+		icq = false;
 
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
@@ -101,6 +97,9 @@ public class Simulation {
 
 	public void singleSimulation() {
 		System.out.println("Start querying...");
+		/* initialize a client */
+		Client client = new Client(server);
+		// do not print ic vs q
 		icq = false;
 		/* run simulation for one time */
 		for (int i = 1; i <= noq; i++) {
@@ -113,7 +112,21 @@ public class Simulation {
 			client.query(server);
 		}
 		IC = client.computeIC();
-		printSingle();
+		
+		/* debug */
+//		for (List<PU> puList : server.getChannelsList()) {
+//			for (PU pu : puList){
+//				pu.printInfo();
+//			}
+//		}
+//		client.countChannel();
+//		System.out.println("IC: ");
+//		for (double d : IC){
+//			System.out.print((int)d + " ");
+//		}
+//		System.out.println();
+		
+		printSingle(server, client, directory);
 	}
 
 	public void multipleSimulation() {
@@ -124,8 +137,7 @@ public class Simulation {
 			return;
 		}
 		icq = true;
-		// reset server and client
-		server.reset();
+
 		// create a new client instead of using the old one, which is saved for email to use
 		Client multclient = new Client(server);
 		// compute query points
@@ -137,13 +149,12 @@ public class Simulation {
 		}
 		gap = (gap / (base / 10)) * (base / 10);
 		// start query from 0 times
-		List<Integer> qlist = new ArrayList<Integer>();
+		List<Integer> qlist = new ArrayList<Integer>(10);
 		for (int i = 0; i <= interval + 1; i++) {
 			qlist.add(gap * i);
 			icMap.put(gap * i, new double[noc]);
 		}
 		int maxQ = qlist.get(qlist.size() - 1);
-		int repeat = 10;
 		/* run simulation for multiple times */
 		icMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repeat; rep++){
@@ -161,32 +172,41 @@ public class Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printMultiple();
+		printMultiple(qlist, icMap, directory, "averageIC_NoCountermeasure.txt");
 	}
 
 	/**
 	 * Print text file
 	 * Probability matrix and location of pu on each channel
+	 * @param server provides information about location of primary users
+	 * @param client provide probability matrix
+	 * @param dir output path of text file
 	 */
-	public void printSingle() {
+	public void printSingle(Server server, Client client, String dir) {
+		if (client == null || server == null || dir == null || dir.length() == 0) {
+			throw new NullPointerException();
+		}
+		
 		System.out.println("Start printing probability...");
-		client.printProbability(directory);
+		client.printProbability(dir);
 		
 		System.out.println("Start printing location of primary users...");
-		server.printPUAllChannel(directory);
+		server.printPUAllChannel(dir);
 	}
 
 	/**
 	 * Print text file
 	 * IC vs Query
+	 * @param qlist points of queries
+	 * @param icMap ic values at each point of query
+	 * @param dir output directory
+	 * @param fileName name of the text file
 	 */
-	public void printMultiple() {
+	public void printMultiple(List<Integer> qlist, Map<Integer, double[]> icMap, String dir, String fileName) {
 		System.out.println("Start printing average IC...");
-		File file = new File(directory + "averageIC_NoCountermeasure.txt");
+		File file = new File(dir + fileName);
 		try {
 			PrintWriter out = new PrintWriter(file);
-			List<Integer> qlist = new ArrayList<Integer>(icMap.keySet());
-			Collections.sort(qlist);
 			for (Integer q : qlist) {
 				out.print(q + " ");
 			}
@@ -213,7 +233,7 @@ public class Simulation {
 		sb.append(server.puOnChannelToString()); // which pu is on which channel
 		sb.append("</p>");
 		sb.append("<p>Querying_information:<br>");
-		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
+//		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
 		sb.append("</p>");
 		if (IC != null) {
 			sb.append("<p>Inaccuracy_for_each_channel:<br>");
@@ -230,26 +250,47 @@ public class Simulation {
 		return content.append(buildMessage()).toString();
 	}
 
-	public void plot() {
+	/**
+	 * Plot function that helps to plot data on google map and ic vs query
+	 * @param plotProbOnMap   whether to plot data on google map
+	 * @param iCvsQ           whether to plot ic vs query on google map
+	 * @param countermeasure  name of the countermeasure
+	 */
+	public void plot(boolean plotProbOnMap, boolean iCvsQ, String countermeasure) {
     	System.out.println("Plotting probability distribution on Google Map...");
-    	for (int i = 0; i < noc; i++) {
-    		if (!MatPlot.plot(i, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-    			System.out.println("Plotting failed");
-    		}
+    	if (plotProbOnMap) {
+        	for (int i = 0; i < noc; i++) {
+        		if (!MatPlot.plot(i, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
+        			System.out.println("Plotting failed");
+        		}
+        	}
     	}
-		if (icq) { // this is set to true if noq is greater than 100
+		if (iCvsQ) { // this is set to true if noq is greater than 100
 			System.out.println("Plotting average inacurracy...");
-			if (!CmpPlot.plot("NOCOUNTERMEASURE")) {
+			if (!CmpPlot.plot(countermeasure)) {
 				System.out.println("Plotting failed");
 			}
 		}
 	}
 	
-	public void sendEmail() {
+	/**
+	 * Send email to users attached with google map plots and ic vs query plots,
+	 * @param googleMap  whether to include plot of probability data
+	 * @param iCvsQ      whether to include plot of ic vs query
+	 */
+	public void sendEmail(boolean googleMap, boolean iCvsQ) {
 		System.out.println("Sending email...");
 		// call send email api
-		if (!SendEmail.send("ningli@vt.edu", bootParams.getEmail(), getEmailContent(), noc, icq, gMap)) {
+		if (!SendEmail.send("ningli@vt.edu", bootParams.getEmail(), getEmailContent(), noc, googleMap, iCvsQ)) {
 			System.out.print("Email failed!");
 		}
+	}
+	
+	/**
+	 * Whether to plot data on google map
+	 * @return true if query number is greater than 50 times
+	 */
+	public boolean plotICvsQuery() {
+		return icq;
 	}
 }

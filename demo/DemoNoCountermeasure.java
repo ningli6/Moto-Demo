@@ -17,8 +17,8 @@ public class DemoNoCountermeasure {
 		/* run different queries for multiple times and compute average ic */ 
 		sim.multipleSimulation();
 		/* plot probability on google map and IC vs Q */
-		sim.plot();
+		sim.plot(true, sim.plotICvsQuery(), "NOCOUNTERMEASURE");
 		/* send email */
-		sim.sendEmail();
+		sim.sendEmail(true, sim.plotICvsQuery());
 	}
 }
