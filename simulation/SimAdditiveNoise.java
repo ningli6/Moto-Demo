@@ -1,16 +1,10 @@
 package simulation;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javaPlot.CmpPlot;
-import javaPlot.MatPlot;
-import server.Server;
 import server.ServerAdditiveNoise;
 import utility.PU;
 import boot.BootParams;
@@ -23,7 +17,7 @@ public class SimAdditiveNoise extends Simulation {
 	private ServerAdditiveNoise cmServer; // instance of countermeasure server
 	private int maxIteration;             // max attempts to reach noise level
 	private boolean feasible;             // whether this noise level is feasible
-	Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
+	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
 
 	public SimAdditiveNoise(BootParams bp, double cs, double scale, int inter, String dir) {
 		/* call parent constructor */
@@ -98,18 +92,18 @@ public class SimAdditiveNoise extends Simulation {
 		feasible = true;        // noise level is feasible, proceed
 		IC = client.computeIC();
 		
-		/* debug */
-		for (List<PU> puList : cmServer.getChannelsList()) {
-			for (PU pu : puList){
-				pu.printInfo();
-			}
-		}
-		client.countChannel();
-		System.out.println("IC: ");
-		for (double d : IC){
-			System.out.print((int)d + " ");
-		}
-		System.out.println();
+//		/* debug */
+//		for (List<PU> puList : cmServer.getChannelsList()) {
+//			for (PU pu : puList){
+//				pu.printInfo();
+//			}
+//		}
+//		client.countChannel();
+//		System.out.println("IC: ");
+//		for (double d : IC){
+//			System.out.print((int)d + " ");
+//		}
+//		System.out.println();
 		
 		printSingle(cmServer, client, directory);
 	}
@@ -221,16 +215,6 @@ public class SimAdditiveNoise extends Simulation {
 	 */
 	public boolean isFeasible() {
 		return feasible;
-	}
-	
-	/**
-	 * Whether to plot ic vs q
-	 * @return if not feasible, return false
-	 */
-	@Override
-	public boolean plotICvsQuery() {
-		if (!feasible) return false;
-		return icq;
 	}
 
 	public String getCountermeasure() {

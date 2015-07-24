@@ -1,10 +1,5 @@
 package javaPlot;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
-
-
 public class MatPlot {
 	/**
 	 * Call Matlab function that plot data on google map

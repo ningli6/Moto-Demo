@@ -257,8 +257,8 @@ public class Simulation {
 	 * @param countermeasure  name of the countermeasure
 	 */
 	public void plot(boolean plotProbOnMap, boolean iCvsQ, String countermeasure) {
-    	System.out.println("Plotting probability distribution on Google Map...");
     	if (plotProbOnMap) {
+        	System.out.println("Plotting probability distribution on Google Map...");
         	for (int i = 0; i < noc; i++) {
         		if (!MatPlot.plot(i, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
         			System.out.println("Plotting failed");
@@ -287,7 +287,7 @@ public class Simulation {
 	}
 	
 	/**
-	 * Whether to plot data on google map
+	 * Whether to plot ic vs q
 	 * @return true if query number is greater than 50 times
 	 */
 	public boolean plotICvsQuery() {

@@ -1,30 +1,22 @@
 package simulation;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javaPlot.CmpPlot;
-import javaPlot.MatPlot;
-import server.Server;
 import server.ServerTransfiguration;
 import utility.PU;
 import boot.BootParams;
 import boot.LatLng;
 import client.Client;
 
-
-
 public class SimTransfiguration extends Simulation {
-	private String counterMeasure;
-	private int sides;
-	private ServerTransfiguration cmServer;
-	private List<Double>[] cmList;  // ic for multiple simulation with countermeasure
-	private int repeat = 10;        // repeat for each number of query
-	private boolean feasible;       // if number of sides is valid
+	private String counterMeasure;            // name of countermeasure
+	private int sides;                        // number of sides for polygon
+	private ServerTransfiguration cmServer;   // instance of countermeasure server
+	private boolean feasible;                 // if number of sides is valid
+	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
 	
 	/**
 	 * Construct a transfiguration simulator
@@ -34,7 +26,6 @@ public class SimTransfiguration extends Simulation {
 	 * @param inter     internal number of queries for multiple simulations
 	 * @param dir       directory
 	 */
-	@SuppressWarnings("unchecked")
 	public SimTransfiguration(BootParams bp, double cs, double scale, int inter, String dir) {
 		/* call parent instructor */
 		super(bp, cs, scale, inter, dir);
@@ -58,104 +49,100 @@ public class SimTransfiguration extends Simulation {
 		// after adding pu, wrap pu as polygon 
 		if (sides > 2) cmServer.transfigure();
 
-		/* initialize cm list */
-		cmList = (ArrayList<Double>[]) new ArrayList[noc];
-		for (int i = 0; i < cmList.length; i++) {
-			cmList[i] = new ArrayList<Double>();
-		}
-
+		/* initialize hashmap for query-ic with countermeasure */
+		icCMMap = new HashMap<Integer, double[]>();
+		
 		/* initialize feasible */
-		feasible = (sides > 2) ? true : false;
-		if (!feasible) {
-			icq = false;   // don't include ic vs q in the email
-			gMap = false;  // don't include google map in the email
-		}
+		feasible = false;
 	}
 
 	@Override
 	public void singleSimulation() {
-		if (!feasible) return;
+		icq = false;           // do not include ic vs q
+		if (sides > 2) {
+			feasible = true;
+		}
+		if (!feasible) {
+			System.out.println("Number of sides for polygon must be an integer greater than 2");
+			return;
+		}
 		System.out.println("Start querying...");
 
+		/* initialize a client */
+		Client client = new Client(cmServer);
 		/* run simulation for once */
 		for (int i = 0; i < noq; i++) {
 			client.randomLocation();
 			client.query(cmServer);
 		}
-
+		
 		/* compute IC */
 		IC = client.computeIC();
+		
+//		/* debug */
+//		for (List<PU> puList : cmServer.getChannelsList()) {
+//			for (PU pu : puList){
+//				pu.printInfo();
+//			}
+//		}
+//		client.countChannel();
+//		System.out.println("IC: ");
+//		for (double d : IC){
+//			System.out.print((int)d + " ");
+//		}
+//		System.out.println();
+		
+		printSingle(cmServer, client, directory);
 	}
 
 	@Override
 	public void multipleSimulation() {
 		if (!feasible) return;
+		if (noq < 50) {
+			icq = false;
+			return;
+		}
+		icq = true;
 		super.multipleSimulation();
-		if (!icq) return; // number of query is less than 100 times
+
 		/**
 		 * use a new client for multiple simulation, 
-		 * the old one should be saved for printing probability
-		 * however we can reuse this client since we don't need its infer result 
 		 */
-		Client mclient = new Client(0, 0, map, noc); 
+		Client multclient = new Client(cmServer); 
 		System.out.println("Start computing average IC with transfiguration...");
-		/* start query, each is done for 'repeat' times then compute average */
-		for (int q : qlist) {
-			System.out.println("Number of queries: " + q);
-			double[] sumIC = new double[noc];
-			// make queries for certain times
-			for (int i = 0; i < repeat; i++) {
-				mclient.reset();                  // reset infermap to 0.5
-				cmServer.reset();
-				for (int j = 0; j < q; j++) {
-					mclient.randomLocation();
-					mclient.query(cmServer);
-				}
-				double[] mIC = mclient.computeIC();
-				int k = 0;
-				for (double ic : mIC) {
-					sumIC[k] += ic;
-					k++;
-				}
-			}
-			// compute average
-			int cid = 0;
-			for (double ic : sumIC) {
-				cmList[cid].add(ic / repeat);
-				cid++;
-			}
+		// compute query points
+		int gap = noq / interval;
+		int base = 1;
+		int tmp = gap;
+		while(tmp / base > 0) {
+			base *= 10;
 		}
-	}
-
-	@Override
-	public void printSingle(Server server, Client client, String dir) {
-		if (!feasible) return;
-		super.printSingle(server, client, dir);
-	}
-
-	@Override
-	public void printMultiple(List<Integer> qlist, Map<Integer, double[]> icMap, String dir, String fileName) {
-		if (!feasible) return;
-		super.printMultiple(qlist, icMap, dir, fileName);
-		File file = new File(directory + "cmp_Transfiguration.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			for (Integer q : qlist) {
-				out.print(q + " ");
-			}
-			out.println();	
-			for (List<Double> listOnChannel : cmList) {
-				for (double d : listOnChannel) {
-					out.print((int) d + " ");
+		gap = (gap / (base / 10)) * (base / 10);
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval + 1; i++) {
+			qlist.add(gap * i);
+			icCMMap.put(gap * i, new double[noc]);
+		}
+		int maxQ = qlist.get(qlist.size() - 1);
+		/* run simulation for multiple times */
+		icCMMap.put(0, multclient.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repeat; rep++){
+			for (int i = 1; i <= maxQ; i++) {
+				multclient.randomLocation();
+				multclient.query(cmServer);
+				if (icCMMap.containsKey(i)){
+					double[] newIC = multclient.computeIC();
+					double[] sum = icCMMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repeat; // avoid overflow
+					}
+					icCMMap.put(i, sum);
 				}
-				out.println();
 			}
-			out.close (); // this is necessary	
-		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
+			multclient.reset(); // set infer matrix to 0.5
+		}
+		printMultiple(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
 	}
 
 	private String buildMessage() {
@@ -170,7 +157,7 @@ public class SimTransfiguration extends Simulation {
 			return sb.toString();
 		}
 		sb.append("<p>Querying_information:<br>");
-		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
+//		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
 		sb.append("</p>");
 		if (IC != null) {
 			sb.append("<p>Inaccuracy_for_each_channel:<br>");
@@ -186,21 +173,6 @@ public class SimTransfiguration extends Simulation {
 	@Override
 	public String getEmailContent() {
 		return content.append(buildMessage()).toString();
-	}
-
-	@Override
-	public void plot(boolean plotGoogleMap, boolean iCvsQ, String countermeasure) {
-		if (!feasible) return;
-    	System.out.println("Plotting probability distribution on Google Map...");
-		if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-			System.out.println("Plotting failed");
-		}
-		if (icq) { // this is set to true if noq is greater than 100
-			System.out.println("Plotting average inacurracy...");
-			if (!CmpPlot.plot("TRANSFIGURATION")) {
-				System.out.println("Plotting failed");
-			}
-		}
 	}
 
 	public boolean isFeasible() {

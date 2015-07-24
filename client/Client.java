@@ -26,7 +26,7 @@ public class Client {
 	private List<PU>[] channels_List; // channel list from pu
 	
 	/**
-	 * Use server to initialize client, 
+	 * Use server to initialize client, to get number of channels, reference to map and channel list
 	 * but client does not keep server instance
 	 * @param server
 	 */

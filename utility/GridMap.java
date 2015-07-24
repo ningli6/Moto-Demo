@@ -104,7 +104,9 @@ public class GridMap {
 		return number_of_rows;
 	}
 	
-	// number of number_of_cols for the map
+	/**
+	 * Get number of columns
+	 */
 	public int getCols() {
 		return number_of_cols;
 	}
@@ -120,6 +122,10 @@ public class GridMap {
 		return cellDegree;
 	}
 
+	/**
+	 * Get average distance of a single cell in meters
+	 * @return average cell size in meters
+	 */
 	public double getAverageDistance() {
 		return averDist;
 	}
@@ -211,6 +217,12 @@ public class GridMap {
 		return colIndex;
 	}
 
+	/**
+	 * Given map indices of rows and cols, return location of the center of that cell
+	 * @param r   index of row
+	 * @param c   index of col
+	 * @return    location of the center of cell(i, j)
+	 */
 	public Location getLocation(int r, int c) {
 		if (r < 0 || r >= number_of_rows || c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
 		return new Location(rowToLat(r), colToLng(c));
