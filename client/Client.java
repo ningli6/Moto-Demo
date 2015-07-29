@@ -23,7 +23,7 @@ public class Client {
 	private int indexOfCol = -1;
 	private int[] count;              // count the number for each channel for updating
 	private InferMap[] inferMap;      // inferMap for each channel
-	private List<PU>[] channels_List; // channel list from pu
+	private List<PU>[] channelsList;  // channel list from pu
 	
 	/**
 	 * Use server to initialize client, to get number of channels, reference to map and channel list
@@ -36,7 +36,7 @@ public class Client {
 		this.count = new int[Number_Of_Channels];
 		this.inferMap = new InferMap[Number_Of_Channels];
 		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, server.getMap());
-		this.channels_List = server.getChannelsList();
+		this.channelsList = server.getChannelsList();
 	}
 
 	public void setLocation(int r, int c) {
@@ -135,7 +135,7 @@ public class Client {
 	private double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= Number_Of_Channels) throw new IllegalArgumentException("Bad channel number");
 		double minDist = Double.MAX_VALUE;
-		for (PU pu : channels_List[channel]) {
+		for (PU pu : channelsList[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
 			if (dist < minDist) {
 				minDist = dist;

@@ -11,15 +11,15 @@ import utility.Response;
 import client.Client;
 
 public class ServerTransfiguration extends Server{
-	private int numberOfSides;
-	private List<PolyPU>[] channels_poly_List;
+	private int numberOfSides;                     // number of sides for polygon
+	private List<PolyPU>[] channels_poly_List;     // channel list for polyPU
 	
 	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map, int noc, int number_of_sides) {
 		super(map, noc);
 		numberOfSides = number_of_sides; 
-		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		channels_poly_List = (List<PolyPU>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
 			channels_poly_List[i] = new LinkedList<PolyPU>();
 		}
 	}
@@ -30,7 +30,7 @@ public class ServerTransfiguration extends Server{
 	public void transfigure() {
 		if (getNumberOfPUs() == 0) return;
 		int k = 0;
-		for (List<PU> list : channels_List) {
+		for (List<PU> list : channelsList) {
 			for (PU pu: list) {
 				channels_poly_List[k].add(new PolyPU(pu, numberOfSides));
 			}

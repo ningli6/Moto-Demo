@@ -14,16 +14,19 @@ public class CmpPlot {
 			String fileName = null;
 			String cmpName = null;
 			switch(cm) {
-				case "NOCOUNTERMEASURE": 
+			case "NOCOUNTERMEASURE": 
 				fileName = "averageIC_NoCountermeasure.txt";
 				break;
-				case "ADDITIVENOISE": 
+			case "ADDITIVENOISE": 
 				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_AdditiveNoise.txt";
 				break;
-				case "TRANSFIGURATION":
+			case "TRANSFIGURATION":
 				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_Transfiguration.txt";
+			case "KANONYMITY":
+				fileName = "averageIC_NoCountermeasure.txt";
+				cmpName = "cmp_kAnonymity.txt";
 			}
 
 			String cmd;

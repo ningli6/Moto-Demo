@@ -17,35 +17,24 @@ import client.Client;
 public class Server {
 	public static double PMAX = 1;   // max value for transmit power
 	public static String directory;  // output directory
-	int Number_Of_Channels = -1;     // number of channels
-	int Number_Of_PUs;               // number of primary users
+	int numberOfChannels = -1;     // number of channels
+	int numberOfPUs;               // number of primary users
 	GridMap map;                     // instance of grid map
-	LinkedList<PU>[] channels_List;  // channel list containing primary users
-
-	public class NumberOfPUsMismatchException extends RuntimeException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public NumberOfPUsMismatchException(String message) {
-			super(message);
-		}
-	}
+	LinkedList<PU>[] channelsList;  // channel list containing primary users
 
 	@SuppressWarnings("unchecked")
 	public Server(GridMap map, int noc) {
 		this.map = map;
-		this.Number_Of_PUs = 0;
-		this.Number_Of_Channels = noc;
-		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_List[i] = new LinkedList<PU>();
+		this.numberOfPUs = 0;
+		this.numberOfChannels = noc;
+		this.channelsList = (LinkedList<PU>[]) new LinkedList[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
+			channelsList[i] = new LinkedList<PU>();
 		}
 	}
 
 	public int getNumberOfChannels() {
-		return Number_Of_Channels;
+		return numberOfChannels;
 	}
 
 	// add pu to one of channels
@@ -56,8 +45,8 @@ public class Server {
 			return;
 		}
 		if (pu == null) return;
-		if (channel < 0 || channel >= Number_Of_Channels) {
-			System.out.println("Avalible channels are from 0 to " + (Number_Of_Channels - 1) + ". Operation failed");
+		if (channel < 0 || channel >= numberOfChannels) {
+			System.out.println("Avalible channels are from 0 to " + (numberOfChannels - 1) + ". Operation failed");
 			return;
 		}
 		int pu_r = pu.getRowIndex();
@@ -73,10 +62,9 @@ public class Server {
 		}
 		// check if location is in the rectangle area
 		if (map.withInBoundary(pu.getLocation())) {
-			channels_List[channel].add(pu);
-			pu.attachToServer(this);
+			channelsList[channel].add(pu);
 			pu.setChannelID(channel);
-			Number_Of_PUs++;
+			numberOfPUs++;
 		}
 		else System.out.println("PU's location out of range");
 	}
@@ -97,8 +85,8 @@ public class Server {
 		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
-		LinkedList<Response> response_list = new LinkedList<Response>();
-		for (LinkedList<PU> list : channels_List) {
+		LinkedList<Response> responseList = new LinkedList<Response>();
+		for (LinkedList<PU> list : channelsList) {
 			Collections.shuffle(list); // for each list, minimum responses can have more than one, this guarantee randomness
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
@@ -112,62 +100,50 @@ public class Server {
 				}
 			}
 			// if one of channels is empty, don't add it
-			if (minPU != null) response_list.add(new Response(minPU, minPower));
+			if (minPU != null) responseList.add(new Response(minPU, minPower));
 		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
-		Collections.shuffle(response_list);
-		return Collections.max(response_list);
+		Collections.shuffle(responseList);
+		return Collections.max(responseList);
 	}
 
 	/**
-	 * Return the pu list
+	 * Return the pu list to the client to compute inaccuracy
 	 * @return
 	 */
 	public List<PU>[] getChannelsList() {
-		if (channels_List == null) {
+		if (channelsList == null) {
 			System.out.println("Initialize Server first");
 			return null;
 		} 
-		return channels_List;
+		return channelsList;
 	}
 
-	// return numbers of PUs
+	/**
+	 * Get number of primary users the server holds
+	 * @return number of pus
+	 */
 	public int getNumberOfPUs() {
-		int sum = 0;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			sum += channels_List[i].size();
-		}
-		if (sum != Number_Of_PUs) {
-			throw new NumberOfPUsMismatchException("Number of PUs doesn't match");
-		}
-		return sum;
-	}
-
-	public void updateNumbersOfPUs() {
-		int sum = 0;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			sum += channels_List[i].size();
-		}
-		Number_Of_PUs = sum;
+		return numberOfPUs;
 	}
 
 	// print the location of PUs
 	public void printInfoPU() {
-		if (channels_List == null) return;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			for (PU pu : channels_List[i]) {
+		if (channelsList == null) return;
+		for (int i = 0; i < numberOfChannels; i++) {
+			for (PU pu : channelsList[i]) {
 				pu.printInfo();
 			}
 		}
 	}
 
 	public void printPUAllChannel(String dir) {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			File file = new File(dir + "demoTable_" + i + "_pu.txt");
 			try {
 				PrintWriter out = new PrintWriter(file);
 				out.println("LAT LNG RI CI");
-				for (PU pu: channels_List[i]) {
+				for (PU pu: channelsList[i]) {
 					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
 				}
 				out.close (); // this is necessary
@@ -185,38 +161,38 @@ public class Server {
 	 * clear response records for all pu on the server
 	 */
 	public void reset() {
-		if (channels_List == null) return;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			for (PU pu : channels_List[i]) {
+		if (channelsList == null) return;
+		for (int i = 0; i < numberOfChannels; i++) {
+			for (PU pu : channelsList[i]) {
 				pu.reset();
 			}
 		}
 	}
 
-	// print infomation about channel
+	// print information about channel
 	public void printInfoChannel() {
-		if (channels_List == null) {
+		if (channelsList == null) {
 			System.out.println("Initialize server first");
 		}
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			System.out.print("Channel [" + i + "]: ");
-			for (PU pu : channels_List[i]) {
+			for (PU pu : channelsList[i]) {
 				System.out.print("pu " + pu.getID() + ", ");
 			}
 			System.out.println();
 		}
 	}
 
-	// print infomation about channel
+	// print information about channel
 	public String puOnChannelToString() {
 		StringBuilder sb = new StringBuilder();
-		if (channels_List == null) {
+		if (channelsList == null) {
 			sb.append("Initialize_server_first<br>");
 		}
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			sb.append("Channel_[" + i + "]:_");
 			int len = sb.length();
-			for (PU pu : channels_List[i]) {
+			for (PU pu : channelsList[i]) {
 				sb.append("pu_" + pu.getID() + ",_");
 			}
 			if (sb.length() != len) {

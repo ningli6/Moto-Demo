@@ -1,31 +1,24 @@
 package utility;
 
 import java.util.Comparator;
-
-import server.*;
 /*
  * PU represents a primary user, server keeps track of pus that were added to it. 
  * Right now it just has location information.
  */
 public class PU {
-	public final Comparator<PU> DIST_ORDER = new distOrder(); // can this be static
+	public final Comparator<PU> DIST_ORDER = new distOrder();
 	private int id = -1;                      // pu id
 	private int channelID = -1;               // channel id
-	// location
-	private Location cellLocation;
-	private int indexOfRow = 0;
-	private int indexOfCol = 0;
+	private Location cellLocation;            // location of pu, centered in the cell
+	private int indexOfRow = 0;               // row index on the map
+	private int indexOfCol = 0;               // col index on the map
 	private int number_of_response = 0;       // record times being chosen to response
-	private Server server;                    // server instance 
-	/* used by k-anonymity */
-	private double baseRadius = 0;
-	/* used by k-clustering */
-	private Cluster cluster = null;
+	private GridMap map;                      // map instance 
+	private double baseRadius = 0;            // used by k-anonymity, protection contour for the group
+	private Cluster cluster = null;           // used by k-clustering
 
-	private class distOrder implements Comparator<PU> { // can this be static class
+	private class distOrder implements Comparator<PU> {
 		public int compare(PU pu1, PU pu2) {
-			if (pu1 == null || pu2 == null) throw new NullPointerException();
-			// if (pu1 == this || pu2 == this) throw new IllegalArgumentException();
 			double dist1 = distTo(pu1);
 			double dist2 = distTo(pu2);
 			if (dist1 == dist2) return 0;
@@ -33,11 +26,12 @@ public class PU {
 			return 1;
 		}
 	}
-
-	public PU() {
-
-	}
-
+	
+	/**
+	 * Empty constructor
+	 */
+	public PU() {}
+	
 	/**
 	 * Initialize primary user
 	 * @param  id  [pu's id]
@@ -47,17 +41,10 @@ public class PU {
 	 */
 	public PU(int id, double lat, double lng, GridMap map) {
 		this.id = id;
+		this.map = map;
 		this.indexOfRow = map.latToRow(lat);
 		this.indexOfCol = map.lngToCol(lng);
 		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);
-	}
-
-	public void attachToServer(Server server) {
-		this.server = server;
-	}
-
-	public Server getServer() {
-		return server;
 	}
 
 	public void setID(int id) {
@@ -76,6 +63,10 @@ public class PU {
 		this.channelID = cid;
 	}
 
+	/**
+	 * Get working channel id
+	 * @return -1 if channel id is not specified
+	 */
 	public int getChannelID() {
 		if (channelID == -1) {
 			System.out.println("Set channel ID first");
@@ -98,11 +89,32 @@ public class PU {
 	public void reset() {
 		number_of_response = 0;
 	}
+	
+	/**
+	 * Get the pu's reference of map
+	 * @return pu's reference of map
+	 */
+	public GridMap getMap() {
+		return this.map;
+	}
+	
+	/**
+	 * attach a map instance to pu
+	 * @param map
+	 */
+	public void setMap(GridMap map) {
+		this.map = map;
+	}
 
+	/**
+	 * Set location of primary users given indices on the map
+	 * @param r  row index
+	 * @param c  col index
+	 */
 	public void setIndices(int r, int c) {
 		indexOfRow = r;
 		indexOfCol = c;
-		indexToLocation();
+		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);
 	}
 
 	public int getRowIndex() {
@@ -133,17 +145,20 @@ public class PU {
 		return this.cellLocation.distTo(pu.getLocation());
 	}
 
-	private void indexToLocation() {
-		if (this.server == null) throw new NullPointerException("Attach to server first");
-		this.cellLocation = this.server.getMap().getLocation(this.indexOfRow, this.indexOfCol);
-	}
-
-	/* used by k-anonymity and k-clustering */
+	/**
+	 * used by k-anonymity and k-clustering to update protection radius for the group
+	 * @param base protection radius for the group
+	 */
 	public void updateRadius(double base) {
 		if (base < 0) throw new IllegalArgumentException();
 		this.baseRadius = base;
 	}
-	/* used by k-anonymity and k-clustering */
+	
+	/**
+	 * Used by k-anonymity and k-clustering.
+	 * Get the protection contour of group/cluster in meters
+	 * @return protection radius of group/cluster
+	 */
 	public double getRadius() {
 		return baseRadius;
 	}
@@ -165,6 +180,10 @@ public class PU {
 		System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
 	}
 
+	/**
+	 * Print pu's location for debugging purpose
+	 * print indices on the map first, then print actual coordinates
+	 */
 	public void printLocation() {
 		if (cellLocation == null) {
 			System.out.println("PU has no location information");

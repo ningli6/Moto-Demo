@@ -32,6 +32,8 @@ if sys.argv[2] == "cmp_AdditiveNoise.txt":
 	cmTitle = 'with additive noise'
 elif sys.argv[2] == "cmp_Transfiguration.txt":
 	cmTitle = 'with transfiguration'
+elif sys.argv[2] == "cmp_kAnonymity.txt":
+	cmTitle = 'with k anonymity'
 
 plt.legend()
 plt.title('Inaccuracy vs queries ' + cmTitle)

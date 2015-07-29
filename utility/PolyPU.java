@@ -25,7 +25,7 @@ public class PolyPU {
 		indexOfRow = pu.getRowIndex();
 		indexOfCol = pu.getColIndex();
 		location = pu.getLocation();
-		map = pu.getServer().getMap();
+		map = pu.getMap();
 		hashmap = new HashMap<Long, Double>();
 		transfigure(MTP.d1, MTP.P_0);   // ( 8 km,    0)
 		transfigure(MTP.d2, MTP.P_50);  // (14 km,  0.5)

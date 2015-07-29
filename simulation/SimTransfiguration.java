@@ -16,7 +16,7 @@ public class SimTransfiguration extends Simulation {
 	private int sides;                        // number of sides for polygon
 	private ServerTransfiguration cmServer;   // instance of countermeasure server
 	private boolean feasible;                 // if number of sides is valid
-	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
+	private Map<Integer, double[]> icCMMap;   // ic for multiple simulation with countermeasure
 	
 	/**
 	 * Construct a transfiguration simulator

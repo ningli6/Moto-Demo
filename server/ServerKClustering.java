@@ -29,11 +29,11 @@ public class ServerKClustering extends Server {
 	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map) {
 		super(map, 1);
-		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++)
+		this.virtual_List = (List<PU>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++)
 			virtual_List[i] = new LinkedList<PU>();
-		this.cluster_list = (List<Cluster>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++)
+		this.cluster_list = (List<Cluster>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++)
 			cluster_list[i] = new LinkedList<Cluster>();
 	}
 
@@ -43,11 +43,11 @@ public class ServerKClustering extends Server {
 		super(map, 1);
 		if (k <= 0) throw new IllegalArgumentException();
 		ServerKClustering.K = k;
-		this.virtual_List = (List<PU>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++)
+		this.virtual_List = (List<PU>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++)
 			virtual_List[i] = new LinkedList<PU>();
-		this.cluster_list = (List<Cluster>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++)
+		this.cluster_list = (List<Cluster>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++)
 			cluster_list[i] = new LinkedList<Cluster>();
 	}
 
@@ -59,21 +59,21 @@ public class ServerKClustering extends Server {
 		}
 		/* list for pairs of pus */
 		LinkedList<Pair> compare = new LinkedList<Pair>();
-		for (int i = 0; i < Number_Of_Channels; i++) { // for each channel
-			if (!channels_List[i].isEmpty()) { // if that channel is empty, do nothing
-				int size = channels_List[i].size();
+		for (int i = 0; i < numberOfChannels; i++) { // for each channel
+			if (!channelsList[i].isEmpty()) { // if that channel is empty, do nothing
+				int size = channelsList[i].size();
 				/* each pu is itself a cluster */
-				for (PU pu : channels_List[i]) cluster_list[i].add(new Cluster(pu));
+				for (PU pu : channelsList[i]) cluster_list[i].add(new Cluster(pu));
 				/* do nothing if number of pus is smaller than K */
 				if (size <= ServerKClustering.K) {
 					System.out.println("K is greater than or equal to the number of pus in that channel");
-					virtual_List[i] = channels_List[i];
+					virtual_List[i] = channelsList[i];
 					continue;
 				}
 				for (int m = 0; m < size; m++) {
 					for (int n = m + 1; n < size; n++) {
 						/* Compute the distance dij between all pairs of PUs ui and uj. */
-						compare.add(new Pair(channels_List[i].get(m), channels_List[i].get(n)));
+						compare.add(new Pair(channelsList[i].get(m), channelsList[i].get(n)));
 					}
 				}
 				/* debug 
@@ -145,10 +145,9 @@ public class ServerKClustering extends Server {
 
 	private PU findVirtualPU(List<PU> list, int channel_id) {
 		if (list == null) throw new NullPointerException();
-		if (channel_id < 0 || channel_id >= Number_Of_Channels) throw new IllegalArgumentException();
+		if (channel_id < 0 || channel_id >= numberOfChannels) throw new IllegalArgumentException();
 		double min_max_radius = Double.POSITIVE_INFINITY;
 		PU virtualPU = new PU();
-		virtualPU.attachToServer(this);               // attach to server
 		virtualPU.setChannelID(channel_id);           // set up working channel
 		for (int i = 0; i < map.getRows(); i++) {
 			for (int j = 0; j < map.getCols(); j++) { // search thru the whole map
@@ -208,7 +207,7 @@ public class ServerKClustering extends Server {
 			if (minPU != null) response_list.add(channelRes);
 			channel_id++;
 		}
-		if (channel_id != Number_Of_Channels) throw new UnitTestException();
+		if (channel_id != numberOfChannels) throw new UnitTestException();
 		Collections.shuffle(response_list);
 		Response finalRes = Collections.max(response_list);
 		/* debug 
@@ -220,7 +219,7 @@ public class ServerKClustering extends Server {
 
 	private int getNumbersOfVirtualPUs() {
 		int sum = 0;
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			sum += virtual_List[i].size();
 		}
 		return sum;
@@ -250,7 +249,7 @@ public class ServerKClustering extends Server {
 
 	public void printInfoVirtualPU() {
 		if (virtual_List == null) return;
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			for (PU pu : virtual_List[i]) {
 				pu.printVirtualPUInfo();
 			}

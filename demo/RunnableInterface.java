@@ -46,7 +46,8 @@ public class RunnableInterface implements Runnable {
                 	runTransfiguration.run();
                     break;
                 case "KANONYMITY":
-                    System.out.println("NOT IMPLEMENTED");
+                    DemoKAnonymity runKAnonymity = new DemoKAnonymity(bootParams, cellsize, mtpScale, interval, directory);
+                    runKAnonymity.run();
                     break;                                    
                 case "KCLUSTERING":
                     System.out.println("NOT IMPLEMENTED");
