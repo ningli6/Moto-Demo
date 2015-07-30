@@ -14,7 +14,7 @@ public class PU {
 	private int indexOfCol = 0;               // col index on the map
 	private int number_of_response = 0;       // record times being chosen to response
 	private GridMap map;                      // map instance 
-	private double baseRadius = 0;            // used by k-anonymity, protection contour for the group
+	private double baseRadius = 0;            // used by k-anonymity/k-clustering, protection contour for the group
 	private Cluster cluster = null;           // used by k-clustering
 
 	private class distOrder implements Comparator<PU> {
@@ -163,14 +163,19 @@ public class PU {
 		return baseRadius;
 	}
 
-	/* used by k-clustering */
+	/**
+	 * Attach pu to cluster c
+	 * @param c    cluster that pu belongs to
+	 */
 	public void putInCluster(Cluster c) {
 		this.cluster = c;
 	}
+	
 	/* used by k-clustering */
 	public boolean isInCluster() {
 		return this.cluster != null;
 	}
+	
 	/* used by k-clustering */
 	public Cluster getCluster() {
 		return this.cluster;

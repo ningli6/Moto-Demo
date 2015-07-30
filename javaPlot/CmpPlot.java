@@ -11,22 +11,20 @@ public class CmpPlot {
 	 */
 	public static boolean plot(String cm) {
 		try {
-			String fileName = null;
+			String fileName = "averageIC_NoCountermeasure.txt";
 			String cmpName = null;
 			switch(cm) {
 			case "NOCOUNTERMEASURE": 
-				fileName = "averageIC_NoCountermeasure.txt";
 				break;
 			case "ADDITIVENOISE": 
-				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_AdditiveNoise.txt";
 				break;
 			case "TRANSFIGURATION":
-				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_Transfiguration.txt";
 			case "KANONYMITY":
-				fileName = "averageIC_NoCountermeasure.txt";
 				cmpName = "cmp_kAnonymity.txt";
+			case "KCLUSTERING":
+				cmpName = "cmp_kClustering.txt";
 			}
 
 			String cmd;

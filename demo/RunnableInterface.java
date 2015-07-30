@@ -50,7 +50,8 @@ public class RunnableInterface implements Runnable {
                     runKAnonymity.run();
                     break;                                    
                 case "KCLUSTERING":
-                    System.out.println("NOT IMPLEMENTED");
+                    DemoKClustering runKClustering = new DemoKClustering(bootParams, cellsize, mtpScale, interval, directory);
+                    runKClustering.run();
                     break;
             }
         } catch (Exception e) {

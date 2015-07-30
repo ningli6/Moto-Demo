@@ -9,222 +9,175 @@ import client.Client;
 
 /* K-Clustering server */
 public class ServerKClustering extends Server {
-	public static int K = 3;                /* default number of cluster */
-	private List<PU>[] virtual_List;        /* list for virtual pus on that channel */
-	private List<Cluster>[] cluster_list;   /* list for clusters on each channel */
+	private int k = 3;                      // k clusters
+	private List<PU>[] virtualList;         // channel list for virtual primary users
+	private int numberOfVPUs;               // number of primary users
 
-	public class UnitTestException extends RuntimeException {
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public UnitTestException() {
-			super();
-		}
-		public UnitTestException(String message) {
-			super(message);
-		}
-	}
 	/* initialize server */
 	@SuppressWarnings("unchecked")
-	public ServerKClustering(GridMap map) {
-		super(map, 1);
-		this.virtual_List = (List<PU>[]) new List[numberOfChannels];
-		for (int i = 0; i < numberOfChannels; i++)
-			virtual_List[i] = new LinkedList<PU>();
-		this.cluster_list = (List<Cluster>[]) new List[numberOfChannels];
-		for (int i = 0; i < numberOfChannels; i++)
-			cluster_list[i] = new LinkedList<Cluster>();
+	public ServerKClustering(GridMap map, int noc, int k) {
+		super(map, noc);
+		this.k = k;
+		this.virtualList = (List<PU>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
+			virtualList[i] = new LinkedList<PU>();
+		}
+		numberOfVPUs = 0;
 	}
 
-	/* initialize server with number of k specified*/
-	@SuppressWarnings("unchecked")
-	public ServerKClustering(GridMap map, int k) {
-		super(map, 1);
-		if (k <= 0) throw new IllegalArgumentException();
-		ServerKClustering.K = k;
-		this.virtual_List = (List<PU>[]) new List[numberOfChannels];
-		for (int i = 0; i < numberOfChannels; i++)
-			virtual_List[i] = new LinkedList<PU>();
-		this.cluster_list = (List<Cluster>[]) new List[numberOfChannels];
-		for (int i = 0; i < numberOfChannels; i++)
-			cluster_list[i] = new LinkedList<Cluster>();
-	}
-
-	/* construct clusters and find virtual pus */
-	public void kClustering() {
-		if (getNumberOfPUs() == 0) { // if no pu on the map, do nothing
-			System.out.println("No pu on the map");
+	/**
+	 * K clustering algorithm for preserving location privacy
+	 * Inputs: set of primary users U
+	 * Output: k clusters
+	 * compute distance d(i, j) for all unique pairs of primary users ui and uj
+	 * sort all distance and put each primary user as a single cluster
+	 * while number of clusters > k:
+	 * 		choose smallest d(i, j)
+	 * 		combine clusters ui and uj
+	 * for each cluster:
+	 * 		find virtual center and protection contour
+	 */
+	public void Clustering() {
+		if (getNumberOfPUs() == 0 || k <= 0) { // if no pu on the map or invalid k, do nothing
+			System.out.println("No need to cluster");
+			for (int i = 0; i < numberOfChannels; i++) {
+				virtualList[i] = channelsList[i];    // virtual list is actually not different with actual list
+			}
+			updateNumbersOfVirtualPUs();  // after grouping, number of virtual pus is N / k where N is the original number of primary users
 			return;
 		}
-		/* list for pairs of pus */
-		LinkedList<Pair> compare = new LinkedList<Pair>();
+		@SuppressWarnings("unchecked")
+		List<Cluster>[] clusterList = (List<Cluster>[]) new List[numberOfChannels];    // list for clusters on each channel
+		for (int i = 0; i < numberOfChannels; i++) {
+			clusterList[i] = new LinkedList<Cluster>();
+		}
 		for (int i = 0; i < numberOfChannels; i++) { // for each channel
-			if (!channelsList[i].isEmpty()) { // if that channel is empty, do nothing
-				int size = channelsList[i].size();
-				/* each pu is itself a cluster */
-				for (PU pu : channelsList[i]) cluster_list[i].add(new Cluster(pu));
-				/* do nothing if number of pus is smaller than K */
-				if (size <= ServerKClustering.K) {
-					System.out.println("K is greater than or equal to the number of pus in that channel");
-					virtual_List[i] = channelsList[i];
-					continue;
+			if (channelsList[i].isEmpty()) continue; // if that channel is empty, do nothing     
+			if (channelsList[i].size() <= this.k) {  // do nothing if number of pus is smaller than K
+				System.out.println("K is greater than or equal to the number of pus in that channel");
+				virtualList[i] = channelsList[i];
+				continue;
+			}
+			LinkedList<Pair> distPair = new LinkedList<Pair>(); // list of unique pairs
+			for (int m = 0; m < channelsList[i].size(); m++) {   // compute distance bewteen any pair of primary users
+				for (int n = m + 1; n < channelsList[i].size(); n++) {
+					distPair.add(new Pair(channelsList[i].get(m), channelsList[i].get(n)));
 				}
-				for (int m = 0; m < size; m++) {
-					for (int n = m + 1; n < size; n++) {
-						/* Compute the distance dij between all pairs of PUs ui and uj. */
-						compare.add(new Pair(channelsList[i].get(m), channelsList[i].get(n)));
-					}
-				}
-				/* debug 
-				 * see pair list before sorting */
-				// System.out.println("Before sorting... size: " + compare.size());
-				// for (Pair p : compare) p.printPair();
-				/* Put dij values into a sorted array D. */
-				Collections.sort(compare, Pair.PAIR_ORDER);
-				/* debug 
-				 * see the result of sorting
-				 */
-				// System.out.println("After sorting... size: " + compare.size());
-				// for (Pair p : compare) p.printPair();
-				/* while (number of clusters) > k do */
-				while(cluster_list[i].size() > ServerKClustering.K) {
-					/* Choose the smallest value dij from array D. */
-					Pair min = compare.pop();
-					/* debug 
-					 * see which one is poped out */
-					// System.out.println("pop out: ");
-					// min.printPair();
-					PU pu1 = min.getPU1();
-					PU pu2 = min.getPU2();
-					/* Combine clusters of ui and uj. */
-					pu1.getCluster().merge(pu2.getCluster());
-					boolean[] removeMark = new boolean[size];
-					int count = 0;
-					for (Cluster c : cluster_list[i]) {
-						if (c == null || c.getNumbersOfPU() == 0)
-							removeMark[count] = true;
-						count++;
-					}
-					/* remove empty cluster */
-					for (int k = 0; k < size; k++) {
-						if (removeMark[k] == true) cluster_list[i].remove(k);
-					}
-					/* debug
-					 * see result of merging
-					 */
-					// for (Cluster c : cluster_list[i]) c.printCluster();
-				}
-				/* Find point Q that minimizes Equation 3. */
-				for (Cluster c : cluster_list[i]) 
-					virtual_List[i].add(findVirtualPU(c.getMembers(), i));
+			}
+			Collections.sort(distPair);
+			for (PU pu : channelsList[i]) {
+				clusterList[i].add(new Cluster(pu)); // each pu itself is a cluster
+			}
+			while(clusterList[i].size() > this.k) { // while number of clusters > k
+//				System.out.println("Size: " + clusterList[i].size());
+				Pair min = distPair.pop();          // Choose the smallest pair
+//				min.printPair();
+				Cluster keepCluster = min.getPU1().getCluster();
+				Cluster rmCluster = min.getPU2().getCluster();
+				keepCluster.merge(rmCluster); // Combine clusters of ui and uj
+				if (rmCluster.isEmpty()) clusterList[i].remove(rmCluster);
+			}
+			for (Cluster c : clusterList[i]) {      // Find virtual point and protection radius
+				if (!c.isEmpty()) virtualList[i].add(findVirtualPU(c.getMembers(), i));
 			}
 		}
-		/* debug 
-		 * see result of virtual pu
-		 */
-		// int i = 0;
-		// System.out.println();
-		// System.out.println("*****Virtual list*****");
-		// for (List<PU> list : virtual_List) {
-		// 	if (cluster_list[i].size() != virtual_List[i].size()) throw new UnitTestException("Cluster size is not equal to virtual pu number");
-		// 	if (list.isEmpty()) {
-		// 		System.out.println("No virtual pu in this channel");
-		// 		continue;
-		// 	}
-		// 	for (PU pu : list) {
-		// 		System.out.println("Channel: [" + i + "]");
-		// 		System.out.println("working on channel " + pu.getChannelID() + ", with R " + pu.getRadius() + "km");
-		// 		pu.printLocation();
-		// 		if (i != pu.getChannelID()) throw new UnitTestException("Channel id mismatches");
-		// 	}
-		// 	i++;
-		// }
-		// System.out.println();
+		updateNumbersOfVirtualPUs();
+		/* debug */
+//		 System.out.println();
+//		 System.out.println("*****Virtual list*****");
+//		 for (List<PU> list : virtualList) {
+//		 	if (list.isEmpty()) {
+//		 		System.out.println("No virtual pu in this channel");
+//		 		continue;
+//		 	}
+//		 	for (PU pu : list) {
+//		 		System.out.println("channel " + pu.getChannelID() + ", with R " + pu.getRadius() + "km");
+//		 		pu.printLocation();
+//		 	}
+//		 }
+//		 System.out.println();
 	}
 
-	private PU findVirtualPU(List<PU> list, int channel_id) {
+	/**
+	 * Minimal Enclosing Circle Problem
+	 * It's not easy to implement linear time algorithm, use brute force here
+	 * @param list           a list of primary users
+	 * @param channelID      channel id
+	 * @return a virtual primary user with correct channel id and radius of group
+	 */
+	private PU findVirtualPU(List<PU> list, int channelID) {
 		if (list == null) throw new NullPointerException();
-		if (channel_id < 0 || channel_id >= numberOfChannels) throw new IllegalArgumentException();
+		if (channelID < 0 || channelID >= numberOfChannels) throw new IllegalArgumentException();
 		double min_max_radius = Double.POSITIVE_INFINITY;
 		PU virtualPU = new PU();
-		virtualPU.setChannelID(channel_id);           // set up working channel
+		virtualPU.setMap(map);
+		virtualPU.setChannelID(channelID); // set up working channel
 		for (int i = 0; i < map.getRows(); i++) {
-			for (int j = 0; j < map.getCols(); j++) { // search thru the whole map
+			for (int j = 0; j < map.getCols(); j++) {
 				Location loc = map.getLocation(i, j);
 				double max_radius = 0;
 				for (PU pu: list) {
 					double r = pu.getLocation().distTo(loc);
-					if (r > max_radius) max_radius = r; 
+					if (r > max_radius) max_radius = r;
 				}
 				if (max_radius < min_max_radius) {
 					min_max_radius = max_radius;
-					/* specific MTP function requried */
-					virtualPU.setIndices(i, j);       // set index position and actual location for pu
-					virtualPU.updateRadius(min_max_radius);
+					virtualPU.setIndices(i, j);  // set index position and actual location for pu
+					virtualPU.updateRadius(min_max_radius);  // set group radius
 				}
 			}
 		}
 		return virtualPU;
 	}
 
-	//@ override
+	/**
+	 * Server responses to client with virtual primary users
+	 * For each channel, it chooses minimum response
+	 * Finally it returns max response among all channels
+	 * @param client
+	 * @return (-1, PMAX) if no PU on the map
+	 */
+	@Override
 	public Response response(Client client) {
-		/* debug 
-		 * client position */
-		// client.printClientPosition();
 		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
-		if (getNumbersOfVirtualPUs() == 0) return new Response(-1, PMAX); // no pu responses, have max transmit power
-		List<Response> response_list = new LinkedList<Response>();// linkedlist that saves responses
-		@SuppressWarnings("unused")
-		double final_res_power = -1;
-		@SuppressWarnings("unused")
-		int final_res_id = -1;
-		int channel_id = 0;
-		for (List<PU> list : virtual_List) {
+		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
+		if (numberOfVPUs == 0) return new Response(-1, PMAX);
+		List<Response> responseList = new LinkedList<Response>();// linkedlist that saves responses
+		for (List<PU> list : virtualList) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				if (channel_id != pu.getChannelID()) throw new UnitTestException("Channel id does not match");
 				double resPower = virtualMTP(pu.getLocation().distTo(client.getLocation()), pu.getRadius());
-				/* debug 
-				 * check server response */
-				// System.out.println("Server=> pu: [" + pu.getID() + "] dist: " + pu.getLocation().distTo(client.getLocation()) + ", power: " + resPower);
 				if (resPower <= minPower) {
-					// System.out.println("resPower " + resPower + " is smaller than minPower " + minPower);
-					// System.out.println("Update=> minPU: " + pu.getID());
 					minPU = pu;
 					minPower = resPower;
 				}
 			}
-			/* debug 
-			 * check server's choice for that channel */
-			Response channelRes = new Response(minPU, minPower);
-			// System.out.println("Channel choice :");
-			// channelRes.printResponse();
-			if (minPU != null) response_list.add(channelRes);
-			channel_id++;
+			if (minPU != null) responseList.add(new Response(minPU, minPower));
 		}
-		if (channel_id != numberOfChannels) throw new UnitTestException();
-		Collections.shuffle(response_list);
-		Response finalRes = Collections.max(response_list);
-		/* debug 
-		 * check server's final choice */
-		// System.out.println("Final choice :");
-		// finalRes.printResponse();
-		return finalRes;
+		Collections.shuffle(responseList);
+		return Collections.max(responseList);
 	}
-
-	private int getNumbersOfVirtualPUs() {
+	
+	/**
+	 * Update number of virtual primary users on all channels
+	 */
+	private void updateNumbersOfVirtualPUs() {
 		int sum = 0;
 		for (int i = 0; i < numberOfChannels; i++) {
-			sum += virtual_List[i].size();
+			sum += virtualList[i].size();
 		}
-		return sum;
+		numberOfVPUs = sum;
 	}
 
+	/**
+	 * Compute transmit power for virtual pu's
+	 * @param dist     distance between client to virtual primary user
+	 * @param base     base radius for the group/cluster
+	 * @return         transmit power available
+	 */
 	private double virtualMTP(double dist, double base) {
 		double PMAX = 1;
 		if (dist < MTP.d1 + base) return 0;
@@ -233,26 +186,20 @@ public class ServerKClustering extends Server {
 		return PMAX;
 	}
 
-	/* 
-	 * @override 
-	 * be careful! must override this function
-	 * otherwise ic is computed based on original pus' location
-	 * rather than virtual pus' location
-	 */
-	public List<PU>[] getChannelsList() {
-		if (virtual_List == null) {
-			System.out.println("Initialize Server first");
-			return null;
-		} 
-		return virtual_List;
-	}
-
 	public void printInfoVirtualPU() {
-		if (virtual_List == null) return;
+		if (virtualList == null) return;
 		for (int i = 0; i < numberOfChannels; i++) {
-			for (PU pu : virtual_List[i]) {
+			for (PU pu : virtualList[i]) {
 				pu.printVirtualPUInfo();
 			}
 		}
+	}
+
+	/**
+	 * Get virtual channel list instead of actual channel list
+	 * @return virtual pu list
+	 */
+	public List<PU>[] getVirtualChannelList() {
+		return virtualList;
 	}
 }

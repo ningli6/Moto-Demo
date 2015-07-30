@@ -10,19 +10,16 @@ import client.Client;
 /* K-Anonymity server */
 public class ServerKAnonymity extends Server {
 	private int k = 3;                    // k for k anonymity
-	private List<PU>[] copyChannelsList;  // a copy of channel list of actual locations of pu on each channel, is going to be cleared
-	private List<PU>[] virtualList;      // channel list for virtual primary users
-	private int numberOfVPUs;    // number of virtual primary users
+	private List<PU>[] virtualList;       // channel list for virtual primary users
+	private int numberOfVPUs;             // number of primary users
 
 	@SuppressWarnings("unchecked")
 	public ServerKAnonymity(GridMap map, int noc, int k) {
 		super(map, noc);
 		this.k = k;
 		this.virtualList = (List<PU>[]) new List[numberOfChannels];
-		this.copyChannelsList = (List<PU>[]) new List[numberOfChannels];
 		for (int i = 0; i < numberOfChannels; i++) {
 			virtualList[i] = new LinkedList<PU>();
-			copyChannelsList[i] = new LinkedList<PU>();
 		}
 		numberOfVPUs = 0;
 	}
@@ -43,18 +40,22 @@ public class ServerKAnonymity extends Server {
 	 * 		remove members of G from U
 	 */
 	public void groupKPUs() {
-		// copy the channel list
-		for (int i = 0; i < numberOfChannels; i++) {
-			copyChannelsList[i].addAll(channelsList[i]);    // virtual list is actually not different with actual list
-		}
 		if (getNumberOfPUs() == 0 || this.k == 1) {         // special case, if no primary user or k is 1 (itself is a group)
 			System.out.println("No need to convert to virtual pu");
 			for (int i = 0; i < numberOfChannels; i++) {
-				virtualList[i].addAll(copyChannelsList[i]);    // virtual list is actually not different with actual list
-				copyChannelsList[i].clear();                    // clear channel list
+				virtualList[i] = channelsList[i];    // virtual list is actually not different with actual list
 			}
 			updateNumbersOfVirtualPUs();  // after grouping, number of virtual pus is N / k where N is the original number of primary users
 			return;
+		}
+		@SuppressWarnings("unchecked")
+		List<PU>[] copyChannelsList = (List<PU>[]) new List[numberOfChannels];;  // a copy of channel list of actual locations of pu on each channel, is going to be cleared
+		for (int i = 0; i < numberOfChannels; i++) {
+			copyChannelsList[i] = new LinkedList<PU>();
+		}
+		// copy the channel list
+		for (int i = 0; i < numberOfChannels; i++) {
+			copyChannelsList[i].addAll(channelsList[i]);    // virtual list is actually not different with actual list
 		}
 		for (int i = 0; i < numberOfChannels; i++) {        // for each channel
 			while (!copyChannelsList[i].isEmpty()) {            // channel is not empty

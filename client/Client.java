@@ -84,20 +84,20 @@ public class Client {
 		res.getPU().sendResponse();
 		double d1 = -1; double d2 = -1;
 		if (power == 0) {
-			d1 = MTP.d0;
-			d2 = MTP.d1;
+			d1 = MTP.d0;  //  0 km
+			d2 = MTP.d1;  //  8 km
 		}
 		else if (power == 0.5 * PMAX) {
-			d1 = MTP.d1;
-			d2 = MTP.d2;
+			d1 = MTP.d1;  //  8 km
+			d2 = MTP.d2;  // 14 km
 		}
 		else if (power == 0.75 * PMAX) {
-			d1 = MTP.d2;
-			d2 = MTP.d3;
+			d1 = MTP.d2;  // 14 km
+			d2 = MTP.d3;  // 25 km
 		}
 		else if (power == PMAX) {
-			d1 = MTP.d3;
-			d2 = d1;
+			d1 = MTP.d3;  // 25 km
+			d2 = d1;      // 25 km
 		}
 		else {
 			throw new IllegalArgumentException();
