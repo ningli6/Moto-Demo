@@ -68,7 +68,7 @@ public class BootParams {
 	/**
 	 * Get a list of coordinate locations on one channels
 	 * @param c   channel
-	 * @return    a list of LatLng class
+	 * @return    a list of Location class
 	 */
 	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
