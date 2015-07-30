@@ -20,7 +20,6 @@ body {
 
 /* Custom page CSS
 -------------------------------------------------- */
-/* Not required for template or sticky footer method. */
 
 #fter {
   width: auto;
@@ -50,4 +49,10 @@ a:active {
     color:#7A7A80;
     background-color:transparent;
     text-decoration:underline;
+}
+
+#cmval, #queries {
+    border-left-width: 1px;
+    margin-left: 10px;  
+    text-align: center;
 }

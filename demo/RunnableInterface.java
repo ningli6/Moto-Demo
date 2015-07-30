@@ -2,35 +2,56 @@ package demo;
 
 import boot.*;
 
+/**
+ * Handle multiple simulation requests by generating new threads for each
+ */
+
 public class RunnableInterface implements Runnable {
     private Thread t;
     private String threadName;
     private BootParams bootParams;
+    private double cellsize;
+    private double mtpScale;
+    private int interval;
+    private String directory;
 
-    public RunnableInterface(BootParams bp){
+    public RunnableInterface(BootParams bp, double cs, double scale, int inter, String dir){
         this.bootParams = bp;
-        threadName = bp.countermeasure();
-        // System.out.println("Creating " +  threadName );
+        threadName = bp.getCountermeasure();
+        this.cellsize = cs;
+        this.mtpScale = scale;
+        this.interval = inter;
+        this.directory = dir;
     }
+
+    /**
+     * According to the name of different countermeasure,
+     * call different routine
+     */
+    @Override
     public void run() {
         System.out.println("Running " +  threadName );
         try {
             switch (threadName) {
                 case "NOCOUNTERMEASURE":
-                    RunNoCountermeasure runNoCountermeasure = new RunNoCountermeasure(bootParams);
+                    DemoNoCountermeasure runNoCountermeasure = new DemoNoCountermeasure(bootParams, cellsize, mtpScale, interval, directory);
                     runNoCountermeasure.run();
                     break;
                 case "ADDITIVENOISE":
-                    System.out.println("NOT IMPLEMENTED");
+                    DemoAdditiveNoise runAdditiveNoise = new DemoAdditiveNoise(bootParams, cellsize, mtpScale, interval, directory);
+                    runAdditiveNoise.run();
                     break;
                 case "TRANSFIGURATION":
-                    System.out.println("NOT IMPLEMENTED");
+                	DemoTransfiguration runTransfiguration = new DemoTransfiguration(bootParams, cellsize, mtpScale, interval, directory);
+                	runTransfiguration.run();
                     break;
                 case "KANONYMITY":
-                    System.out.println("NOT IMPLEMENTED");
+                    DemoKAnonymity runKAnonymity = new DemoKAnonymity(bootParams, cellsize, mtpScale, interval, directory);
+                    runKAnonymity.run();
                     break;                                    
                 case "KCLUSTERING":
-                    System.out.println("NOT IMPLEMENTED");
+                    DemoKClustering runKClustering = new DemoKClustering(bootParams, cellsize, mtpScale, interval, directory);
+                    runKClustering.run();
                     break;
             }
         } catch (Exception e) {
@@ -42,7 +63,6 @@ public class RunnableInterface implements Runnable {
 
     public void start ()
     {
-        // System.out.println("Starting " +  threadName );
         if (t == null)
         {
             t = new Thread (this, threadName);

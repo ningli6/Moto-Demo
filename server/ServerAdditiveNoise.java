@@ -1,10 +1,7 @@
 package server;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Collections;
-
-import utility.*;
+import utility.GridMap;
+import utility.Response;
 import client.Client;
 
 /*
@@ -12,40 +9,45 @@ import client.Client;
  */
 
 public class ServerAdditiveNoise extends Server{
-	public static double noise = 0.5;
-	public static int Number_Of_Queries = -1;
-	public static int NOISE_DECREASE_STEP = 1;
-	
-	private int actual_lies;
-	private int expected_lies;
+	private double noise = 0.5;                  // noise level   
+	private int numberOfQueries = -1;            // number of queries
+	private int NOISE_DECREASE_STEP = 1;         // decrease level
+	private int actualLies;                      // number of actual lies has been made
+	private int expectedLies;                    // number of expected lies
 
-	public ServerAdditiveNoise(GridMap map) {
-		super(map);
-		actual_lies = 0;
-		expected_lies = (int) Math.round(Number_Of_Queries * noise / NOISE_DECREASE_STEP);
-	}
-
-	public ServerAdditiveNoise(GridMap map, double noise) {
-		super(map);
+	/**
+	 * Initiate additive noise server
+	 * @param map     grid map
+	 * @param noc     number of channels
+	 * @param noq     number of queries (this is necessary to compute expected lies)
+	 * @param noise   noise level
+	 */
+	public ServerAdditiveNoise(GridMap map, int noc, int noq, double noise) {
+		super(map, noc);
 		this.noise = noise;
-		actual_lies = 0;
-		expected_lies = (int) Math.round(Number_Of_Queries * noise / NOISE_DECREASE_STEP);
+		this.numberOfQueries = noq;
+		this.actualLies = 0;
+		this.expectedLies = (int) Math.round(numberOfQueries * noise / NOISE_DECREASE_STEP);
 	}
 
-	// @override
-	// resonse to the query
+	/**
+	 * @Override
+	 * Response queries from client
+	 * Check if actual lies has met expected lies, decrease response if not
+	 */
 	public Response response(Client client) {
 		Response res = super.response(client);
 		if (res == null) return res;
-		if (actual_lies < expected_lies) {
-			if (res.decrease(NOISE_DECREASE_STEP)) actual_lies++;
+		if (actualLies < expectedLies) {
+			if (res.decrease(NOISE_DECREASE_STEP)) actualLies++;
 		}
 		return res;
 	}
 
-	public void setNoise(int number_of_queries) {
-		Number_Of_Queries = number_of_queries;
-		expected_lies = (int) Math.round(Number_Of_Queries * noise / NOISE_DECREASE_STEP);
+	public void updateLiesNeeded(int number_of_queries) {
+		actualLies = 0;
+		numberOfQueries = number_of_queries;
+		expectedLies = (int) Math.round(numberOfQueries * noise / NOISE_DECREASE_STEP);
 	}
 
 	public double getNoiseLevel() {
@@ -53,20 +55,27 @@ public class ServerAdditiveNoise extends Server{
 	}
 
 	public int getNumberOfLies() {
-		return actual_lies;
+		return actualLies;
 	}
 
 	public int getExpectedLies() {
-		return expected_lies;
+		return expectedLies;
 	}
 
+	/**
+	 * Check if noise requirement has been reached
+	 * @return true if actual lies met expected lies
+	 */
 	public boolean reachNoiseLevel() {
-		return actual_lies == expected_lies;
+		return actualLies == expectedLies;
 	}
 
+	/**
+	 * Clear response records for all primary users
+	 * Set actual number of lies back to 0
+	 */
 	public void reset() {
 		super.reset();
-		actual_lies = 0;
-		// Number_Of_Queries = -1;
+		actualLies = 0;
 	}
 }

@@ -1,7 +1,16 @@
 '''
 This script can be used to send emails
+
+To call this routine:
+
+python send.py sender receiver channels icq gMap message
+@param sender
+@param receiver 
+@param channels
+@param icq         whether to plot ic vs q
+@param gMap        whether to plot google map
+@param message     email content
 ''' 
-print 'Sending email...'
 
 # Import sys for taking in arguments
 import sys
@@ -14,38 +23,58 @@ from email.mime.multipart import MIMEMultipart
 # Import data module
 import datetime
 
-# # print 'args len: ' , len(sys.argv)
-# # for i in range(0, len(sys.argv)):
-# # 	print str(sys.argv[i])
+# sender
+sender = sys.argv[1]
+print 'From: ', sender
 
 # receiver
-recv = sys.argv[1]
-print 'Send to: ', recv
+recv = sys.argv[2]
+print 'To: ', recv
+
+# Number of channel
+nc = int(sys.argv[3])
+
+ICvsQ = sys.argv[4]
+
+gMap = sys.argv[5]
 
 # construct message
-message = sys.argv[2]
+message = sys.argv[6]
 message = message.replace("_", " ");
-message = message.replace("#", "\n");
-message += "\n\n"
-message += ('Current time: ' + str(datetime.datetime.now()))
+
+html = '<html><head><style>h3,p, span {color: black}</style></head><body>' + message + '</body></html>'
+
 
 # Create a text/plain message
 msg = MIMEMultipart('multipart')
 # text
-txt = MIMEText(message, 'plain')
+txt = MIMEText(html, 'html')
 msg.attach(txt)
+
+
 # image
-fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-fp = open(fileName, 'rb')
-img = MIMEImage(fp.read())
-fp.close()
-msg.attach(img)
+if (gMap == 'YgMap'):
+	for i in range(nc):
+		# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
+		fileName = 'C:\Users\Administrator\Desktop\motoPlot\Simulation_result_channel_' + str(i) + '.png'
+		fp = open(fileName, 'rb')
+		img = MIMEImage(fp.read())
+		fp.close()
+		msg.attach(img)
+
+if (ICvsQ == 'YICvsQ'):
+	fileName = 'C:\Users\Administrator\Desktop\motoPlot\ICvsQ.png'
+	fp = open(fileName, 'rb')
+	img = MIMEImage(fp.read())
+	fp.close()
+	msg.attach(img)
+
 
 # me == the sender's email address
 # you == the recipient's email address
-me = 'ningli@vt.edu'
+me = sender
 you = recv
-msg['Subject'] = 'AWS SES Test'
+msg['Subject'] = 'Moto demo'
 msg['From'] = me
 msg['To'] = you
 

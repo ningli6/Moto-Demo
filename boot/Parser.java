@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Parser {
 	public static Map<String, String> cmswitch;
 
+	@SuppressWarnings("unchecked")
 	public static BootParams parse(String[] args) {
 		if (args == null) return null;
 		if (cmswitch == null) {
@@ -89,10 +90,5 @@ public class Parser {
 			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries");
 			return null;
 		}
-	}
-
-	public static void main(String[] args) {
-		BootParams bp = Parser.parse(args);
-		bp.printParams();
 	}
 }
