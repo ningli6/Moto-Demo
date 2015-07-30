@@ -7,9 +7,9 @@ import java.util.Map;
 
 import client.Client;
 import server.ServerKClustering;
+import utility.Location;
 import utility.PU;
 import boot.BootParams;
-import boot.LatLng;
 
 public class SimKClustering extends Simulation {
 	private String counterMeasure;            // name of countermeasure
@@ -33,9 +33,9 @@ public class SimKClustering extends Simulation {
 		cmServer = new ServerKClustering(map, noc, k);
 		int PUid = 0;
 		for (int k = 0; k < noc; k++) {
-			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
-			for (LatLng ll : LatLngList) {
-				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
+			List<Location> LatLngList = bootParams.getPUOnChannel(k);
+			for (Location ll : LatLngList) {
+				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
 				cmServer.addPU(pu, k);
 			}
 		}

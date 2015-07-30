@@ -3,17 +3,16 @@ package demo;
 import boot.*;
 
 /**
- * Handle multiple simulation requests by generating new threads for each
+ * Handle multiple simulation requests by generating new threads for each task
  */
-
 public class RunnableInterface implements Runnable {
-    private Thread t;
-    private String threadName;
-    private BootParams bootParams;
-    private double cellsize;
-    private double mtpScale;
-    private int interval;
-    private String directory;
+    private Thread t;                // thread instance
+    private String threadName;       // thread name (countermeausre name)
+    private BootParams bootParams;   // BootParams instance
+    private double cellsize;         // cell size
+    private double mtpScale;         // scale that determines mtp function
+    private int interval;            // query points in the middle
+    private String directory;        // output directory
 
     public RunnableInterface(BootParams bp, double cs, double scale, int inter, String dir){
         this.bootParams = bp;
@@ -61,6 +60,10 @@ public class RunnableInterface implements Runnable {
         System.out.println("Thread " +  threadName + " exiting.");
     }
 
+    /**
+     * Start program in a new thread
+     * run() is called
+     */
     public void start ()
     {
         if (t == null)

@@ -5,10 +5,21 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
 
+import utility.Location;
+
+/**
+ * Parser class that takes in input string from web interface,
+ * then parse and wrap it as a BootParams instance
+ * @author Ning Li
+ */
 public class Parser {
 	public static Map<String, String> cmswitch;
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Parse an input string from web interface
+	 * @param final string from web page
+	 * @return    BootParams that holds all these information
+	 */
 	public static BootParams parse(String[] args) {
 		if (args == null) return null;
 		if (cmswitch == null) {
@@ -40,9 +51,10 @@ public class Parser {
 				i++;
 			}
 			if (count != bootParams.getNumberOfChannels()) throw new IllegalArgumentException("Number of channels don't match");
-			List<LatLng>[] init = (List<LatLng>[]) new List[count];
+			@SuppressWarnings("unchecked")
+			List<Location>[] init = (List<Location>[]) new List[count];
 			for (int j = 0; j < init.length; j++) {
-				init[j] = new LinkedList<LatLng>();
+				init[j] = new LinkedList<Location>();
 			}
 			i = 7;
 			int putchannel = -1;
@@ -53,11 +65,11 @@ public class Parser {
 						i++;
 						continue;
 					}
-					init[putchannel].add(new LatLng(Double.parseDouble(args[++i]), Double.parseDouble(args[++i])));
+					init[putchannel].add(new Location(Double.parseDouble(args[++i]), Double.parseDouble(args[++i])));
 					i++;
 				}
 				else if (!args[i].equals("-C") && !args[i].equals("-q") && !args[i].equals("-f") && !cmswitch.containsKey(args[i])) {
-					init[putchannel].add(new LatLng(Double.parseDouble(args[i]), Double.parseDouble(args[++i])));
+					init[putchannel].add(new Location(Double.parseDouble(args[i]), Double.parseDouble(args[++i])));
 					i++;
 				}
 				else break;

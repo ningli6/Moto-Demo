@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import server.ServerTransfiguration;
+import utility.Location;
 import utility.PU;
 import boot.BootParams;
-import boot.LatLng;
 import client.Client;
 
 public class SimTransfiguration extends Simulation {
@@ -40,9 +40,9 @@ public class SimTransfiguration extends Simulation {
 		cmServer = new ServerTransfiguration(map, noc, sides);
 		int PUid = 0;
 		for (int k = 0; k < noc; k++) {
-			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
-			for (LatLng ll : LatLngList) {
-				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
+			List<Location> LatLngList = bootParams.getPUOnChannel(k);
+			for (Location ll : LatLngList) {
+				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
 				cmServer.addPU(pu, k);
 			}
 		}

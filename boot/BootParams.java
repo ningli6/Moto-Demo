@@ -2,20 +2,23 @@ package boot;
 
 import java.util.List;
 
+import utility.Location;
+
+/* class that holds information about input parameters */
 public class BootParams {
-	private int numberOfChannels;
-	private double NorthLat;
+	private double NorthLat;         // coordinates
 	private double SouthLat;
 	private double EastLng;
 	private double WestLng;
-	private List<LatLng>[] puList;
-	private boolean isCountermeasure;
-	private String countermeasure = "NOCOUNTERMEASURE";
-	private double counterParamD = -1;
-	private int counterParamI = -1;
-	private int numberOfQueries = -1;
-	private String fileName;
-	private String email;
+	private List<Location>[] puList;   // location list
+	private boolean isCountermeasure;// whether use countermeasure or not
+	private String countermeasure = "NOCOUNTERMEASURE"; // countermeasure
+	private double counterParamD = -1;  // countermeasure value (float)
+	private int counterParamI = -1;     // countermeasure value (integer)
+	private int numberOfChannels;    // number of channels
+	private int numberOfQueries = -1;   // number of queries
+	private String fileName;            // upload file name
+	private String email;               // email address
 
 	public int getNumberOfChannels() {
 		return numberOfChannels;
@@ -58,11 +61,16 @@ public class BootParams {
 		this.WestLng = lng;
 	}
 
-	public void setPUonChannels(List<LatLng>[] list) {
+	public void setPUonChannels(List<Location>[] list) {
 		this.puList = list;
 	}
 
-	public List<LatLng> getPUOnChannel(int c) {
+	/**
+	 * Get a list of coordinate locations on one channels
+	 * @param c   channel
+	 * @return    a list of LatLng class
+	 */
+	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
 		return puList[c];
 	}
@@ -80,7 +88,7 @@ public class BootParams {
 	}
 
 	public void setCountermeasure(String cm) {
-		if (!cm.equals("ADDITIVENOISE") &&  !cm.equals("TRANSFIGURATION") &&
+		if (!cm.equals("ADDITIVENOISE") && !cm.equals("TRANSFIGURATION") &&
 			!cm.equals("KANONYMITY") && !cm.equals("KCLUSTERING"))
 			throw new IllegalArgumentException();
 		isCountermeasure = true;
@@ -96,6 +104,10 @@ public class BootParams {
 		return counterParamD;
 	}
 
+	/**
+	 * Set countermeasure value
+	 * @param p    float for additive noise, cast to integer for other countermeasures
+	 */
 	public void setCMParam(double p) {
 		if (countermeasure.equals("ADDITIVENOISE")) {
 			this.counterParamD = p;
@@ -147,8 +159,8 @@ public class BootParams {
 		int len = puList.length;
 		for (int i = 0; i < len; i++) {
 			sb.append("Channel " + i + ": <br>");
-			for (LatLng ll : puList[i]) {
-				sb.append("[" + ll.getLat() + ", " + ll.getLng() + "] <br>");
+			for (Location ll : puList[i]) {
+				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "] <br>");
 			}
 			sb.append("</p>");
 		}

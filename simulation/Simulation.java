@@ -15,7 +15,6 @@ import utility.Location;
 import utility.MTP;
 import utility.PU;
 import boot.BootParams;
-import boot.LatLng;
 
 public class Simulation {
 	String directory;      // output dir
@@ -68,9 +67,9 @@ public class Simulation {
 		/* Add PU to the map */
 		int PUid = 0;
 		for (int k = 0; k < noc; k++) {
-			List<LatLng> LatLngList = bootParams.getPUOnChannel(k);
-			for (LatLng ll : LatLngList) {
-				PU pu = new PU(PUid++, ll.getLat(), ll.getLng(), map);
+			List<Location> LatLngList = bootParams.getPUOnChannel(k);
+			for (Location ll : LatLngList) {
+				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
 //				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
 				server.addPU(pu, k);
 			}
