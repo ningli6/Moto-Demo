@@ -35,11 +35,4 @@ public class Line {
 	public void print() {
 		System.out.println("a: " + a + " b: " + b + " c: " + c + " k: " + k);
 	}
-
-	public static void main(String[] args) {
-		Point a = new Point(2, 2);
-		Point b = new Point(6, 6);
-		Line l = new Line(a, b);
-		System.out.println(l.online(new Point(1, 5)));
-	}
 }

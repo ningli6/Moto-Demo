@@ -245,7 +245,7 @@ function sendParams()
         {
             var res = xmlhttp.responseText;
             if (res == "OK") {
-                alert("Demo has been started successfully! The simulation will usually take about 30 seconds. Please check your email for result.\nThanks for using!");
+                alert("Demo has been started successfully!\nThe simulation usually takes about 30 seconds. Please check your email for result.\nThanks for using!");
             }
             else {
                 alert("Demo failed. " + res);

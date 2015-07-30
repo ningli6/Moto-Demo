@@ -21,10 +21,13 @@ public class CmpPlot {
 				break;
 			case "TRANSFIGURATION":
 				cmpName = "cmp_Transfiguration.txt";
+				break;
 			case "KANONYMITY":
 				cmpName = "cmp_kAnonymity.txt";
+				break;
 			case "KCLUSTERING":
 				cmpName = "cmp_kClustering.txt";
+				break;
 			}
 
 			String cmd;

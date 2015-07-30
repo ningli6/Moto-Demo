@@ -16,24 +16,29 @@ label = [
 			['No countermasure, channel 0', 'No countermasure, channel 1', 'No countermasure, channe 2']
 		]
 marker = ['*', 'o', 'x']
+color = ['red', 'blue', 'green']
 
 f = open ( path1 , 'r')
 l = chophead([ map(float, line.split()) for line in f ])
 channels = len(l) - 1
 for c in range(0,channels):
-	plt.plot(l[0], l[c + 1], linestyle = '--', marker = marker[c], label = label[1][c])
+	plt.plot(l[0], l[c + 1], linestyle = '--', marker = marker[c], label = label[1][c], color = color[c])
 
 f2 = open ( path2 , 'r')
 l2 = chophead([ map(float, line.split()) for line in f2 ])
 channels = len(l2) - 1
-for c2 in range(0,channels):
-	plt.plot(l2[0], l2[c2 + 1], marker = marker[c2], label = label[0][c2])
+for c in range(0,channels):
+	plt.plot(l2[0], l2[c + 1], marker = marker[c], label = label[0][c], color = color[c])
 
 cmTitle = '';
 if sys.argv[2] == "cmp_AdditiveNoise.txt": 
 	cmTitle = 'with additive noise'
 elif sys.argv[2] == "cmp_Transfiguration.txt":
 	cmTitle = 'with transfiguration'
+elif sys.argv[2] == "cmp_kAnonymity.txt":
+	cmTitle = 'with k anonymity'
+elif sys.argv[2] == "cmp_kClustering.txt":
+	cmTitle = 'with k clustering'
 
 plt.legend()
 plt.title('Inaccuracy vs queries ' + cmTitle)

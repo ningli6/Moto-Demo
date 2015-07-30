@@ -3,27 +3,27 @@ package boot;
 import java.util.List;
 
 public class BootParams {
-	private int number_of_channels;
+	private int numberOfChannels;
 	private double NorthLat;
 	private double SouthLat;
 	private double EastLng;
 	private double WestLng;
-	private List<LatLng>[] PUList;
+	private List<LatLng>[] puList;
 	private boolean isCountermeasure;
 	private String countermeasure = "NOCOUNTERMEASURE";
 	private double counterParamD = -1;
 	private int counterParamI = -1;
-	private int number_of_queries = -1;
+	private int numberOfQueries = -1;
 	private String fileName;
 	private String email;
 
 	public int getNumberOfChannels() {
-		return number_of_channels;
+		return numberOfChannels;
 	}
 
 	public void setNumberOfChannels(int c) {
 		if (c <= 0) throw new IllegalArgumentException();
-		this.number_of_channels = c;
+		this.numberOfChannels = c;
 	}
 
 	public double getNorthLat() {
@@ -59,12 +59,12 @@ public class BootParams {
 	}
 
 	public void setPUonChannels(List<LatLng>[] list) {
-		this.PUList = list;
+		this.puList = list;
 	}
 
 	public List<LatLng> getPUOnChannel(int c) {
-		if (c < 0 || c >= number_of_channels) throw new IllegalArgumentException();
-		return PUList[c];
+		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
+		return puList[c];
 	}
 
 	public boolean isCountermeasure() {
@@ -104,12 +104,12 @@ public class BootParams {
 	}
 
 	public int getNumberOfQueries() {
-		return number_of_queries;
+		return numberOfQueries;
 	}
 
 	public void setNumberOfQueries(int q) {
 		if (q < 0) throw new IllegalArgumentException();
-		this.number_of_queries = q;
+		this.numberOfQueries = q;
 	}
 
 	public String getFileName() {
@@ -129,69 +129,60 @@ public class BootParams {
 		return email;
 	}
 
-	public void printParams() {
-		System.out.println("Print parameters");
-		System.out.println("Number of channels: " + number_of_channels);
-		System.out.println("Analysis region: ");
-		System.out.println("North latitude: " + NorthLat);
-		System.out.println("South latitude: " + SouthLat);
-		System.out.println("West longitude: " + WestLng);
-		System.out.println("East longitude: " + EastLng);
-		System.out.println("Location of PU: ");
-		int len = PUList.length;
-		for (int i = 0; i < len; i++) {
-			System.out.println("Channel " + i + ": ");
-			for (LatLng ll : PUList[i]) {
-				System.out.print("[" + ll.getLat() + ", " + ll.getLng() + "] ");
-			}
-			System.out.println();
-		}
-		if (!isCountermeasure) {
-			System.out.println("Countermeasure: " + "No countermeausre");
-		}
-		else {
-			System.out.println("Countermeasure: " + countermeasure + ", Param: " + getCMParam());
-		}
-		if (number_of_queries < 0) {
-			System.out.println("Upload file: " + fileName);
-		}
-		else {
-			System.out.println("Number of Queries: " + number_of_queries);
-		}
-		System.out.println("Email to: " + email);
-		System.out.println();
-	}
-
+	/**
+	 * Construct email content
+	 * @return  a string that describing input parameters
+	 */
 	public String paramsToString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<h3>Input_parameters</h3>");
-		sb.append("<p>Number_of_channels:_" + number_of_channels + "</p>");
-		sb.append("<p>Analysis_region:<br>");
-		sb.append("North_latitude_:" + NorthLat + "<br>");
-		sb.append("South_latitude_:" + SouthLat + "<br>");
-		sb.append("West_longitude_:" + WestLng + "<br>");
-		sb.append("East_longitude_:" + EastLng + "<br>");
+		sb.append("<h3>Simulation result</h3>");
+		sb.append("<p>Number of channels: " + numberOfChannels + "</p>");
+		sb.append("<p>Analysis region: <br>");
+		sb.append("North latitude :" + NorthLat + "<br>");
+		sb.append("South latitude :" + SouthLat + "<br>");
+		sb.append("West longitude :" + WestLng + "<br>");
+		sb.append("East longitude :" + EastLng + "<br>");
 		sb.append("</p>");
-		sb.append("<p>Location_of_PU:<br>");
-		int len = PUList.length;
+		sb.append("<p>Location of Primary users: <br>");
+		int len = puList.length;
 		for (int i = 0; i < len; i++) {
-			sb.append("Channel_" + i + ":<br>");
-			for (LatLng ll : PUList[i]) {
-				sb.append("[" + ll.getLat() + ",_" + ll.getLng() + "]<br>");
+			sb.append("Channel " + i + ": <br>");
+			for (LatLng ll : puList[i]) {
+				sb.append("[" + ll.getLat() + ", " + ll.getLng() + "] <br>");
 			}
 			sb.append("</p>");
 		}
 		if (!isCountermeasure) {
-			sb.append("<p>Countermeasure:_No_countermeausre</p>");
+			sb.append("<p>Countermeasure: No countermeausre</p>");
 		}
 		else {
-			sb.append("<p>Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "</p>");
+			String cmName = null;
+			String cmParam = null;
+			switch (countermeasure) {
+			case "ADDITIVENOISE":
+				cmName = countermeasure.toLowerCase();
+				cmParam = "noise level: " + getCMParam();
+				break;
+			case "TRANSFIGURATION":
+				cmName = countermeasure.toLowerCase();
+				cmParam = "sides of polygon: " + (int) getCMParam();
+				break;
+			case "KANONYMITY":
+				cmName = "k anonymity";
+				cmParam = "size of group: " + (int) getCMParam();
+				break;
+			case "KCLUSTERING":
+				cmName = "k clustering";
+				cmParam = "number of clusters: " + (int) getCMParam();
+				break;
+			}
+			sb.append("<p>Countermeasure: " + cmName + ", " + cmParam + "</p>");
 		}
-		if (number_of_queries < 0) {
+		if (numberOfQueries < 0) {
 			sb.append("<p>Upload_file:_" + fileName + "</p>");
 		}
 		else {
-			sb.append("<p>Number_of_queries:_" + number_of_queries + "</p>");
+			sb.append("<p>Number of queries: " + numberOfQueries + "</p>");
 		}
 		return sb.toString();
 	}

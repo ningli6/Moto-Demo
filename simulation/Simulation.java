@@ -225,29 +225,27 @@ public class Simulation {
 		}		
 	}
 
-	private String buildMessage() {
+	/**
+	 * Get the email content after simulation completes
+	 * @return  a string that replaces space with '_' to be passed as an argument
+	 */
+	public String getEmailContent() {
+		return content.append(buildMessage()).toString().replace(' ', '_');
+	}
+	
+	/**
+	 * Construct email content
+	 * @return   a string that describing simulation results
+	 */
+	protected String buildMessage() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<h3>Simlation_result</h3>");
-		sb.append("<p>Distribution_of_primary_users:<br>");
-		sb.append("Number_of_PUs:_" + server.getNumberOfPUs() + "<br>");
-		sb.append(server.puOnChannelToString()); // which pu is on which channel
-		sb.append("</p>");
-		sb.append("<p>Querying_information:<br>");
-//		sb.append(client.countChannelUpdateToString()); // channel is updated how many times
-		sb.append("</p>");
-		if (IC != null) {
-			sb.append("<p>Inaccuracy_for_each_channel:<br>");
-			for (int i = 0; i < IC.length; i++) {
-				sb.append("Channel_" + i + ":_" + IC[i] + "<br>");
-			}
+		sb.append("<p>Simulation results are plotted and attached to this email. "
+				+ "Maps indecate attacker's speculation of primary users whereabout for each channel. ");
+		if (icq) {
+			sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increase.");
 		}
 		sb.append("</p>");
-		sb.append("<p>See_probability_plots_in_the_attachments._Location_of_primary_users_are_marked_as_yellow_stars.</p>");
 		return sb.toString();
-	}
-
-	public String getEmailContent() {
-		return content.append(buildMessage()).toString();
 	}
 
 	/**
