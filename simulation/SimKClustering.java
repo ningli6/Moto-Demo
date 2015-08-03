@@ -154,16 +154,16 @@ public class SimKClustering extends Simulation {
 	 * @return   a string that describing simulation results
 	 */
 	@Override
-	public String buildMessage() {
+	protected String buildMessage() {
 		StringBuilder sb = new StringBuilder();
 		if (!isFeasible()) {
-			sb.append("<p>Simulation failed! K for clustering must be a positive integer.</p>");
+			sb.append("<p>K for clustering must be a positive integer.</p>");
 		}
 		else {
 			sb.append("<p>Simulation results are plotted and attached to this email. "
-					+ "Maps indecate attacker's speculation of primary users whereabout for each channel. ");
+					+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
 			if (icq) {
-				sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increase.");
+				sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
 			}
 			sb.append("</p>");
 		}

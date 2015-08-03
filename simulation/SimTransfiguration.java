@@ -158,9 +158,9 @@ public class SimTransfiguration extends Simulation {
 		}
 		else {
 			sb.append("<p>Simulation results are plotted and attached to this email. "
-					+ "Maps indecate attacker's speculation of primary users whereabout for each channel. ");
+					+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
 			if (icq) {
-				sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increase.");
+				sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
 			}
 			sb.append("</p>");
 		}
