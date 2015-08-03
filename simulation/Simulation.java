@@ -256,10 +256,8 @@ public class Simulation {
 	public void plot(boolean plotProbOnMap, boolean iCvsQ, String countermeasure) {
     	if (plotProbOnMap) {
         	System.out.println("Plotting probability distribution on Google Map...");
-        	for (int i = 0; i < noc; i++) {
-        		if (!MatPlot.plot(i, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-        			System.out.println("Plotting failed");
-        		}
+        	if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
+        		System.out.println("Plotting failed");
         	}
     	}
 		if (iCvsQ) { // this is set to true if noq is greater than 100
