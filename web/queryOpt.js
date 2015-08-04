@@ -5,13 +5,42 @@
 // file name of user uploaded text file
 var file_name;  
 
+/**
+ * Disable query number input
+ * @return {void}
+ */
 function disableRandomQueries () {
     document.getElementById("randomQuery").disabled = true;
 }
 
+/**
+ * Enable query number input
+ * @return {void}
+ */
 function enableRandomQueries () {
     document.getElementById("randomQuery").disabled = false;
 }
+
+/**
+ * Adjust value of query numbers so that it is multiple of 100
+ * Min: 100, Max: 1000
+ * @return {void}
+ */
+function adjustValue() {
+    var val = document.getElementById("randomQuery").value;
+    var newVal = Math.round(val / 100) * 100;
+    if (newVal < 100) {
+        newVal = 100;
+    }
+    if (newVal > 1000) {
+        newVal = 1000;
+    }
+    document.getElementById("randomQuery").value = newVal;
+}
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
 
 function uploadfile () {
     var form = document.getElementById('file-form');
