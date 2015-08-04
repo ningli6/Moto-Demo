@@ -8,7 +8,6 @@ var drawingManager;              // helper object for drawing shapes on google m
 var rect;                        // google.maps.Rectangle class
 var recRegion;                   // rectangle boundary, google.maps.LatLngBounds class
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
-var numberOfChannels = 1;        // number of channels [1, 3]
 var chanls = 0;                  // user selected channel [0, 2]
 var markers_one = [];            // makers list for 1 channel
 var circles_one = [];            // circles list for 1 channel

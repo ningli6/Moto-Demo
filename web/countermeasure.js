@@ -11,6 +11,18 @@
 function enableInput(arg) {
 	if (document.getElementById(arg).disabled) {
 		document.getElementById(arg).disabled = false;
+		if (arg == "cmval1") {
+			document.getElementById("cmval1").value = 0.5;
+		}
+		if (arg == "cmval2") {
+			document.getElementById("cmval2").value = 3;
+		}
+		if (arg == "cmval3") {
+			document.getElementById("cmval3").value = 1;
+		}
+		if (arg == "cmval4") {
+			document.getElementById("cmval4").value = 1;
+		}
 	}
     else {
     	document.getElementById(arg).disabled = true;
@@ -26,7 +38,6 @@ function enableInput(arg) {
 /**
  * When checkbox is clicked, enable related input field for countermeasure parameter if it is disabled
  * @param  {String} arg id of trade-off checkboxes, tradeOff1, tradeOff2
- * @return {void}     [description]
  */
 function tradeOffCurve(arg) {
 	if (arg == "tradeOff1") {
@@ -40,5 +51,82 @@ function tradeOffCurve(arg) {
 			document.getElementById('cmopt2').checked = true
 			enableInput('cmval2');
 		}
+	}
+}
+
+/**
+ * Check if the input is a valid numeric number
+ * @param  {[type]}  n input number
+ * @return {Boolean}   true if input is valid
+ */
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+/**
+ * Value of noise level shoud be within 0 and 1
+ */
+function adjustNoiseLevel() {
+	if (!isNumeric(document.getElementById("cmval1").value)) {
+		document.getElementById("cmval1").value = 0;
+		return;
+	}
+	var val = document.getElementById("cmval1").value;
+	if (val < 0) {
+		document.getElementById("cmval1").value = 0;
+	}
+	else if (val > 1) {
+		document.getElementById("cmval1").value = 1;
+	}
+}
+
+/**
+ * Number of sides should be a positive integer no less than 3
+ */
+function adjustNumberOfSides () {
+	if (!isNumeric(document.getElementById("cmval2").value)) {
+		document.getElementById("cmval2").value = 3;
+		return;
+	}
+	var val = document.getElementById("cmval2").value;
+	if (val < 3) {
+		document.getElementById("cmval2").value = 3;
+	}
+	else {
+		document.getElementById("cmval2").value = Math.round(val);
+	}
+}
+
+/**
+ * K for k anonymity should be an integer no less than 1
+ */
+function adjustKAnonymity () {
+	if (!isNumeric(document.getElementById("cmval3").value)) {
+		document.getElementById("cmval3").value = 1;
+		return;
+	}
+	var val = document.getElementById("cmval3").value;
+	if (val < 1) {
+		document.getElementById("cmval3").value = 1;
+	}
+	else {
+		document.getElementById("cmval3").value = Math.round(val);
+	}
+}
+
+/**
+ * K for k clustering should be an integer no less than 1
+ */
+function adjustKClustering () {
+	if (!isNumeric(document.getElementById("cmval4").value)) {
+		document.getElementById("cmval4").value = 1;
+		return;
+	}
+	var val = document.getElementById("cmval4").value;
+	if (val < 1) {
+		document.getElementById("cmval4").value = 1;
+	}
+	else {
+		document.getElementById("cmval4").value = Math.round(val);
 	}
 }

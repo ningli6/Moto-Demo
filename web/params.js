@@ -2,120 +2,169 @@
  * This script collect parameters from web interface and pass it to php script
  */
 
-var channel_number;        // number of channels
-var analysis_region = [];  // region
+var numberOfChannels = 1;  // number of channels [1, 3]
 var location_PU = [];      // pu's location
-var countermeasure;        // countermeasure
-var cmVal;                 // value for countermeasure
-var queries_number;        // number of queries
-var queries_file;          // name of querying file
+var countermeasure = [];   // countermeasures
+var cmVal = []             // cm parameters
+var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
+var tradeOffTF = false; 
+var inputParams = false;   // whether to include input parameters in the email
+var plotGoogleMap = false; // whether to include google map in the email
+var numberOfQueries;       // number of queries
+var queryFile;             // name of querying file
 var args;                  // formatted params as a argument for java program
 var email;                 // send result to this email
 
+/**
+ * Check parameters first, then consturct argument string for backend program,
+ * build modal at last
+ * @return {void}
+ */
 function getParams () {
-    // get number of channels
-    channel_number = numberOfChannels;
-    // get region boundaries
+    // check region boundaries
     if (rect == undefined || recRegion == undefined) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
         return;
     }
-    analysis_region = [];
-    // upper lat
-    analysis_region.push(recRegion.getNorthEast().lat());
-    // right lng
-    analysis_region.push(recRegion.getNorthEast().lng());
-    // lower lat
-    analysis_region.push(recRegion.getSouthWest().lat());
-    // left lng
-    analysis_region.push(recRegion.getSouthWest().lng());
-
-    if (channel_number == 1 && markers_one.length == 0) {
-        alert("Please define working channel and location for primary user!");
-        return;
-    } 
-    if (channel_number == 2 && markers_two_channel0.length == 0 && markers_two_channel1.length == 0) {
-        alert("Please define working channel and location for primary user!");
-        return;
-    } 
-    if (channel_number == 3 && markers_three_channel0.length == 0 && markers_three_channel1.length == 0 && markers_three_channel2.length == 0) {
-        alert("Please define working channel and location for primary user!");
+    // check number of channels
+    if (numberOfChannels < 1 || numberOfChannels > 3) {
+        alert("Number of channels is not valid!");
         return;
     }
+    // make sure primary user exists on each channel
+    if (numberOfChannels == 1 && markers_one.length == 0) {
+        alert("Please define working channel and location of primary users!");
+        return;
+    }
+
+    if (numberOfChannels == 2 && (markers_two_channel0.length == 0 || markers_two_channel1.length == 0)) {
+        alert("Please define primary users on both channels!");
+        return;
+    }
+
+    if (numberOfChannels == 3 && (markers_three_channel0.length == 0 || markers_three_channel1.length == 0 || markers_three_channel2.length == 0)) {
+        alert("Please define primary users on all working channels!");
+        return;
+    }
+
+    // check ic vs q & trade off curve
+    if (!document.getElementById("cmval1").checked && document.getElementById("tradeOff1").checked) {
+        alert("Trade off box can't be checked unless its countermeasure is selected!");
+        return;
+    }
+
+    if (!document.getElementById("cmval2").checked && document.getElementById("tradeOff2").checked) {
+        alert("Trade off box can't be checked unless its countermeasure is selected!");
+        return;
+    }
+
     // get pus' location
     location_PU = [];
-    if (channel_number == 1) location_PU.push(markers_one);
-    if (channel_number == 2) {
+    if (numberOfChannels == 1) location_PU.push(markers_one);
+    if (numberOfChannels == 2) {
         location_PU.push(markers_two_channel0);
         location_PU.push(markers_two_channel1);
     }
-    if (channel_number == 3) {
+    if (numberOfChannels == 3) {
         location_PU.push(markers_three_channel0);
         location_PU.push(markers_three_channel1);
         location_PU.push(markers_three_channel2);
     }
 
+    countermeasure = [];
+    cmVal = [];
     // get countermeasure and cm value
     if (document.getElementById('cmopt0').checked) {
-        countermeasure = "NO_COUNTERMEASURE";
+        countermeasure.push("NO_COUNTERMEASURE");
+        cmVal.push(null);
     }
     if (document.getElementById('cmopt1').checked) {
-        countermeasure = "ADDITIVE_NOISE";
-        cmVal = document.getElementById('cmval1').value;
-        if (cmVal > 1 || cmVal < 0) {
+        if (!isNumeric(document.getElementById('cmval1').value)) {
+            alert("Noise level is not a valid number");
+            return;
+        }
+        var val = document.getElementById('cmval1').value;
+        if (val > 1 || val < 0) {
             alert("Noise level should be in the range from 0 to 1 inclusively");
             return;
         }
+        countermeasure.push("ADDITIVE_NOISE");
+        cmVal.push(val);
+        if (document.getElementById('tradeOff1').checked) {
+            tradeOffAD = true;
+        }
     }
     if (document.getElementById('cmopt2').checked) {
-        countermeasure = "TRANSFIGURATION";
-        cmVal = document.getElementById('cmval2').value;
-        if (cmVal < 3 || !(cmVal % 1 === 0)) {
+        if (!isNumeric(document.getElementById('cmval2').value)) {
+            alert("Number of sides is not a valid number");
+            return;
+        }
+        var val = document.getElementById('cmval2').value;
+        if (val < 3 || !(val % 1 === 0)) {
             alert("Sides for polygon should be an integer greater than 2");
             return;
         }
+        countermeasure.push("TRANSFIGURATION");
+        cmVal.push(val);
+        if (document.getElementById('tradeOff2').checked) {
+            tradeOffTF = true;
+        }
     }
     if (document.getElementById('cmopt3').checked) {
-        countermeasure = "K_ANONYMITY";
-        cmVal = document.getElementById('cmval3').value;
-        if (cmVal < 0 || !(cmVal % 1 === 0)) {
+        if (!isNumeric(document.getElementById('cmval3').value)) {
+            alert("K for anonymity is not a valid number");
+            return;
+        }
+        var val = document.getElementById('cmval3').value;
+        if (val < 0 || !(val % 1 === 0)) {
             alert("K for k anonymity should be an positive integer");
             return;
         }
+        countermeasure.push("K_ANONYMITY");
+        cmVal.push(val);
     }
     if (document.getElementById('cmopt4').checked) {
-        countermeasure = "K_CLUSTERING";
-        cmVal = document.getElementById('cmval4').value;
-        if (cmVal < 0 || !(cmVal % 1 === 0)) {
+        if (!isNumeric(document.getElementById('cmval4').value)) {
+            alert("K for clustering is not a valid number");
+            return;
+        }
+        var val = document.getElementById('cmval4').value;
+        if (val < 0 || !(val % 1 === 0)) {
             alert("K for k clustering should be an positive integer");
             return;
         }
+        countermeasure.push("K_CLUSTERING");
+        cmVal.push(val);
     }
-    if (countermeasure == undefined) {
-        alert("Undefined countermeasure!");
+    if (countermeasure.length == 0) {
+        alert("No countermeasure is selected!");
         return;
     }
 
     // get query method
     if (document.getElementById("input_query0").checked) {
-        queries_number = document.getElementById("randomQuery").value;
-        if (queries_number == undefined) {
+        if (!isNumeric(document.getElementById('randomQuery').value)) {
+            alert("Number of query is not a valid number!");
+            return;
+        }
+        numberOfQueries = document.getElementById("randomQuery").value;
+        if (numberOfQueries == undefined) {
             alert("Please specify number of queries!");
             return;
         }
-        if (queries_number <= 0 || queries_number % 1 != 0) {
+        if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
             alert("Number of queries should be a positive integer");
             return;
         }
     }
     if (document.getElementById("input_query1").checked) {
-        queries_file = file_name;
-        if (queries_file == undefined) {
+        queryFile = file_name;
+        if (queryFile == undefined) {
             alert("Please upload a text file containing location information");
             return;
         }
     }
-    if (queries_number == undefined && queries_file == undefined) {
+    if (numberOfQueries == undefined && queryFile == undefined) {
         alert("Please specify querying method");
         return;
     }
@@ -131,9 +180,18 @@ function getParams () {
         return;
     }
 
+    // get email option
+    if (document.getElementById("inputParams").checked) {
+        inputParams = true;
+    }
+    if (document.getElementById("plotGoogleMap").checked) {
+        plotGoogleMap = true;
+    }
+
     // formatting params
-    args = "-a " + analysis_region[0] + " " + analysis_region[3] + " " + analysis_region[2] + " " + analysis_region[1] + " ";
-    args += "-c " + channel_number + " ";
+    // NE lat, SW lng, SW lat, NE lng
+    args = "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
+    args += "-c " + numberOfChannels + " ";
     for (var i = 0; i < location_PU.length; i++) {
         args += "-C ";
         for (var j = 0; j < location_PU[i].length; j++) {
@@ -156,11 +214,11 @@ function getParams () {
             break;
     }
 
-    if (queries_number != null) {
-        args += "-q " + queries_number;
+    if (numberOfQueries != null) {
+        args += "-q " + numberOfQueries;
     }
     else {
-        args += "-f " + queries_file;
+        args += "-f " + queryFile;
     }
 
     args += " -e " + email;
@@ -170,13 +228,13 @@ function getParams () {
 
     /* fill in wells */
     // number of channels
-    document.getElementById("wellchannel").innerHTML = channel_number;
+    document.getElementById("wellchannel").innerHTML = numberOfChannels;
     // anaysis area
     var regionstr = "";
-    regionstr += "North latitude: " + analysis_region[0] + "<br>";
-    regionstr += "South latitude: " + analysis_region[2] + "<br>";
-    regionstr += "West longitude: " + analysis_region[3] + "<br>";
-    regionstr += "East longitude: " + analysis_region[1] + "<br>";
+    regionstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
+    regionstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
+    regionstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
+    regionstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
     document.getElementById("wellregion").innerHTML = regionstr;
     // location of pu
     var pustr = "";
@@ -209,11 +267,11 @@ function getParams () {
     document.getElementById("wellcm").innerHTML = cmstr;
     // query
     var querystr = "";
-    if (queries_number != null) {
-        querystr = "Randomly generated location<br>Number of queries: " + queries_number;
+    if (numberOfQueries != null) {
+        querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries;
     }
     else {
-        querystr = "Use location from " + queries_file;
+        querystr = "Use location from " + queryFile;
     }
     document.getElementById("wellquery").innerHTML = querystr;
 
@@ -266,6 +324,11 @@ function sendParams()
     xmlhttp.send("args=" + args);
 }
 
+/**
+ * Validating email address
+ * @param  {String} email user email
+ * @return {boolean}      true if email is valid
+ */
 function validateEmail(email) {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
     return re.test(email);

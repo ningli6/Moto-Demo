@@ -27,6 +27,10 @@ function enableRandomQueries () {
  * @return {void}
  */
 function adjustValue() {
+    if (!isNumeric(document.getElementById("randomQuery").value)) {
+        document.getElementById("randomQuery").value = 100;
+        return;
+    }
     var val = document.getElementById("randomQuery").value;
     var newVal = Math.round(val / 100) * 100;
     if (newVal < 100) {
@@ -39,7 +43,7 @@ function adjustValue() {
 }
 
 $(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();   
+    $('[data-toggle="qtip"]').tooltip();   
 });
 
 function uploadfile () {
