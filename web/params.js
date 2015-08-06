@@ -4,16 +4,21 @@
 
 var numberOfChannels = 1;  // number of channels [1, 3]
 var location_PU = [];      // pu's location
-var countermeasure = [];   // countermeasures
+var countermeasure = [];   // countermeasures for ic vs q
 var cmVal = []             // cm parameters
+var gmapNO = false;        // plot google map for no countermeasure
+var gmapAD = false;        // plot google map for additive noise
+var gmapTF = false;        // plot google map for transfiguration
+var gmapKA = false;        // plot google map for k anonymity
+var gmapKC = false;        // plot google map for k clustering
 var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
 var tradeOffTF = false; 
-var inputParams = false;   // whether to include input parameters in the email
-var plotGoogleMap = false; // whether to include google map in the email
 var numberOfQueries;       // number of queries
 var queryFile;             // name of querying file
-var args;                  // formatted params as a argument for java program
 var email;                 // send result to this email
+var inputParams = false;   // whether to include input parameters in the email
+
+var args;                  // formatted params as a argument for java program
 
 /**
  * Check parameters first, then consturct argument string for backend program,
@@ -21,7 +26,7 @@ var email;                 // send result to this email
  * @return {void}
  */
 function getParams () {
-    // check region boundaries
+    // check parameters and grab values from forms
     if (rect == undefined || recRegion == undefined) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
         return;
@@ -47,17 +52,31 @@ function getParams () {
         return;
     }
 
-    // check ic vs q & trade off curve
-    if (!document.getElementById("cmval1").checked && document.getElementById("tradeOff1").checked) {
-        alert("Trade off box can't be checked unless its countermeasure is selected!");
+    // check ic vs q
+    if (!document.getElementById("cmopt0").checked && document.getElementById("gmno").checked) {
+        alert("No countermeasure must be selected!");
         return;
     }
 
-    if (!document.getElementById("cmval2").checked && document.getElementById("tradeOff2").checked) {
-        alert("Trade off box can't be checked unless its countermeasure is selected!");
+    if (!document.getElementById("cmopt1").checked && (document.getElementById("tradeOff1").checked || document.getElementById("gmad").checked)) {
+        alert("Countermeasure additive noise must be selected!");
         return;
     }
 
+    if (!document.getElementById("cmopt2").checked && (document.getElementById("tradeOff2").checked || document.getElementById("gmtf").checked)) {
+        alert("Countermeasure transfiguration must be selected!");
+        return;
+    }
+
+    if (!document.getElementById("cmopt3").checked && document.getElementById("gmka").checked) {
+        alert("Countermeasure k anonymity must be selected!");
+        return;
+    }
+
+    if (!document.getElementById("cmopt4").checked && document.getElementById("gmkc").checked) {
+        alert("Countermeasure k clustering must be selected!");
+        return;
+    }
     // get pus' location
     location_PU = [];
     if (numberOfChannels == 1) location_PU.push(markers_one);
@@ -73,10 +92,13 @@ function getParams () {
 
     countermeasure = [];
     cmVal = [];
-    // get countermeasure and cm value
+    // get countermeasure, cm value, google map options, trade off curve options
     if (document.getElementById('cmopt0').checked) {
-        countermeasure.push("NO_COUNTERMEASURE");
-        cmVal.push(null);
+        countermeasure.push("no");
+        cmVal.push(-1);
+        if (document.getElementById('gmno').checked) {
+            gmapNO = true;
+        }
     }
     if (document.getElementById('cmopt1').checked) {
         if (!isNumeric(document.getElementById('cmval1').value)) {
@@ -88,10 +110,13 @@ function getParams () {
             alert("Noise level should be in the range from 0 to 1 inclusively");
             return;
         }
-        countermeasure.push("ADDITIVE_NOISE");
+        countermeasure.push("an");
         cmVal.push(val);
         if (document.getElementById('tradeOff1').checked) {
             tradeOffAD = true;
+        }
+        if (document.getElementById('gmad').checked) {
+            gmapAD = true;
         }
     }
     if (document.getElementById('cmopt2').checked) {
@@ -104,10 +129,13 @@ function getParams () {
             alert("Sides for polygon should be an integer greater than 2");
             return;
         }
-        countermeasure.push("TRANSFIGURATION");
+        countermeasure.push("tf");
         cmVal.push(val);
         if (document.getElementById('tradeOff2').checked) {
             tradeOffTF = true;
+        }
+        if (document.getElementById('gmtf').checked) {
+            gmapTF = true;
         }
     }
     if (document.getElementById('cmopt3').checked) {
@@ -120,8 +148,11 @@ function getParams () {
             alert("K for k anonymity should be an positive integer");
             return;
         }
-        countermeasure.push("K_ANONYMITY");
+        countermeasure.push("ka");
         cmVal.push(val);
+        if (document.getElementById('gmka').checked) {
+            gmapKA = true;
+        }
     }
     if (document.getElementById('cmopt4').checked) {
         if (!isNumeric(document.getElementById('cmval4').value)) {
@@ -133,8 +164,11 @@ function getParams () {
             alert("K for k clustering should be an positive integer");
             return;
         }
-        countermeasure.push("K_CLUSTERING");
+        countermeasure.push("kc");
         cmVal.push(val);
+        if (document.getElementById('gmkc').checked) {
+            gmapKC = true;
+        }
     }
     if (countermeasure.length == 0) {
         alert("No countermeasure is selected!");
@@ -143,13 +177,13 @@ function getParams () {
 
     // get query method
     if (document.getElementById("input_query0").checked) {
-        if (!isNumeric(document.getElementById('randomQuery').value)) {
-            alert("Number of query is not a valid number!");
-            return;
-        }
         numberOfQueries = document.getElementById("randomQuery").value;
         if (numberOfQueries == undefined) {
             alert("Please specify number of queries!");
+            return;
+        }
+        if (!isNumeric(document.getElementById('randomQuery').value)) {
+            alert("Number of query is not a valid number!");
             return;
         }
         if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
@@ -184,44 +218,76 @@ function getParams () {
     if (document.getElementById("inputParams").checked) {
         inputParams = true;
     }
-    if (document.getElementById("plotGoogleMap").checked) {
-        plotGoogleMap = true;
-    }
 
     // formatting params
     // NE lat, SW lng, SW lat, NE lng
     args = "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
+    // number of channels
     args += "-c " + numberOfChannels + " ";
+    // location of pu
     for (var i = 0; i < location_PU.length; i++) {
         args += "-C ";
         for (var j = 0; j < location_PU[i].length; j++) {
             args += location_PU[i][j].position.lat() + " " + location_PU[i][j].position.lng() + " ";
         }
     }
-
-    switch(countermeasure) {
-        case "ADDITIVE_NOISE":
-            args += "-an " + cmVal + " ";
-            break;
-        case "TRANSFIGURATION":
-            args += "-tf " + cmVal + " ";
-            break;
-        case "K_ANONYMITY":
-            args += "-ka " + cmVal + " ";
-            break;
-        case "K_CLUSTERING":
-            args += "-kc " + cmVal + " ";
-            break;
+    // countermeasure
+    args += "-cm ";
+    for (var i = 0; i < countermeasure.length; i++) {
+        if (countermeasure[i] == "no") {
+            args += "-no -1 ";
+        }
+        else if (countermeasure[i] == "an") {
+            args += "-an " + cmVal[i] + " ";
+        }
+        else if (countermeasure[i] == "tf") {
+            args += "-tf " + cmVal[i] + " ";
+        }
+        else if (countermeasure[i] == "ka") {
+            args += "-ka " + cmVal[i] + " ";
+        }
+        else {
+            args += "-kc " + cmVal[i] + " ";
+        }
     }
-
+    // google map plots
+    args += "-gm ";
+    if (gmapNO) {
+        args += 'no ';
+    }
+    if (gmapAD) {
+        args += 'ad ';
+    }
+    if (gmapTF) {
+        args += 'tf ';
+    }
+    if (gmapKA) {
+        args += 'ka ';
+    }
+    if (gmapKC) {
+        args += 'kc ';
+    }
+    // trade off curve
+    args += "-tr ";
+    if (tradeOffAD) {
+        args += 'ad '
+    }
+    if (tradeOffTF) {
+        args += 'tf '
+    }
+    // queries
     if (numberOfQueries != null) {
-        args += "-q " + numberOfQueries;
+        args += "-q " + numberOfQueries + " ";
     }
     else {
-        args += "-f " + queryFile;
+        args += "-f " + queryFile + " ";
     }
-
-    args += " -e " + email;
+    // email
+    args += "-e " + email + " ";
+    args += "-opt ";
+    if (inputParams) {
+        args += "pa ";
+    }
 
     // output formatted args to console
     console.log("args=" + args);
@@ -239,30 +305,55 @@ function getParams () {
     // location of pu
     var pustr = "";
     for (var i = 0; i < location_PU.length; i++) {
+        pustr += "<p>";
         pustr += "Primary user on channel " + i + "<br>";
         for (var j = 0; j < location_PU[i].length; j++) {
             pustr += "( " + location_PU[i][j].position.lat() + ", " + location_PU[i][j].position.lng() + " ) <br>";
         }
+        pustr += "</p>";
     }
     document.getElementById("wellpu").innerHTML = pustr;
     // countermeasure
     var cmstr = "";
-    switch(countermeasure) {
-        case "ADDITIVE_NOISE":
-            cmstr += "Additive noise<br>Noise level: " + cmVal;
-            break;
-        case "TRANSFIGURATION":
-            cmstr += "Transfiguration<br>Number of sides: " + cmVal;
-            break;
-        case "K_ANONYMITY":
-            cmstr += "K anonymity<br>K: " + cmVal;
-            break;
-        case "K_CLUSTERING":
-            cmstr += "K Clustering<br>K: " + cmVal;
-            break;
-        default:
+    for (var i = 0; i < countermeasure.length; i++) {
+        cmstr += "<p>";
+        if (countermeasure[i] == "no") {
             cmstr += "No countermeasure";
-            break;
+            if (gmapNO) {
+                cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+        }
+        else if (countermeasure[i] == "an") {
+            cmstr += "Additive noise. Noise level: " + cmVal[i];
+            if (gmapAD) {
+                cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+            if (tradeOffAD) {
+                cmstr += ". Plot trade-off curve";
+            }
+        }
+        else if (countermeasure[i] == "tf") {
+            cmstr += "Transfiguration. Sides of polygon: " + cmVal[i];
+            if (gmapTF) {
+                cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+            if (tradeOffTF) {
+                cmstr += ". Plot trade-off curve";
+            }
+        }
+        else if (countermeasure[i] == "ka") {
+            cmstr += "K Anonymity. K: " + cmVal[i];
+            if (gmapKA) {
+                cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+        }
+        else {
+            cmstr += "K Clustering. K: " + cmVal[i];
+            if (gmapKC) {
+                cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+        }
+        cmstr += "</p>";
     }
     document.getElementById("wellcm").innerHTML = cmstr;
     // query
@@ -274,9 +365,14 @@ function getParams () {
         querystr = "Use location from " + queryFile;
     }
     document.getElementById("wellquery").innerHTML = querystr;
-
     // email
-    document.getElementById("wellemail").innerHTML = email;
+    var emstr = "";
+    emstr += "<p>Results will be send to " + email;
+    if (inputParams) {
+        emstr += ". Email will also include parameters from above";
+    }
+    emstr += "</p>";
+    document.getElementById("wellemail").innerHTML = emstr;
 
     /* if everything works well, start modal */
     $('#myModal').modal({

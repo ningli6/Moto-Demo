@@ -1,7 +1,5 @@
 package boot;
 
-import demo.*;
-
 /**
  * Entrance of java program
  * Parse parameters from web interface then pass it as a new data structure to a runnable class
@@ -18,20 +16,15 @@ public class Boot {
 
 	public static void main(String[] args) {
 		BootParams bp = Parser.parse(args);
-		RunnableInterface R;
+//		RunnableInterface R;
 		if (bp == null) {
 			System.out.println("FAILED");
 			return;
 		}
-		if (bp.isCountermeasure() && bp.getCountermeasure().equals("NOCOUNTERMEASURE")) {
-			System.out.println("FAILED");
-			return;
-		}
 
-		R = new RunnableInterface(bp, cellsize, mtpScale, interval, directory);
-
+//		R = new RunnableInterface(bp, cellsize, mtpScale, interval, directory)
 		/* start program, return ok */
 		System.out.println("OK");
-	    R.start();
+//	    R.start();
 	}
 }

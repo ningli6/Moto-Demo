@@ -16,7 +16,7 @@ public class RunnableInterface implements Runnable {
 
     public RunnableInterface(BootParams bp, double cs, double scale, int inter, String dir){
         this.bootParams = bp;
-        threadName = bp.getCountermeasure();
+        threadName ="New Thread";
         this.cellsize = cs;
         this.mtpScale = scale;
         this.interval = inter;

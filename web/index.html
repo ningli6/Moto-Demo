@@ -23,7 +23,6 @@
     <script type="text/javascript" src="countermeasure.js"></script>
     <script type="text/javascript" src="queryOpt.js"></script>
     <script type="text/javascript" src="params.js"></script>
-    <link href="style.css" rel="stylesheet">
 </head>
 
 <script type="text/javascript">
@@ -66,51 +65,81 @@ google.maps.event.addDomListener(window, 'load', initialize);
         <div id='map-canvas' style='width:100%; height:500px;'></div>
     </div>
 
-    <!-- analysis bounds -->
-    <!-- Not sure if this is necessary -->
-<!--     <div class="well">
-        <div id="showBounds">Analysis area is not specified</div>
-    </div> -->
-
     <!-- choose countermeasure -->
     <br>
     <h4>Specify countermeasure</h4>
+    <div class="row">
+        <div class="col-md-6"><h5>Inaccuracy vs Queries</h5></div>
+        <div class="col-md-3">
+            <h5>Probability on Google Maps<a href="#" data-toggle="qtip" title="Plot attacker's speculation of primary users location on Google Maps.">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </a></h5>
+        </div>
+        <div class="col-md-3">
+            <h5>Trade-off curves<a href="#" data-toggle="qtip" title="Plot inaccuracy vs different parameter of countermeasures. This option is not available to K anonymity and K clustering technique, because inaccuracy is more relevant to the distribution of primary users, rather than the value of k in their cases.">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </a></h5>
+        </div>
+    </div>
     <form class="form-horizontal" role="form">
         <div class="form-group">
-            <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt0" name="cmradio" checked="checked" onchange="disableInputs();">No countermeasure</label>
+            <div class="col-md-2 checkbox">
+                <label><input type="checkbox" id="cmopt0" onchange="enableInput('cmval0');">No countermeasure</label>
+            </div>
+            <div class="col-md-4 checkbox" id="emptyDiv"> 
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="gmno" onchange="plotGMap('gmno');">Plot on Google Maps</label>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2 radio">
-              <label><input type="radio" id="cmopt1" name="cmradio" onchange="enableInput(1);">Additive Noise</label>
+            <div class="col-md-2 checkbox">
+              <label><input type="checkbox" id="cmopt1" onchange="enableInput('cmval1');">Additive Noise</label>
             </div>
-            <div class="col-sm-10"> 
-                <input type="number" class="form-control" id="cmval1" min="0.0" max="1.0" step="0.1" placeholder="Noise level" style="text-align:center;" disabled>
+            <div class="col-md-4"> 
+                <input type="number" class="form-control" id="cmval1" min="0.0" max="1.0" step="0.1" placeholder="Noise level" style="text-align:center;" disabled onchange="adjustNoiseLevel();">
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt2" name="cmradio" onchange="enableInput(2);">Transfiguration</label>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="gmad" onchange="plotGMap('gmad');">Plot on Google Maps</label>
             </div>
-            <div class="col-sm-10"> 
-                <input type="number" class="form-control" id="cmval2" min="3" placeholder="Sides for convex polygon" style="text-align:center;" disabled>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="tradeOff1" onchange="tradeOffCurve('tradeOff1')">Include trade-off curve</label>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt3" name="cmradio" onchange="enableInput(3);">K-Anonymity</label>
+            <div class="col-md-2 checkbox">
+                <label><input type="checkbox" id="cmopt2" onchange="enableInput('cmval2');">Transfiguration</label>
             </div>
-            <div class="col-sm-10"> 
-                <input type="number" class="form-control" id="cmval3" min="1" placeholder="K for K-Anonymity" style="text-align:center;" disabled>
+            <div class="col-md-4">
+                <input type="number" class="form-control" id="cmval2" min="3" placeholder="Sides for convex polygon" style="text-align:center;" disabled onchange="adjustNumberOfSides();">
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="gmtf" onchange="plotGMap('gmtf');">Plot on Google Maps</label>
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="tradeOff2" onchange="tradeOffCurve('tradeOff2')">Include trade-off curve</label>
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2 radio">
-                <label><input type="radio" id="cmopt4" name="cmradio" onchange="enableInput(4);">K-Clustering</label>
+            <div class="col-md-2 checkbox">
+                <label><input type="checkbox" id="cmopt3" onchange="enableInput('cmval3');">K-Anonymity</label>
             </div>
-            <div class="col-sm-10"> 
-                <input type="number" class="form-control" id="cmval4" min="1" placeholder="K for K-Clustering" style="text-align:center;" disabled>
+            <div class="col-md-4"> 
+                <input type="number" class="form-control" id="cmval3" min="1" placeholder="K for K-Anonymity" style="text-align:center;" disabled onchange="adjustKAnonymity();">
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="gmka" onchange="plotGMap('gmka');">Plot on Google Maps</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2 checkbox">
+                <label><input type="checkbox" id="cmopt4" onchange="enableInput('cmval4');">K-Clustering</label>
+            </div>
+            <div class="col-md-4"> 
+                <input type="number" class="form-control" id="cmval4" min="1" placeholder="K for K-Clustering" style="text-align:center;" disabled onchange="adjustKClustering();">
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="gmkc" onchange="plotGMap('gmkc');">Plot on Google Maps</label>
             </div>
         </div>
     </form>
@@ -119,32 +148,42 @@ google.maps.event.addDomListener(window, 'load', initialize);
     <h4>Specify queries</h4>
     <form class="form-horizontal" role="form">
         <div class="form-group">
-            <div class="col-sm-2 radio">
+            <div class="col-md-2 radio">
                 <label><input type="radio" id="input_query0" name="input_query" onchange="enableRandomQueries();" checked>Random queries</label>
             </div>
-            <div class="col-sm-10"> 
-                <input type="number" class="form-control" id="randomQuery" placeholder="Number of queries" min="1" step="100" style="text-align:center;">
+            <div class="col-md-4"> 
+                <input class="form-control" id="randomQuery" placeholder="Number of queries" min="100" step="100" max="1000" style="text-align:center;" onchange="adjustValue();">
             </div>
+            <a href="#" data-toggle="qtip" title="Query numbers are rounded as multiple of hundred, ranging from 100 to 1000.">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </a>
         </div>
         <div class="form-group">
-            <div class="col-sm-2 radio">
+            <div class="col-md-2 radio">
                 <label><input type="radio" id="input_query1" name="input_query" onchange="disableRandomQueries();">Upload query location</label>
             </div>
-            <div class="col-sm-5">
-                <input type="file" class="col-sm-5 form-control" id="file-select" name="uploadthisfile">
+            <div class="col-md-4">
+                <input type="file" class="form-control" id="file-select" name="uploadthisfile">
             </div>
-            <div class="col-sm-5">
+            <div class="col-md-4">
                 <button type="submit" class="btn btn-default" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
             </div>
         </div>
     </form>
 
-
-    <form class="form-inline" role="form">
-        <h4>Send result to this email</h4>
+    <h4>Send results</h4>
+    <form class="form-horizontal" role="form">
         <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" style="margin-left: 10px" id="email" placeholder="example@vt.edu">
+            <div class="col-md-2 control-label" for="email">Email:</div>
+            <div class="col-md-4">
+                <input type="email" class="form-control" id="email" placeholder="your email address" style="text-align:center;">
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="inputParams">Include input parameters</label>
+                <a href="#" data-toggle="qtip" title="Check this to include above parameters you have chosen in the email.">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                </a>
+            </div>
         </div>
     </form>
 
@@ -183,12 +222,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
     <button type="submit" class="btn btn-primary btn-lg" style="float: right;" onclick="getParams();">Start demo <span class="glyphicon glyphicon-play"></span></button>
     <br><br><br><br>
 </div>
-
-<footer class="footer">
-    <div class="container" id="fter" style="margin-right: 55px">
-        <p class="text-muted" style="text-align: right"><a href="#" style="padding-right: 10px;">Contact us</a></p>
-    </div>
-</footer>
 
 </body>
 </html>

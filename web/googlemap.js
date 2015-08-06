@@ -352,25 +352,4 @@ function resetAllMarkers() {
     markers_three_channel2 = [];
     circles_three_channel2 = [];
     clearGrids();
-    // clearBounds();
 }
-
-/**
- * Update div showBounds, that display information about analysis boundary
- * @param  {google.maps.LatLngBounds} recRegion [analysis boundary]
- */
-// function updateBounds(recRegion) {
-//     var boundstr = "";
-//     boundstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
-//     boundstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
-//     boundstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
-//     boundstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
-//     document.getElementById("showBounds").innerHTML = boundstr;
-// }
-
-/**
- * Clear div showBounds
- */
-// function clearBounds() {
-//     document.getElementById("showBounds").innerHTML = "";
-// }

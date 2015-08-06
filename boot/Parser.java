@@ -1,9 +1,7 @@
 package boot;
 
-import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
 
 import utility.Location;
 
@@ -13,93 +11,150 @@ import utility.Location;
  * @author Ning Li
  */
 public class Parser {
-	public static Map<String, String> cmswitch;
-
 	/**
 	 * Parse an input string from web interface
-	 * @param final string from web page
+	 * The arguments from web interface should be formatted as:
+	 * -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
+	 * @param     string from web page
 	 * @return    BootParams that holds all these information
 	 */
 	public static BootParams parse(String[] args) {
-		if (args == null) return null;
-		if (cmswitch == null) {
-			cmswitch = new HashMap<String, String>();
-			cmswitch.put("-an", "ADDITIVENOISE"); cmswitch.put("-tf", "TRANSFIGURATION");
-			cmswitch.put("-ka", "KANONYMITY"); cmswitch.put("-kc", "KCLUSTERING");
-		}
+		if (args == null || args.length == 0) 
+			return null;
 		BootParams bootParams = new BootParams();
 		try {
+			// get boundary
 			if (!args[0].equals("-a")) {
-				System.out.println(args[0]);
 				throw new IllegalArgumentException("-a");
 			}
 			bootParams.setNorthLat(Double.parseDouble(args[1]));
 			bootParams.setSouthLat(Double.parseDouble(args[3]));
 			bootParams.setWestLng(Double.parseDouble(args[2]));
 			bootParams.setEastLng(Double.parseDouble(args[4]));
+			// get number of channels
 			if (!args[5].equals("-c")) {
-				System.out.println(args[5]);
 				throw new IllegalArgumentException("-c");
 			}
-			bootParams.setNumberOfChannels(Integer.parseInt(args[6]));
-			if (!args[7].equals("-C") && bootParams.getNumberOfChannels() > 0) throw new IllegalArgumentException("Must specify location of PU");
-			if (!args[7].equals("-C")) throw new IllegalArgumentException("-C");
-			int count = 0;
-			int i = 7;
-			while(i < args.length) {
-				if (args[i].equals("-C")) count++;
-				i++;
+			int noc = Integer.parseInt(args[6]);
+			if (noc < 1 || noc > 3) {
+				throw new IllegalArgumentException("Number of channels must be 1, 2 or 3");
 			}
-			if (count != bootParams.getNumberOfChannels()) throw new IllegalArgumentException("Number of channels don't match");
+			bootParams.setNumberOfChannels(noc);
+			// specify location for all pu on each channel
 			@SuppressWarnings("unchecked")
-			List<Location>[] init = (List<Location>[]) new List[count];
-			for (int j = 0; j < init.length; j++) {
-				init[j] = new LinkedList<Location>();
+			List<Location>[] puLocations = (List<Location>[]) new List[noc];
+			for (int j = 0; j < puLocations.length; j++) {
+				puLocations[j] = new LinkedList<Location>();
 			}
-			i = 7;
-			int putchannel = -1;
-			while(i < args.length) {
+			int i = 7;
+			int ch = 0;
+			while(ch < noc) {
 				if (args[i].equals("-C")) {
-					putchannel++;
-					if (args[i + 1].equals("-C")) {
-						i++;
-						continue;
+					i++;
+					while (!args[i].equals("-C") && !args[i].equals("-cm")) {
+						puLocations[ch].add(new Location(Double.parseDouble(args[i++]), Double.parseDouble(args[i++])));
 					}
-					init[putchannel].add(new Location(Double.parseDouble(args[++i]), Double.parseDouble(args[++i])));
-					i++;
+					ch++;
 				}
-				else if (!args[i].equals("-C") && !args[i].equals("-q") && !args[i].equals("-f") && !cmswitch.containsKey(args[i])) {
-					init[putchannel].add(new Location(Double.parseDouble(args[i]), Double.parseDouble(args[++i])));
-					i++;
-				}
-				else break;
 			}
-			bootParams.setPUonChannels(init);
-			if (i == args.length) throw new IllegalArgumentException("Invalid ending");
-			if (cmswitch.containsKey(args[i])) {
-				bootParams.setCountermeasure(cmswitch.get(args[i++]));
-				bootParams.setCMParam(Double.parseDouble(args[i++]));
+			if (ch != noc || !args[i].equals("-cm")) {
+				throw new IllegalArgumentException();
 			}
-			if (i == args.length) throw new IllegalArgumentException("Invalid ending");
+			i += 1;
+			bootParams.setPUonChannels(puLocations);
+			// countermeasure
+			if (!args[i].equals("-no") && !args[i].equals("-an") && !args[i].equals("-tf") && !args[i].equals("-ka") && !args[i].equals("-kc")) {
+				throw new IllegalArgumentException("Must specify countermeasure!");
+			}
+			if (args[i].equals("-no")) {
+				bootParams.putCountermeasure("NOCOUNTERMEASURE", -1);
+				i += 2;
+			}
+			if (args[i].equals("-an")) {
+				bootParams.putCountermeasure("ADDITIVENOISE", Double.valueOf(args[i + 1]));
+				i += 2;
+			}
+			if (args[i].equals("-tf")) {
+				bootParams.putCountermeasure("TRANSFIGURATION", Double.valueOf(args[i + 1]));
+				i += 2;
+			}
+			if (args[i].equals("-ka")) {
+				bootParams.putCountermeasure("KANONYMITY", Double.valueOf(args[i + 1]));
+				i += 2;
+			}
+			if (args[i].equals("-kc")) {
+				bootParams.putCountermeasure("KCLUSTERING", Double.valueOf(args[i + 1]));
+				i += 2;
+			}
+			// google maps
+			if (!args[i].equals("-gm")) {
+				throw new IllegalArgumentException("Need to specify trade off information");
+			}
+			i += 1;
+			if (args[i].equals("no")) {
+				bootParams.setGoogleMapNO(true);
+				i += 1;
+			}
+			if (args[i].equals("ad")) {
+				bootParams.setGoogleMapAD(true);
+				i += 1;
+			}
+			if (args[i].equals("tf")) {
+				bootParams.setGoogleMapTF(true);
+				i += 1;
+			}
+			if (args[i].equals("ka")) {
+				bootParams.setGoogleMapKA(true);
+				i += 1;
+			}
+			if (args[i].equals("kc")) {
+				bootParams.setGoogleMapKC(true);
+				i += 1;
+			}
+			// trade off curve
+			if (!args[i].equals("-tr")) {
+				throw new IllegalArgumentException("Need to specify trade off information");
+			}
+			i += 1;
+			if (args[i].equals("ad")) {
+				bootParams.setTradeOffAD(true);
+				i += 1;
+			}
+			if (args[i].equals("tf")) {
+				bootParams.setTradeOffTF(true);
+				i += 1;
+			}
+			// queries
 			if (args[i].equals("-f")) {
-				bootParams.useFile(args[++i]);
+				bootParams.useFile(args[i + 1]);
+				i += 2;
 			}
 			else if (args[i].equals("-q")){
-				bootParams.setNumberOfQueries(Integer.parseInt(args[++i]));
+				bootParams.setNumberOfQueries(Integer.parseInt(args[i + 1]));
+				i += 2;
 			}
 			else {
-				throw new IllegalArgumentException("Invalid ending");
+				throw new IllegalArgumentException("No query information!");
 			}
-			if (i++ == args.length) throw new IllegalArgumentException("Invalid ending");
-			if (args[i].equals("-e")) {
-				bootParams.setEmail(args[++i]);
+			if (!args[i].equals("-e")) {
+				throw new IllegalArgumentException("No email address!");
+			}
+			bootParams.setEmail(args[i + 1]);
+			i += 2;
+			if (!args[i].equals("-opt")) {
+				throw new IllegalArgumentException("No email option!");
+			}
+			i += 1;
+			if (i < args.length && args[i].equals("pa")) {
+				bootParams.setInputParams(true);
+				i += 1;
 			}
 			return bootParams;
 		}
 		catch (Exception e) {
-			System.out.println("Exception thrown:" + e);
+			e.printStackTrace();
 			System.out.println("Usage: ");
-			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c number_of_channels (-C (lat lon)*){number_of_channels} -q number_of_queries");
+			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
 			return null;
 		}
 	}

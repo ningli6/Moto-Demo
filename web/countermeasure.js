@@ -9,6 +9,12 @@
  * @return {void}
  */
 function enableInput(arg) {
+	if (arg == "cmval0") {
+		if (!document.getElementById("cmopt0").checked) {
+    		document.getElementById("gmno").checked = false;
+    	}
+    	return;
+    }
 	if (document.getElementById(arg).disabled) {
 		document.getElementById(arg).disabled = false;
 		if (arg == "cmval1") {
@@ -28,9 +34,17 @@ function enableInput(arg) {
     	document.getElementById(arg).disabled = true;
     	if (arg == "cmval1") {
     		document.getElementById("tradeOff1").checked = false;
+    		document.getElementById("gmad").checked = false;
     	}
     	if (arg == "cmval2") {
     		document.getElementById("tradeOff2").checked = false;
+    		document.getElementById("gmtf").checked = false;
+    	}
+    	if (arg == "cmval3") {
+    		document.getElementById("gmka").checked = false;
+    	}
+    	if (arg == "cmval4") {
+    		document.getElementById("gmkc").checked = false;
     	}
     }
 }
@@ -50,6 +64,42 @@ function tradeOffCurve(arg) {
 		if (!document.getElementById('cmopt2').checked) {
 			document.getElementById('cmopt2').checked = true
 			enableInput('cmval2');
+		}
+	}
+}
+
+/**
+ * Control plot google map checkbox
+ * @param  {String} argument checkbox id
+ */
+function plotGMap (argument) {
+	if (argument == "gmad") {
+		if (!document.getElementById('cmopt1').checked) {
+			document.getElementById('cmopt1').checked = true
+			enableInput('cmval1');
+		}
+	}
+	else if (argument == "gmtf") {
+		if (!document.getElementById('cmopt2').checked) {
+			document.getElementById('cmopt2').checked = true
+			enableInput('cmval2');
+		}
+	}
+	else if (argument == "gmka") {
+		if (!document.getElementById('cmopt3').checked) {
+			document.getElementById('cmopt3').checked = true
+			enableInput('cmval3');
+		}
+	}
+	else if (argument == "gmkc") {
+		if (!document.getElementById('cmopt4').checked) {
+			document.getElementById('cmopt4').checked = true
+			enableInput('cmval4');
+		}
+	}
+	else {
+		if (!document.getElementById('cmopt0').checked) {
+			document.getElementById('cmopt0').checked = true
 		}
 	}
 }
