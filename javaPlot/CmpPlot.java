@@ -6,37 +6,32 @@ import java.io.InputStreamReader;
 public class CmpPlot {
 	/**
 	 * Call a python script that plot ic vs q
-	 * @param cm Name of countermeasure
+	 * @param noCM plot no countermeasure
+	 * @param ad   plot additive noise
+	 * @param tf   plot transfiguration
+	 * @param ka   plot k anonymity
+	 * @param kc   plot k clustering
 	 * @return true if it works all right
 	 */
-	public static boolean plot(String cm) {
+	public static boolean plot(boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		try {
-			String fileName = "averageIC_NoCountermeasure.txt";
-			String cmpName = null;
-			switch(cm) {
-			case "NOCOUNTERMEASURE": 
-				break;
-			case "ADDITIVENOISE": 
-				cmpName = "cmp_AdditiveNoise.txt";
-				break;
-			case "TRANSFIGURATION":
-				cmpName = "cmp_Transfiguration.txt";
-				break;
-			case "KANONYMITY":
-				cmpName = "cmp_kAnonymity.txt";
-				break;
-			case "KCLUSTERING":
-				cmpName = "cmp_kClustering.txt";
-				break;
+			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py";
+			if (noCM) {
+				cmd += " averageIC_NoCountermeasure.txt";
+			}
+			if (ad) {
+				cmd += " cmp_AdditiveNoise.txt";
+			}
+			if (tf) {
+				cmd += " cmp_Transfiguration.txt";
+			}
+			if (ka) {
+				cmd += " cmp_kAnonymity.txt";
+			}
+			if (kc) {
+				cmd += " cmp_kClustering.txt";
 			}
 
-			String cmd;
-			if (cm == "NOCOUNTERMEASURE") 
-				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + fileName;
-			else if (cm =="TRANSFIGURATION")
-				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwithCmpChopHead.py " + fileName + " " + cmpName; // chop query at 0
-			else 
-				cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwithCmp.py " + fileName + " " + cmpName;
 			Process p = Runtime.getRuntime().exec(cmd);
 			int r = p.waitFor();
 

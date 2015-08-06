@@ -16,15 +16,13 @@ public class Boot {
 
 	public static void main(String[] args) {
 		BootParams bp = Parser.parse(args);
-//		RunnableInterface R;
 		if (bp == null) {
 			System.out.println("FAILED");
 			return;
 		}
-
-//		R = new RunnableInterface(bp, cellsize, mtpScale, interval, directory)
+		Demo R = new Demo(bp, cellsize, mtpScale, interval, directory);
 		/* start program, return ok */
 		System.out.println("OK");
-//	    R.start();
+	    R.start();
 	}
 }

@@ -4,26 +4,40 @@ Show relation between IC and query for each channel
 
 import matplotlib.pyplot as plt
 import sys
+from pyFunctions import PyFunctions
 
-path = "C:/Users/Administrator/Desktop/motoData/" + sys.argv[1]
-output = 'C:/Users/Administrator/Desktop/motoPlot/'
-label = ['channel 0', 'channel 1', 'channe 2']
-marker = ['*', 'o', 'x']
+class cmpPlots:
 
-try:
-	f = open ( path , 'r')
-	l = [ map(float, line.split()) for line in f ]
-	channels = len(l) - 1
-	for c in range(0,channels):
-		plt.plot(l[0], l[c + 1], marker = marker[c], label = label[c])
-	plt.legend()
-	plt.title('Inaccuracy vs queries')
-	plt.xlabel('Number of queries')
-	plt.ylabel('IC')
-	plt.tight_layout()
-	plt.savefig(output + 'ICvsQ.png')
-	# plt.show()
-except Exception, e:
-	raise e
+	def plot(self, files):
+		output = 'C:/Users/Administrator/Desktop/motoPlot/'
+		pyf = PyFunctions()
+		for x in range(len(files)):
+			path = "C:/Users/Administrator/Desktop/motoData/" + files[x]
+			f = open(path, 'r')
+			l = [map(float, line.split()) for line in f]
+			if files[x] == 'averageIC_NoCountermeasure.txt':
+				label = "No countermeasure"
+				marker = '.'
+			elif files[x] == 'cmp_AdditiveNoise.txt':
+				label = "Additive noise"
+				marker = "*"
+			elif files[x] == 'cmp_Transfiguration.txt':
+				label = "Transfiguration"
+				marker = "o"
+			elif files[x] == 'cmp_kAnonymity.txt':
+				label = "K anonymity"
+				marker = "^"
+			elif files[x] == 'cmp_kClustering.txt':
+				label = "K clustering"
+				marker = "D"
+			plt.plot(l[0], pyf.normalize(pyf.average(l[1:])), label = label, marker = marker)
+		plt.legend()
+		plt.title('Inaccuracy vs queries')
+		plt.xlabel('Number of queries')
+		plt.ylabel('IC')
+		plt.tight_layout()
+		plt.savefig(output + 'ICvsQ.png')
+		plt.show()
 
-
+pt = cmpPlots()
+pt.plot(['averageIC_NoCountermeasure.txt', 'cmp_AdditiveNoise.txt', 'cmp_Transfiguration.txt', 'cmp_kAnonymity.txt', 'cmp_kClustering.txt'])

@@ -24,10 +24,10 @@ public class SimKClustering extends Simulation {
 		super(bootParams, cellsize, mtpScale, interval, directory);
 		
 		/* initialize countermeasure */
-		this.counterMeasure = bootParams.getCountermeasure();
+		this.counterMeasure = "KCLUSTERING";
 		
 		/* initialize k for clustering */
-		this.k = (int) bootParams.getCMParam();
+		this.k = (int) bootParams.getCMParam(this.counterMeasure);
 		
 		/* initialize server */
 		cmServer = new ServerKClustering(map, noc, k);
@@ -52,7 +52,6 @@ public class SimKClustering extends Simulation {
 	
 	@Override
 	public void singleSimulation() {
-		icq = false;           // do not include ic vs q
 		if (this.k > 0) {
 			feasible = true;
 		}
@@ -91,32 +90,20 @@ public class SimKClustering extends Simulation {
 	
 	@Override
 	public void multipleSimulation() {
-		if (!feasible) {
+		if (this.k < 1) {
+			this.feasible = false;
 			System.out.println("K must be a positive integer.");
-			icq = false;
 			return;
 		}
-		if (noq < 50) {
-			icq = false;
-			return;
-		}
-		icq = true;
-		// multiple simulation without countermeasure
-		super.multipleSimulation();
+		
 		// multiple simulation with k anonymity
 		Client multclient = new Client(cmServer); 
 		System.out.println("Start computing average IC with k clustering...");
 		// compute query points
 		int gap = noq / interval;
-		int base = 1;
-		int tmp = gap;
-		while(tmp / base > 0) {
-			base *= 10;
-		}
-		gap = (gap / (base / 10)) * (base / 10);
 		// start query from 0 times
 		List<Integer> qlist = new ArrayList<Integer>(10);
-		for (int i = 0; i <= interval + 1; i++) {
+		for (int i = 0; i <= interval; i++) {
 			qlist.add(gap * i);
 			icCMMap.put(gap * i, new double[noc]);
 		}
@@ -162,9 +149,7 @@ public class SimKClustering extends Simulation {
 		else {
 			sb.append("<p>Simulation results are plotted and attached to this email. "
 					+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
-			if (icq) {
-				sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
-			}
+			sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
 			sb.append("</p>");
 		}
 		return sb.toString();

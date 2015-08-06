@@ -28,16 +28,15 @@ public class Simulation {
 	int noq;               // number of queries
 	int repeat;            // number of repetition for multiple simulations
 	double[] IC;           // ic for single simulation, may include this information in email
-	boolean icq;           // whether to include ic vs q, if query is greater than 100, icq is set to true
 	Map<Integer, double[]> icMap; // associate ic to number of queries
 	StringBuilder content; // for email
 
-	public Simulation(BootParams bp, double cs, double scale, int inter, String dir) {
-		this.bootParams = bp;
-		this.cellsize = cs;
-		this.mtpScale = scale;
-		this.interval = inter;
-		this.directory = dir;
+	public Simulation(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
+		this.bootParams = bootParams;
+		this.cellsize = cellSize;
+		this.mtpScale = mtpScale;
+		this.interval = interval;
+		this.directory = directory;
 
 		/* initialize map */
 		Location upperLeft = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
@@ -84,9 +83,6 @@ public class Simulation {
 		/* initialize ic */
 		IC = null;
 
-		/* whether to plot ic vs q */
-		icq = false;
-
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
 
@@ -98,8 +94,6 @@ public class Simulation {
 		System.out.println("Start querying...");
 		/* initialize a client */
 		Client client = new Client(server);
-		// do not print ic vs q
-		icq = false;
 		/* run simulation for one time */
 		for (int i = 1; i <= noq; i++) {
 			client.randomLocation();
@@ -130,12 +124,6 @@ public class Simulation {
 
 	public void multipleSimulation() {
 		System.out.println("Start computing average IC...");
-		// update icq
-		if (noq < 50) {
-			icq = false;
-			return;
-		}
-		icq = true;
 
 		// create a new client instead of using the old one, which is saved for email to use
 		Client multclient = new Client(server);
@@ -149,7 +137,7 @@ public class Simulation {
 		gap = (gap / (base / 10)) * (base / 10);
 		// start query from 0 times
 		List<Integer> qlist = new ArrayList<Integer>(10);
-		for (int i = 0; i <= interval + 1; i++) {
+		for (int i = 0; i <= interval; i++) {
 			qlist.add(gap * i);
 			icMap.put(gap * i, new double[noc]);
 		}
@@ -240,9 +228,7 @@ public class Simulation {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<p>Simulation results are plotted and attached to this email. "
 				+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
-		if (icq) {
-			sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
-		}
+		sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
 		sb.append("</p>");
 		return sb.toString();
 	}
@@ -262,7 +248,7 @@ public class Simulation {
     	}
 		if (iCvsQ) { // this is set to true if noq is greater than 100
 			System.out.println("Plotting average inacurracy...");
-			if (!CmpPlot.plot(countermeasure)) {
+			if (!CmpPlot.plot(false, false, false, false, false)) {
 				System.out.println("Plotting failed");
 			}
 		}
@@ -279,13 +265,5 @@ public class Simulation {
 		if (!SendEmail.send("ningli@vt.edu", bootParams.getEmail(), getEmailContent(), noc, googleMap, iCvsQ)) {
 			System.out.print("Email failed!");
 		}
-	}
-	
-	/**
-	 * Whether to plot ic vs q
-	 * @return true if query number is greater than 50 times
-	 */
-	public boolean plotICvsQuery() {
-		return icq;
 	}
 }
