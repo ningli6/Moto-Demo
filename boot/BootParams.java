@@ -230,6 +230,71 @@ public class BootParams {
 	public void setInputParams(boolean f) {
 		this.inputParams = f;
 	}
+	
+	public String paramsToTextFile() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Simulation parameters:\n\n");
+		sb.append("Number of channels: " + numberOfChannels + "\n");
+		sb.append("Analysis region: \n");
+		sb.append("North latitude :" + NorthLat + "\n");
+		sb.append("South latitude :" + SouthLat + "\n");
+		sb.append("West longitude :" + WestLng + "\n");
+		sb.append("East longitude :" + EastLng + "\n\n");
+		sb.append("Location of Primary users: \n");
+		int len = puList.length;
+		for (int i = 0; i < len; i++) {
+			sb.append("Channel " + i + ": \n");
+			for (Location ll : puList[i]) {
+				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "\n");
+			}
+			sb.append("\n");
+		}
+		sb.append("Countermeasure: \n");
+		if (containsCM("NOCOUNTERMEASURE")) {
+			sb.append("No countermeasure.");
+			if (plotGooglMapNO()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+			}
+		}
+		if (containsCM("ADDITIVENOISE")) {
+			sb.append("Additive noise. Noise level: " + getCMParam("ADDITIVENOISE") + "\n");
+			if (plotGooglMapAD()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+			}
+			if (tradeOffAD()) {
+				sb.append("Plot trade-off curve.");
+			}
+		}
+		if (containsCM("TRANSFIGURATION")) {
+			sb.append("Transfiguration. Number of sids: " + (int) getCMParam("TRANSFIGURATION") + "\n");
+			if (plotGooglMapTF()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+			}
+			if (tradeOffTF()) {
+				sb.append("Plot trade-off curve.");
+			}
+		}
+		if (containsCM("KANONYMITY")) {
+			sb.append("K anonymity. K: " + (int) getCMParam("KANONYMITY") + "\n");
+			if (plotGooglMapKA()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+			}
+		}
+		if (containsCM("KCLUSTERING")) {
+			sb.append("K clustering. K: " + (int) getCMParam("KCLUSTERING") + "\n");
+			if (plotGooglMapAD()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+			}
+		}
+		sb.append(System.getProperty("line.separator"));
+		if (numberOfQueries < 0) {
+			sb.append("Upload_file: " + fileName + "\n");
+		}
+		else {
+			sb.append("Number of queries: " + numberOfQueries + "\n");
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * Construct email content
@@ -237,7 +302,7 @@ public class BootParams {
 	 */
 	public String paramsToString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<h3>Simulation result</h3>");
+		sb.append("<h3>Simulation parameters:</h3>");
 		sb.append("<p>Number of channels: " + numberOfChannels + "</p>");
 		sb.append("<p>Analysis region: <br>");
 		sb.append("North latitude :" + NorthLat + "<br>");

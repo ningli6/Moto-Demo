@@ -130,7 +130,7 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		/* run simulation for multiple times */
 		for (int q : qlist) {             // for each query number
-			System.out.println("Number of queries: " + q);
+//			System.out.println("Number of queries: " + q);
 			cmServer.updateLiesNeeded(q); // update expected number of lies
 			int attempts = maxIteration;  // with in maxIteration, must succeed once
 			int succeed = 0;              // number of successful attempts
@@ -175,6 +175,7 @@ public class SimAdditiveNoise extends Simulation {
 			System.out.println("Noise: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
 				trdOfClient.reset();
+				cmServer.reset();
 				for (int i = 0; i < noq; i++) {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);

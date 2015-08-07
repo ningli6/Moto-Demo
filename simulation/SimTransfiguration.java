@@ -146,9 +146,9 @@ public class SimTransfiguration extends Simulation {
 		System.out.println("Start computing trade off curve for transfiguration...");
 		Client trdOfClient = new Client(cmServer);
 		for (int k = 0; k < cmString.length - 1; k++) {
+			cmServer.transfigure(cmString[k]);
 			System.out.println("Sides: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
-				cmServer.transfigure(cmString[k]);
 				trdOfClient.reset();
 				for (int i = 0; i < noq; i++) {
 					trdOfClient.randomLocation();
