@@ -126,10 +126,11 @@ public class InferMap extends GridMap {
 	/**
 	 * Print infer map's probability map
 	 * @param dir     output path
+	 * @param fileName TODO
 	 */
-	public void printProbability(String dir) {
+	public void printProbability(String dir, String fileName) {
 		if (dir == null || dir.length() == 0) return;
-		File file = new File(dir + "demoTable_" + this.id + ".txt");
+		File file = new File(dir + fileName + "_" + this.id + "_pMatrix.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
 			out.println("ROW COL P");

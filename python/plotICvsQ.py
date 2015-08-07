@@ -13,7 +13,10 @@ class cmpPlots:
 		pyf = PyFunctions()
 		for x in range(len(files)):
 			path = "C:/Users/Administrator/Desktop/motoData/" + files[x]
-			f = open(path, 'r')
+			try:
+				f = open(path, 'r')
+			except Exception, e:
+				continue
 			l = [map(float, line.split()) for line in f]
 			if files[x] == 'averageIC_NoCountermeasure.txt':
 				label = "No countermeasure"
@@ -37,7 +40,7 @@ class cmpPlots:
 		plt.ylabel('IC')
 		plt.tight_layout()
 		plt.savefig(output + 'ICvsQ.png')
-		plt.show()
+		# plt.show()
 
 pt = cmpPlots()
-pt.plot(['averageIC_NoCountermeasure.txt', 'cmp_AdditiveNoise.txt', 'cmp_Transfiguration.txt', 'cmp_kAnonymity.txt', 'cmp_kClustering.txt'])
+pt.plot([sys.argv[x] for x in range(1, len(sys.argv))])

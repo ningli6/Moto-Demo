@@ -137,9 +137,9 @@ public class Server {
 		}
 	}
 
-	public void printPUAllChannel(String dir) {
+	public void printPUAllChannel(String dir, String fileName) {
 		for (int i = 0; i < numberOfChannels; i++) {
-			File file = new File(dir + "demoTable_" + i + "_pu.txt");
+			File file = new File(dir + fileName + "_" + i + "_pu.txt");
 			try {
 				PrintWriter out = new PrintWriter(file);
 				out.println("LAT LNG RI CI");

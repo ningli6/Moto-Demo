@@ -91,7 +91,7 @@ public class SimTransfiguration extends Simulation {
 //		}
 //		System.out.println();
 		
-		printSingle(cmServer, client, directory);
+		printSingle(cmServer, client, directory, "Transfiguration");
 	}
 
 	@Override

@@ -181,10 +181,11 @@ public class Client {
 	/**
 	 * Print probability matrix of ALL channels
 	 * @param dir   output path
+	 * @param fileName TODO
 	 */
-	public void printProbability(String dir) {
+	public void printProbability(String dir, String fileName) {
 		for (int i = 0; i < Number_Of_Channels; i++) {
-			inferMap[i].printProbability(dir);
+			inferMap[i].printProbability(dir, fileName);
 		}
 	}
 

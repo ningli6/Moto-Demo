@@ -3,18 +3,19 @@ package simulation;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javaEmail.SendEmail;
-import javaPlot.CmpPlot;
-import javaPlot.MatPlot;
-import client.Client;
+
 import server.Server;
 import utility.GridMap;
 import utility.Location;
 import utility.MTP;
 import utility.PU;
 import boot.BootParams;
+import client.Client;
 
 public class Simulation {
 	String directory;      // output dir
@@ -119,7 +120,7 @@ public class Simulation {
 //		}
 //		System.out.println();
 		
-		printSingle(server, client, directory);
+		printSingle(server, client, directory, "No_Countermeasure");
 	}
 
 	public void multipleSimulation() {
@@ -165,20 +166,21 @@ public class Simulation {
 	/**
 	 * Print text file
 	 * Probability matrix and location of pu on each channel
-	 * @param server provides information about location of primary users
-	 * @param client provide probability matrix
-	 * @param dir output path of text file
+	 * @param server       provides information about location of primary users
+	 * @param client       provide probability matrix
+	 * @param dir          output path of text file
+	 * @param fileName     file that holds information about probability and locations
 	 */
-	public void printSingle(Server server, Client client, String dir) {
+	public void printSingle(Server server, Client client, String dir, String fileName) {
 		if (client == null || server == null || dir == null || dir.length() == 0) {
 			throw new NullPointerException();
 		}
 		
 		System.out.println("Start printing probability...");
-		client.printProbability(dir);
+		client.printProbability(dir, fileName);
 		
 		System.out.println("Start printing location of primary users...");
-		server.printPUAllChannel(dir);
+		server.printPUAllChannel(dir, fileName);
 	}
 
 	/**
@@ -231,27 +233,6 @@ public class Simulation {
 		sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
 		sb.append("</p>");
 		return sb.toString();
-	}
-
-	/**
-	 * Plot function that helps to plot data on google map and ic vs query
-	 * @param plotProbOnMap   whether to plot data on google map
-	 * @param iCvsQ           whether to plot ic vs query on google map
-	 * @param countermeasure  name of the countermeasure
-	 */
-	public void plot(boolean plotProbOnMap, boolean iCvsQ, String countermeasure) {
-    	if (plotProbOnMap) {
-        	System.out.println("Plotting probability distribution on Google Map...");
-        	if (!MatPlot.plot(noc, map.getRows(), map.getCols(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng())) {
-        		System.out.println("Plotting failed");
-        	}
-    	}
-		if (iCvsQ) { // this is set to true if noq is greater than 100
-			System.out.println("Plotting average inacurracy...");
-			if (!CmpPlot.plot(false, false, false, false, false)) {
-				System.out.println("Plotting failed");
-			}
-		}
 	}
 	
 	/**

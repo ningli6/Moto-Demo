@@ -1,6 +1,7 @@
 package boot;
 
 import javaPlot.CmpPlot;
+import javaPlot.MatPlot;
 import simulation.SimAdditiveNoise;
 import simulation.SimKAnonymity;
 import simulation.SimKClustering;
@@ -36,16 +37,16 @@ public class Demo implements Runnable {
         	if (bootParams.containsCM("NOCOUNTERMEASURE")) {
         		Simulation sim = new Simulation(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-//        		if (bootParams.plotGooglMapNO()) {
-//        			sim.singleSimulation();
-//        		}
+        		if (bootParams.plotGooglMapNO()) {
+        			sim.singleSimulation();
+        		}
         	}
         	if (bootParams.containsCM("ADDITIVENOISE")) {
         		SimAdditiveNoise sim = new SimAdditiveNoise(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-//        		if (bootParams.plotGooglMapAD()) {
-//        			sim.singleSimulation();
-//        		}
+        		if (bootParams.plotGooglMapAD()) {
+        			sim.singleSimulation();
+        		}
 //        		if (bootParams.tradeOffAD()) {
 //        			sim.tradeOffCurve();
 //        		}
@@ -53,9 +54,9 @@ public class Demo implements Runnable {
         	if (bootParams.containsCM("TRANSFIGURATION")) {
         		SimTransfiguration sim = new SimTransfiguration(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-//        		if (bootParams.plotGooglMapTF()) {
-//        			sim.singleSimulation();
-//        		}
+        		if (bootParams.plotGooglMapTF()) {
+        			sim.singleSimulation();
+        		}
 //        		if (bootParams.tradeOffTF()) {
 //        			sim.tradeOffCurve();
 //        		}
@@ -63,20 +64,26 @@ public class Demo implements Runnable {
         	if (bootParams.containsCM("KANONYMITY")) {
         		SimKAnonymity sim = new SimKAnonymity(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-//        		if (bootParams.plotGooglMapKA()) {
-//        			sim.singleSimulation();
-//        		}
+        		if (bootParams.plotGooglMapKA()) {
+        			sim.singleSimulation();
+        		}
         	}
         	if (bootParams.containsCM("KCLUSTERING")) {
         		SimKClustering sim = new SimKClustering(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-//        		if (bootParams.plotGooglMapKC()) {
-//        			sim.singleSimulation();
-//        		}
+        		if (bootParams.plotGooglMapKC()) {
+        			sim.singleSimulation();
+        		}
         	}
         	// plot ic vs q
         	if (!CmpPlot.plot(bootParams.containsCM("NOCOUNTERMEASURE"), bootParams.containsCM("ADDITIVENOISE"), bootParams.containsCM("TRANSFIGURATION"), bootParams.containsCM("KANONYMITY"), bootParams.containsCM("KCLUSTERING"))) {
         		System.out.println("Plot ic vs q failed");
+        		return;
+        	}
+        	// plot google map
+        	if (!MatPlot.plot(bootParams.getNumberOfChannels(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng(), 
+        			bootParams.plotGooglMapNO(), bootParams.plotGooglMapAD(), bootParams.plotGooglMapTF(), bootParams.plotGooglMapKA(), bootParams.plotGooglMapKC())) {
+        		System.out.println("Plot Google Maps failed");
         		return;
         	}
         	// send email

@@ -14,6 +14,7 @@ public class CmpPlot {
 	 * @return true if it works all right
 	 */
 	public static boolean plot(boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+		System.out.println("Start plotting ic vs queries...");
 		try {
 			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py";
 			if (noCM) {
