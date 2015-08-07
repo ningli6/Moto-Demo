@@ -1,5 +1,8 @@
 package server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,27 +91,27 @@ public class ServerTransfiguration extends Server{
 		return Collections.max(response_list);
 	}
 	
-//	public void printTransfiguredMap(String dir) {
-//		if (dir == null || dir.length() == 0) return;
-//		for (List<PolyPU> ppu : channels_poly_List) {
-//			for (PolyPU polyPU : ppu) {
-//				File file = new File(dir + "tf_" + polyPU.getPU().getID() + ".txt");
-//				try {
-//					PrintWriter out = new PrintWriter(file);
-//					for (int i = 0; i < map.getRows(); i++) {
-//						for (int j = 0; j < map.getCols(); j++) {
-//							double val = polyPU.response(i, j);
-//							out.print(val + " ");
-//						}
-//						out.println();
-//					}
-//					out.close (); // this is necessary
-//				} catch (FileNotFoundException e) {
-//					System.out.println("FileNotFoundException: " + e.getMessage());
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
+	public void printTransfiguredMap(String dir) {
+		if (dir == null || dir.length() == 0) return;
+		for (List<PolyPU> ppu : channels_poly_List) {
+			for (PolyPU polyPU : ppu) {
+				File file = new File(dir + "tf_" + polyPU.getPU().getID() + ".txt");
+				try {
+					PrintWriter out = new PrintWriter(file);
+					for (int i = 0; i < map.getRows(); i++) {
+						for (int j = 0; j < map.getCols(); j++) {
+							double val = polyPU.response(i, j);
+							out.print(val + " ");
+						}
+						out.println();
+					}
+					out.close (); // this is necessary
+				} catch (FileNotFoundException e) {
+					System.out.println("FileNotFoundException: " + e.getMessage());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }

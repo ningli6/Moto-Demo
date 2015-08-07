@@ -140,12 +140,13 @@ public class SimTransfiguration extends Simulation {
 	}
 
 	public void tradeOffCurve() {
-		int[] cmString = {3, 4, 5, 6, 7, 8};
-		double[] trdIC = new double[6];
+		int[] cmString = {3, 4, 5, 6, 7, 8, 9, 10};
+		double[] trdIC = new double[cmString.length];
 		int repeat = 10;
 		System.out.println("Start computing trade off curve for transfiguration...");
 		Client trdOfClient = new Client(cmServer);
-		for (int k = 0; k < cmString.length; k++) {
+		for (int k = 0; k < cmString.length - 1; k++) {
+			System.out.println("Sides: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
 				cmServer.transfigure(cmString[k]);
 				trdOfClient.reset();
@@ -153,9 +154,24 @@ public class SimTransfiguration extends Simulation {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
 				}
-				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+				double[] ic = trdOfClient.computeIC();
+				trdIC[k] += average(ic) / repeat;
 			}
 		}
+		Client client = new Client(server);
+		int k = cmString.length - 1;
+		System.out.println("Sides: infinite");
+		for (int r = 0; r < repeat; r++) {
+			client.reset();
+			/* run simulation for once */
+			for (int i = 0; i < noq; i++) {
+				client.randomLocation();
+				client.query(cmServer);
+			}
+			double[] ic = client.computeIC();
+			trdIC[k] += average(ic) / repeat;
+		}
+		
 		printTradeOff(cmString, trdIC, directory, "traddOff_Transfiguration.txt");
 	}
 	

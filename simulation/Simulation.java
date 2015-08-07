@@ -114,10 +114,10 @@ public class Simulation {
 //			}
 //		}
 //		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
+		System.out.println("IC: ");
+		for (double d : IC){
+			System.out.print((int)d + " ");
+		}
 //		System.out.println();
 		
 		printSingle(server, client, directory, "No_Countermeasure");
