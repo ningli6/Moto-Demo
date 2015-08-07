@@ -1,5 +1,8 @@
 package simulation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +139,57 @@ public class SimTransfiguration extends Simulation {
 		printMultiple(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
 	}
 
+	public void tradeOffCurve() {
+		int[] cmString = {3, 4, 5, 6, 7, 8};
+		double[] trdIC = new double[6];
+		int repeat = 10;
+		System.out.println("Start computing trade off curve for transfiguration...");
+		Client trdOfClient = new Client(cmServer);
+		for (int k = 0; k < cmString.length; k++) {
+			for (int r = 0; r < repeat; r++) {
+				cmServer.transfigure(cmString[k]);
+				trdOfClient.reset();
+				for (int i = 0; i < noq; i++) {
+					trdOfClient.randomLocation();
+					trdOfClient.query(cmServer);
+				}
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmString, trdIC, directory, "traddOff_Transfiguration.txt");
+	}
 	
+	private void printTradeOff(int[] cmString, double[] trdIC,
+			String directory, String string) {
+		System.out.println("Start printing trade-off value...");
+		File file = new File(directory + string);
+		try {
+			PrintWriter out = new PrintWriter(file);
+			for (int q : cmString) {
+				out.print(q + " ");
+			}
+			out.println();	
+			for (double q : trdIC) {
+				out.print(q + " ");
+			}
+			out.println();
+			out.close (); // this is necessary	
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private double average(double[] computeIC) {
+		double ans = 0;
+		int len = computeIC.length;
+		for (double d : computeIC) {
+			ans += d / len;
+		}
+		return ans;
+	}
+
 	/**
 	 * Construct email content
 	 * @return   a string that describing simulation results
@@ -162,10 +215,5 @@ public class SimTransfiguration extends Simulation {
 
 	public String getCountermeasure() {
 		return counterMeasure;
-	}
-
-	public void tradeOffCurve() {
-		// TODO Auto-generated method stub
-		
 	}
 }

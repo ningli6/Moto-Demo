@@ -18,3 +18,13 @@ class PyFunctions:
 	def normalize(self, nums):
 		maxVal = float(max(nums))
 		return [(val / float(maxVal)) for val in nums]
+
+	# Cut the first element in the array
+	# @param {[]} array
+	# @return {[]}
+	def chophead(l):
+		res = []
+		for line in l:
+			line = line[1:]
+			res.append(line)
+		return res

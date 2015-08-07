@@ -44,14 +44,29 @@ public class ServerAdditiveNoise extends Server{
 		return res;
 	}
 
-	public void updateLiesNeeded(int number_of_queries) {
+	public void updateLiesNeeded(int numberOfQueries) {
 		actualLies = 0;
-		numberOfQueries = number_of_queries;
+		this.numberOfQueries = numberOfQueries;
 		expectedLies = (int) Math.round(numberOfQueries * noise / NOISE_DECREASE_STEP);
 	}
 
 	public double getNoiseLevel() {
 		return noise;
+	}
+	
+	/**
+	 * Set new noise level
+	 * set actual lies back to 0
+	 * compute new expected lies needed
+	 * @param lv   new noise level, must be in (0, 1)
+	 */
+	public void setNoiseLevel(double lv) {
+		if (lv < 0 || lv > 1) {
+			System.out.println("Invalid noise level");
+			return;
+		}
+		this.noise = lv;
+		updateLiesNeeded(numberOfQueries);
 	}
 
 	public int getNumberOfLies() {

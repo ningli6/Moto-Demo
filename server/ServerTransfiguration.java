@@ -15,9 +15,9 @@ public class ServerTransfiguration extends Server{
 	private List<PolyPU>[] channels_poly_List;     // channel list for polyPU
 	
 	@SuppressWarnings("unchecked")
-	public ServerTransfiguration(GridMap map, int noc, int number_of_sides) {
+	public ServerTransfiguration(GridMap map, int noc, int numberOfSides) {
 		super(map, noc);
-		numberOfSides = number_of_sides; 
+		this.numberOfSides = numberOfSides; 
 		channels_poly_List = (List<PolyPU>[]) new List[numberOfChannels];
 		for (int i = 0; i < numberOfChannels; i++) {
 			channels_poly_List[i] = new LinkedList<PolyPU>();
@@ -36,6 +36,23 @@ public class ServerTransfiguration extends Server{
 			}
 			k++;
 		}
+	}
+	
+	/**
+	 * Set new number of sides
+	 * @param sides  new number of sides
+	 */
+	public void transfigure(int sides) {
+		if (sides < 3) {
+			System.out.println("Invalid number of sides for polygon");
+			return;
+		}
+		if (getNumberOfPUs() == 0) return;
+		for (List<PolyPU> list : channels_poly_List) {
+			list.clear();
+		}
+		numberOfSides = sides;
+		transfigure();
 	}
 
 	/**

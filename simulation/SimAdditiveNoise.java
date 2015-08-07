@@ -1,5 +1,8 @@
 package simulation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +21,7 @@ public class SimAdditiveNoise extends Simulation {
 	private int maxIteration;             // max attempts to reach noise level
 	private boolean feasible;             // whether this noise level is feasible
 	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
-
+	
 	public SimAdditiveNoise(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
 		/* call parent constructor */
 		super(bootParams, cellSize, mtpScale, interval, directory);
@@ -160,6 +163,56 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		printMultiple(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
 	}
+	
+	public void tradeOffCurve() {
+		double[] cmString = {0.2, 0.4, 0.6, 0.8};
+		double[] trdIC = new double[4];
+		int repeat = 10;
+		System.out.println("Start computing trade off curve for additive noise...");
+		Client trdOfClient = new Client(cmServer);
+		for (int k = 0; k < cmString.length; k++) {
+			for (int r = 0; r < repeat; r++) {
+				cmServer.setNoiseLevel(cmString[k]);
+				trdOfClient.reset();
+				for (int i = 0; i < noq; i++) {
+					trdOfClient.randomLocation();
+					trdOfClient.query(cmServer);
+				}
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
+	}
+	
+	private void printTradeOff(double[] cm, double[] ic, String path, String fileName) {
+		System.out.println("Start printing trade-off value...");
+		File file = new File(path + fileName);
+		try {
+			PrintWriter out = new PrintWriter(file);
+			for (double q : cm) {
+				out.print(q + " ");
+			}
+			out.println();	
+			for (double q : ic) {
+				out.print(q + " ");
+			}
+			out.println();
+			out.close (); // this is necessary	
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private double average(double[] nums) {
+		double ans = 0;
+		int len = nums.length;
+		for (double d : nums) {
+			ans += d / len;
+		}
+		return ans;
+	}
 
 	/**
 	 * Construct email content
@@ -190,10 +243,5 @@ public class SimAdditiveNoise extends Simulation {
 
 	public String getCountermeasure() {
 		return countermeasure;
-	}
-
-	public void tradeOffCurve() {
-		// TODO Auto-generated method stub
-		
 	}
 }
