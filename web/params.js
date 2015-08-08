@@ -439,17 +439,17 @@ function sendParams()
                 alert("Demo failed. " + res);
             }
             // reload page
-            window.location = 'index-dev.html';
+            window.location = 'index.html';
         }
         if (xmlhttp.readyState == 4 && xmlhttp.status != 200)
         {
             // document.getElementById("params").innerHTML=xmlhttp.responseText;
             alert("Sorry. Failed to start demo. " + xmlhttp.status);
             // reload page
-            window.location = 'index-dev.html';
+            window.location = 'index.html';
         }
     }
-    xmlhttp.open("POST","result-dev.php", true);
+    xmlhttp.open("POST","result.php", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.send("args=" + args);
 }

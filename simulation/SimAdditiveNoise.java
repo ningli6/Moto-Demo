@@ -61,23 +61,20 @@ public class SimAdditiveNoise extends Simulation {
 			feasible = false;   // do not execute following simulations
 			return;
 		}
-		System.out.println("Start querying...");
-		
-		/* initialize a client */
-		Client client = new Client(cmServer);
-
-		/* run simulation for once */
-		int attempts = maxIteration;
+		if (!feasible) {  // multiple simulation was performed first, so if it's not feasible, return
+			return;
+		}
+		System.out.println("Start querying...");  
+		Client client = new Client(cmServer);		// initialize a client
+		int attempts = maxIteration;		        // define max iteration
 		while(attempts > 0) {
-			// clear client's probability map to 0.5
-			client.reset();
-			// set actual lies back to 0
-			cmServer.reset();
+			client.reset();  // clear client's probability map to 0.5
+			cmServer.reset();// set actual lies back to 0
 			for (int i = 0; i < noq; i++) {
 				client.randomLocation();
 				client.query(cmServer);
 			}
-			if (cmServer.reachNoiseLevel()) {
+			if (cmServer.reachNoiseLevel()) { // if noise level satisfied
 				System.out.println("Noise level satisfied!");
 //				System.out.println("Actual lies: " + cmServer.getNumberOfLies() + " Expected lies: " + cmServer.getExpectedLies());
 				break;
@@ -91,7 +88,6 @@ public class SimAdditiveNoise extends Simulation {
 			System.out.println("Noise level is set too high. Requirement can't be reached within 20 attempts.");
 			return;
 		}
-		feasible = true;        // noise level is feasible, proceed
 		IC = client.computeIC();
 		
 //		/* debug */
@@ -117,20 +113,15 @@ public class SimAdditiveNoise extends Simulation {
 			System.out.println("Noise level is not feasible.");
 			return;
 		}
-
 		System.out.println("Start computing average IC with additive noise...");
-		Client multclient = new Client(cmServer);
-		// compute query points
-		int gap = noq / interval;
-		// start query from 0 times
+		Client multclient = new Client(cmServer); // get a new client
+		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
 		List<Integer> qlist = new ArrayList<Integer>();
-		for (int i = 0; i <= interval; i++) {
+		for (int i = 0; i <= interval; i++) {     // start query from 0 times
 			qlist.add(gap * i);
 			icCMMap.put(gap * i, new double[noc]);
 		}
-		/* run simulation for multiple times */
 		for (int q : qlist) {             // for each query number
-//			System.out.println("Number of queries: " + q);
 			cmServer.updateLiesNeeded(q); // update expected number of lies
 			int attempts = maxIteration;  // with in maxIteration, must succeed once
 			int succeed = 0;              // number of successful attempts
@@ -161,21 +152,25 @@ public class SimAdditiveNoise extends Simulation {
 				return;
 			}
 		}
+		feasible = true;         // noise level is feasible, proceed
 		printMultiple(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
 	}
 	
+	/**
+	 * Plot trade-of curve, output data in a file named traddOff_AdditiveNoise.txt
+	 */
 	public void tradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
 		int repeat = 10;
 		System.out.println("Start computing trade off curve for additive noise...");
-		Client trdOfClient = new Client(cmServer);
-		for (int k = 0; k < cmString.length; k++) {
-			cmServer.setNoiseLevel(cmString[k]);
+		Client trdOfClient = new Client(cmServer);  // create a new client
+		for (int k = 0; k < cmString.length; k++) { // for each noise level
+			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
 			System.out.println("Noise: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
-				trdOfClient.reset();
-				cmServer.reset();
+				trdOfClient.reset();                // set matrix back to 0.5
+				cmServer.reset();                   // set actual lies back to 0
 				for (int i = 0; i < noq; i++) {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
@@ -207,6 +202,11 @@ public class SimAdditiveNoise extends Simulation {
 		}
 	}
 	
+	/**
+	 * Find the average ic of all channels
+	 * @param nums   array that contains ic values for all channels
+	 * @return       average ic of all channels
+	 */
 	private double average(double[] nums) {
 		double ans = 0;
 		int len = nums.length;

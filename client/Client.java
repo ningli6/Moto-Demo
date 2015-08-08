@@ -16,7 +16,7 @@ import utility.Response;
 
 public class Client {
 	public static final double PMAX = 1;
-	int Number_Of_Channels = 1;       // number of channels
+	int numberOfChannels = 1;         // number of channels
 	// location of the SU
 	private Location location;
 	private int indexOfRow = -1;
@@ -31,11 +31,11 @@ public class Client {
 	 * @param server
 	 */
 	public Client(Server server) {
-		this.Number_Of_Channels = server.getNumberOfChannels();
+		this.numberOfChannels = server.getNumberOfChannels();
 		this.location = new Location();
-		this.count = new int[Number_Of_Channels];
-		this.inferMap = new InferMap[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) inferMap[i] = new InferMap(i, server.getMap());
+		this.count = new int[numberOfChannels];
+		this.inferMap = new InferMap[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) inferMap[i] = new InferMap(i, server.getMap());
 		this.channelsList = server.getChannelsList();
 	}
 
@@ -47,6 +47,9 @@ public class Client {
 		indexOfCol = c;
 	}
 
+	/**
+	 * Generate random location for client
+	 */
 	public void randomLocation() {
 		Random rand = new Random();
 		int newR = rand.nextInt(inferMap[0].getRows());
@@ -112,8 +115,8 @@ public class Client {
 	 * @return i th element are ic value for i th channel
 	 */
 	public double[] computeIC() {
-		double[] IC = new double[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		double[] IC = new double[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
 			/* debug 
 			 * check server has returned correct list of pu to client */
 			// System.out.println("CLient=> list size: " + channels_List[i].size());
@@ -133,7 +136,7 @@ public class Client {
 	}
 
 	private double distanceToClosestPU(int channel, int r, int c) {
-		if (channel < 0 || channel >= Number_Of_Channels) throw new IllegalArgumentException("Bad channel number");
+		if (channel < 0 || channel >= numberOfChannels) throw new IllegalArgumentException("Bad channel number");
 		double minDist = Double.MAX_VALUE;
 		for (PU pu : channelsList[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
@@ -153,7 +156,7 @@ public class Client {
 	 */
 	public String countChannelUpdateToString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times<br>");
 		}
 		return sb.toString();
@@ -163,7 +166,7 @@ public class Client {
 	 * Print information: each channel is updated how many times
 	 */
 	public void countChannel() {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
 		}
 	}
@@ -172,7 +175,7 @@ public class Client {
 	 * Reset infer matrix back to 0.5
 	 */
 	public void reset() {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			count[i] = 0;
 			inferMap[i].resetMap();
 		}
@@ -184,7 +187,7 @@ public class Client {
 	 * @param fileName TODO
 	 */
 	public void printProbability(String dir, String fileName) {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			inferMap[i].printProbability(dir, fileName);
 		}
 	}
@@ -194,7 +197,7 @@ public class Client {
 	 * @param dir   output path
 	 */
 	public void printRC(String dir) {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			inferMap[i].printRC(dir);
 		}
 	}
@@ -204,7 +207,7 @@ public class Client {
 	 * @param dir   output path
 	 */
 	public void printBounds(String dir) {
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			inferMap[i].printBounds(dir);
 		}
 	}

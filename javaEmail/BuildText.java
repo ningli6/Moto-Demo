@@ -25,11 +25,4 @@ public class BuildText {
 			e.printStackTrace();
 		}	
 	}
-	
-	public static void main(String[] args) {
-		String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
-		String name = "test.txt";
-		String content = "test\nnew line";
-		BuildText.printText(directory, name, content);
-	}
 }

@@ -55,8 +55,8 @@ public class SimKClustering extends Simulation {
 		if (this.k > 0) {
 			feasible = true;
 		}
-		if (!feasible) {
-			System.out.println("K for clustering must be a postitive integer");
+		else {
+			feasible = false;
 			return;
 		}
 		System.out.println("Start querying...");
@@ -90,9 +90,11 @@ public class SimKClustering extends Simulation {
 	
 	@Override
 	public void multipleSimulation() {
-		if (this.k < 1) {
-			this.feasible = false;
-			System.out.println("K must be a positive integer.");
+		if (this.k > 0) {
+			feasible = true;
+		}
+		else {
+			feasible = false;
 			return;
 		}
 		

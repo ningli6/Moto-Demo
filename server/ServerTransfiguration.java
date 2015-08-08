@@ -52,7 +52,7 @@ public class ServerTransfiguration extends Server{
 		}
 		if (getNumberOfPUs() == 0) return;
 		for (List<PolyPU> list : channels_poly_List) {
-			list.clear();
+			list.clear();  // clear all previous polyPU
 		}
 		numberOfSides = sides;
 		transfigure();

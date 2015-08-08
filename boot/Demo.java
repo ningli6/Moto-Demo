@@ -49,6 +49,10 @@ public class Demo implements Runnable {
         		if (bootParams.plotGooglMapAD()) {
         			sim.singleSimulation();
         		}
+        		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
+        			bootParams.delCountermeasure("ADDITIVENOISE");
+        			bootParams.setGoogleMapAD(false);
+        		}
         		if (bootParams.tradeOffAD()) {
         			sim.tradeOffCurve();
         		}
@@ -58,6 +62,10 @@ public class Demo implements Runnable {
         		sim.multipleSimulation();
         		if (bootParams.plotGooglMapTF()) {
         			sim.singleSimulation();
+        		}
+        		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
+        			bootParams.delCountermeasure("TRANSFIGURATION");
+        			bootParams.setGoogleMapTF(false);
         		}
         		if (bootParams.tradeOffTF()) {
         			sim.tradeOffCurve();
@@ -69,12 +77,20 @@ public class Demo implements Runnable {
         		if (bootParams.plotGooglMapKA()) {
         			sim.singleSimulation();
         		}
+        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+        			bootParams.delCountermeasure("KANONYMITY");
+        			bootParams.setGoogleMapKA(false);
+        		}
         	}
         	if (bootParams.containsCM("KCLUSTERING")) {
         		SimKClustering sim = new SimKClustering(bootParams, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bootParams.plotGooglMapKC()) {
         			sim.singleSimulation();
+        		}
+        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+        			bootParams.delCountermeasure("KCLUSTERING");
+        			bootParams.setGoogleMapKC(false);
         		}
         	}
         	// plot ic vs q

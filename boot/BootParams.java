@@ -88,6 +88,12 @@ public class BootParams {
 		}
 		cmMap.put(cm, val);
 	}
+	
+	public void delCountermeasure(String cm) {
+		if (cmMap.containsKey(cm)) {
+			cmMap.remove(cm);
+		}
+	}
 
 	/**
 	 * Whether this countermeasure is selected
@@ -286,7 +292,7 @@ public class BootParams {
 				sb.append(" Plot inferred location of primary users on Google Maps.\n");
 			}
 		}
-		sb.append(System.getProperty("\n"));
+		sb.append("\n\n");
 		if (numberOfQueries < 0) {
 			sb.append("Upload_file: " + fileName + "\n");
 		}

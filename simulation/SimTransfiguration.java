@@ -64,8 +64,8 @@ public class SimTransfiguration extends Simulation {
 		if (sides > 2) {
 			feasible = true;
 		}
-		if (!feasible) {
-			System.out.println("Number of sides for polygon must be an integer greater than 2");
+		else {
+			feasible = false;
 			return;
 		}
 		System.out.println("Start querying...");
@@ -99,9 +99,11 @@ public class SimTransfiguration extends Simulation {
 
 	@Override
 	public void multipleSimulation() {
-		if (this.sides < 3) {
-			this.feasible = false;
-			System.out.println("Number of sides must be greater than 2");
+		if (sides > 2) {
+			feasible = true;
+		}
+		else {
+			feasible = false;
 			return;
 		}
 
@@ -144,12 +146,12 @@ public class SimTransfiguration extends Simulation {
 		double[] trdIC = new double[cmString.length];
 		int repeat = 10;
 		System.out.println("Start computing trade off curve for transfiguration...");
-		Client trdOfClient = new Client(cmServer);
-		for (int k = 0; k < cmString.length - 1; k++) {
-			cmServer.transfigure(cmString[k]);
+		Client trdOfClient = new Client(cmServer);     // get a new client
+		for (int k = 0; k < cmString.length - 1; k++) {// for each sides
+			cmServer.transfigure(cmString[k]);         // set new number of sides
 			System.out.println("Sides: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
-				trdOfClient.reset();
+				trdOfClient.reset(); // set client maps back to 0.5
 				for (int i = 0; i < noq; i++) {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
@@ -158,7 +160,8 @@ public class SimTransfiguration extends Simulation {
 				trdIC[k] += average(ic) / repeat;
 			}
 		}
-		Client client = new Client(server);
+		// for the last sides 10, use the original circular contour
+		Client client = new Client(server);  // the original server
 		int k = cmString.length - 1;
 		System.out.println("Sides: infinite");
 		for (int r = 0; r < repeat; r++) {

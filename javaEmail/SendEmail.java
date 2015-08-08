@@ -48,7 +48,6 @@ public class SendEmail {
             return true;
         }
         catch (IOException e) {
-            System.out.println("exception happened!");
             e.printStackTrace();
             return false;
         }

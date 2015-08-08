@@ -44,6 +44,11 @@ public class ServerAdditiveNoise extends Server{
 		return res;
 	}
 
+	/**
+	 * Set actual lies back to 0
+	 * Update number of queries and expected lies needed
+	 * @param new number of queries
+	 */
 	public void updateLiesNeeded(int numberOfQueries) {
 		actualLies = 0;
 		this.numberOfQueries = numberOfQueries;
