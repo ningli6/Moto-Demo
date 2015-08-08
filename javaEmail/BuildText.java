@@ -17,12 +17,19 @@ public class BuildText {
 		File file = new File(path + fileName);
 		try {
 			PrintWriter out = new PrintWriter(file);
-			out.println(content);
+			out.println(content.replaceAll("\n", System.getProperty("line.separator")));
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
 			System.err.println("FileNotFoundException: " + e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
+	}
+	
+	public static void main(String[] args) {
+		String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
+		String name = "test.txt";
+		String content = "test\nnew line";
+		BuildText.printText(directory, name, content);
 	}
 }

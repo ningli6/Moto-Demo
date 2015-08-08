@@ -286,7 +286,7 @@ public class BootParams {
 				sb.append(" Plot inferred location of primary users on Google Maps.\n");
 			}
 		}
-		sb.append(System.getProperty("line.separator"));
+		sb.append(System.getProperty("\n"));
 		if (numberOfQueries < 0) {
 			sb.append("Upload_file: " + fileName + "\n");
 		}
