@@ -152,9 +152,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 <label><input type="radio" id="input_query0" name="input_query" onchange="enableRandomQueries();" checked>Random queries</label>
             </div>
             <div class="col-md-4"> 
-                <input class="form-control" id="randomQuery" placeholder="Number of queries" min="100" step="100" max="1000" style="text-align:center;" onchange="adjustValue();">
+                <input class="form-control" id="randomQuery" placeholder="Number of queries" min="10" step="10" max="500" style="text-align:center;" onchange="adjustValue();">
             </div>
-            <a href="#" data-toggle="qtip" title="Query numbers are rounded as multiple of hundred, ranging from 100 to 1000.">
+            <a href="#" data-toggle="qtip" title="Query numbers are rounded as multiple of 10, with maximum 500 times.">
                 <span class="glyphicon glyphicon-info-sign"></span>
             </a>
         </div>

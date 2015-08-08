@@ -90,6 +90,16 @@ function getParams () {
         location_PU.push(markers_three_channel2);
     }
 
+    // reset params for input options
+    gmapNO = false;
+    tradeOffAD = false;
+    gmapAD = false;
+    tradeOffTF = false;
+    gmapTF = false;
+    gmapKA = false;
+    gmapKC = false;
+    inputParams = false;
+
     countermeasure = [];
     cmVal = [];
     // get countermeasure, cm value, google map options, trade off curve options
@@ -98,6 +108,9 @@ function getParams () {
         cmVal.push(-1);
         if (document.getElementById('gmno').checked) {
             gmapNO = true;
+        }
+        else {
+            gmapNO = false;
         }
     }
     if (document.getElementById('cmopt1').checked) {
@@ -115,8 +128,14 @@ function getParams () {
         if (document.getElementById('tradeOff1').checked) {
             tradeOffAD = true;
         }
+        else {
+            tradeOffAD = false;
+        }
         if (document.getElementById('gmad').checked) {
             gmapAD = true;
+        }
+        else {
+            gmapAD = false;
         }
     }
     if (document.getElementById('cmopt2').checked) {
@@ -134,8 +153,14 @@ function getParams () {
         if (document.getElementById('tradeOff2').checked) {
             tradeOffTF = true;
         }
+        else {
+            tradeOffTF = false;
+        }
         if (document.getElementById('gmtf').checked) {
             gmapTF = true;
+        }
+        else {
+            gmapTF = false;
         }
     }
     if (document.getElementById('cmopt3').checked) {
@@ -153,6 +178,9 @@ function getParams () {
         if (document.getElementById('gmka').checked) {
             gmapKA = true;
         }
+        else {
+            gmapKA = false;
+        }
     }
     if (document.getElementById('cmopt4').checked) {
         if (!isNumeric(document.getElementById('cmval4').value)) {
@@ -168,6 +196,9 @@ function getParams () {
         cmVal.push(val);
         if (document.getElementById('gmkc').checked) {
             gmapKC = true;
+        }
+        else {
+            gmapKC = false;
         }
     }
     if (countermeasure.length == 0) {
@@ -217,6 +248,9 @@ function getParams () {
     // get email option
     if (document.getElementById("inputParams").checked) {
         inputParams = true;
+    }
+    else {
+        inputParams = false;
     }
 
     // formatting params

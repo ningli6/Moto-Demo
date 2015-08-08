@@ -22,9 +22,8 @@ function enableRandomQueries () {
 }
 
 /**
- * Adjust value of query numbers so that it is multiple of 100
- * Min: 100, Max: 1000
- * @return {void}
+ * Adjust value of query numbers so that it is multiple of 10
+ * Min: 10, Max: 500
  */
 function adjustValue() {
     if (!isNumeric(document.getElementById("randomQuery").value)) {
@@ -32,12 +31,12 @@ function adjustValue() {
         return;
     }
     var val = document.getElementById("randomQuery").value;
-    var newVal = Math.round(val / 100) * 100;
-    if (newVal < 100) {
-        newVal = 100;
+    var newVal = Math.round(val / 10) * 10;
+    if (newVal < 10) {
+        newVal = 10;
     }
-    if (newVal > 1000) {
-        newVal = 1000;
+    if (newVal > 500) {
+        newVal = 500;
     }
     document.getElementById("randomQuery").value = newVal;
 }
