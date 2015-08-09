@@ -251,7 +251,7 @@ public class BootParams {
 		for (int i = 0; i < len; i++) {
 			sb.append("Channel " + i + ": \n");
 			for (Location ll : puList[i]) {
-				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "\n");
+				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "]\n");
 			}
 			sb.append("\n");
 		}
@@ -259,40 +259,45 @@ public class BootParams {
 		if (containsCM("NOCOUNTERMEASURE")) {
 			sb.append("No countermeasure.");
 			if (plotGooglMapNO()) {
-				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
+			sb.append("\n");
 		}
 		if (containsCM("ADDITIVENOISE")) {
-			sb.append("Additive noise. Noise level: " + getCMParam("ADDITIVENOISE") + "\n");
+			sb.append("Additive noise. Noise level: " + getCMParam("ADDITIVENOISE") + ".");
 			if (plotGooglMapAD()) {
-				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
 			if (tradeOffAD()) {
-				sb.append("Plot trade-off curve.");
+				sb.append(" Plot trade-off curve.");
 			}
+			sb.append("\n");
 		}
 		if (containsCM("TRANSFIGURATION")) {
-			sb.append("Transfiguration. Number of sids: " + (int) getCMParam("TRANSFIGURATION") + "\n");
+			sb.append("Transfiguration. Number of sids: " + (int) getCMParam("TRANSFIGURATION") + ".");
 			if (plotGooglMapTF()) {
-				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
 			if (tradeOffTF()) {
-				sb.append("Plot trade-off curve.");
+				sb.append(" Plot trade-off curve.");
 			}
+			sb.append("\n");
 		}
 		if (containsCM("KANONYMITY")) {
-			sb.append("K anonymity. K: " + (int) getCMParam("KANONYMITY") + "\n");
+			sb.append("K anonymity. K: " + (int) getCMParam("KANONYMITY") + ".");
 			if (plotGooglMapKA()) {
-				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
+			sb.append("\n");
 		}
 		if (containsCM("KCLUSTERING")) {
-			sb.append("K clustering. K: " + (int) getCMParam("KCLUSTERING") + "\n");
+			sb.append("K clustering. K: " + (int) getCMParam("KCLUSTERING") + ".");
 			if (plotGooglMapAD()) {
-				sb.append(" Plot inferred location of primary users on Google Maps.\n");
+				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
+			sb.append("\n");
 		}
-		sb.append("\n\n");
+		sb.append("\n");
 		if (numberOfQueries < 0) {
 			sb.append("Upload_file: " + fileName + "\n");
 		}

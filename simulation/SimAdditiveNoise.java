@@ -217,25 +217,6 @@ public class SimAdditiveNoise extends Simulation {
 	}
 
 	/**
-	 * Construct email content
-	 * @return   a string that describing simulation results
-	 */
-	@Override
-	protected String buildMessage() {
-		StringBuilder sb = new StringBuilder();
-		if (!isFeasible()) {
-			sb.append("<p>Noise level is too high. Noise requirement can't be reached.</p>");
-		}
-		else {
-			sb.append("<p>Simulation results are plotted and attached to this email. "
-					+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
-			sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
-			sb.append("</p>");
-		}
-		return sb.toString();
-	}
-
-	/**
 	 * Is the given noise level a practical one for this simulation
 	 * @return true if noise requirement can be reached 
 	 */

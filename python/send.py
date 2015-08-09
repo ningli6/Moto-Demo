@@ -1,15 +1,5 @@
 '''
 This script can be used to send emails
-
-To call this routine:
-
-python send.py sender receiver channels icq gMap message
-@param sender
-@param receiver 
-@param channels
-@param icq         whether to plot ic vs q
-@param gMap        whether to plot google map
-@param message     email content
 ''' 
 
 # Import sys for taking in arguments
@@ -31,44 +21,38 @@ print 'From: ', sender
 recv = sys.argv[2]
 print 'To: ', recv
 
-# Number of channel
-nc = int(sys.argv[3])
-
-ICvsQ = sys.argv[4]
-
-gMap = sys.argv[5]
-
 # construct message
-message = sys.argv[6]
+message = sys.argv[3]
 message = message.replace("_", " ");
-
+message = message.replace("\\n", "<br>");
 html = '<html><head><style>h3,p, span {color: black}</style></head><body>' + message + '</body></html>'
-
 
 # Create a text/plain message
 msg = MIMEMultipart('multipart')
+
 # text
 txt = MIMEText(html, 'html')
 msg.attach(txt)
 
-
-# image
-if (gMap == 'YgMap'):
-	for i in range(nc):
-		# fileName = '/var/www/html/Project/output/ec2-user_Demo_probability_0.png'
-		fileName = 'C:\Users\Administrator\Desktop\motoPlot\Simulation_result_channel_' + str(i) + '.png'
-		fp = open(fileName, 'rb')
-		img = MIMEImage(fp.read())
-		fp.close()
-		msg.attach(img)
-
-if (ICvsQ == 'YICvsQ'):
-	fileName = 'C:\Users\Administrator\Desktop\motoPlot\ICvsQ.png'
-	fp = open(fileName, 'rb')
-	img = MIMEImage(fp.read())
-	fp.close()
-	msg.attach(img)
-
+# attachments
+path = 'C:/Users/Administrator/Desktop/motoPlot/'
+text = '.txt';
+png = '.png';
+fileNames = sys.argv[4:]
+for fileName in fileNames:
+	try:
+		if text in fileName:
+			f = file(path + fileName)
+			attachment = MIMEText(f.read())
+			attachment.add_header('Content-Disposition', 'attachment', filename=fileName)           
+			msg.attach(attachment)
+		if png in fileName:
+			fp = open(path + fileName, 'rb')
+			img = MIMEImage(fp.read())
+			fp.close()
+			msg.attach(img)
+	except Exception, e:
+		continue
 
 # me == the sender's email address
 # you == the recipient's email address

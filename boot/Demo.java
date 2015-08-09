@@ -1,6 +1,7 @@
 package boot;
 
 import javaEmail.BuildText;
+import javaEmail.SendEmail;
 import javaPlot.CmpPlot;
 import javaPlot.MatPlot;
 import javaPlot.TradeOffPlot;
@@ -16,102 +17,115 @@ import simulation.Simulation;
 public class Demo implements Runnable {
     private Thread t;                // thread instance
     private String threadName;       // thread name
-    private BootParams bootParams;   // BootParams instance
+    private BootParams bp;   // BootParams instance
     private double cellSize;         // cell size
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String directory;        // output directory
+    private String resultDir;        // directory that saves plots from python and maltab
 
     public Demo(BootParams bp, double cs, double scale, int inter, String dir){
     	this.threadName ="New Demo";
-    	this.bootParams = bp;
+    	this.bp = bp;
         this.cellSize = cs;
         this.mtpScale = scale;
         this.interval = inter;
         this.directory = dir;
+        this.resultDir = "C:\\Users\\Administrator\\Desktop\\motoPlot\\";
     }
 
     @Override
     public void run() {
         System.out.println("Running " +  threadName );
+        String emailInfo = null;  // additional information for the email
         try {
         	// program goes here
-        	if (bootParams.containsCM("NOCOUNTERMEASURE")) {
-        		Simulation sim = new Simulation(bootParams, cellSize, mtpScale, interval, directory);
+        	if (bp.containsCM("NOCOUNTERMEASURE")) {
+        		Simulation sim = new Simulation(bp, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-        		if (bootParams.plotGooglMapNO()) {
+        		if (bp.plotGooglMapNO()) {
         			sim.singleSimulation();
         		}
         	}
-        	if (bootParams.containsCM("ADDITIVENOISE")) {
-        		SimAdditiveNoise sim = new SimAdditiveNoise(bootParams, cellSize, mtpScale, interval, directory);
+        	if (bp.containsCM("ADDITIVENOISE")) {
+        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-        		if (bootParams.plotGooglMapAD()) {
+        		if (bp.plotGooglMapAD()) {
         			sim.singleSimulation();
         		}
         		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
-        			bootParams.delCountermeasure("ADDITIVENOISE");
-        			bootParams.setGoogleMapAD(false);
+        			bp.delCountermeasure("ADDITIVENOISE");
+        			bp.setGoogleMapAD(false);
+        			emailInfo += "Noise requirement can't be reached.\n\n";
         		}
-        		if (bootParams.tradeOffAD()) {
+        		if (bp.tradeOffAD()) {
         			sim.tradeOffCurve();
         		}
         	}
-        	if (bootParams.containsCM("TRANSFIGURATION")) {
-        		SimTransfiguration sim = new SimTransfiguration(bootParams, cellSize, mtpScale, interval, directory);
+        	if (bp.containsCM("TRANSFIGURATION")) {
+        		SimTransfiguration sim = new SimTransfiguration(bp, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-        		if (bootParams.plotGooglMapTF()) {
+        		if (bp.plotGooglMapTF()) {
         			sim.singleSimulation();
         		}
         		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
-        			bootParams.delCountermeasure("TRANSFIGURATION");
-        			bootParams.setGoogleMapTF(false);
+        			bp.delCountermeasure("TRANSFIGURATION");
+        			bp.setGoogleMapTF(false);
+        			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
         		}
-        		if (bootParams.tradeOffTF()) {
+        		if (bp.tradeOffTF()) {
         			sim.tradeOffCurve();
         		}
         	}
-        	if (bootParams.containsCM("KANONYMITY")) {
-        		SimKAnonymity sim = new SimKAnonymity(bootParams, cellSize, mtpScale, interval, directory);
+        	if (bp.containsCM("KANONYMITY")) {
+        		SimKAnonymity sim = new SimKAnonymity(bp, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-        		if (bootParams.plotGooglMapKA()) {
+        		if (bp.plotGooglMapKA()) {
         			sim.singleSimulation();
         		}
         		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bootParams.delCountermeasure("KANONYMITY");
-        			bootParams.setGoogleMapKA(false);
+        			bp.delCountermeasure("KANONYMITY");
+        			bp.setGoogleMapKA(false);
+        			emailInfo += "K must be a positive integer.\n\n";
         		}
         	}
-        	if (bootParams.containsCM("KCLUSTERING")) {
-        		SimKClustering sim = new SimKClustering(bootParams, cellSize, mtpScale, interval, directory);
+        	if (bp.containsCM("KCLUSTERING")) {
+        		SimKClustering sim = new SimKClustering(bp, cellSize, mtpScale, interval, directory);
         		sim.multipleSimulation();
-        		if (bootParams.plotGooglMapKC()) {
+        		if (bp.plotGooglMapKC()) {
         			sim.singleSimulation();
         		}
         		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bootParams.delCountermeasure("KCLUSTERING");
-        			bootParams.setGoogleMapKC(false);
+        			bp.delCountermeasure("KCLUSTERING");
+        			bp.setGoogleMapKC(false);
+        			emailInfo += "K must be a positive integer.\n\n";
         		}
         	}
         	// plot ic vs q
-        	if (!CmpPlot.plot(bootParams.containsCM("NOCOUNTERMEASURE"), bootParams.containsCM("ADDITIVENOISE"), bootParams.containsCM("TRANSFIGURATION"), bootParams.containsCM("KANONYMITY"), bootParams.containsCM("KCLUSTERING"))) {
+        	if (!CmpPlot.plot(bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
         		System.out.println("Plot ic vs q failed");
         		return;
         	}
         	// plot google map
-        	if (!MatPlot.plot(bootParams.getNumberOfChannels(), bootParams.getNorthLat(), bootParams.getSouthLat(), bootParams.getWestLng(), bootParams.getEastLng(), 
-        			bootParams.plotGooglMapNO(), bootParams.plotGooglMapAD(), bootParams.plotGooglMapTF(), bootParams.plotGooglMapKA(), bootParams.plotGooglMapKC())) {
+        	if (!MatPlot.plot(bp.getNumberOfChannels(), bp.getNorthLat(), bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), 
+        			bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
         		System.out.println("Plot Google Maps failed");
         		return;
         	}
         	// plot tradeOff curve
-        	if (!TradeOffPlot.plot(bootParams.tradeOffAD(), bootParams.tradeOffTF())) {
+        	if (!TradeOffPlot.plot(bp.tradeOffAD(), bp.tradeOffTF())) {
         		System.out.println("Plot trade-off curves failed");
         		return;
         	}
         	// send email
-        	if (bootParams.getInputParams()) {
-        		BuildText.printText(directory, "emailInfo.txt", bootParams.paramsToTextFile());
+        	if (bp.getInputParams()) {
+        		BuildText.printText(resultDir, "emailInfo.txt", bp.paramsToTextFile());
+        	}
+        	if (!SendEmail.send("ningli@vt.edu", bp.getEmail(), emailInfo, bp.getNumberOfChannels(), 
+        			true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC(), 
+        			bp.tradeOffAD(), bp.tradeOffTF(), bp.getInputParams())) {
+        		System.out.println("Sending email failed");
+        		return;
         	}
         } catch (Exception e) {
             System.out.println("Thread " +  threadName + " interrupted.");

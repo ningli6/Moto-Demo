@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javaEmail.SendEmail;
 
 import server.Server;
 import utility.GridMap;
@@ -212,39 +211,5 @@ public class Simulation {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
-	}
-
-	/**
-	 * Get the email content after simulation completes
-	 * @return  a string that replaces space with '_' to be passed as an argument
-	 */
-	public String getEmailContent() {
-		return content.append(buildMessage()).toString().replace(' ', '_');
-	}
-	
-	/**
-	 * Construct email content
-	 * @return   a string that describing simulation results
-	 */
-	protected String buildMessage() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<p>Simulation results are plotted and attached to this email. "
-				+ "Maps indecate attacker's speculation of primary users' whereabout for each channel. ");
-		sb.append("Inaccuracy-query plot shows tendency of inaccuracy when number of queries increases.");
-		sb.append("</p>");
-		return sb.toString();
-	}
-	
-	/**
-	 * Send email to users attached with google map plots and ic vs query plots,
-	 * @param googleMap  whether to include plot of probability data
-	 * @param iCvsQ      whether to include plot of ic vs query
-	 */
-	public void sendEmail(boolean googleMap, boolean iCvsQ) {
-		System.out.println("Sending email...");
-		// call send email api
-		if (!SendEmail.send("ningli@vt.edu", bootParams.getEmail(), getEmailContent(), noc, googleMap, iCvsQ)) {
-			System.out.print("Email failed!");
-		}
 	}
 }
