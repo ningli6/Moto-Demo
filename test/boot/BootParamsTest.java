@@ -1,4 +1,4 @@
-package bootTest;
+package boot;
 
 import static org.junit.Assert.*;
 
