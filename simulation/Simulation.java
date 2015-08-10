@@ -29,7 +29,6 @@ public class Simulation {
 	int repeat;            // number of repetition for multiple simulations
 	double[] IC;           // ic for single simulation, may include this information in email
 	Map<Integer, double[]> icMap; // associate ic to number of queries
-	StringBuilder content; // for email
 
 	public Simulation(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
 		this.bootParams = bootParams;
@@ -85,9 +84,6 @@ public class Simulation {
 
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
-
-		/* initialize email content */
-		content = new StringBuilder(bootParams.paramsToString());
 	}
 
 	public void singleSimulation() {
