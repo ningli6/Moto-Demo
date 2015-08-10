@@ -3,7 +3,6 @@ package server;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.File;
@@ -16,43 +15,26 @@ import client.Client;
  */
 
 public class Server {
-	public static double PMAX = 1;
-	int Number_Of_Channels = -1; // only visible within its own package
-	// Server has an instance of GridMap
-	protected GridMap map;
-	protected LinkedList<PU>[] channels_List;
-	private int Number_Of_PUs;
-	private HashSet<Integer> set;
-	public static String directory;
+	public static double PMAX = 1;   // max value for transmit power
+	public static String directory;  // output directory
+	int numberOfChannels = -1;     // number of channels
+	int numberOfPUs;               // number of primary users
+	GridMap map;                     // instance of grid map
+	LinkedList<PU>[] channelsList;  // channel list containing primary users
 
-	public class NumberOfPUsMismatchException extends RuntimeException {
-		public NumberOfPUsMismatchException(String message) {
-			super(message);
-		}
-	}
-
-	public class ClientOutOfMapException extends RuntimeException {
-		public ClientOutOfMapException(String message) {
-			super(message);
-		}
-	}
-
-	public Server(GridMap map) {
+	@SuppressWarnings("unchecked")
+	public Server(GridMap map, int noc) {
 		this.map = map;
-		this.Number_Of_PUs = 0;
-		set = new HashSet<Integer>();
-	}
-
-	public void setNumberOfChannels(int c) {
-		this.Number_Of_Channels = c;
-		this.channels_List = (LinkedList<PU>[]) new LinkedList[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_List[i] = new LinkedList<PU>();
+		this.numberOfPUs = 0;
+		this.numberOfChannels = noc;
+		this.channelsList = (LinkedList<PU>[]) new LinkedList[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
+			channelsList[i] = new LinkedList<PU>();
 		}
 	}
 
 	public int getNumberOfChannels() {
-		return Number_Of_Channels;
+		return numberOfChannels;
 	}
 
 	// add pu to one of channels
@@ -63,8 +45,8 @@ public class Server {
 			return;
 		}
 		if (pu == null) return;
-		if (channel < 0 || channel >= Number_Of_Channels) {
-			System.out.println("Avalible channels are from 0 to " + (Number_Of_Channels - 1) + ". Operation failed");
+		if (channel < 0 || channel >= numberOfChannels) {
+			System.out.println("Avalible channels are from 0 to " + (numberOfChannels - 1) + ". Operation failed");
 			return;
 		}
 		int pu_r = pu.getRowIndex();
@@ -80,10 +62,9 @@ public class Server {
 		}
 		// check if location is in the rectangle area
 		if (map.withInBoundary(pu.getLocation())) {
-			channels_List[channel].add(pu);
-			pu.attachToServer(this);
+			channelsList[channel].add(pu);
 			pu.setChannelID(channel);
-			Number_Of_PUs++;
+			numberOfPUs++;
 		}
 		else System.out.println("PU's location out of range");
 	}
@@ -92,84 +73,77 @@ public class Server {
 		return map;
 	}
 
-	// resonse to the query
+	/**
+	 * Server responses to client
+	 * For each channel, it chooses minimum response
+	 * Finally it returns max response among all channels
+	 * @param client
+	 * @return (-1, PMAX) if no PU on the map
+	 */
 	public Response response(Client client) {
-		// response with (-1, -1) means no transmit power available
 		if (client == null) throw new NullPointerException("Querying client does not exist");
-		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
+		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
-		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
-		LinkedList<Response> response_list = new LinkedList<Response>();
-		double final_res_power = -1;
-		int final_res_id = -1;
-		for (LinkedList<PU> list : channels_List) {
-			Collections.shuffle(list);
+		LinkedList<Response> responseList = new LinkedList<Response>();
+		for (LinkedList<PU> list : channelsList) {
+			Collections.shuffle(list); // for each list, minimum responses can have more than one, this guarantee randomness
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
 			for (PU pu : list) {
-				// System.out.println("Distance between SU and PU [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
+//				System.out.println("Distance between client and pu [" + pu.getID() + "] is: " + pu.getLocation().distTo(client.getLocation()) + " km");
 				double resPower = MTP(pu.getLocation().distTo(client.getLocation()));
-				// System.out.println("Server compute dist: [" + pu.getID() + "] " + resPower);
-				if (resPower <= minPower) {
+//				System.out.println("Response power according to MTP:" + resPower);
+				if (resPower <= minPower) { // find the minimum for each channel
 					minPU = pu;
 					minPower = resPower;
 				}
 			}
-			// if one of channels is empty, then minPU would be null
-			if (minPU != null) response_list.add(new Response(minPU, minPower));
+			// if one of channels is empty, don't add it
+			if (minPU != null) responseList.add(new Response(minPU, minPower));
 		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
-		Collections.shuffle(response_list);
-		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
-		return Collections.max(response_list);
+		Collections.shuffle(responseList);
+		return Collections.max(responseList);
 	}
 
-	// cheat
+	/**
+	 * Return the pu list to the client to compute inaccuracy
+	 * @return
+	 */
 	public List<PU>[] getChannelsList() {
-		if (channels_List == null) {
+		if (channelsList == null) {
 			System.out.println("Initialize Server first");
 			return null;
 		} 
-		return channels_List;
+		return channelsList;
 	}
 
-	// return numbers of PUs
+	/**
+	 * Get number of primary users the server holds
+	 * @return number of pus
+	 */
 	public int getNumberOfPUs() {
-		int sum = 0;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			sum += channels_List[i].size();
-		}
-		if (sum != Number_Of_PUs) {
-			throw new NumberOfPUsMismatchException("Number of PUs doesn't match");
-		}
-		return sum;
-	}
-
-	public void updateNumbersOfPUs() {
-		int sum = 0;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			sum += channels_List[i].size();
-		}
-		Number_Of_PUs = sum;
+		return numberOfPUs;
 	}
 
 	// print the location of PUs
 	public void printInfoPU() {
-		if (channels_List == null) return;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			for (PU pu : channels_List[i]) {
+		if (channelsList == null) return;
+		for (int i = 0; i < numberOfChannels; i++) {
+			for (PU pu : channelsList[i]) {
 				pu.printInfo();
 			}
 		}
 	}
 
-	public void printPUAllChannel() {
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			File file = new File(directory + "demoTable_" + i + "_pu.txt");
+	public void printPUAllChannel(String dir, String fileName) {
+		for (int i = 0; i < numberOfChannels; i++) {
+			File file = new File(dir + fileName + "_" + i + "_pu.txt");
 			try {
 				PrintWriter out = new PrintWriter(file);
-				for (PU pu: channels_List[i]) {
+				out.println("LAT LNG RI CI");
+				for (PU pu: channelsList[i]) {
 					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
 				}
 				out.close (); // this is necessary
@@ -179,50 +153,52 @@ public class Server {
 				e.printStackTrace();
 			}
 			finally {
-				System.out.println("Printing ends");
 			}
 		}
 	}
 
+	/**
+	 * clear response records for all pu on the server
+	 */
 	public void reset() {
-		if (channels_List == null) return;
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			for (PU pu : channels_List[i]) {
+		if (channelsList == null) return;
+		for (int i = 0; i < numberOfChannels; i++) {
+			for (PU pu : channelsList[i]) {
 				pu.reset();
 			}
 		}
 	}
 
-	// print infomation about channel
+	// print information about channel
 	public void printInfoChannel() {
-		if (channels_List == null) {
+		if (channelsList == null) {
 			System.out.println("Initialize server first");
 		}
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			System.out.print("Channel [" + i + "]: ");
-			for (PU pu : channels_List[i]) {
+			for (PU pu : channelsList[i]) {
 				System.out.print("pu " + pu.getID() + ", ");
 			}
 			System.out.println();
 		}
 	}
 
-	// print infomation about channel
-	public String infoChannelToString() {
+	// print information about channel
+	public String puOnChannelToString() {
 		StringBuilder sb = new StringBuilder();
-		if (channels_List == null) {
-			sb.append("Initialize_server_first#");
+		if (channelsList == null) {
+			sb.append("Initialize_server_first<br>");
 		}
-		for (int i = 0; i < Number_Of_Channels; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			sb.append("Channel_[" + i + "]:_");
 			int len = sb.length();
-			for (PU pu : channels_List[i]) {
+			for (PU pu : channelsList[i]) {
 				sb.append("pu_" + pu.getID() + ",_");
 			}
 			if (sb.length() != len) {
 				sb.delete(sb.length() - 2, sb.length());
 			}
-			sb.append("#");
+			sb.append("<br>");
 		}
 		return sb.toString();
 	}
@@ -237,6 +213,7 @@ public class Server {
 	}
 
 	/* This hash function works as long as j is smaller than 100000 */
+	@SuppressWarnings("unused")
 	private int hashcode(int i, int j) {
 		return 100000 * i + j;
 	}

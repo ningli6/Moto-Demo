@@ -1,29 +1,34 @@
 package boot;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import utility.Location;
+
+/* class that holds information about input parameters */
 public class BootParams {
-	private int number_of_channels;
-	private double NorthLat;
+	private double NorthLat;           // coordinates
 	private double SouthLat;
 	private double EastLng;
 	private double WestLng;
-	private List<LatLng>[] PUList;
-	private boolean isCountermeasure;
-	private String countermeasure = "NOCOUNTERMEASURE";
-	private double counterParamD = -1;
-	private int counterParamI = -1;
-	private int number_of_queries = -1;
-	private String fileName;
-	private String email;
+	private List<Location>[] puList;   // location list
+	private Map<String, Double> cmMap; // countermeasures and their values
+	private boolean gMapNO;            // plot google map for no countermeasure
+	private boolean gMapAD;            // plot google map for additive noise
+	private boolean gMapTF;            // plot google map for transfiguration
+	private boolean gMapKA;            // plot google map for k anonymity
+	private boolean gMapKC;            // plot google map for k clustering
+	private boolean tradeOffAD;        // whether to plot trade off curve for tf
+	private boolean tradeOffTF;        // whether to plot trade off curve for tf
+	private int numberOfChannels;      // number of channels
+	private int numberOfQueries;       // number of queries
+	private String fileName;           // upload file name
+	private String email;              // email address
+	private boolean inputParams;       // whether to include input parameters in the email
 
-	public int getNumberOfChannels() {
-		return number_of_channels;
-	}
-
-	public void setNumberOfChannels(int c) {
-		if (c <= 0) throw new IllegalArgumentException();
-		this.number_of_channels = c;
+	public BootParams() {
+		this.cmMap = new HashMap<String, Double>();
 	}
 
 	public double getNorthLat() {
@@ -58,50 +63,146 @@ public class BootParams {
 		this.WestLng = lng;
 	}
 
-	public void setPUonChannels(List<LatLng>[] list) {
-		this.PUList = list;
+	public void setPUonChannels(List<Location>[] list) {
+		this.puList = list;
 	}
 
-	public List<LatLng> getPUOnChannel(int c) {
-		if (c < 0 || c >= number_of_channels) throw new IllegalArgumentException();
-		return PUList[c];
+	/**
+	 * Get a list of coordinate locations on one channels
+	 * @param c   channel
+	 * @return    a list of Location class
+	 */
+	public List<Location> getPUOnChannel(int c) {
+		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
+		return puList[c];
 	}
 
-	public boolean isCountermeasure() {
-		return isCountermeasure;
-	}
-
-	public String countermeasure() {
-		return countermeasure;
-	}
-
-	public void setCountermeasure(String cm) {
-		if (!cm.equals("ADDITIVENOISE") &&  !cm.equals("TRANSFIGURATION") &&
-			!cm.equals("KANONYMITY") && !cm.equals("KCLUSTERING"))
-			throw new IllegalArgumentException();
-		isCountermeasure = true;
-		countermeasure = cm;
-	}
-
-	public double getCMParam() {
-		if (counterParamI != -1) return (double) counterParamI;
-		return counterParamD;
-	}
-
-	public void setCMParam(double p) {
-		if (countermeasure.equals("ADDITIVENOISE")) {
-			this.counterParamD = p;
+	/**
+	 * Associate countermeasure with its value
+	 * @param cm  name of countermeasure
+	 * @param val parameters for countermeasure
+	 */
+	public void putCountermeasure(String cm, double val) {
+		if (cmMap.containsKey(cm)) {
+			throw new IllegalArgumentException("This countermeasure was selected!");
 		}
-		else this.counterParamI = (int) p;
+		cmMap.put(cm, val);
+	}
+	
+	public void delCountermeasure(String cm) {
+		if (cmMap.containsKey(cm)) {
+			cmMap.remove(cm);
+		}
+	}
+
+	/**
+	 * Whether this countermeasure is selected
+	 * @param  cm name of countermeasure
+	 * @return    true if user have decided to plot this countermeasure
+	 */
+	public boolean containsCM(String cm) {
+		return cmMap.containsKey(cm);
+	}
+
+	/**
+	 * Return the value for the countermeasure
+	 * @param  cm name of the countermeasure
+	 * @return    value of that countermeasrue
+	 */
+	public double getCMParam(String cm) {
+		if (!containsCM(cm)) {
+			throw new IllegalArgumentException("User didn't select this countermeasure");
+		}
+		return cmMap.get(cm);
+	}
+
+	// setter and getter for google map options
+	public boolean plotGooglMapNO() {
+		return this.gMapNO;
+	}
+
+	public void setGoogleMapNO(boolean f) {
+		this.gMapNO = f;
+	}
+
+	public boolean plotGooglMapAD() {
+		return this.gMapAD;
+	}
+
+	public void setGoogleMapAD(boolean f) {
+		this.gMapAD = f;
+	}
+
+	public boolean plotGooglMapTF() {
+		return this.gMapTF;
+	}
+
+	public void setGoogleMapTF(boolean f) {
+		this.gMapTF = f;
+	}
+
+	public boolean plotGooglMapKA() {
+		return this.gMapKA;
+	}
+
+	public void setGoogleMapKA(boolean f) {
+		this.gMapKA = f;
+	}
+
+	public boolean plotGooglMapKC() {
+		return this.gMapKC;
+	}
+
+	public void setGoogleMapKC(boolean f) {
+		this.gMapKC = f;
+	}
+
+	/**
+	 * Whether to plot trade off curve for additive noise
+	 * @return true if user decided to plot trade off curve
+	 */
+	public boolean tradeOffAD() {
+		return this.tradeOffAD;
+	}
+
+	/**
+	 * Whether to plot trade off curve for transfiguration
+	 * @return true if user decided to plot trade off curve
+	 */
+	public boolean tradeOffTF() {
+		return this.tradeOffTF;
+	}
+
+	/**
+	 * Plot trade off curve for additive noise
+	 */
+	public void setTradeOffAD(boolean f) {
+		this.tradeOffAD = f;
+	}
+
+	/**
+	 * Plot trade off curve for transfiguration
+	 */
+	public void setTradeOffTF(boolean f) {
+		this.tradeOffTF = f;
+	}
+
+	public int getNumberOfChannels() {
+		return numberOfChannels;
+	}
+
+	public void setNumberOfChannels(int c) {
+		if (c <= 0) throw new IllegalArgumentException();
+		this.numberOfChannels = c;
 	}
 
 	public int getNumberOfQueries() {
-		return number_of_queries;
+		return numberOfQueries;
 	}
 
 	public void setNumberOfQueries(int q) {
 		if (q < 0) throw new IllegalArgumentException();
-		this.number_of_queries = q;
+		this.numberOfQueries = q;
 	}
 
 	public String getFileName() {
@@ -121,76 +222,146 @@ public class BootParams {
 		return email;
 	}
 
-	public void printParams() {
-		System.out.println("Print parameters");
-		System.out.println("Number of channels: " + number_of_channels);
-		System.out.println("Analysis region: ");
-		System.out.println("North latitude: " + NorthLat);
-		System.out.println("South latitude: " + SouthLat);
-		System.out.println("West longitude: " + WestLng);
-		System.out.println("East longitude: " + EastLng);
-		System.out.println("Location of PU: ");
-		int len = PUList.length;
-		for (int i = 0; i < len; i++) {
-			System.out.println("Channel " + i + ": ");
-			for (LatLng ll : PUList[i]) {
-				System.out.print("[" + ll.getLat() + ", " + ll.getLng() + "] ");
-			}
-			System.out.println();
-		}
-		if (!isCountermeasure) {
-			System.out.println("Countermeasure: " + "No countermeausre");
-		}
-		else {
-			System.out.println("Countermeasure: " + countermeasure + ", Param: " + getCMParam());
-		}
-		if (number_of_queries < 0) {
-			System.out.println("Upload file: " + fileName);
-		}
-		else {
-			System.out.println("Number of Queries: " + number_of_queries);
-		}
-		System.out.println("Email to: " + email);
-		System.out.println();
+	/**
+	 * Whether to include input parameters in the email
+	 * @return true if user decide to include input parameters in the email in text format
+	 */
+	public boolean getInputParams() {
+		return inputParams;
 	}
 
+	/**
+	 * Include input parameters in the email
+	 */
+	public void setInputParams(boolean f) {
+		this.inputParams = f;
+	}
+	
+	public String paramsToTextFile() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Simulation parameters:\n\n");
+		sb.append("Number of channels: " + numberOfChannels + "\n");
+		sb.append("Analysis region: \n");
+		sb.append("North latitude :" + NorthLat + "\n");
+		sb.append("South latitude :" + SouthLat + "\n");
+		sb.append("West longitude :" + WestLng + "\n");
+		sb.append("East longitude :" + EastLng + "\n\n");
+		sb.append("Location of Primary users: \n");
+		int len = puList.length;
+		for (int i = 0; i < len; i++) {
+			sb.append("Channel " + i + ": \n");
+			for (Location ll : puList[i]) {
+				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "]\n");
+			}
+			sb.append("\n");
+		}
+		sb.append("Countermeasure: \n");
+		if (containsCM("NOCOUNTERMEASURE")) {
+			sb.append("No countermeasure.");
+			if (plotGooglMapNO()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.");
+			}
+			sb.append("\n");
+		}
+		if (containsCM("ADDITIVENOISE")) {
+			sb.append("Additive noise. Noise level: " + getCMParam("ADDITIVENOISE") + ".");
+			if (plotGooglMapAD()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.");
+			}
+			if (tradeOffAD()) {
+				sb.append(" Plot trade-off curve.");
+			}
+			sb.append("\n");
+		}
+		if (containsCM("TRANSFIGURATION")) {
+			sb.append("Transfiguration. Number of sids: " + (int) getCMParam("TRANSFIGURATION") + ".");
+			if (plotGooglMapTF()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.");
+			}
+			if (tradeOffTF()) {
+				sb.append(" Plot trade-off curve.");
+			}
+			sb.append("\n");
+		}
+		if (containsCM("KANONYMITY")) {
+			sb.append("K anonymity. K: " + (int) getCMParam("KANONYMITY") + ".");
+			if (plotGooglMapKA()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.");
+			}
+			sb.append("\n");
+		}
+		if (containsCM("KCLUSTERING")) {
+			sb.append("K clustering. K: " + (int) getCMParam("KCLUSTERING") + ".");
+			if (plotGooglMapAD()) {
+				sb.append(" Plot inferred location of primary users on Google Maps.");
+			}
+			sb.append("\n");
+		}
+		sb.append("\n");
+		if (numberOfQueries < 0) {
+			sb.append("Upload_file: " + fileName + "\n");
+		}
+		else {
+			sb.append("Number of queries: " + numberOfQueries + "\n");
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Construct email content
+	 * @return  a string that describing input parameters
+	 */
 	public String paramsToString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("*****Print_parameters*****#");
-		sb.append("#");
-		sb.append("Number_of_channels:_" + number_of_channels + "#");
-		sb.append("#");
-		sb.append("Analysis_region:#");
-		sb.append("North_latitude:_" + NorthLat + "#");
-		sb.append("South_latitude:_" + SouthLat + "#");
-		sb.append("West_longitude:_" + WestLng + "#");
-		sb.append("East_longitude:_" + EastLng + "#");
-		sb.append("#");
-		sb.append("Location_of_PU:#");
-		int len = PUList.length;
+		sb.append("<h3>Simulation parameters:</h3>");
+		sb.append("<p>Number of channels: " + numberOfChannels + "</p>");
+		sb.append("<p>Analysis region: <br>");
+		sb.append("North latitude :" + NorthLat + "<br>");
+		sb.append("South latitude :" + SouthLat + "<br>");
+		sb.append("West longitude :" + WestLng + "<br>");
+		sb.append("East longitude :" + EastLng + "<br>");
+		sb.append("</p>");
+		sb.append("<p>Location of Primary users: <br>");
+		int len = puList.length;
 		for (int i = 0; i < len; i++) {
-			sb.append("Channel_" + i + ":#");
-			for (LatLng ll : PUList[i]) {
-				sb.append("[" + ll.getLat() + ",_" + ll.getLng() + "]#");
+			sb.append("Channel " + i + ": <br>");
+			for (Location ll : puList[i]) {
+				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "] <br>");
 			}
-			sb.append("#");
+			sb.append("</p>");
 		}
-		if (!isCountermeasure) {
-			sb.append("Countermeasure:_" + "No_countermeausre#");
+//		if (!isCountermeasure) {
+//			sb.append("<p>Countermeasure: No countermeausre</p>");
+//		}
+//		else {
+//			String cmName = null;
+//			String cmParam = null;
+//			switch (countermeasure) {
+//			case "ADDITIVENOISE":
+//				cmName = countermeasure.toLowerCase();
+//				cmParam = "noise level: " + getCMParam();
+//				break;
+//			case "TRANSFIGURATION":
+//				cmName = countermeasure.toLowerCase();
+//				cmParam = "sides of polygon: " + (int) getCMParam();
+//				break;
+//			case "KANONYMITY":
+//				cmName = "k anonymity";
+//				cmParam = "size of group: " + (int) getCMParam();
+//				break;
+//			case "KCLUSTERING":
+//				cmName = "k clustering";
+//				cmParam = "number of clusters: " + (int) getCMParam();
+//				break;
+//			}
+//			sb.append("<p>Countermeasure: " + cmName + ", " + cmParam + "</p>");
+//		}
+		if (numberOfQueries < 0) {
+			sb.append("<p>Upload_file:_" + fileName + "</p>");
 		}
 		else {
-			sb.append("Countermeasure:_" + countermeasure + ",_Param:_" + getCMParam() + "#");
+			sb.append("<p>Number of queries: " + numberOfQueries + "</p>");
 		}
-		sb.append("#");
-		if (number_of_queries < 0) {
-			sb.append("Upload_file:_" + fileName + "#");
-		}
-		else {
-			sb.append("Number_of_Queries:_" + number_of_queries + "#");
-		}
-		sb.append("#");
-		sb.append("Email_to:_" + email + "#");
-		sb.append("#");
 		return sb.toString();
 	}
 }

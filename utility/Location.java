@@ -13,7 +13,6 @@ public class Location {
 	}
 
 	public Location(double lat, double lon) {
-		// if (!map.withInBoundary(lat, lon)) throw new IllegalArgumentException("Coordinate is not in the range of map");
 		latitude = lat;
 		longitude = lon;
 	}
