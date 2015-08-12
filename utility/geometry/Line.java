@@ -5,6 +5,11 @@ public class Line {
 	public double a, b, c;
 	public double k;
 
+	/**
+	 * Construct a line from two points, they can't be the same point
+	 * @param a   point a
+	 * @param b   point b
+	 */
 	public Line(Point a, Point b) {
 		if (a.x == b.x && a.y == b.y) throw new IllegalArgumentException();
 		else if (a.x == b.x) {
@@ -22,12 +27,24 @@ public class Line {
 		}
 	}
 
+	/**
+	 * Determine if a point is on the line
+	 * @param a  point
+	 * @return   true if point is on the line
+	 */
 	public boolean online(Point a) {
-		return this.a * a.x + this.b * a.y + this.c == 0;
+		double delta = 0.001;
+		return Math.abs(this.a * a.x + this.b * a.y + this.c) < delta;
 	}
 
+	/**
+	 * Determine if point a and point b are on the same side of line
+	 * @param a  point a
+	 * @param b  point b
+	 * @return   true if point a, b are on the same side
+	 */
 	public boolean sameSide(Point a, Point b) {
-		if (a.x == b.x && a.y == b.y) return true;
+		if (a.SamePoint(b)) return true;
 		// if some point is on the line, return true
 		return (this.a * a.x + this.b * a.y + this.c) * (this.a * b.x + this.b * b.y + this.c) >= 0;
 	}

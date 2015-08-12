@@ -1,11 +1,25 @@
 package utility.geometry;
 
-/* This class represents the polygon contour for a PU */
+/* This class represents the polygon contour for a PU 
+ * The polygon must be a convex polygon and centerd with point(0, 0)
+ */
 
 public class Polygon {
 	private Point[] vertexes;   // vertices
 	private Line[] borders;     // borders
 	private int sides;          // number of borders
+
+	public Point[] getVertexes() {
+		return vertexes;
+	}
+
+	public Line[] getBorders() {
+		return borders;
+	}
+
+	public int getSides() {
+		return sides;
+	}
 
 	public Polygon(Point[] p) {
 		if (p == null || p.length == 0) throw new NullPointerException();
@@ -19,6 +33,7 @@ public class Polygon {
 
 	/**
 	 * Check if the given point is within the polygon
+	 * Vertices are considered within polygon
 	 * @param p   point
 	 * @return    true if the given point is within the polygon
 	 */
@@ -26,7 +41,7 @@ public class Polygon {
 		if (p == null) return false;
 		for (Point v : vertexes)
 			if (p.SamePoint(v)) return true;  // true if given point is the vertex
-		Point ref = new Point(0, 0);
+		Point ref = new Point(0, 0);          // (0, 0) must be center
 		if (p.SamePoint(ref)) return true;    // true if given point is the center of polygon
 		for (Line l : borders)                // true if given point is on the same side with center point
 			if (!l.sameSide(ref, p)) return false;

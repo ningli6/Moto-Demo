@@ -24,6 +24,9 @@ public class Cluster {
 	/* initialize a cluster with a list of pus */
 	public Cluster(List<PU> list) {
 		puSet = new LinkedList<PU>(list);
+		for (PU p : puSet) {
+			p.putInCluster(this);
+		}
 	}
 
 	public int getNumbersOfPU() {
