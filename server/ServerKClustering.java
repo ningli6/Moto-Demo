@@ -122,7 +122,7 @@ public class ServerKClustering extends Server {
 				}
 				if (max_radius < min_max_radius) {
 					min_max_radius = max_radius;
-					virtualPU.setIndices(i, j);  // set index position and actual location for pu
+					virtualPU.setLocation(i, j);  // set index position and actual location for pu
 					virtualPU.updateRadius(min_max_radius);  // set group radius
 				}
 			}

@@ -74,7 +74,7 @@ public class PolyPU {
 	 * @param j  col index
 	 * @return  a point object with the center of pu's location
 	 */
-	private Point indexTodist(int i, int j) {
+	public Point indexTodist(int i, int j) {
 		Location loc = map.getLocation(i, j);    // get location of cell(i, j)
 		double dist = loc.distTo(this.location); // distance between cell(i, j) to the cell where pu stands
 		// compute bearing, then return coordinate
@@ -82,14 +82,13 @@ public class PolyPU {
 		return new Point(dist * Math.sin(bear), dist * Math.cos(bear));
 	}
 
-
 	/**
 	 * Compute initialize bearing between from location s to location d
 	 * @param s     start location
 	 * @param d     destination location
 	 * @return      bearing in degrees
 	 */
-	private double bearing(Location s, Location d) {
+	public static double bearing(Location s, Location d) {
 		if (s == null || d == null) throw new NullPointerException();
 		double lat1 = s.getLatitude();
 		double long1 = s.getLongitude();

@@ -95,5 +95,4 @@ public class InferMapTest {
 			e.printStackTrace();
 		}
 	}
-
 }

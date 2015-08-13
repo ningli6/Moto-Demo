@@ -112,7 +112,7 @@ public class PU {
 	 * @param r  row index
 	 * @param c  col index
 	 */
-	public void setIndices(int r, int c) {
+	public void setLocation(int r, int c) {
 		indexOfRow = r;
 		indexOfCol = c;
 		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);

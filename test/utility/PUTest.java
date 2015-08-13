@@ -14,7 +14,7 @@ public class PUTest {
 		Location lr = new Location(35.137879119634185, -81.134033203125);
 		GridMap map = new GridMap(ul, ur, ll, lr, 0.005);
 		PU pu = new PU(3, 37, -88, map);
-		pu.setIndices(3, 5);
+		pu.setLocation(3, 5);
 		assertEquals(3, pu.getRowIndex());
 		assertEquals(5, pu.getColIndex());
 	}
