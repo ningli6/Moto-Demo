@@ -108,6 +108,7 @@ public class PU {
 
 	/**
 	 * Set location of primary users given indices on the map
+	 * Used to update virtual pu's location
 	 * @param r  row index
 	 * @param c  col index
 	 */

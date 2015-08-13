@@ -14,7 +14,6 @@ import client.Client;
 public class InferMap extends GridMap {
 	private int id;                      // channel id
 	private double[][] p;                // probability matrix
-	public static String directory;      // output path
 
 	/**
 	 * Construct a probability map with 0.5 for each cell
@@ -39,7 +38,6 @@ public class InferMap extends GridMap {
 	 * @param d2        update range, probability of area in between d1 and d2 will increase
 	 */
 	public void update(Client client, double d1, double d2) {
-		// probability over the map should sum to 1
 		Location clientLocation = client.getLocation();
 		if (clientLocation == null) return;
 		if (!withInBoundary(clientLocation)) {
@@ -50,32 +48,17 @@ public class InferMap extends GridMap {
 			System.out.println("Invalid parameters");
 			return;
 		}
-		
 		// parameter used in updating formula
 		int G = 0;
-
 		// index for client's position
 		int rowIndex = client.getRowIndex();
 		int colIndex = client.getColIndex();
-		
-		/* debug information */
-//		System.out.println("***Update****");
-//		// see d1 and d2
-//		System.out.println("d1: " + d1 + " d2: " + d2);
-//		// see channel
-//		System.out.println("on channel: " + id);
-
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
-		/* debug information */
-//		System.out.println("updateLength: " + updateLength);
 
 		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
 		if (startRow < 0) startRow = 0;
 		int startCol = colIndex - (int) Math.round(updateLength / 2.0);
 		if (startCol < 0) startCol = 0;
-		/* debug information */
-		// System.out.println("startRow: " + startRow);
-		// System.out.println("startCol: " + startCol);
 
 		// temporary location for each cell
 		Location tmpCell = new Location();
@@ -90,8 +73,6 @@ public class InferMap extends GridMap {
 				if (distance >= d1 && distance < d2) G++;
 			}
 		}
-		/* debug information */
-//		 System.out.println("Number of G: " + G);
 		if (G != 0) {
 			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
@@ -99,10 +80,7 @@ public class InferMap extends GridMap {
 					tmpCell.setLocation(rowToLat(i), colToLng(j));
 					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
-//						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (0.01 * G));
 						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (G));
-						/* debug information */
-						// System.out.println("p" + "[" + i + "]" + "[" + j + "] = " + p[i][j]);
 					}
 				}
 		}
@@ -126,7 +104,7 @@ public class InferMap extends GridMap {
 	/**
 	 * Print infer map's probability map
 	 * @param dir     output path
-	 * @param fileName TODO
+	 * @param fileName file name of text file that contains probability
 	 */
 	public void printProbability(String dir, String fileName) {
 		if (dir == null || dir.length() == 0) return;
@@ -139,42 +117,6 @@ public class InferMap extends GridMap {
 					out.println(i + " " + j + " " + p[i][j]);
 				}
 			}
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Print number of rows & cols
-	 * @param dir  output path
-	 */
-	public void printRC(String dir) {
-		File file = new File(dir + "demoTable_" + id + "_rowcol.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			out.println("ROWS COLS");
-			out.println(getRows() + " " + getCols());
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException: " + e.getMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} 
-	}
-
-	/**
-	 * Print map boundaries
-	 * @param dir  output path
-	 */ 
-	public void printBounds(String dir) {
-		File file = new File(dir + "demoTable_" + id + "_bounds.txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			out.println("NLAT SLAT WLNG ELNG");
-			out.println(getTopBound() + " " + getBotBound() + " " + getWestBound() + " " + getEastBound());
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
 			System.out.println("FileNotFoundException: " + e.getMessage());

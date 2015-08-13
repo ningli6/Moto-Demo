@@ -13,7 +13,6 @@ import utility.Response;
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
  */
-
 public class Client {
 	public static final double PMAX = 1;
 	int numberOfChannels = 1;         // number of channels
@@ -184,32 +183,11 @@ public class Client {
 	/**
 	 * Print probability matrix of ALL channels
 	 * @param dir   output path
-	 * @param fileName TODO
+	 * @param fileName file name of text file that holds probability information
 	 */
 	public void printProbability(String dir, String fileName) {
 		for (int i = 0; i < numberOfChannels; i++) {
 			inferMap[i].printProbability(dir, fileName);
 		}
 	}
-
-	/**
-	 * Print number of rows & cols
-	 * @param dir   output path
-	 */
-	public void printRC(String dir) {
-		for (int i = 0; i < numberOfChannels; i++) {
-			inferMap[i].printRC(dir);
-		}
-	}
-
-	/**
-	 * Print map boundaries
-	 * @param dir   output path
-	 */
-	public void printBounds(String dir) {
-		for (int i = 0; i < numberOfChannels; i++) {
-			inferMap[i].printBounds(dir);
-		}
-	}
-
 }
