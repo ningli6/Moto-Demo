@@ -46,19 +46,32 @@ google.maps.event.addDomListener(window, 'load', initialize);
     </div>
 
     <!-- dropdown specifying channels -->
-    <h4>Specify number of channels</h4>
-    <form role="form">
+    <h4>Select number of channels</h4>
+    <div class="row">
+        <div class="col-md-2 btn-group dropdown">
+            <button id="channelButton" class="btn btn-default" style="width:80%">1</button>
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" style="width:20%">
+                <span class="caret"></span></button>
+                <ul id="dp" class="dropdown-menu" style="width: 100%; text-align: center;">
+                    <li><a>1</a></li>
+                    <li><a>2</a></li>
+                    <li><a>3</a></li>
+                </ul>
+        </div>
+    </div>
+
+<!--     <form role="form">
         <div class="form-group">
-            <select class="form-control" id="selc" style="width: 15%" onchange="setChannels();">
+            <select class="form-control" id="selc" style="width: 10%" onchange="setChannels();">
                 <option class="optclass" selected="selected">1</option>
                 <option class="optclass">2</option>
                 <option class="optclass">3</option>
             </select>
         </div>
-    </form>
+    </form> -->
 
     <!-- google map -->
-    <h4>Specify analysis area and location of primary users</h4> 
+    <h4>Draw analysis area and pick location of primary users</h4> 
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
@@ -67,7 +80,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     <!-- choose countermeasure -->
     <br>
-    <h4>Specify countermeasure</h4>
+    <h4>Choose countermeasures</h4>
     <div class="row">
         <div class="col-md-6"><h5>Inaccuracy vs Queries</h5></div>
         <div class="col-md-3">
