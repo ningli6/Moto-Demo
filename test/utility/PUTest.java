@@ -29,6 +29,19 @@ public class PUTest {
 		PU pu = new PU(3, 37, -88, map);
 		assertEquals(37, pu.getLocation().getLatitude(), 0.01);
 		assertEquals(-88, pu.getLocation().getLongitude(), 0.01);
+		
+		ul = new Location(40, -90);
+		ur = new Location(40, -85);
+		ll = new Location(35, -90);
+		lr = new Location(35, -85);
+		map = new GridMap(ul, ur, ll, lr, 0.1);
+		assertEquals(50, map.getRows());
+		assertEquals(50, map.getCols());
+		pu = new PU(0, 39.89, -85.01, map);
+		System.out.println(pu.getLocation().getLatitude());
+		System.out.println(pu.getLocation().getLongitude());
+		assertEquals(39.85, pu.getLocation().getLatitude(), 0.01);
+		assertEquals(-85.05, pu.getLocation().getLongitude(), 0.01);
 	}
 
 	@Test

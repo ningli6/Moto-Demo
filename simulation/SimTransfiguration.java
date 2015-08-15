@@ -24,14 +24,13 @@ public class SimTransfiguration extends Simulation {
 	/**
 	 * Construct a transfiguration simulator
 	 * @param bootParams        boot parameters
-	 * @param cellSize        cell size
 	 * @param mtpScale     mtp scale
 	 * @param interval     internal number of queries for multiple simulations
 	 * @param directory       directory
 	 */
-	public SimTransfiguration(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
+	public SimTransfiguration(BootParams bootParams, double mtpScale, int interval, String directory) {
 		/* call parent instructor */
-		super(bootParams, cellSize, mtpScale, interval, directory);
+		super(bootParams, mtpScale, interval, directory);
 
 		/* initialize countermeasure */
 		this.counterMeasure = "TRANSFIGURATION";

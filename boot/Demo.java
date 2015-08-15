@@ -18,16 +18,14 @@ public class Demo implements Runnable {
     private Thread t;                // thread instance
     private String threadName;       // thread name
     private BootParams bp;   // BootParams instance
-    private double cellSize;         // cell size
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String directory;        // output directory
     private String resultDir;        // directory that saves plots from python and maltab
 
-    public Demo(BootParams bp, double cs, double scale, int inter, String dir){
+    public Demo(BootParams bp, double scale, int inter, String dir){
     	this.threadName ="New Demo";
     	this.bp = bp;
-        this.cellSize = cs;
         this.mtpScale = scale;
         this.interval = inter;
         this.directory = dir;
@@ -41,14 +39,14 @@ public class Demo implements Runnable {
         try {
         	// program goes here
         	if (bp.containsCM("NOCOUNTERMEASURE")) {
-        		Simulation sim = new Simulation(bp, cellSize, mtpScale, interval, directory);
+        		Simulation sim = new Simulation(bp, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapNO()) {
         			sim.singleSimulation();
         		}
         	}
         	if (bp.containsCM("ADDITIVENOISE")) {
-        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, cellSize, mtpScale, interval, directory);
+        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapAD()) {
         			sim.singleSimulation();
@@ -63,7 +61,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("TRANSFIGURATION")) {
-        		SimTransfiguration sim = new SimTransfiguration(bp, cellSize, mtpScale, interval, directory);
+        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapTF()) {
         			sim.singleSimulation();
@@ -78,7 +76,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("KANONYMITY")) {
-        		SimKAnonymity sim = new SimKAnonymity(bp, cellSize, mtpScale, interval, directory);
+        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapKA()) {
         			sim.singleSimulation();
@@ -90,7 +88,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("KCLUSTERING")) {
-        		SimKClustering sim = new SimKClustering(bp, cellSize, mtpScale, interval, directory);
+        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, directory);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapKC()) {
         			sim.singleSimulation();
@@ -107,8 +105,8 @@ public class Demo implements Runnable {
         		return;
         	}
         	// plot google map
-        	if (!MatPlot.plot(bp.getNumberOfChannels(), bp.getNorthLat(), bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), 
-        			bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+        	if (!MatPlot.plot(bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), bp.getSouthLat(), bp.getWestLng(), 
+        			bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
         		System.out.println("Plot Google Maps failed");
         		return;
         	}

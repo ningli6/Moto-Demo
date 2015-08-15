@@ -23,19 +23,24 @@ public class Parser {
 			return null;
 		BootParams bootParams = new BootParams();
 		try {
+			// get cell size
+			if (!args[0].equals("-cd")) {
+				throw new IllegalArgumentException("-cd");
+			}
+			bootParams.setCellSize(Double.parseDouble(args[1]));
 			// get boundary
-			if (!args[0].equals("-a")) {
+			if (!args[2].equals("-a")) {
 				throw new IllegalArgumentException("-a");
 			}
-			bootParams.setNorthLat(Double.parseDouble(args[1]));
-			bootParams.setSouthLat(Double.parseDouble(args[3]));
-			bootParams.setWestLng(Double.parseDouble(args[2]));
-			bootParams.setEastLng(Double.parseDouble(args[4]));
+			bootParams.setNorthLat(Double.parseDouble(args[3]));
+			bootParams.setSouthLat(Double.parseDouble(args[5]));
+			bootParams.setWestLng(Double.parseDouble(args[4]));
+			bootParams.setEastLng(Double.parseDouble(args[6]));
 			// get number of channels
-			if (!args[5].equals("-c")) {
+			if (!args[7].equals("-c")) {
 				throw new IllegalArgumentException("-c");
 			}
-			int noc = Integer.parseInt(args[6]);
+			int noc = Integer.parseInt(args[8]);
 			if (noc < 1 || noc > 3) {
 				throw new IllegalArgumentException("Number of channels must be 1, 2 or 3");
 			}
@@ -46,7 +51,7 @@ public class Parser {
 			for (int j = 0; j < puLocations.length; j++) {
 				puLocations[j] = new LinkedList<Location>();
 			}
-			int i = 7;
+			int i = 9;
 			int ch = 0;
 			while(ch < noc) {
 				if (args[i].equals("-C")) {

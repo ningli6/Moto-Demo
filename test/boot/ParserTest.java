@@ -13,8 +13,9 @@ public class ParserTest {
 //	-a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
 	@Test
 	public void testParse() {
-		String args = "-a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -an 0.9 -tf 3 -kc 4 -gm no ad ka -tr tf -q 200 -e foo@vt.edu -opt";
+		String args = "-cd 0.005 -a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -an 0.9 -tf 3 -kc 4 -gm no ad ka -tr tf -q 200 -e foo@vt.edu -opt";
 		BootParams bp = Parser.parse(args.split(" "));
+		assertEquals(0.005, bp.getCellSize(), 0.001);
 		assertEquals(39.0959629363055, bp.getNorthLat(), 0.0001);
 		assertEquals(-85.1385498046875, bp.getWestLng(), 0.0001);
 		assertEquals(37.06394430056685, bp.getSouthLat(), 0.0001);

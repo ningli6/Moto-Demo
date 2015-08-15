@@ -5,25 +5,25 @@ import java.io.InputStreamReader;
 
 import utility.GridMap;
 import utility.Location;
-import boot.Boot;
 
 public class MatPlot {
 	/**
 	 * Call Matlab function that plot data on google map
-	 * @param noc     number of channels
-	 * @param nlat    north lat
-	 * @param slat    south lat
-	 * @param wlng    west lng
-	 * @param elng    east lng
-	 * @param noCM    plot google map for no countermeasure
-	 * @param ad      plot additive noise
-	 * @param tf      plot transfiguration
-	 * @param ka      plot k anonymity
-	 * @param kc      plot k clustering
+	 * @param cellSize grid size
+	 * @param noc      number of channels
+	 * @param nlat     north lat
+	 * @param slat     south lat
+	 * @param wlng     west lng
+	 * @param elng     east lng
+	 * @param noCM     plot google map for no countermeasure
+	 * @param ad       plot additive noise
+	 * @param tf       plot transfiguration
+	 * @param ka       plot k anonymity
+	 * @param kc       plot k clustering
 	 * @return
 	 */
-	public static boolean plot(int noc, double nlat, double slat, double wlng, double elng, 
-			boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+	public static boolean plot(double cellSize, int noc, double nlat, double slat, double wlng, 
+			double elng, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		if (!noCM && !ad && !tf && !ka && !kc) {
 			System.out.println("No google map need to be plotted");
 			return true;
@@ -36,7 +36,7 @@ public class MatPlot {
 		Location upperRight = new Location(nlat, elng);
 		Location lowerLeft = new Location(slat, wlng);
 		Location lowerRight = new Location(slat, elng);
-		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, Boot.cellsize);
+		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellSize);
 		int rows = map.getRows();
 		int cols = map.getCols();
 		try {

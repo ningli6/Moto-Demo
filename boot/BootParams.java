@@ -8,6 +8,7 @@ import utility.Location;
 
 /* class that holds information about input parameters */
 public class BootParams {
+	private double cellSize;           // grid size
 	private double NorthLat;           // coordinates
 	private double SouthLat;
 	private double EastLng;
@@ -29,6 +30,14 @@ public class BootParams {
 
 	public BootParams() {
 		this.cmMap = new HashMap<String, Double>();
+	}
+
+	public double getCellSize() {
+		return cellSize;
+	}
+
+	public void setCellSize(double cellSize) {
+		this.cellSize = cellSize;
 	}
 
 	public double getNorthLat() {

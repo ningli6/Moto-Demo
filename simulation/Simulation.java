@@ -30,9 +30,9 @@ public class Simulation {
 	double[] IC;           // ic for single simulation, may include this information in email
 	Map<Integer, double[]> icMap; // associate ic to number of queries
 
-	public Simulation(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
+	public Simulation(BootParams bootParams, double mtpScale, int interval, String directory) {
 		this.bootParams = bootParams;
-		this.cellsize = cellSize;
+		this.cellsize = bootParams.getCellSize();
 		this.mtpScale = mtpScale;
 		this.interval = interval;
 		this.directory = directory;

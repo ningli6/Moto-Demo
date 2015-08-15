@@ -8,7 +8,6 @@ package boot;
  */
 public class Boot {
 	/* initial settings, these are not included in BootParams */
-	public static double cellsize = 0.005;    // cell size in degree, about 0.5 km
 	public static double mtpScale = 1;        // MTP function
 	public static int interval = 5;           // number of internal points of querying
 	public static String directory = "C:\\Users\\Administrator\\Desktop\\motoData\\";
@@ -20,7 +19,7 @@ public class Boot {
 			System.out.println("FAILED");
 			return;
 		}
-		Demo R = new Demo(bp, cellsize, mtpScale, interval, directory);
+		Demo R = new Demo(bp, mtpScale, interval, directory);
 		/* start program, return ok */
 		System.out.println("OK");
 	    R.start();
