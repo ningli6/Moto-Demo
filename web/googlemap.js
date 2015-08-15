@@ -4,7 +4,6 @@
 
 
 var map;                         // google map instance
-var drawingManager;              // helper object for drawing shapes on google map
 var rect;                        // google.maps.Rectangle class
 var recRegion;                   // rectangle boundary, google.maps.LatLngBounds class
 var myCenter = new google.maps.LatLng(37.227799, -80.422054); // center for google map region
@@ -43,10 +42,9 @@ function initialize() {
         fillOpacity: 0.1,
         editable: true,
         clickable: false,
-        strokeColor: '#3399FF',
-        // fillColor: '#3399FF'
+        strokeColor: '#3399FF'
     };
-    drawingManager = new google.maps.drawing.DrawingManager({
+    var drawingManager = new google.maps.drawing.DrawingManager({
         drawingMode: null,
         drawingControl: true,
         drawingControlOptions: {
@@ -62,24 +60,30 @@ function initialize() {
         if (rect != undefined) {
             rect.setMap(null);
         }
-
+        // draw rectangle
         rect = e.overlay;
         rect.type = e.type;
-
         if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
             rect.setMap(map);
             recRegion = rect.getBounds();
-            // updateBounds(recRegion);
             console.log(recRegion.toString());
         }
         // restore cursor to hand
         drawingManager.setDrawingMode(null);
+        // clear previous grids
+        clearGrids();
+        // check grid size and coverage
+        if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
+            if (rect != undefined) rect.setMap(null);
+            recRegion = undefined;
+        }
+        else drawGrids(recRegion); // draw new grids
+
         // Add an event listener on the rectangle for bounds change
         google.maps.event.addListener(e.overlay, 'bounds_changed', function() {
             rect = e.overlay;
             rect.type = e.type;
             recRegion = rect.getBounds();
-            // updateBounds(recRegion);
             console.log(recRegion.toString());
             clearGrids();
             if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
@@ -88,12 +92,6 @@ function initialize() {
             }
             else drawGrids(recRegion);
         });
-        clearGrids();
-        if (!checkSize(recRegion) || !checkCoverage(recRegion)) {
-            if (rect != undefined) rect.setMap(null);
-            recRegion = undefined;
-        }
-        else drawGrids(recRegion);
     });
 
     // Add an event listener on the map for click
@@ -106,8 +104,9 @@ function initialize() {
  * Check size of analysis area
  */
 function checkSize(recRegion) {
-    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.005);
-    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.005);
+    var sz = document.getElementById("cd").value;
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / sz);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / sz);
     if (rows < 50 || cols < 50) {
         console.log("Rows: " + rows + ", Cols: " + cols);
         alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
@@ -258,18 +257,22 @@ function placeMarker(location) {
  * Show grid cells in analysis area
  */
 function drawGrids(recRegion) {
+    var sz = document.getElementById("cd").value;
+    if (!isNumeric(sz)) {
+        sz = 0.005;
+    }
     var nLat = recRegion.getNorthEast().lat();
     var sLat = recRegion.getSouthWest().lat();
     var eLng = recRegion.getNorthEast().lng();
     var wLng = recRegion.getSouthWest().lng();
     // north east lat/lng is bigger
-    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / 0.005);
-    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / 0.005);
+    var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / sz);
+    var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / sz);
     for (var i = 1; i <= rows; i++) {
         latLines.push(new google.maps.Polyline({
             map: map,
-            path: [new google.maps.LatLng(nLat - i * 0.005, eLng),
-                   new google.maps.LatLng(nLat - i * 0.005, wLng)],
+            path: [new google.maps.LatLng(nLat - i * sz, eLng),
+                   new google.maps.LatLng(nLat - i * sz, wLng)],
             geodesic: false,
             strokeColor: '#3399FF',
             strokeOpacity: 0.9,
@@ -280,8 +283,8 @@ function drawGrids(recRegion) {
     for (var i = 1; i <= cols; i++) {
         lngLines.push(new google.maps.Polyline({
             map: map,
-            path: [new google.maps.LatLng(nLat, wLng + i * 0.005),
-                   new google.maps.LatLng(sLat, wLng + i * 0.005)],
+            path: [new google.maps.LatLng(nLat, wLng + i * sz),
+                   new google.maps.LatLng(sLat, wLng + i * sz)],
             geodesic: false,
             strokeColor: '#3399FF',
             strokeOpacity: 0.9,

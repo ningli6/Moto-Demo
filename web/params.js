@@ -17,7 +17,6 @@ var numberOfQueries;       // number of queries
 var queryFile;             // name of querying file
 var email;                 // send result to this email
 var inputParams = false;   // whether to include input parameters in the email
-
 var args;                  // formatted params as a argument for java program
 
 /**
@@ -26,6 +25,17 @@ var args;                  // formatted params as a argument for java program
  * @return {void}
  */
 function getParams () {
+    // check cell size
+    var cellSize = document.getElementById("cd").value;
+    if (!isNumeric(cellSize)) {
+        cellSize = 0.005;
+    }
+    else if (cellSize > 0.05) {
+        cellSize = 0.05;
+    }
+    else if (cellSize < 0.005) {
+        cellSize = 0.005
+    }
     // check parameters and grab values from forms
     if (rect == undefined || recRegion == undefined) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
@@ -254,8 +264,10 @@ function getParams () {
     }
 
     // formatting params
+    // cell size
+    args = "-cd " + cellSize + " ";
     // NE lat, SW lng, SW lat, NE lng
-    args = "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
+    args += "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
     // number of channels
     args += "-c " + numberOfChannels + " ";
     // location of pu

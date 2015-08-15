@@ -3,7 +3,7 @@
 <!DOCTYPE HTML> 
 <html lang="en-US">
 <head>
-    <title>Moto Demo</title>
+    <title>Moto Demo Dev</title>
     <meta charset="UTF-8">
     <meta name="author" content="Ning Li">
     <meta name="description" 
@@ -23,6 +23,7 @@
     <script type="text/javascript" src="countermeasure.js"></script>
     <script type="text/javascript" src="queryOpt.js"></script>
     <script type="text/javascript" src="params.js"></script>
+    <script type="text/javascript" src="gridSize.js"></script>
 </head>
 
 <script type="text/javascript">
@@ -60,15 +61,18 @@ google.maps.event.addDomListener(window, 'load', initialize);
         </div>
     </div>
 
-<!--     <form role="form">
+    <!-- Cell size -->
+    <h4>Specify grid size</h4>
+    <form class="form-horizontal" role="form">
         <div class="form-group">
-            <select class="form-control" id="selc" style="width: 10%" onchange="setChannels();">
-                <option class="optclass" selected="selected">1</option>
-                <option class="optclass">2</option>
-                <option class="optclass">3</option>
-            </select>
+            <div class="col-md-2">
+                <input class="form-control" id="cd" min="0.005" max="0.05" step="0.001" placeholder="0.005" style="text-align:center;" onchange="adjustGridSize();">
+            </div>
+            <a href="#" data-toggle="qtip" title="Simulation treats selected area as grid of cells. Grid size determines size of each cell and is specified in degree with earth based coordinates. Maximum cell size is 0.05 (about 5 km) and minimum cell size is 0.005 (about 500 m). To achieve more accuracy, we recommend defalut value 0.005 degree for cell size.">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </a>
         </div>
-    </form> -->
+    </form>
 
     <!-- google map -->
     <h4>Draw analysis area and pick location of primary users</h4> 
