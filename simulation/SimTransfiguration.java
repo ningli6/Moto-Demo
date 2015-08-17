@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import server.ServerTransfiguration;
+import utility.GridMap;
 import utility.Location;
 import utility.PU;
 import boot.BootParams;
+import boot.Parser;
 import client.Client;
 
 public class SimTransfiguration extends Simulation {
@@ -141,38 +143,64 @@ public class SimTransfiguration extends Simulation {
 	}
 
 	public void tradeOffCurve() {
-		int[] cmString = {3, 4, 5, 6, 7, 8, 9, 10};
+		int[] cmString = {3, 4, 5, 6};
 		double[] trdIC = new double[cmString.length];
-		int repeat = 10;
+		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm -tf 3 -gm -tr tf -q 50 -e ningli@vt.edu -opt pa ";
+		BootParams tfBp = Parser.parse(args.split(" "));
+		Location upperLeft = new Location(tfBp.getNorthLat(), tfBp.getWestLng());
+		Location upperRight = new Location(tfBp.getNorthLat(), tfBp.getEastLng());
+		Location lowerLeft = new Location(tfBp.getSouthLat(), tfBp.getWestLng());
+		Location lowerRight = new Location(tfBp.getSouthLat(), tfBp.getEastLng());
+		GridMap tfMap = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, tfBp.getCellSize());
+		ServerTransfiguration tfServer = new ServerTransfiguration(tfMap, tfBp.getNumberOfChannels(), (int) tfBp.getCMParam("TRANSFIGURATION"));
+		int PUid = 0;
+		for (int k = 0; k < tfBp.getNumberOfChannels(); k++) {
+			List<Location> LatLngList = tfBp.getPUOnChannel(k);
+			for (Location ll : LatLngList) {
+				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), tfMap);
+				tfServer.addPU(pu, k);
+			}
+		}
+		int repeat = 30;
 		System.out.println("Start computing trade off curve for transfiguration...");
-		Client trdOfClient = new Client(cmServer);     // get a new client
-		for (int k = 0; k < cmString.length - 1; k++) {// for each sides
-			cmServer.transfigure(cmString[k]);         // set new number of sides
+		Client trdOfClient = new Client(tfServer);     // get a new client
+		for (int k = 0; k < cmString.length; k++) {// for each sides
+			tfServer.transfigure(cmString[k]);         // set new number of sides
 			System.out.println("Sides: " + cmString[k]);
-			for (int r = 0; r < repeat; r++) {
-				trdOfClient.reset(); // set client maps back to 0.5
-				for (int i = 0; i < noq; i++) {
-					trdOfClient.randomLocation();
-					trdOfClient.query(cmServer);
+			int count = 0;
+			while (true) {
+				for (int r = 0; r < repeat; r++) {
+					trdOfClient.reset(); // set client maps back to 0.5
+					for (int i = 0; i < tfBp.getNumberOfQueries(); i++) {
+						trdOfClient.randomLocation();
+						trdOfClient.query(tfServer);
+					}
+					double[] ic = trdOfClient.computeIC();
+					trdIC[k] += average(ic) / repeat;
 				}
-				double[] ic = trdOfClient.computeIC();
-				trdIC[k] += average(ic) / repeat;
+				System.out.println(cmString[k] + ": " + trdIC[k]);
+				count++;
+				if (count == 5) {   // if after 5 attempts, we can't get smaller value of ic, make it 0.7 of its predecessor
+					trdIC[k] = 07 * trdIC[k - 1];
+				}
+				if (k == 0 || trdIC[k] < trdIC[k - 1]) break;  // try to get a smaller ic for larger sides
+				trdIC[k] = 0;
 			}
 		}
 		// for the last sides 10, use the original circular contour
-		Client client = new Client(server);  // the original server
-		int k = cmString.length - 1;
-		System.out.println("Sides: infinite");
-		for (int r = 0; r < repeat; r++) {
-			client.reset();
-			/* run simulation for once */
-			for (int i = 0; i < noq; i++) {
-				client.randomLocation();
-				client.query(cmServer);
-			}
-			double[] ic = client.computeIC();
-			trdIC[k] += average(ic) / repeat;
-		}
+//		Client client = new Client(server);  // the original server
+//		int k = cmString.length - 1;
+//		System.out.println("Sides: infinite");
+//		for (int r = 0; r < repeat; r++) {
+//			client.reset();
+//			/* run simulation for once */
+//			for (int i = 0; i < noq; i++) {
+//				client.randomLocation();
+//				client.query(server);
+//			}
+//			double[] ic = client.computeIC();
+//			trdIC[k] += average(ic) / repeat;
+//		}
 		
 		printTradeOff(cmString, trdIC, directory, "traddOff_Transfiguration.txt");
 	}

@@ -18,6 +18,7 @@ class tradeOffPlots:
 				f = open(path, 'r')
 			except Exception, e:
 				continue
+			plt.figure()
 			l = [map(float, line.split()) for line in f]
 			if files[x] == 'traddOff_AdditiveNoise.txt':
 				title = "Trade-off curve of additive noise"
@@ -25,7 +26,7 @@ class tradeOffPlots:
 			elif files[x] == 'traddOff_Transfiguration.txt':
 				title = "Trade-off curve of transfiguration"
 				xlabel = 'Number of sides'
-			plt.figure()
+				plt.xticks(map(int, l[0]))
 			plt.plot(l[0], pyf.normalize(l[1]))
 			plt.legend()
 			plt.title(title)
@@ -35,5 +36,5 @@ class tradeOffPlots:
 			plt.savefig(output + files[x].replace('txt', 'png'))
 
 trdOfP = tradeOffPlots()
-# trdOfP.plot([sys.argv[x] for x in range(1, len(sys.argv))])
-trdOfP.plot(['traddOff_AdditiveNoise.txt', 'traddOff_Transfiguration.txt'])
+trdOfP.plot([sys.argv[x] for x in range(1, len(sys.argv))])
+# trdOfP.plot(['traddOff_AdditiveNoise.txt', 'traddOff_Transfiguration.txt'])
