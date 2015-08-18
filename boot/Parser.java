@@ -14,7 +14,7 @@ public class Parser {
 	/**
 	 * Parse an input string from web interface
 	 * The arguments from web interface should be formatted as:
-	 * -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
+	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
 	 * @param     string from web page
 	 * @return    BootParams that holds all these information
 	 */
@@ -129,6 +129,14 @@ public class Parser {
 				bootParams.setTradeOffTF(true);
 				i += 1;
 			}
+			if (args[i].equals("ka")) {
+				bootParams.setTradeOffKA(true);
+				i += 1;
+			}
+			if (args[i].equals("kc")) {
+				bootParams.setTradeOffKC(true);
+				i += 1;
+			}
 			// queries
 			if (args[i].equals("-f")) {
 				bootParams.useFile(args[i + 1]);
@@ -159,7 +167,7 @@ public class Parser {
 		catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Usage: ");
-			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
+			System.out.println("java Boot -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
 			return null;
 		}
 	}

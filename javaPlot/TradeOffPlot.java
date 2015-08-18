@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class TradeOffPlot {
-	public static boolean plot(boolean ad, boolean tr) {
+	public static boolean plot(boolean ad, boolean tr, boolean ka, boolean kc) {
 		if (!ad && !tr) {
 			System.out.println("No trade-off curve need to be plotted.");
 			return true;

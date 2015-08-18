@@ -137,4 +137,9 @@ public class SimKClustering extends Simulation {
 	public boolean isFeasible() {
 		return feasible;
 	}
+
+	public void tradeOffBar() {
+		System.out.println("Start computing trade off bar for K Clustering...");
+		
+	}
 }

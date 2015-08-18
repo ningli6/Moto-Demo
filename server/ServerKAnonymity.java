@@ -23,6 +23,25 @@ public class ServerKAnonymity extends Server {
 		}
 		numberOfVPUs = 0;
 	}
+	
+	public int getK() {
+		return this.k;
+	}
+	
+	/**
+	 * Set new k to server
+	 * Clear all previous virtual pu
+	 * @param k
+	 */
+	public void setK(int k) {
+		if (k <= 0) return;
+		this.k = k;
+		for (int i = 0; i < numberOfChannels; i++) {
+			virtualList[i].clear();
+		}
+		numberOfVPUs = 0;
+		groupKPUs();
+	}
 
 	/**
 	 * Group primary users into several groups that all have k members.
@@ -43,7 +62,7 @@ public class ServerKAnonymity extends Server {
 		if (getNumberOfPUs() == 0 || this.k == 1) {         // special case, if no primary user or k is 1 (itself is a group)
 			System.out.println("No need to convert to virtual pu");
 			for (int i = 0; i < numberOfChannels; i++) {
-				virtualList[i] = channelsList[i];    // virtual list is actually not different with actual list
+				virtualList[i].addAll(channelsList[i]);    // virtual list is actually not different with actual list
 			}
 			updateNumbersOfVirtualPUs();  // after grouping, number of virtual pus is N / k where N is the original number of primary users
 			return;

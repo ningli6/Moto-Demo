@@ -20,13 +20,15 @@ public class SendEmail {
 	 * @param tradeOffAd whether to trade-off curve for additive noise
 	 * @param tradeOffTf whether to trade-off curve for transfiguration
 	 * @param inputParams include user parameters in the email as a text file
+	 * @param c 
+	 * @param b 
 	 * @return           true if everything works
 	 */
 	public static boolean send(String from, String to, String message, int noc,
 			boolean icVSq, 
 			boolean gMapNo, boolean gMapAd, boolean gMapTf, boolean gMapKa, boolean gMapKc, 
 			boolean tradeOffAd, boolean tradeOffTf,
-			boolean inputParams) {
+			boolean inputParams, boolean b, boolean c) {
 		System.out.println("Start sending email...");
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
         String s = null;

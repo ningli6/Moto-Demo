@@ -56,7 +56,7 @@ public class Demo implements Runnable {
         			bp.setGoogleMapAD(false);
         			emailInfo += "Noise requirement can't be reached.\n\n";
         		}
-        		if (bp.tradeOffAD()) {
+        		if (bp.isTradeOffAD()) {
         			sim.tradeOffCurve();
         		}
         	}
@@ -71,7 +71,7 @@ public class Demo implements Runnable {
         			bp.setGoogleMapTF(false);
         			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
         		}
-        		if (bp.tradeOffTF()) {
+        		if (bp.isTradeOffTF()) {
         			sim.tradeOffCurve();
         		}
         	}
@@ -86,6 +86,9 @@ public class Demo implements Runnable {
         			bp.setGoogleMapKA(false);
         			emailInfo += "K must be a positive integer.\n\n";
         		}
+        		if (bp.isTradeOffKA()) {
+        			sim.tradeOffBar();
+        		}
         	}
         	if (bp.containsCM("KCLUSTERING")) {
         		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, directory);
@@ -97,6 +100,9 @@ public class Demo implements Runnable {
         			bp.delCountermeasure("KCLUSTERING");
         			bp.setGoogleMapKC(false);
         			emailInfo += "K must be a positive integer.\n\n";
+        		}
+        		if (bp.isTradeOffKC()) {
+        			sim.tradeOffBar();
         		}
         	}
         	// plot ic vs q
@@ -111,7 +117,7 @@ public class Demo implements Runnable {
         		return;
         	}
         	// plot tradeOff curve
-        	if (!TradeOffPlot.plot(bp.tradeOffAD(), bp.tradeOffTF())) {
+        	if (!TradeOffPlot.plot(bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
         		System.out.println("Plot trade-off curves failed");
         		return;
         	}
@@ -121,7 +127,8 @@ public class Demo implements Runnable {
         	}
         	if (!SendEmail.send("ningli@vt.edu", bp.getEmail(), emailInfo, bp.getNumberOfChannels(), 
         			true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC(), 
-        			bp.tradeOffAD(), bp.tradeOffTF(), bp.getInputParams())) {
+        			bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC(), 
+        			bp.getInputParams())) {
         		System.out.println("Sending email failed");
         		return;
         	}
