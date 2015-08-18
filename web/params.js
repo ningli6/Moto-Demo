@@ -12,7 +12,9 @@ var gmapTF = false;        // plot google map for transfiguration
 var gmapKA = false;        // plot google map for k anonymity
 var gmapKC = false;        // plot google map for k clustering
 var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
-var tradeOffTF = false; 
+var tradeOffTF = false;
+var tradeOffKA = false;
+var tradeOffKC = false;
 var numberOfQueries;       // number of queries
 var queryFile;             // name of querying file
 var email;                 // send result to this email
@@ -106,7 +108,9 @@ function getParams () {
     gmapAD = false;
     tradeOffTF = false;
     gmapTF = false;
+    tradeOffKA = false;
     gmapKA = false;
+    tradeOffKC = false;
     gmapKC = false;
     inputParams = false;
 
@@ -185,6 +189,12 @@ function getParams () {
         }
         countermeasure.push("ka");
         cmVal.push(val);
+        if (document.getElementById('tradeOff3').checked) {
+            tradeOffKA = true;
+        }
+        else {
+            tradeOffKA = false;
+        }
         if (document.getElementById('gmka').checked) {
             gmapKA = true;
         }
@@ -204,6 +214,12 @@ function getParams () {
         }
         countermeasure.push("kc");
         cmVal.push(val);
+        if (document.getElementById('tradeOff4').checked) {
+            tradeOffKC = true;
+        }
+        else {
+            tradeOffKC = false;
+        }
         if (document.getElementById('gmkc').checked) {
             gmapKC = true;
         }
@@ -321,6 +337,12 @@ function getParams () {
     if (tradeOffTF) {
         args += 'tf '
     }
+    if (tradeOffKA) {
+        args += 'ka '
+    }
+    if (tradeOffKC) {
+        args += 'kc '
+    }
     // queries
     if (numberOfQueries != null) {
         args += "-q " + numberOfQueries + " ";
@@ -392,11 +414,17 @@ function getParams () {
             if (gmapKA) {
                 cmstr += ". Plot inferred location of primary users on Google Maps";
             }
+            if (tradeOffKA) {
+                cmstr += ". Plot trade-off bar";
+            }
         }
         else {
             cmstr += "K Clustering. K: " + cmVal[i];
             if (gmapKC) {
                 cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+            if (tradeOffKC) {
+                cmstr += ". Plot trade-off bar";
             }
         }
         cmstr += "</p>";

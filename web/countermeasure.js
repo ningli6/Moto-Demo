@@ -41,9 +41,11 @@ function enableInput(arg) {
     		document.getElementById("gmtf").checked = false;
     	}
     	if (arg == "cmval3") {
+    		document.getElementById("tradeOff3").checked = false;
     		document.getElementById("gmka").checked = false;
     	}
     	if (arg == "cmval4") {
+    		document.getElementById("tradeOff4").checked = false;
     		document.getElementById("gmkc").checked = false;
     	}
     }
@@ -64,6 +66,18 @@ function tradeOffCurve(arg) {
 		if (!document.getElementById('cmopt2').checked) {
 			document.getElementById('cmopt2').checked = true
 			enableInput('cmval2');
+		}
+	}
+	if (arg == "tradeOff3") { // k anonymity
+		if (!document.getElementById('cmopt3').checked) {
+			document.getElementById('cmopt3').checked = true
+			enableInput('cmval3');
+		}
+	}
+	if (arg == "tradeOff4") { // k clustering
+		if (!document.getElementById('cmopt4').checked) {
+			document.getElementById('cmopt4').checked = true
+			enableInput('cmval4');
 		}
 	}
 }
