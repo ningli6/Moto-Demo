@@ -24,6 +24,19 @@ public class ServerKClustering extends Server {
 		}
 		numberOfVPUs = 0;
 	}
+	
+	/**
+	 * Set k for clustering, clear virtual pu list, reclustering
+	 * @param k
+	 */
+	public void setK(int k) {
+		this.k = k;
+		for (int i = 0; i < numberOfChannels; i++) {
+			virtualList[i].clear();
+		}
+		numberOfVPUs = 0;
+		Clustering();
+	}
 
 	/**
 	 * K clustering algorithm for preserving location privacy
@@ -41,7 +54,7 @@ public class ServerKClustering extends Server {
 		if (getNumberOfPUs() == 0 || k <= 0) { // if no pu on the map or invalid k, do nothing
 			System.out.println("No need to cluster");
 			for (int i = 0; i < numberOfChannels; i++) {
-				virtualList[i] = channelsList[i];    // virtual list is actually not different with actual list
+				virtualList[i].addAll(channelsList[i]);    // virtual list is actually not different with actual list
 			}
 			updateNumbersOfVirtualPUs();  // after grouping, number of virtual pus is N / k where N is the original number of primary users
 			return;
@@ -55,7 +68,7 @@ public class ServerKClustering extends Server {
 			if (channelsList[i].isEmpty()) continue; // if that channel is empty, do nothing     
 			if (channelsList[i].size() <= this.k) {  // do nothing if number of pus is smaller than K
 				System.out.println("K is greater than or equal to the number of pus in that channel");
-				virtualList[i] = channelsList[i];
+				virtualList[i].addAll(channelsList[i]);
 				continue;
 			}
 			LinkedList<Pair> distPair = new LinkedList<Pair>(); // list of unique pairs

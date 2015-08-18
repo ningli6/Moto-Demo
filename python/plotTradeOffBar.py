@@ -1,12 +1,12 @@
 '''
-Plot trade-off curves for additive noise and transfiguration
+Plot trade-off bar for k anonymity and k clustering
 '''
 import sys
 import matplotlib.pyplot as plt
 
 from pyFunctions import PyFunctions
 
-class tradeOffPlots:
+class tradeOffBars:
 	# @param {[String]} filename that need to be plot
 	def plot(self, files):
 		output = 'C:/Users/Administrator/Desktop/motoPlot/'
@@ -17,23 +17,22 @@ class tradeOffPlots:
 				f = open(path, 'r')
 			except Exception, e:
 				continue
-			plt.figure()
 			l = [map(float, line.split()) for line in f]
-			if files[x] == 'traddOff_AdditiveNoise.txt':
-				title = "Trade-off curve of additive noise"
-				xlabel = 'Noise level'
-			elif files[x] == 'traddOff_Transfiguration.txt':
-				title = "Trade-off curve of transfiguration"
-				xlabel = 'Number of sides'
-				plt.xticks(map(int, l[0]))
-			plt.plot(l[0], pyf.normalize(l[1]))
-			plt.legend()
+			if files[x] == 'traddOff_KAnonymity.txt':
+				title = "Trade-off bar of k anonymity"
+			elif files[x] == 'traddOff_KClustering.txt':
+				title = "Trade-off bar of k clustering"
+			plt.figure()
+			plt.bar([k - 0.25 for k in l[0]], pyf.normalize(l[1]), 0.5, color = 'g')
+			plt.xticks(map(int, l[0]))
+			plt.yticks([0.1 * i for i in range(1, 12)])
 			plt.title(title)
-			plt.xlabel(xlabel)
+			plt.xlabel('k')
 			plt.ylabel('IC')
 			plt.tight_layout()
+			# plt.show()
 			plt.savefig(output + files[x].replace('txt', 'png'))
 
-trdOfP = tradeOffPlots()
+trdOfP = tradeOffBars()
 trdOfP.plot([sys.argv[x] for x in range(1, len(sys.argv))])
-# trdOfP.plot(['traddOff_AdditiveNoise.txt', 'traddOff_Transfiguration.txt'])
+# trdOfP.plot(['traddOff_KAnonymity.txt'])

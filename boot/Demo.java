@@ -118,7 +118,7 @@ public class Demo implements Runnable {
         	}
         	// plot tradeOff curve
         	if (!TradeOffPlot.plot(bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-        		System.out.println("Plot trade-off curves failed");
+        		System.out.println("Plot trade-off failed");
         		return;
         	}
         	// send email

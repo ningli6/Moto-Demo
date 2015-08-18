@@ -19,16 +19,16 @@ public class SendEmail {
 	 * @param gMapKc     whether to include google map for k clustering
 	 * @param tradeOffAd whether to trade-off curve for additive noise
 	 * @param tradeOffTf whether to trade-off curve for transfiguration
+	 * @param tradeOffKA whether to plot trade-off bar for k anonymity
+	 * @param tradeOffKC whether to plot trade-off bar for k clustering
 	 * @param inputParams include user parameters in the email as a text file
-	 * @param c 
-	 * @param b 
 	 * @return           true if everything works
 	 */
 	public static boolean send(String from, String to, String message, int noc,
 			boolean icVSq, 
 			boolean gMapNo, boolean gMapAd, boolean gMapTf, boolean gMapKa, boolean gMapKc, 
-			boolean tradeOffAd, boolean tradeOffTf,
-			boolean inputParams, boolean b, boolean c) {
+			boolean tradeOffAd, boolean tradeOffTf, boolean tradeOffKA, boolean tradeOffKC,
+			boolean inputParams) {
 		System.out.println("Start sending email...");
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
         String s = null;
@@ -75,6 +75,12 @@ public class SendEmail {
             }
             if (tradeOffTf) {
             	cmd += " traddOff_Transfiguration.png";
+            }
+            if (tradeOffKA) {
+            	cmd += " traddOff_KAnonymity.png";
+            }
+            if (tradeOffKC) {
+            	cmd += " traddOff_KClustering.png";
             }
             if (inputParams) {
             	cmd += " emailInfo.txt";

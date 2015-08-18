@@ -136,14 +136,6 @@ public class SimKAnonymity extends Simulation {
 		}
 		printMultiple(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
 	}
-	
-	public boolean isFeasible() {
-		return feasible;
-	}
-
-	public String getCountermeasure() {
-		return counterMeasure;
-	}
 
 	public void tradeOffBar() {
 		System.out.println("Start computing trade off bar for K Anonymity...");
@@ -203,5 +195,13 @@ public class SimKAnonymity extends Simulation {
 			ans += d / len;
 		}
 		return ans;
+	}
+	
+	public boolean isFeasible() {
+		return feasible;
+	}
+
+	public String getCountermeasure() {
+		return counterMeasure;
 	}
 }
