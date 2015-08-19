@@ -80,15 +80,22 @@ function getParams () {
         return;
     }
 
-    if (!document.getElementById("cmopt3").checked && document.getElementById("gmka").checked) {
+    if (!document.getElementById("cmopt3").checked && (document.getElementById("gmka").checked || document.getElementById("tradeOff3").checked)) {
         alert("Countermeasure k anonymity must be selected!");
         return;
     }
 
-    if (!document.getElementById("cmopt4").checked && document.getElementById("gmkc").checked) {
+    if (!document.getElementById("cmopt4").checked && (document.getElementById("gmkc").checked) || document.getElementById("tradeOff4").checked) {
         alert("Countermeasure k clustering must be selected!");
         return;
     }
+
+    // make sure number of markers are more than 1 when checking trade off bar
+    if (numberOfMarkers < 2 && (document.getElementById("tradeOff3").checked || document.getElementById("tradeOff4").checked)) {
+        alert("Trade off bar should be selected only when number of primary users is more than 1");
+        return;
+    }
+
     // get pus' location
     location_PU = [];
     if (numberOfChannels == 1) location_PU.push(markers_one);

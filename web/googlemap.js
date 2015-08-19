@@ -22,6 +22,7 @@ var markers_three_channel2 = []; // channel 2 for 3 channels
 var circles_three_channel2 = []; 
 var latLines = [];               // horizontal lines for grids
 var lngLines = [];               // vertical lines for grids
+var numberOfMarkers = 0;
 
 /*
  * Initialize google map
@@ -251,6 +252,15 @@ function placeMarker(location) {
             clearGrids();
         }
     }
+    numberOfMarkers += 1;
+    if (numberOfMarkers > 1) {
+        document.getElementById("tradeOff3").disabled = false;
+        document.getElementById("tradeOff4").disabled = false;
+    }
+    else {
+        document.getElementById("tradeOff3").disabled = true;
+        document.getElementById("tradeOff4").disabled = true;
+    }
 }
 
 /**
@@ -355,4 +365,9 @@ function resetAllMarkers() {
     markers_three_channel2 = [];
     circles_three_channel2 = [];
     clearGrids();
+    numberOfMarkers = 0;
+    document.getElementById("tradeOff3").checked = false;
+    document.getElementById("tradeOff4").checked = false;
+    document.getElementById("tradeOff3").disabled = true; // do not allow user to plot bar if no markers on channel
+    document.getElementById("tradeOff4").disabled = true;
 }
