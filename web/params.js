@@ -235,7 +235,7 @@ function getParams () {
         }
     }
     if (countermeasure.length == 0) {
-        alert("No countermeasure is selected!");
+        alert("Please select at least one option under Inaccuracy vs Queries!");
         return;
     }
 
@@ -255,13 +255,13 @@ function getParams () {
             return;
         }
     }
-    if (document.getElementById("input_query1").checked) {
-        queryFile = file_name;
-        if (queryFile == undefined) {
-            alert("Please upload a text file containing location information");
-            return;
-        }
-    }
+    // if (document.getElementById("input_query1").checked) {
+    //     queryFile = file_name;
+    //     if (queryFile == undefined) {
+    //         alert("Please upload a text file containing location information");
+    //         return;
+    //     }
+    // }
     if (numberOfQueries == undefined && queryFile == undefined) {
         alert("Please specify querying method");
         return;
