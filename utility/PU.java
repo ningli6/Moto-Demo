@@ -12,7 +12,7 @@ public class PU {
 	private Location cellLocation;            // location of pu, centered in the cell
 	private int indexOfRow = 0;               // row index on the map
 	private int indexOfCol = 0;               // col index on the map
-	private int number_of_response = 0;       // record times being chosen to response
+	public int number_of_response = 0;       // record times being chosen to response
 	private GridMap map;                      // map instance 
 	private double baseRadius = 0;            // used by k-anonymity/k-clustering, protection contour for the group
 	private Cluster cluster = null;           // used by k-clustering

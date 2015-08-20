@@ -17,7 +17,7 @@ import simulation.Simulation;
 public class Demo implements Runnable {
     private Thread t;                // thread instance
     private String threadName;       // thread name
-    private BootParams bp;   // BootParams instance
+    private BootParams bp;           // BootParams instance
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String directory;        // output directory

@@ -15,11 +15,11 @@ import utility.Response;
  */
 public class Client {
 	public static final double PMAX = 1;
-	int numberOfChannels = 1;         // number of channels
+	private int numberOfChannels = 1; // number of channels
 	private Location location;	      // location of the SU
 	private int indexOfRow = -1;
 	private int indexOfCol = -1;
-	public int[] count;              // count the number for each channel for updating
+	public int[] count;               // count the number for each channel for updating, for testing
 	private InferMap[] inferMap;      // inferMap for each channel
 	private List<PU>[] channelsList;  // channel list from pu
 	
@@ -35,6 +35,14 @@ public class Client {
 		this.inferMap = new InferMap[numberOfChannels];
 		for (int i = 0; i < numberOfChannels; i++) inferMap[i] = new InferMap(i, server.getMap());
 		this.channelsList = server.getChannelsList();
+	}
+
+	public int getNumberOfChannels() {
+		return numberOfChannels;
+	}
+
+	public void setNumberOfChannels(int numberOfChannels) {
+		this.numberOfChannels = numberOfChannels;
 	}
 
 	public void setLocation(int r, int c) {
@@ -68,7 +76,7 @@ public class Client {
 	public int getColIndex() {
 		return indexOfCol;
 	}
-
+	// for testing purpose
 	public double d1 = -1, d2 = -1;
 	
 	// send a query to server
@@ -139,15 +147,13 @@ public class Client {
 
 	public double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= numberOfChannels) throw new IllegalArgumentException("Bad channel number");
-		double minDist = Double.MAX_VALUE;
+		double minDist = Double.MAX_VALUE; // if channel is empty, return max int
 		for (PU pu : channelsList[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
 			if (dist < minDist) {
 				minDist = dist;
 			}
 		}
-		/* debug info */
-		// check[minPU.getID()]++;
 		return minDist;
 	}
 

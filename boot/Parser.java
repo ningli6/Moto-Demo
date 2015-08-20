@@ -62,6 +62,11 @@ public class Parser {
 					ch++;
 				}
 			}
+			for (int j = 0; j < puLocations.length; j++) {
+				if (puLocations[j].size() == 0) {
+					throw new IllegalArgumentException("Some channel is empty!");
+				}
+			}
 			if (ch != noc || !args[i].equals("-cm")) {
 				throw new IllegalArgumentException();
 			}

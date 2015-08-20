@@ -37,6 +37,30 @@ public class Server {
 		return numberOfChannels;
 	}
 
+	public GridMap getMap() {
+		return map;
+	}
+	
+	/**
+	 * Return the pu list to the client to compute inaccuracy
+	 * @return
+	 */
+	public List<PU>[] getChannelsList() {
+		if (channelsList == null) {
+			System.out.println("Initialize Server first");
+			return null;
+		} 
+		return channelsList;
+	}
+
+	/**
+	 * Get number of primary users the server holds
+	 * @return number of pus
+	 */
+	public int getNumberOfPUs() {
+		return numberOfPUs;
+	}
+	
 	// add pu to one of channels
 	public void addPU(PU pu, int channel) {
 		// error checking
@@ -49,14 +73,12 @@ public class Server {
 			System.out.println("Avalible channels are from 0 to " + (numberOfChannels - 1) + ". Operation failed");
 			return;
 		}
-		int pu_r = pu.getRowIndex();
-		int pu_c = pu.getColIndex();
-		// System.out.println("pu: " + pu_r + ", " + pu_c);
-		if (pu_r < 0 || pu_r >= map.getRows()) {
+
+		if (pu.getRowIndex() < 0 || pu.getRowIndex() >= map.getRows()) {
 			System.out.println("PU's location is out out index");
 			return;
 		}
-		if (pu_c < 0 || pu_c >= map.getCols()) {
+		if (pu.getColIndex() < 0 || pu.getColIndex() >= map.getCols()) {
 			System.out.println("PU's location is out out index");
 			return;
 		}
@@ -67,10 +89,6 @@ public class Server {
 			numberOfPUs++;
 		}
 		else System.out.println("PU's location out of range");
-	}
-
-	public GridMap getMap() {
-		return map;
 	}
 
 	/**
@@ -102,29 +120,12 @@ public class Server {
 			// if one of channels is empty, don't add it
 			if (minPU != null) responseList.add(new Response(minPU, minPower));
 		}
+		if (responseList.isEmpty()) {
+			throw new IllegalArgumentException("No primary users found");
+		}
 		// shuffle the list to make sure server choose randomly over tied items. This method runs in linear time.
 		Collections.shuffle(responseList);
 		return Collections.max(responseList);
-	}
-
-	/**
-	 * Return the pu list to the client to compute inaccuracy
-	 * @return
-	 */
-	public List<PU>[] getChannelsList() {
-		if (channelsList == null) {
-			System.out.println("Initialize Server first");
-			return null;
-		} 
-		return channelsList;
-	}
-
-	/**
-	 * Get number of primary users the server holds
-	 * @return number of pus
-	 */
-	public int getNumberOfPUs() {
-		return numberOfPUs;
 	}
 
 	// print the location of PUs
@@ -155,6 +156,15 @@ public class Server {
 			finally {
 			}
 		}
+	}
+	
+    // MTP function
+	double MTP(double distance) {
+		// System.out.println("Distance between PU and SU is: " + distance + " km");
+		if (distance < MTP.d1) return 0;
+		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
+		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
+		return PMAX;
 	}
 
 	/**
@@ -201,20 +211,5 @@ public class Server {
 			sb.append("<br>");
 		}
 		return sb.toString();
-	}
-
-    // MTP function
-	private double MTP(double distance) {
-		// System.out.println("Distance between PU and SU is: " + distance + " km");
-		if (distance < MTP.d1) return 0;
-		if (distance >= MTP.d1 && distance < MTP.d2) return 0.5 * PMAX;
-		if (distance >= MTP.d2 && distance < MTP.d3) return 0.75 * PMAX;
-		return PMAX;
-	}
-
-	/* This hash function works as long as j is smaller than 100000 */
-	@SuppressWarnings("unused")
-	private int hashcode(int i, int j) {
-		return 100000 * i + j;
 	}
 }
