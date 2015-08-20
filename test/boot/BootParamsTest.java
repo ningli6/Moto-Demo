@@ -207,14 +207,14 @@ public class BootParamsTest {
 	public void testTradeOffAD() {
 		String args = "-a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -no -1 -an 0.5 -tf 3 -ka 1 -kc 1 -gm no ad tf ka kc -tr ad tf -q 100 -e ningli@vt.edu -opt pa ";
 		BootParams bp = Parser.parse(args.split(" "));
-		assertTrue(bp.tradeOffAD());
+		assertTrue(bp.isTradeOffAD());
 	}
 
 	@Test
 	public void testTradeOffTF() {
 		String args = "-a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -no -1 -an 0.5 -tf 3 -ka 1 -kc 1 -gm no ad tf ka kc -tr ad tf -q 100 -e ningli@vt.edu -opt pa ";
 		BootParams bp = Parser.parse(args.split(" "));
-		assertTrue(bp.tradeOffTF());
+		assertTrue(bp.isTradeOffTF());
 	}
 
 	@Test
@@ -222,7 +222,7 @@ public class BootParamsTest {
 		String args = "-a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -no -1 -an 0.5 -tf 3 -ka 1 -kc 1 -gm no ad tf ka kc -tr ad tf -q 100 -e ningli@vt.edu -opt pa ";
 		BootParams bp = Parser.parse(args.split(" "));
 		bp.setTradeOffAD(false);
-		assertFalse(bp.tradeOffAD());
+		assertFalse(bp.isTradeOffAD());
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class BootParamsTest {
 		String args = "-a 39.0959629363055 -85.1385498046875 37.06394430056685 -81.8646240234375 -c 2 -C 38.41916639395372 -83.7103271484375 38.16047628099622 -84.1937255859375 -C 38.06539235133249 -82.7764892578125 37.65773212628274 -83.0401611328125 -cm -no -1 -an 0.5 -tf 3 -ka 1 -kc 1 -gm no ad tf ka kc -tr ad tf -q 100 -e ningli@vt.edu -opt pa ";
 		BootParams bp = Parser.parse(args.split(" "));
 		bp.setTradeOffTF(false);
-		assertFalse(bp.tradeOffTF());
+		assertFalse(bp.isTradeOffTF());
 	}
 
 	@Test

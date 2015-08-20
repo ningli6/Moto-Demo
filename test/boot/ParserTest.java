@@ -48,8 +48,8 @@ public class ParserTest {
 		assertFalse(bp.plotGooglMapTF());
 		assertTrue(bp.plotGooglMapKA());
 		assertFalse(bp.plotGooglMapKC());
-		assertFalse(bp.tradeOffAD());
-		assertTrue(bp.tradeOffTF());
+		assertFalse(bp.isTradeOffAD());
+		assertTrue(bp.isTradeOffTF());
 		assertEquals(2, bp.getNumberOfChannels(), 0.0001);
 		assertEquals(200, bp.getNumberOfQueries(), 0.0001);
 		assertEquals("foo@vt.edu", bp.getEmail());
