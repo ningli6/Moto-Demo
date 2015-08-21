@@ -186,6 +186,10 @@ public class ServerKAnonymity extends Server {
 		numberOfVPUs = sum;
 	}
 	
+	public int getNumberOfVPUs() {
+		return numberOfVPUs;
+	}
+
 	/**
 	 * Get virtual channel list instead of actual channel list
 	 * @return virtual pu list
@@ -200,7 +204,7 @@ public class ServerKAnonymity extends Server {
 	 * @param base     base radius for the group/cluster
 	 * @return         transmit power available
 	 */
-	private double virtualMTP(double dist, double base) {
+	public double virtualMTP(double dist, double base) {
 		double PMAX = 1;
 		if (dist < MTP.d1 + base) return 0;
 		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
