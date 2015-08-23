@@ -54,6 +54,14 @@ public class SimAdditiveNoise extends Simulation {
 		feasible = false;
 	}
 
+	public double getNoiseLevel() {
+		return noiseLevel;
+	}
+
+	public ServerAdditiveNoise getCmServer() {
+		return cmServer;
+	}
+
 	@Override
 	public void singleSimulation() {
 		if (noiseLevel < 0 || noiseLevel > 1) {
@@ -207,7 +215,7 @@ public class SimAdditiveNoise extends Simulation {
 	 * @param nums   array that contains ic values for all channels
 	 * @return       average ic of all channels
 	 */
-	private double average(double[] nums) {
+	public double average(double[] nums) {
 		double ans = 0;
 		int len = nums.length;
 		for (double d : nums) {

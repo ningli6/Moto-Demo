@@ -13,7 +13,12 @@ public class ServerKClustering extends Server {
 	private List<PU>[] virtualList;         // channel list for virtual primary users
 	private int numberOfVPUs;               // number of primary users
 
-	/* initialize server */
+	/**
+	 * Initialize clustering server
+	 * @param map  map instance
+	 * @param noc  number of channels
+	 * @param k    k for k clustering
+	 */
 	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map, int noc, int k) {
 		super(map, noc);
@@ -25,6 +30,18 @@ public class ServerKClustering extends Server {
 		numberOfVPUs = 0;
 	}
 	
+	public int getNumberOfVPUs() {
+		return numberOfVPUs;
+	}
+
+	public int getK() {
+		return k;
+	}
+
+	public List<PU>[] getVirtualList() {
+		return virtualList;
+	}
+
 	/**
 	 * Set k for clustering, clear virtual pu list, reclustering
 	 * @param k
@@ -35,7 +52,7 @@ public class ServerKClustering extends Server {
 			virtualList[i].clear();
 		}
 		numberOfVPUs = 0;
-		Clustering();
+		clustering();
 	}
 
 	/**
@@ -50,7 +67,7 @@ public class ServerKClustering extends Server {
 	 * for each cluster:
 	 * 		find virtual center and protection contour
 	 */
-	public void Clustering() {
+	public void clustering() {
 		if (getNumberOfPUs() == 0 || k <= 0) { // if no pu on the map or invalid k, do nothing
 			System.out.println("No need to cluster");
 			for (int i = 0; i < numberOfChannels; i++) {
@@ -191,7 +208,7 @@ public class ServerKClustering extends Server {
 	 * @param base     base radius for the group/cluster
 	 * @return         transmit power available
 	 */
-	private double virtualMTP(double dist, double base) {
+	public double virtualMTP(double dist, double base) {
 		double PMAX = 1;
 		if (dist < MTP.d1 + base) return 0;
 		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
@@ -206,13 +223,5 @@ public class ServerKClustering extends Server {
 				pu.printVirtualPUInfo();
 			}
 		}
-	}
-
-	/**
-	 * Get virtual channel list instead of actual channel list
-	 * @return virtual pu list
-	 */
-	public List<PU>[] getVirtualChannelList() {
-		return virtualList;
 	}
 }

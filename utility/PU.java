@@ -186,28 +186,11 @@ public class PU {
 		System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
 	}
 
-	/**
-	 * Print pu's location for debugging purpose
-	 * print indices on the map first, then print actual coordinates
-	 */
-	public void printLocation() {
-		if (cellLocation == null) {
-			System.out.println("PU has no location information");
-			return;
-		}
-		printIndexLocation();
-		cellLocation.printLocation();
-	}
-
-	public void printIndexLocation() {
-		System.out.println("[ " + getRowIndex() + " " + getColIndex() + " ]");
-	}
-
 	public void printInfo() {
 		System.out.println("***PU***");
 		System.out.println("id: " + this.id);
 		System.out.println("working channel: " + this.channelID);
-		printLocation();
+		printIndices();
 		System.out.println("updated " + this.number_of_response + " times");
 		System.out.println();
 	}
@@ -217,7 +200,7 @@ public class PU {
 		System.out.println("***Virtual PU***");
 		System.out.println("Radius: " + getRadius());
 		System.out.println("Working channel: " + this.channelID);
-		printLocation();
+		printIndices();
 		System.out.println("updated " + this.number_of_response + " times");
 	}
 }

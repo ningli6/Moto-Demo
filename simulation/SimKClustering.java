@@ -43,7 +43,7 @@ public class SimKClustering extends Simulation {
 			}
 		}
 		if (k > 0) {
-			cmServer.Clustering();
+			cmServer.clustering();
 		}
 		
 		/* initialize hashmap for query-ic with countermeasure */
