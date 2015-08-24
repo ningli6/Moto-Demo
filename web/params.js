@@ -85,7 +85,7 @@ function getParams () {
         return;
     }
 
-    if (!document.getElementById("cmopt4").checked && (document.getElementById("gmkc").checked) || document.getElementById("tradeOff4").checked) {
+    if (!document.getElementById("cmopt4").checked && (document.getElementById("gmkc").checked || document.getElementById("tradeOff4").checked)) {
         alert("Countermeasure k clustering must be selected!");
         return;
     }

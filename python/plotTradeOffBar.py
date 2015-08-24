@@ -8,11 +8,11 @@ from pyFunctions import PyFunctions
 
 class tradeOffBars:
 	# @param {[String]} filename that need to be plot
-	def plot(self, files):
-		output = 'C:/Users/Administrator/Desktop/motoPlot/'
+	def plot(self, dataDir, plotDir, files):
+		output = plotDir
 		pyf = PyFunctions()
 		for x in range(len(files)):
-			path = "C:/Users/Administrator/Desktop/motoData/" + files[x]
+			path = dataDir + files[x]
 			try:
 				f = open(path, 'r')
 			except Exception, e:
@@ -34,5 +34,5 @@ class tradeOffBars:
 			plt.savefig(output + files[x].replace('txt', 'png'))
 
 trdOfP = tradeOffBars()
-trdOfP.plot([sys.argv[x] for x in range(1, len(sys.argv))])
+trdOfP.plot(sys.argv[1], sys.argv[2], [sys.argv[x] for x in range(3, len(sys.argv))])
 # trdOfP.plot(['traddOff_KAnonymity.txt'])

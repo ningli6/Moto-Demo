@@ -1,5 +1,7 @@
 package boot;
 
+import java.io.File;
+
 import javaEmail.BuildText;
 import javaEmail.SendEmail;
 import javaPlot.CmpPlot;
@@ -20,16 +22,16 @@ public class Demo implements Runnable {
     private BootParams bp;           // BootParams instance
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
-    private String directory;        // output directory
-    private String resultDir;        // directory that saves plots from python and maltab
+    private String dataDir;        // output directory
+    private String plotDir;        // directory that saves plots from python and maltab
 
-    public Demo(BootParams bp, double scale, int inter, String dir){
+    public Demo(BootParams bp, double scale, int inter, String dataDir, String plotDir){
     	this.threadName ="New Demo";
     	this.bp = bp;
         this.mtpScale = scale;
         this.interval = inter;
-        this.directory = dir;
-        this.resultDir = "C:\\Users\\Administrator\\Desktop\\motoPlot\\";
+        this.dataDir = dataDir;
+        this.plotDir = plotDir;
     }
 
     @Override
@@ -39,14 +41,14 @@ public class Demo implements Runnable {
         try {
         	// program goes here
         	if (bp.containsCM("NOCOUNTERMEASURE")) {
-        		Simulation sim = new Simulation(bp, mtpScale, interval, directory);
+        		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapNO()) {
         			sim.singleSimulation();
         		}
         	}
         	if (bp.containsCM("ADDITIVENOISE")) {
-        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, directory);
+        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapAD()) {
         			sim.singleSimulation();
@@ -61,7 +63,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("TRANSFIGURATION")) {
-        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, directory);
+        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapTF()) {
         			sim.singleSimulation();
@@ -76,7 +78,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("KANONYMITY")) {
-        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, directory);
+        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapKA()) {
         			sim.singleSimulation();
@@ -91,7 +93,7 @@ public class Demo implements Runnable {
         		}
         	}
         	if (bp.containsCM("KCLUSTERING")) {
-        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, directory);
+        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapKC()) {
         			sim.singleSimulation();
@@ -106,7 +108,7 @@ public class Demo implements Runnable {
         		}
         	}
         	// plot ic vs q
-        	if (!CmpPlot.plot(bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+        	if (!CmpPlot.plot(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
         		System.out.println("Plot ic vs q failed");
         		return;
         	}
@@ -116,19 +118,19 @@ public class Demo implements Runnable {
         		System.out.println("Plot Google Maps failed");
         		return;
         	}
-        	// plot tradeOff curve
-        	if (!TradeOffPlot.plot(bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+        	// plot tradeOff curve/bar
+        	if (!TradeOffPlot.plot(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
         		System.out.println("Plot trade-off failed");
         		return;
         	}
         	// send email
         	if (bp.getInputParams()) {
-        		BuildText.printText(resultDir, "emailInfo.txt", bp.paramsToTextFile());
+        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
         	}
-        	if (!SendEmail.send("ningli@vt.edu", bp.getEmail(), emailInfo, bp.getNumberOfChannels(), 
-        			true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC(), 
-        			bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC(), 
-        			bp.getInputParams())) {
+        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
+        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
+        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
+        			bp.isTradeOffKC(), bp.getInputParams())) {
         		System.out.println("Sending email failed");
         		return;
         	}
@@ -137,6 +139,26 @@ public class Demo implements Runnable {
             e.printStackTrace();
         }
         System.out.println("Thread " +  threadName + " exiting.");
+        System.out.println("Cleaning up folders...");
+        deleteDirectory(new File(dataDir));
+        deleteDirectory(new File(plotDir));
+    }
+    
+    public static boolean deleteDirectory(File directory) {
+        if(directory.exists()){
+            File[] files = directory.listFiles();
+            if(null!=files){
+                for(int i=0; i<files.length; i++) {
+                    if(files[i].isDirectory()) {
+                        deleteDirectory(files[i]);
+                    }
+                    else {
+                        files[i].delete();
+                    }
+                }
+            }
+        }
+        return(directory.delete());
     }
 
     /**

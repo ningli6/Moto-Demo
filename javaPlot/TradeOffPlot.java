@@ -4,14 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class TradeOffPlot {
-	public static boolean plot(boolean ad, boolean tr, boolean ka, boolean kc) {
+	public static boolean plot(String dataDir, String plotDir, boolean ad, boolean tr, boolean ka, boolean kc) {
 		if (!ad && !tr && !ka && !kc) {
 			System.out.println("No trade-off curve need to be plotted.");
 			return true;
 		}
 		try {
 			System.out.println("Start plotting trade off curves...");
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOff.py";
+			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOff.py " + dataDir + " " + plotDir;
 			if (ad) {
 				cmd += " traddOff_AdditiveNoise.txt";
 			}
@@ -39,7 +39,7 @@ public class TradeOffPlot {
 			}
 			
 			System.out.println("Start plotting trade off bars...");
-			cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffBar.py";
+			cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffBar.py " + dataDir + " " + plotDir;
 			if (ka) {
 				cmd += " traddOff_KAnonymity.txt";
 			}
