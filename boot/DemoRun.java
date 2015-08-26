@@ -1,6 +1,7 @@
 package boot;
 
 import java.io.File;
+import java.util.Arrays;
 
 import javaEmail.BuildText;
 import javaEmail.SendEmail;
@@ -14,19 +15,18 @@ import simulation.SimTransfiguration;
 import simulation.Simulation;
 
 /**
- * Handle multiple simulation requests by generating new threads for each task
+ * Demo instance without using new threads, invoked in another proecss
+ * @author Administrator
+ *
  */
-public class Demo implements Runnable {
-    private Thread t;                // thread instance
-    private String threadName;       // thread name
+public class DemoRun {
     private BootParams bp;           // BootParams instance
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String dataDir;        // output directory
     private String plotDir;        // directory that saves plots from python and maltab
 
-    public Demo(BootParams bp, double scale, int inter, String dataDir, String plotDir){
-    	this.threadName ="New Demo";
+    public DemoRun(BootParams bp, double scale, int inter, String dataDir, String plotDir){
     	this.bp = bp;
         this.mtpScale = scale;
         this.interval = inter;
@@ -34,9 +34,7 @@ public class Demo implements Runnable {
         this.plotDir = plotDir;
     }
 
-    @Override
     public void run() {
-        System.out.println("Running " +  threadName );
         String emailInfo = null;  // additional information for the email
         try {
         	// program goes here
@@ -135,10 +133,8 @@ public class Demo implements Runnable {
         		return;
         	}
         } catch (Exception e) {
-            System.out.println("Thread " +  threadName + " interrupted.");
             e.printStackTrace();
         }
-        System.out.println("Thread " +  threadName + " exiting.");
 //        System.out.println("Cleaning up folders...");
         deleteDirectory(new File(dataDir));
         deleteDirectory(new File(plotDir));
@@ -160,17 +156,14 @@ public class Demo implements Runnable {
         }
         return(directory.delete());
     }
-
-    /**
-     * Start program in a new thread
-     * run() is called
-     */
-    public void start ()
-    {
-        if (t == null)
-        {
-            t = new Thread (this, threadName);
-            t.start();
-        }
+    
+    public static void main(String[] args) {
+		BootParams bp = Parser.parse(Arrays.copyOfRange(args, 0, args.length - 2));
+		if (bp == null) {
+			System.out.println("FAILED");
+			return;
+		}
+		DemoRun demo = new DemoRun(bp, 1, 5, args[args.length - 2], args[args.length - 1]);
+		demo.run();
     }
 }

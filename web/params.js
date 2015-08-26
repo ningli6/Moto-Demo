@@ -480,7 +480,7 @@ function sendParams()
         {
             var res = xmlhttp.responseText;
             if (res == "OK") {
-                alert("Demo has been started successfully!\nPlease check your email for result.\nThanks for using!");
+                alert("Demo started successfully!\nWe will send simulation results to you shortly.\nThanks for using!");
             }
             else {
                 alert("Demo failed. " + res);
