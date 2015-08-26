@@ -113,8 +113,8 @@ public class Demo implements Runnable {
         		return;
         	}
         	// plot google map
-        	if (!MatPlot.plot(bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), bp.getSouthLat(), bp.getWestLng(), 
-        			bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
+        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
         		System.out.println("Plot Google Maps failed");
         		return;
         	}

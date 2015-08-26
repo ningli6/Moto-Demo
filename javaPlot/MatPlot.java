@@ -9,6 +9,8 @@ import utility.Location;
 public class MatPlot {
 	/**
 	 * Call Matlab function that plot data on google map
+	 * @param dataDir TODO
+	 * @param plotDir TODO
 	 * @param cellSize grid size
 	 * @param noc      number of channels
 	 * @param nlat     north lat
@@ -22,8 +24,8 @@ public class MatPlot {
 	 * @param kc       plot k clustering
 	 * @return
 	 */
-	public static boolean plot(double cellSize, int noc, double nlat, double slat, double wlng, 
-			double elng, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+	public static boolean plot(String dataDir, String plotDir, double cellSize, int noc, double nlat, 
+			double slat, double wlng, double elng, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		if (!noCM && !ad && !tf && !ka && !kc) {
 			System.out.println("No google map need to be plotted");
 			return true;
@@ -42,6 +44,7 @@ public class MatPlot {
 		try {
 	        // using the Runtime exec method:
 	        String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
+	        							+ dataDir + " " + plotDir + " "
 	        							+ Integer.toString(noc) + " " + Integer.toString(rows) + " " + Integer.toString(cols) + " "
 	        							+ Double.toString(nlat) + " " + Double.toString(slat) + " " + Double.toString(wlng) + " " + Double.toString(elng);
 	        if (noCM) {
@@ -59,6 +62,7 @@ public class MatPlot {
 	        if (kc) {
 	        	cmd += " K_Clustering";
 	        }
+//	        System.out.println(cmd);
 	        Process p = Runtime.getRuntime().exec(cmd);
 	        /* uncomment these code to see matlab output */
 			BufferedReader stdInput = new BufferedReader(new
