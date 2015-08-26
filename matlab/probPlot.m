@@ -122,11 +122,23 @@ for iter = 1:size(cmArray, 2)
         xlabel('longitude');
         ylabel('latitude');
         
-        % plot location of pu
-        plot(markers(:, 2), markers(:, 1), 'd', 'MarkerSize', 10, 'MarkerEdgeColor','k', 'MarkerFaceColor', 'r');
+        locParams = {};
+        countLocParams = 1;
+        for i = 1: tr
+            locStrSpec = '%f,%f';
+            locParams{countLocParams} = 'Marker';
+            locParams{countLocParams + 1} = sprintf(locStrSpec, markers(i, 1), markers(i, 2));
+            countLocParams = countLocParams + 2;
+        end
         
         % draw google map
-        plot_google_map('maptype','hybrid','APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA');
+        plot_google_map('maptype','roadmap','APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA', locParams{:});
+        
+        % plot location of pu
+%         plot(markers(:, 2), markers(:, 1), 'v', 'MarkerSize', 15, 'MarkerEdgeColor','k', 'MarkerFaceColor', 'r');
+        hmarker = plot(markers(:, 2), markers(:, 1), 'r*', 'MarkerSize', 30);
+        set(hmarker, 'linewidth', 1);
+        
         hold off;
         
         name = [varargin{2}, cmArray{iter}, '_', channelID, '_gMaps.png'];
