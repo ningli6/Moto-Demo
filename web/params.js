@@ -510,3 +510,12 @@ function validateEmail(email) {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
     return re.test(email);
 }
+
+/**
+ * Once the launch button is clicked, change the text to launching
+ */
+$(document).ready(function(){
+    $("#launchButton").click(function(){
+        $("#launchButton").html('Launching...');
+    });
+});
