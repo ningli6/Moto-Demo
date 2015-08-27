@@ -170,7 +170,7 @@ public class SimAdditiveNoise extends Simulation {
 	public void tradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
-		int repeat = 10;
+		int repeat = 20;
 		System.out.println("Start computing trade off curve for additive noise...");
 		Client trdOfClient = new Client(cmServer);  // create a new client
 		for (int k = 0; k < cmString.length; k++) { // for each noise level

@@ -140,8 +140,8 @@ public class Demo implements Runnable {
         }
         System.out.println("Thread " +  threadName + " exiting.");
 //        System.out.println("Cleaning up folders...");
-        deleteDirectory(new File(dataDir));
-        deleteDirectory(new File(plotDir));
+//        deleteDirectory(new File(dataDir));
+//        deleteDirectory(new File(plotDir));
     }
     
     public static boolean deleteDirectory(File directory) {
