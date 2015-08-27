@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 public class CmpPlot {
 	/**
 	 * Call a python script that plot ic vs q
+	 * @param dataDir TODO
+	 * @param plotDir TODO
 	 * @param noCM plot no countermeasure
 	 * @param ad   plot additive noise
 	 * @param tf   plot transfiguration
@@ -13,10 +15,10 @@ public class CmpPlot {
 	 * @param kc   plot k clustering
 	 * @return true if it works all right
 	 */
-	public static boolean plot(boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+	public static boolean plot(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		System.out.println("Start plotting ic vs queries...");
 		try {
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py";
+			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
 			if (noCM) {
 				cmd += " averageIC_NoCountermeasure.txt";
 			}

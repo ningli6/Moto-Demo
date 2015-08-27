@@ -1,5 +1,8 @@
 package simulation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,11 +21,11 @@ public class SimKAnonymity extends Simulation {
 	private boolean feasible;                 // is k for anonymity a valid parameter
 	private Map<Integer, double[]> icCMMap;;  // ic for multiple simulation with countermeasure
 
-	public SimKAnonymity(BootParams bootParams, double cellsize,
-			double mtpScale, int interval, String directory) {
+	public SimKAnonymity(BootParams bootParams, double mtpScale,
+			int interval, String directory) {
 		
 		/* parent instructor */
-		super(bootParams, cellsize, mtpScale, interval, directory);
+		super(bootParams, mtpScale, interval, directory);
 		
 		/* initialize countermeasure */
 		this.counterMeasure = "KANONYMITY";
@@ -132,6 +135,66 @@ public class SimKAnonymity extends Simulation {
 			multclient.reset(); // set infer matrix to 0.5
 		}
 		printMultiple(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
+	}
+
+	public void tradeOffBar() {
+		System.out.println("Start computing trade off bar for K Anonymity...");
+		int repeat = 10;
+		Client trClient = new Client(cmServer);
+		// find value for k
+		int k = 0;
+		for (int i = 0; i < noc; i++) {
+			k = Math.max(k, bootParams.getPUOnChannel(i).size());
+		}
+		// initialize value for k
+		int[] cmVal = new int[k];
+		int[] icVal = new int[k];
+		for (int i = 1; i <= k; i++) {
+			cmVal[i - 1] = i;
+		}
+		for (int i : cmVal) { // for different k
+			cmServer.setK(i); // set new k and regroup
+			for (int r = 0; r < repeat; r++) {
+				trClient.reset();// reset k
+				for (int q = 0; q < noq; q++) {
+					trClient.randomLocation();
+					trClient.query(cmServer);
+				}
+				icVal[i - 1] += (int) average(trClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmVal, icVal, directory, "traddOff_KAnonymity.txt");
+	}
+	
+	private void printTradeOff(int[] cmString, int[] icVal,
+			String directory, String string) {
+		System.out.println("Start printing trade-off value...");
+		File file = new File(directory + string);
+		try {
+			PrintWriter out = new PrintWriter(file);
+			for (int k : cmString) {
+				out.print(k + " ");
+			}
+			out.println();	
+			for (int ic : icVal) {
+				out.print(ic + " ");
+			}
+			out.println();
+			out.close (); // this is necessary	
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private double average(double[] computeIC) {
+		double ans = 0;
+		int len = computeIC.length;
+		for (double d : computeIC) {
+			ans += d / len;
+		}
+		return ans;
 	}
 	
 	public boolean isFeasible() {

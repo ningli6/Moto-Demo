@@ -13,7 +13,12 @@ public class ServerKClustering extends Server {
 	private List<PU>[] virtualList;         // channel list for virtual primary users
 	private int numberOfVPUs;               // number of primary users
 
-	/* initialize server */
+	/**
+	 * Initialize clustering server
+	 * @param map  map instance
+	 * @param noc  number of channels
+	 * @param k    k for k clustering
+	 */
 	@SuppressWarnings("unchecked")
 	public ServerKClustering(GridMap map, int noc, int k) {
 		super(map, noc);
@@ -23,6 +28,31 @@ public class ServerKClustering extends Server {
 			virtualList[i] = new LinkedList<PU>();
 		}
 		numberOfVPUs = 0;
+	}
+	
+	public int getNumberOfVPUs() {
+		return numberOfVPUs;
+	}
+
+	public int getK() {
+		return k;
+	}
+
+	public List<PU>[] getVirtualList() {
+		return virtualList;
+	}
+
+	/**
+	 * Set k for clustering, clear virtual pu list, reclustering
+	 * @param k
+	 */
+	public void setK(int k) {
+		this.k = k;
+		for (int i = 0; i < numberOfChannels; i++) {
+			virtualList[i].clear();
+		}
+		numberOfVPUs = 0;
+		clustering();
 	}
 
 	/**
@@ -37,11 +67,11 @@ public class ServerKClustering extends Server {
 	 * for each cluster:
 	 * 		find virtual center and protection contour
 	 */
-	public void Clustering() {
+	public void clustering() {
 		if (getNumberOfPUs() == 0 || k <= 0) { // if no pu on the map or invalid k, do nothing
 			System.out.println("No need to cluster");
 			for (int i = 0; i < numberOfChannels; i++) {
-				virtualList[i] = channelsList[i];    // virtual list is actually not different with actual list
+				virtualList[i].addAll(channelsList[i]);    // virtual list is actually not different with actual list
 			}
 			updateNumbersOfVirtualPUs();  // after grouping, number of virtual pus is N / k where N is the original number of primary users
 			return;
@@ -55,7 +85,7 @@ public class ServerKClustering extends Server {
 			if (channelsList[i].isEmpty()) continue; // if that channel is empty, do nothing     
 			if (channelsList[i].size() <= this.k) {  // do nothing if number of pus is smaller than K
 				System.out.println("K is greater than or equal to the number of pus in that channel");
-				virtualList[i] = channelsList[i];
+				virtualList[i].addAll(channelsList[i]);
 				continue;
 			}
 			LinkedList<Pair> distPair = new LinkedList<Pair>(); // list of unique pairs
@@ -122,7 +152,7 @@ public class ServerKClustering extends Server {
 				}
 				if (max_radius < min_max_radius) {
 					min_max_radius = max_radius;
-					virtualPU.setIndices(i, j);  // set index position and actual location for pu
+					virtualPU.setLocation(i, j);  // set index position and actual location for pu
 					virtualPU.updateRadius(min_max_radius);  // set group radius
 				}
 			}
@@ -178,7 +208,7 @@ public class ServerKClustering extends Server {
 	 * @param base     base radius for the group/cluster
 	 * @return         transmit power available
 	 */
-	private double virtualMTP(double dist, double base) {
+	public double virtualMTP(double dist, double base) {
 		double PMAX = 1;
 		if (dist < MTP.d1 + base) return 0;
 		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
@@ -193,13 +223,5 @@ public class ServerKClustering extends Server {
 				pu.printVirtualPUInfo();
 			}
 		}
-	}
-
-	/**
-	 * Get virtual channel list instead of actual channel list
-	 * @return virtual pu list
-	 */
-	public List<PU>[] getVirtualChannelList() {
-		return virtualList;
 	}
 }

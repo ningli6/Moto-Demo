@@ -3,7 +3,7 @@
 <!DOCTYPE HTML> 
 <html lang="en-US">
 <head>
-    <title>Moto Demo</title>
+    <title>Moto Demo Dev</title>
     <meta charset="UTF-8">
     <meta name="author" content="Ning Li">
     <meta name="description" 
@@ -23,6 +23,7 @@
     <script type="text/javascript" src="countermeasure.js"></script>
     <script type="text/javascript" src="queryOpt.js"></script>
     <script type="text/javascript" src="params.js"></script>
+    <script type="text/javascript" src="gridSize.js"></script>
 </head>
 
 <script type="text/javascript">
@@ -32,7 +33,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 <body>
 <div class="container">
     <div class="jumbotron">
-        <h2>Moto demo Dev</h2>      
+        <h2>Moto demo</h2>      
         <p>
             This is a demo of techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
             proposed in the paper: 
@@ -46,19 +47,35 @@ google.maps.event.addDomListener(window, 'load', initialize);
     </div>
 
     <!-- dropdown specifying channels -->
-    <h4>Specify number of channels</h4>
-    <form role="form">
+    <h4>Select number of channels</h4>
+    <div class="row">
+        <div class="col-md-2 btn-group dropdown">
+            <button id="channelButton" class="btn btn-default" style="width:80%" disabled>1</button>
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" style="width:20%">
+                <span class="caret"></span></button>
+                <ul id="dp" class="dropdown-menu" style="width: 100%; text-align: center;">
+                    <li><a>1</a></li>
+                    <li><a>2</a></li>
+                    <li><a>3</a></li>
+                </ul>
+        </div>
+    </div>
+
+    <!-- Cell size -->
+    <h4>Specify grid size</h4>
+    <form class="form-horizontal" role="form">
         <div class="form-group">
-            <select class="form-control" id="selc" style="width: 15%" onchange="setChannels();">
-                <option class="optclass" selected="selected">1</option>
-                <option class="optclass">2</option>
-                <option class="optclass">3</option>
-            </select>
+            <div class="col-md-2">
+                <input class="form-control" id="cd" min="0.005" max="0.05" step="0.001" placeholder="0.005" style="text-align:center;" onchange="adjustGridSize();">
+            </div>
+            <a href="#" data-toggle="qtip" title="Simulation treats selected area as grid of cells. Grid size determines size of each cell and is specified in degree with earth based coordinates. Maximum cell size is 0.05 (about 5 km) and minimum cell size is 0.005 (about 500 m). To achieve reasonable accuracy, we recommend defalut value 0.005 degree for cell size.">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </a>
         </div>
     </form>
 
     <!-- google map -->
-    <h4>Specify analysis area and location of primary users</h4> 
+    <h4>Draw analysis area and pick location of primary users</h4> 
     <div id="mapArea">
         <button type='button' class='btn btn-warning' onclick='resetAllMarkers();'>Reset</button>
         <span class="help-block">Click rectangle icon to draw analysis area</span>
@@ -67,7 +84,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     <!-- choose countermeasure -->
     <br>
-    <h4>Specify countermeasure</h4>
+    <h4>Choose countermeasures</h4>
     <div class="row">
         <div class="col-md-6"><h5>Inaccuracy vs Queries</h5></div>
         <div class="col-md-3">
@@ -76,7 +93,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             </a></h5>
         </div>
         <div class="col-md-3">
-            <h5>Trade-off curves<a href="#" data-toggle="qtip" title="Plot inaccuracy vs different parameter of countermeasures. This option is not available to K anonymity and K clustering technique, because inaccuracy is more relevant to the distribution of primary users, rather than the value of k in their cases.">
+            <h5>Trade-off<a href="#" data-toggle="qtip" title="Plot inaccuracy vs different parameter of countermeasures. For K anonymity and clustering, keep in mind that inaccuracy is more relevant to the location distribution of primary users, rather than the value of k in their cases.">
                 <span class="glyphicon glyphicon-info-sign"></span>
             </a></h5>
         </div>
@@ -130,6 +147,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
             <div class="col-md-3 checkbox">
                 <label><input type="checkbox" id="gmka" onchange="plotGMap('gmka');">Plot on Google Maps</label>
             </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="tradeOff3" onchange="tradeOffCurve('tradeOff3')" disabled>Include trade-off bar</label>
+            </div>
         </div>
         <div class="form-group">
             <div class="col-md-2 checkbox">
@@ -140,6 +160,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
             </div>
             <div class="col-md-3 checkbox">
                 <label><input type="checkbox" id="gmkc" onchange="plotGMap('gmkc');">Plot on Google Maps</label>
+            </div>
+            <div class="col-md-3 checkbox">
+                <label><input type="checkbox" id="tradeOff4" onchange="tradeOffCurve('tradeOff4')" disabled>Include trade-off bar</label>
             </div>
         </div>
     </form>
@@ -158,7 +181,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 <span class="glyphicon glyphicon-info-sign"></span>
             </a>
         </div>
-        <div class="form-group">
+<!--         <div class="form-group">
             <div class="col-md-2 radio">
                 <label><input type="radio" id="input_query1" name="input_query" onchange="disableRandomQueries();">Upload query location</label>
             </div>
@@ -168,7 +191,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             <div class="col-md-4">
                 <button type="submit" class="btn btn-default" id="upload-button" onclick="uploadfile(); return false;">Upload</button>
             </div>
-        </div>
+        </div> -->
     </form>
 
     <h4>Send results</h4>
@@ -211,7 +234,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 <div class="well" id="wellemail"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" onclick="sendParams();">Launch</button>
+                <button type="button" class="btn btn-success" id="launchButton" onclick="sendParams();">Launch</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>   

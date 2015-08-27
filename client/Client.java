@@ -13,15 +13,13 @@ import utility.Response;
  * Client represents an attacker. It has its own location and a inference map
  * It uses results from queries to update inference map
  */
-
 public class Client {
 	public static final double PMAX = 1;
-	int numberOfChannels = 1;         // number of channels
-	// location of the SU
-	private Location location;
+	private int numberOfChannels = 1; // number of channels
+	private Location location;	      // location of the SU
 	private int indexOfRow = -1;
 	private int indexOfCol = -1;
-	private int[] count;              // count the number for each channel for updating
+	public int[] count;               // count the number for each channel for updating, for testing
 	private InferMap[] inferMap;      // inferMap for each channel
 	private List<PU>[] channelsList;  // channel list from pu
 	
@@ -37,6 +35,14 @@ public class Client {
 		this.inferMap = new InferMap[numberOfChannels];
 		for (int i = 0; i < numberOfChannels; i++) inferMap[i] = new InferMap(i, server.getMap());
 		this.channelsList = server.getChannelsList();
+	}
+
+	public int getNumberOfChannels() {
+		return numberOfChannels;
+	}
+
+	public void setNumberOfChannels(int numberOfChannels) {
+		this.numberOfChannels = numberOfChannels;
 	}
 
 	public void setLocation(int r, int c) {
@@ -70,7 +76,9 @@ public class Client {
 	public int getColIndex() {
 		return indexOfCol;
 	}
-
+	// for testing purpose
+	public double d1 = -1, d2 = -1;
+	
 	// send a query to server
 	public void query(Server server) {
 		if (server == null) return;
@@ -105,6 +113,8 @@ public class Client {
 		else {
 			throw new IllegalArgumentException();
 		}
+		this.d1 = d1;
+		this.d2 = d2;
 		// client records how many times a channel is updated
 		count[channelID]++;
 		inferMap[channelID].update(this, d1, d2);
@@ -135,40 +145,16 @@ public class Client {
 		return IC;
 	}
 
-	private double distanceToClosestPU(int channel, int r, int c) {
+	public double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= numberOfChannels) throw new IllegalArgumentException("Bad channel number");
-		double minDist = Double.MAX_VALUE;
+		double minDist = Double.MAX_VALUE; // if channel is empty, return max int
 		for (PU pu : channelsList[channel]) {
 			double dist = inferMap[channel].getLocation(r, c).distTo(pu.getLocation());
 			if (dist < minDist) {
 				minDist = dist;
 			}
 		}
-		/* debug info */
-		// check[minPU.getID()]++;
 		return minDist;
-	}
-
-	/**
-	 * Part of message in the email
-	 * Record number of times each channels is updated
-	 * @return string that include information about number of time each channel is updated
-	 */
-	public String countChannelUpdateToString() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < numberOfChannels; i++) {
-			sb.append("Channel_[" + i + "]_is_updated_" + count[i] + "_times<br>");
-		}
-		return sb.toString();
-	}
-	
-	/**
-	 * Print information: each channel is updated how many times
-	 */
-	public void countChannel() {
-		for (int i = 0; i < numberOfChannels; i++) {
-			System.out.println("Channel [" + i + "] is updated " + count[i] + " times");
-		}
 	}
 
 	/**
@@ -184,32 +170,11 @@ public class Client {
 	/**
 	 * Print probability matrix of ALL channels
 	 * @param dir   output path
-	 * @param fileName TODO
+	 * @param fileName file name of text file that holds probability information
 	 */
 	public void printProbability(String dir, String fileName) {
 		for (int i = 0; i < numberOfChannels; i++) {
 			inferMap[i].printProbability(dir, fileName);
 		}
 	}
-
-	/**
-	 * Print number of rows & cols
-	 * @param dir   output path
-	 */
-	public void printRC(String dir) {
-		for (int i = 0; i < numberOfChannels; i++) {
-			inferMap[i].printRC(dir);
-		}
-	}
-
-	/**
-	 * Print map boundaries
-	 * @param dir   output path
-	 */
-	public void printBounds(String dir) {
-		for (int i = 0; i < numberOfChannels; i++) {
-			inferMap[i].printBounds(dir);
-		}
-	}
-
 }

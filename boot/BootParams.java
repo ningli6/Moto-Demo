@@ -8,6 +8,7 @@ import utility.Location;
 
 /* class that holds information about input parameters */
 public class BootParams {
+	private double cellSize;           // grid size
 	private double NorthLat;           // coordinates
 	private double SouthLat;
 	private double EastLng;
@@ -19,8 +20,10 @@ public class BootParams {
 	private boolean gMapTF;            // plot google map for transfiguration
 	private boolean gMapKA;            // plot google map for k anonymity
 	private boolean gMapKC;            // plot google map for k clustering
-	private boolean tradeOffAD;        // whether to plot trade off curve for tf
-	private boolean tradeOffTF;        // whether to plot trade off curve for tf
+	private boolean tradeOffAD;        // whether to plot trade off curve for additive noise
+	private boolean tradeOffTF;        // whether to plot trade off curve for transfiguration
+	private boolean tradeOffKA;        // whether to plot rade off bar for k anonymity
+	private boolean tradeOffKC;        // whether to plot rade off bar for k clustering
 	private int numberOfChannels;      // number of channels
 	private int numberOfQueries;       // number of queries
 	private String fileName;           // upload file name
@@ -29,6 +32,14 @@ public class BootParams {
 
 	public BootParams() {
 		this.cmMap = new HashMap<String, Double>();
+	}
+
+	public double getCellSize() {
+		return cellSize;
+	}
+
+	public void setCellSize(double cellSize) {
+		this.cellSize = cellSize;
 	}
 
 	public double getNorthLat() {
@@ -161,18 +172,10 @@ public class BootParams {
 	 * Whether to plot trade off curve for additive noise
 	 * @return true if user decided to plot trade off curve
 	 */
-	public boolean tradeOffAD() {
+	public boolean isTradeOffAD() {
 		return this.tradeOffAD;
 	}
-
-	/**
-	 * Whether to plot trade off curve for transfiguration
-	 * @return true if user decided to plot trade off curve
-	 */
-	public boolean tradeOffTF() {
-		return this.tradeOffTF;
-	}
-
+	
 	/**
 	 * Plot trade off curve for additive noise
 	 */
@@ -181,10 +184,34 @@ public class BootParams {
 	}
 
 	/**
+	 * Whether to plot trade off curve for transfiguration
+	 * @return true if user decided to plot trade off curve
+	 */
+	public boolean isTradeOffTF() {
+		return this.tradeOffTF;
+	}
+
+	/**
 	 * Plot trade off curve for transfiguration
 	 */
 	public void setTradeOffTF(boolean f) {
 		this.tradeOffTF = f;
+	}
+	
+	public boolean isTradeOffKA() {
+		return this.tradeOffKA;
+	}
+	
+	public void setTradeOffKA(boolean f) {
+		this.tradeOffKA = f;
+	}
+	
+	public boolean isTradeOffKC() {
+		return tradeOffKC;
+	}
+
+	public void setTradeOffKC(boolean tradeOffKC) {
+		this.tradeOffKC = tradeOffKC;
 	}
 
 	public int getNumberOfChannels() {
@@ -268,7 +295,7 @@ public class BootParams {
 			if (plotGooglMapAD()) {
 				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
-			if (tradeOffAD()) {
+			if (isTradeOffAD()) {
 				sb.append(" Plot trade-off curve.");
 			}
 			sb.append("\n");
@@ -278,7 +305,7 @@ public class BootParams {
 			if (plotGooglMapTF()) {
 				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
-			if (tradeOffTF()) {
+			if (isTradeOffTF()) {
 				sb.append(" Plot trade-off curve.");
 			}
 			sb.append("\n");
@@ -307,61 +334,4 @@ public class BootParams {
 		return sb.toString();
 	}
 
-	/**
-	 * Construct email content
-	 * @return  a string that describing input parameters
-	 */
-	public String paramsToString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<h3>Simulation parameters:</h3>");
-		sb.append("<p>Number of channels: " + numberOfChannels + "</p>");
-		sb.append("<p>Analysis region: <br>");
-		sb.append("North latitude :" + NorthLat + "<br>");
-		sb.append("South latitude :" + SouthLat + "<br>");
-		sb.append("West longitude :" + WestLng + "<br>");
-		sb.append("East longitude :" + EastLng + "<br>");
-		sb.append("</p>");
-		sb.append("<p>Location of Primary users: <br>");
-		int len = puList.length;
-		for (int i = 0; i < len; i++) {
-			sb.append("Channel " + i + ": <br>");
-			for (Location ll : puList[i]) {
-				sb.append("[" + ll.getLatitude() + ", " + ll.getLongitude() + "] <br>");
-			}
-			sb.append("</p>");
-		}
-//		if (!isCountermeasure) {
-//			sb.append("<p>Countermeasure: No countermeausre</p>");
-//		}
-//		else {
-//			String cmName = null;
-//			String cmParam = null;
-//			switch (countermeasure) {
-//			case "ADDITIVENOISE":
-//				cmName = countermeasure.toLowerCase();
-//				cmParam = "noise level: " + getCMParam();
-//				break;
-//			case "TRANSFIGURATION":
-//				cmName = countermeasure.toLowerCase();
-//				cmParam = "sides of polygon: " + (int) getCMParam();
-//				break;
-//			case "KANONYMITY":
-//				cmName = "k anonymity";
-//				cmParam = "size of group: " + (int) getCMParam();
-//				break;
-//			case "KCLUSTERING":
-//				cmName = "k clustering";
-//				cmParam = "number of clusters: " + (int) getCMParam();
-//				break;
-//			}
-//			sb.append("<p>Countermeasure: " + cmName + ", " + cmParam + "</p>");
-//		}
-		if (numberOfQueries < 0) {
-			sb.append("<p>Upload_file:_" + fileName + "</p>");
-		}
-		else {
-			sb.append("<p>Number of queries: " + numberOfQueries + "</p>");
-		}
-		return sb.toString();
-	}
 }

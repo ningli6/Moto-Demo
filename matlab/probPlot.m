@@ -2,6 +2,8 @@ function [] = probPlot(varargin)
 
 % Usage:
 % probPlot(nc, rows, cols, latStart, latEnd, lngStart, lngEnd)
+% @Param dataDir   [Directory for data file]
+% @Param plotDir   [Save directory for plotted figure]
 % @Param nc        [Number of channels]
 % @Param rows      [Number of rows for analysis area]
 % @Param cols      [Number of cols for analysis area]
@@ -15,32 +17,27 @@ function [] = probPlot(varargin)
 % @Param ka        [plot anonymity]
 % @Param kc        [plot clustering]
 
-if (nargin == 7)  % don't need to plot any map
-    return
-end
 
-rows = str2double(varargin{2});
-cols = str2double(varargin{3});
-latStart = str2double(varargin{4});
-latEnd = str2double(varargin{5});
-lngStart = str2double(varargin{6});
-lngEnd = str2double(varargin{7});
+rows = str2double(varargin{4});
+cols = str2double(varargin{5});
+latStart = str2double(varargin{6});
+latEnd = str2double(varargin{7});
+lngStart = str2double(varargin{8});
+lngEnd = str2double(varargin{9});
 cmArray = cell(0);
-for i = 8 : nargin
-    cmArray{i - 7} = varargin{i};
+for i = 10 : nargin
+    cmArray{i - 9} = varargin{i};
 end
 
 for iter = 1:size(cmArray, 2)
-    for nc = 1: int32(str2double(varargin{1}))
+    for nc = 1: int32(str2double(varargin{3}))
         channelID = num2str(nc - 1);
         % import data from a text file
-        % importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '.txt'];
-        importName = ['C:\Users\Administrator\Desktop\motoData\', cmArray{iter}, '_', channelID, '_pMatrix','.txt'];
+        importName = [varargin{1}, cmArray{iter}, '_', channelID, '_pMatrix','.txt'];
         import = importdata(importName);
         A = import.data;
         
-        % importName = ['/Users/ningli/Desktop/motoData/demoTable_', channelID, '_pu.txt'];
-        importName = ['C:\Users\Administrator\Desktop\motoData\', cmArray{iter}, '_', channelID, '_pu', '.txt'];
+        importName = [varargin{1}, cmArray{iter}, '_', channelID, '_pu', '.txt'];
         import = importdata(importName);
         D = import.data;
         
@@ -125,14 +122,26 @@ for iter = 1:size(cmArray, 2)
         xlabel('longitude');
         ylabel('latitude');
         
-        % plot location of pu
-        plot(markers(:, 2), markers(:, 1), 'd', 'MarkerSize', 10, 'MarkerEdgeColor','k', 'MarkerFaceColor', 'r');
+        locParams = {};
+        countLocParams = 1;
+        for i = 1: tr
+            locStrSpec = '%f,%f';
+            locParams{countLocParams} = 'Marker';
+            locParams{countLocParams + 1} = sprintf(locStrSpec, markers(i, 1), markers(i, 2));
+            countLocParams = countLocParams + 2;
+        end
         
         % draw google map
-        plot_google_map('maptype','hybrid','APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA');
+        plot_google_map('maptype','roadmap','APIKey','AIzaSyB6ss_yCVoGjERLDXwydWcyu21SS-dToBA', locParams{:});
+        
+        % plot location of pu
+%         plot(markers(:, 2), markers(:, 1), 'v', 'MarkerSize', 15, 'MarkerEdgeColor','k', 'MarkerFaceColor', 'r');
+        hmarker = plot(markers(:, 2), markers(:, 1), 'r*', 'MarkerSize', 30);
+        set(hmarker, 'linewidth', 1);
+        
         hold off;
         
-        name = ['C:\Users\Administrator\Desktop\motoPlot\', cmArray{iter}, '_', channelID, '_gMaps.png'];
+        name = [varargin{2}, cmArray{iter}, '_', channelID, '_gMaps.png'];
         saveas(fig, name);
         close(fig);
     end

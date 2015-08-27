@@ -14,7 +14,7 @@ public class Parser {
 	/**
 	 * Parse an input string from web interface
 	 * The arguments from web interface should be formatted as:
-	 * -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
+	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
 	 * @param     string from web page
 	 * @return    BootParams that holds all these information
 	 */
@@ -23,19 +23,24 @@ public class Parser {
 			return null;
 		BootParams bootParams = new BootParams();
 		try {
+			// get cell size
+			if (!args[0].equals("-cd")) {
+				throw new IllegalArgumentException("-cd");
+			}
+			bootParams.setCellSize(Double.parseDouble(args[1]));
 			// get boundary
-			if (!args[0].equals("-a")) {
+			if (!args[2].equals("-a")) {
 				throw new IllegalArgumentException("-a");
 			}
-			bootParams.setNorthLat(Double.parseDouble(args[1]));
-			bootParams.setSouthLat(Double.parseDouble(args[3]));
-			bootParams.setWestLng(Double.parseDouble(args[2]));
-			bootParams.setEastLng(Double.parseDouble(args[4]));
+			bootParams.setNorthLat(Double.parseDouble(args[3]));
+			bootParams.setSouthLat(Double.parseDouble(args[5]));
+			bootParams.setWestLng(Double.parseDouble(args[4]));
+			bootParams.setEastLng(Double.parseDouble(args[6]));
 			// get number of channels
-			if (!args[5].equals("-c")) {
+			if (!args[7].equals("-c")) {
 				throw new IllegalArgumentException("-c");
 			}
-			int noc = Integer.parseInt(args[6]);
+			int noc = Integer.parseInt(args[8]);
 			if (noc < 1 || noc > 3) {
 				throw new IllegalArgumentException("Number of channels must be 1, 2 or 3");
 			}
@@ -46,7 +51,7 @@ public class Parser {
 			for (int j = 0; j < puLocations.length; j++) {
 				puLocations[j] = new LinkedList<Location>();
 			}
-			int i = 7;
+			int i = 9;
 			int ch = 0;
 			while(ch < noc) {
 				if (args[i].equals("-C")) {
@@ -55,6 +60,11 @@ public class Parser {
 						puLocations[ch].add(new Location(Double.parseDouble(args[i++]), Double.parseDouble(args[i++])));
 					}
 					ch++;
+				}
+			}
+			for (int j = 0; j < puLocations.length; j++) {
+				if (puLocations[j].size() == 0) {
+					throw new IllegalArgumentException("Some channel is empty!");
 				}
 			}
 			if (ch != noc || !args[i].equals("-cm")) {
@@ -124,6 +134,14 @@ public class Parser {
 				bootParams.setTradeOffTF(true);
 				i += 1;
 			}
+			if (args[i].equals("ka")) {
+				bootParams.setTradeOffKA(true);
+				i += 1;
+			}
+			if (args[i].equals("kc")) {
+				bootParams.setTradeOffKC(true);
+				i += 1;
+			}
 			// queries
 			if (args[i].equals("-f")) {
 				bootParams.useFile(args[i + 1]);
@@ -154,7 +172,7 @@ public class Parser {
 		catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Usage: ");
-			System.out.println("java Boot -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
+			System.out.println("java Boot -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
 			return null;
 		}
 	}

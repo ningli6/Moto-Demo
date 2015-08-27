@@ -14,7 +14,11 @@ public class Point {
 	}
 
 	public boolean SamePoint(Point p) {
-		if (this.x == p.x && this.y == p.y) return true;
+		if (this == p) return true;
+		double delta = 0.001;
+		if (Math.abs(this.x - p.x) < delta && Math.abs(this.y - p.y) < delta) {
+			return true;
+		}
 		return false;
 	}
 

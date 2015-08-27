@@ -15,15 +15,15 @@ import client.Client;
 
 public class ServerTransfiguration extends Server{
 	private int numberOfSides;                     // number of sides for polygon
-	private List<PolyPU>[] channels_poly_List;     // channel list for polyPU
+	private List<PolyPU>[] polyPUList;             // channel list for polyPU
 	
 	@SuppressWarnings("unchecked")
 	public ServerTransfiguration(GridMap map, int noc, int numberOfSides) {
 		super(map, noc);
 		this.numberOfSides = numberOfSides; 
-		channels_poly_List = (List<PolyPU>[]) new List[numberOfChannels];
+		polyPUList = (List<PolyPU>[]) new List[numberOfChannels];
 		for (int i = 0; i < numberOfChannels; i++) {
-			channels_poly_List[i] = new LinkedList<PolyPU>();
+			polyPUList[i] = new LinkedList<PolyPU>();
 		}
 	}
 
@@ -35,7 +35,7 @@ public class ServerTransfiguration extends Server{
 		int k = 0;
 		for (List<PU> list : channelsList) {
 			for (PU pu: list) {
-				channels_poly_List[k].add(new PolyPU(pu, numberOfSides));
+				polyPUList[k].add(new PolyPU(pu, numberOfSides));
 			}
 			k++;
 		}
@@ -51,7 +51,7 @@ public class ServerTransfiguration extends Server{
 			return;
 		}
 		if (getNumberOfPUs() == 0) return;
-		for (List<PolyPU> list : channels_poly_List) {
+		for (List<PolyPU> list : polyPUList) {
 			list.clear();  // clear all previous polyPU
 		}
 		numberOfSides = sides;
@@ -69,7 +69,7 @@ public class ServerTransfiguration extends Server{
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		List<Response> response_list = new LinkedList<Response>();
-		for (List<PolyPU> list : channels_poly_List) {
+		for (List<PolyPU> list : polyPUList) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
@@ -91,9 +91,13 @@ public class ServerTransfiguration extends Server{
 		return Collections.max(response_list);
 	}
 	
+	public List<PolyPU>[] getChannelPolyPU() {
+		return polyPUList;
+	}
+
 	public void printTransfiguredMap(String dir) {
 		if (dir == null || dir.length() == 0) return;
-		for (List<PolyPU> ppu : channels_poly_List) {
+		for (List<PolyPU> ppu : polyPUList) {
 			for (PolyPU polyPU : ppu) {
 				File file = new File(dir + "tf_" + polyPU.getPU().getID() + ".txt");
 				try {

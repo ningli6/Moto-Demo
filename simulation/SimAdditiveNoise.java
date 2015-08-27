@@ -22,9 +22,9 @@ public class SimAdditiveNoise extends Simulation {
 	private boolean feasible;             // whether this noise level is feasible
 	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
 	
-	public SimAdditiveNoise(BootParams bootParams, double cellSize, double mtpScale, int interval, String directory) {
+	public SimAdditiveNoise(BootParams bootParams, double mtpScale, int interval, String directory) {
 		/* call parent constructor */
-		super(bootParams, cellSize, mtpScale, interval, directory);
+		super(bootParams, mtpScale, interval, directory);
 
 		/* initialize countermeasure */
 		this.countermeasure = "ADDITIVENOISE";
@@ -52,6 +52,14 @@ public class SimAdditiveNoise extends Simulation {
 
 		/* initialize feasibility */
 		feasible = false;
+	}
+
+	public double getNoiseLevel() {
+		return noiseLevel;
+	}
+
+	public ServerAdditiveNoise getCmServer() {
+		return cmServer;
 	}
 
 	@Override
@@ -162,7 +170,7 @@ public class SimAdditiveNoise extends Simulation {
 	public void tradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
-		int repeat = 10;
+		int repeat = 20;
 		System.out.println("Start computing trade off curve for additive noise...");
 		Client trdOfClient = new Client(cmServer);  // create a new client
 		for (int k = 0; k < cmString.length; k++) { // for each noise level
@@ -207,7 +215,7 @@ public class SimAdditiveNoise extends Simulation {
 	 * @param nums   array that contains ic values for all channels
 	 * @return       average ic of all channels
 	 */
-	private double average(double[] nums) {
+	public double average(double[] nums) {
 		double ans = 0;
 		int len = nums.length;
 		for (double d : nums) {

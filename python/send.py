@@ -14,15 +14,15 @@ from email.mime.multipart import MIMEMultipart
 import datetime
 
 # sender
-sender = sys.argv[1]
+sender = sys.argv[2]
 print 'From: ', sender
 
 # receiver
-recv = sys.argv[2]
+recv = sys.argv[3]
 print 'To: ', recv
 
 # construct message
-message = sys.argv[3]
+message = sys.argv[4]
 message = message.replace("_", " ");
 message = message.replace("\\n", "<br>");
 html = '<html><head><style>h3,p, span {color: black}</style></head><body>' + message + '</body></html>'
@@ -35,10 +35,10 @@ txt = MIMEText(html, 'html')
 msg.attach(txt)
 
 # attachments
-path = 'C:/Users/Administrator/Desktop/motoPlot/'
+path = sys.argv[1]
 text = '.txt';
 png = '.png';
-fileNames = sys.argv[4:]
+fileNames = sys.argv[5:]
 for fileName in fileNames:
 	try:
 		if text in fileName:

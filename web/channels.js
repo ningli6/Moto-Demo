@@ -4,14 +4,22 @@
 
 
 /**
+ * JQuery that bind to dropdown list
+ */
+$(document).ready(function(){
+    $('#dp li').on('click', function(){
+        setChannels($(this).text());
+        $('#channelButton').html($(this).text());
+    });
+});
+
+/**
  * Specify number of channels. 
  * Dispalying google map area in accordance with user specified number of channels
  */
-function setChannels() {
-    console.log("Set channels!");
+function setChannels(args) {
     resetAllMarkers();
-    var e = document.getElementById("selc");
-    numberOfChannels = parseInt(e.options[e.selectedIndex].value);
+    numberOfChannels = parseInt(args);
     switch (numberOfChannels) {
     case 1:
         console.log("Number of channels: 1");

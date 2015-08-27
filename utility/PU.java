@@ -12,7 +12,7 @@ public class PU {
 	private Location cellLocation;            // location of pu, centered in the cell
 	private int indexOfRow = 0;               // row index on the map
 	private int indexOfCol = 0;               // col index on the map
-	private int number_of_response = 0;       // record times being chosen to response
+	public int number_of_response = 0;       // record times being chosen to response
 	private GridMap map;                      // map instance 
 	private double baseRadius = 0;            // used by k-anonymity/k-clustering, protection contour for the group
 	private Cluster cluster = null;           // used by k-clustering
@@ -108,10 +108,11 @@ public class PU {
 
 	/**
 	 * Set location of primary users given indices on the map
+	 * Used to update virtual pu's location
 	 * @param r  row index
 	 * @param c  col index
 	 */
-	public void setIndices(int r, int c) {
+	public void setLocation(int r, int c) {
 		indexOfRow = r;
 		indexOfCol = c;
 		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);
@@ -185,28 +186,11 @@ public class PU {
 		System.out.println("[ " + indexOfRow + ", " + indexOfCol + " ]");
 	}
 
-	/**
-	 * Print pu's location for debugging purpose
-	 * print indices on the map first, then print actual coordinates
-	 */
-	public void printLocation() {
-		if (cellLocation == null) {
-			System.out.println("PU has no location information");
-			return;
-		}
-		printIndexLocation();
-		cellLocation.printLocation();
-	}
-
-	public void printIndexLocation() {
-		System.out.println("[ " + getRowIndex() + " " + getColIndex() + " ]");
-	}
-
 	public void printInfo() {
 		System.out.println("***PU***");
 		System.out.println("id: " + this.id);
 		System.out.println("working channel: " + this.channelID);
-		printLocation();
+		printIndices();
 		System.out.println("updated " + this.number_of_response + " times");
 		System.out.println();
 	}
@@ -216,7 +200,7 @@ public class PU {
 		System.out.println("***Virtual PU***");
 		System.out.println("Radius: " + getRadius());
 		System.out.println("Working channel: " + this.channelID);
-		printLocation();
+		printIndices();
 		System.out.println("updated " + this.number_of_response + " times");
 	}
 }

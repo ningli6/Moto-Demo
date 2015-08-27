@@ -12,12 +12,13 @@ var gmapTF = false;        // plot google map for transfiguration
 var gmapKA = false;        // plot google map for k anonymity
 var gmapKC = false;        // plot google map for k clustering
 var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
-var tradeOffTF = false; 
+var tradeOffTF = false;
+var tradeOffKA = false;
+var tradeOffKC = false;
 var numberOfQueries;       // number of queries
 var queryFile;             // name of querying file
 var email;                 // send result to this email
 var inputParams = false;   // whether to include input parameters in the email
-
 var args;                  // formatted params as a argument for java program
 
 /**
@@ -26,6 +27,17 @@ var args;                  // formatted params as a argument for java program
  * @return {void}
  */
 function getParams () {
+    // check cell size
+    var cellSize = document.getElementById("cd").value;
+    if (!isNumeric(cellSize)) {
+        cellSize = 0.005;
+    }
+    else if (cellSize > 0.05) {
+        cellSize = 0.05;
+    }
+    else if (cellSize < 0.005) {
+        cellSize = 0.005
+    }
     // check parameters and grab values from forms
     if (rect == undefined || recRegion == undefined) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
@@ -68,15 +80,22 @@ function getParams () {
         return;
     }
 
-    if (!document.getElementById("cmopt3").checked && document.getElementById("gmka").checked) {
+    if (!document.getElementById("cmopt3").checked && (document.getElementById("gmka").checked || document.getElementById("tradeOff3").checked)) {
         alert("Countermeasure k anonymity must be selected!");
         return;
     }
 
-    if (!document.getElementById("cmopt4").checked && document.getElementById("gmkc").checked) {
+    if (!document.getElementById("cmopt4").checked && (document.getElementById("gmkc").checked || document.getElementById("tradeOff4").checked)) {
         alert("Countermeasure k clustering must be selected!");
         return;
     }
+
+    // make sure number of markers are more than 1 when checking trade off bar
+    if (numberOfMarkers < 2 && (document.getElementById("tradeOff3").checked || document.getElementById("tradeOff4").checked)) {
+        alert("Trade off bar should be selected only when number of primary users is more than 1");
+        return;
+    }
+
     // get pus' location
     location_PU = [];
     if (numberOfChannels == 1) location_PU.push(markers_one);
@@ -96,7 +115,9 @@ function getParams () {
     gmapAD = false;
     tradeOffTF = false;
     gmapTF = false;
+    tradeOffKA = false;
     gmapKA = false;
+    tradeOffKC = false;
     gmapKC = false;
     inputParams = false;
 
@@ -175,6 +196,12 @@ function getParams () {
         }
         countermeasure.push("ka");
         cmVal.push(val);
+        if (document.getElementById('tradeOff3').checked) {
+            tradeOffKA = true;
+        }
+        else {
+            tradeOffKA = false;
+        }
         if (document.getElementById('gmka').checked) {
             gmapKA = true;
         }
@@ -194,6 +221,12 @@ function getParams () {
         }
         countermeasure.push("kc");
         cmVal.push(val);
+        if (document.getElementById('tradeOff4').checked) {
+            tradeOffKC = true;
+        }
+        else {
+            tradeOffKC = false;
+        }
         if (document.getElementById('gmkc').checked) {
             gmapKC = true;
         }
@@ -202,7 +235,7 @@ function getParams () {
         }
     }
     if (countermeasure.length == 0) {
-        alert("No countermeasure is selected!");
+        alert("Please select at least one option under Inaccuracy vs Queries!");
         return;
     }
 
@@ -222,13 +255,13 @@ function getParams () {
             return;
         }
     }
-    if (document.getElementById("input_query1").checked) {
-        queryFile = file_name;
-        if (queryFile == undefined) {
-            alert("Please upload a text file containing location information");
-            return;
-        }
-    }
+    // if (document.getElementById("input_query1").checked) {
+    //     queryFile = file_name;
+    //     if (queryFile == undefined) {
+    //         alert("Please upload a text file containing location information");
+    //         return;
+    //     }
+    // }
     if (numberOfQueries == undefined && queryFile == undefined) {
         alert("Please specify querying method");
         return;
@@ -254,8 +287,10 @@ function getParams () {
     }
 
     // formatting params
+    // cell size
+    args = "-cd " + cellSize + " ";
     // NE lat, SW lng, SW lat, NE lng
-    args = "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
+    args += "-a " + recRegion.getNorthEast().lat() + " " + recRegion.getSouthWest().lng() + " " + recRegion.getSouthWest().lat() + " " + recRegion.getNorthEast().lng() + " ";
     // number of channels
     args += "-c " + numberOfChannels + " ";
     // location of pu
@@ -308,6 +343,12 @@ function getParams () {
     }
     if (tradeOffTF) {
         args += 'tf '
+    }
+    if (tradeOffKA) {
+        args += 'ka '
+    }
+    if (tradeOffKC) {
+        args += 'kc '
     }
     // queries
     if (numberOfQueries != null) {
@@ -380,11 +421,17 @@ function getParams () {
             if (gmapKA) {
                 cmstr += ". Plot inferred location of primary users on Google Maps";
             }
+            if (tradeOffKA) {
+                cmstr += ". Plot trade-off bar";
+            }
         }
         else {
             cmstr += "K Clustering. K: " + cmVal[i];
             if (gmapKC) {
                 cmstr += ". Plot inferred location of primary users on Google Maps";
+            }
+            if (tradeOffKC) {
+                cmstr += ". Plot trade-off bar";
             }
         }
         cmstr += "</p>";
@@ -433,7 +480,7 @@ function sendParams()
         {
             var res = xmlhttp.responseText;
             if (res == "OK") {
-                alert("Demo has been started successfully!\nPlease check your email for result.\nThanks for using!");
+                alert("Demo started successfully!\nWe will send simulation results to you shortly.\nThanks for using!");
             }
             else {
                 alert("Demo failed. " + res);
@@ -463,3 +510,12 @@ function validateEmail(email) {
     var re = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
     return re.test(email);
 }
+
+/**
+ * Once the launch button is clicked, change the text to launching
+ */
+$(document).ready(function(){
+    $("#launchButton").click(function(){
+        $("#launchButton").html('Launching...');
+    });
+});

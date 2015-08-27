@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 public class SendEmail {  
 	/**
 	 * Api for sending email
+	 * @param plotDir TODO
 	 * @param from       sender
 	 * @param to         receiver
 	 * @param message    additional email content
@@ -19,14 +20,16 @@ public class SendEmail {
 	 * @param gMapKc     whether to include google map for k clustering
 	 * @param tradeOffAd whether to trade-off curve for additive noise
 	 * @param tradeOffTf whether to trade-off curve for transfiguration
+	 * @param tradeOffKA whether to plot trade-off bar for k anonymity
+	 * @param tradeOffKC whether to plot trade-off bar for k clustering
 	 * @param inputParams include user parameters in the email as a text file
 	 * @return           true if everything works
 	 */
-	public static boolean send(String from, String to, String message, int noc,
-			boolean icVSq, 
-			boolean gMapNo, boolean gMapAd, boolean gMapTf, boolean gMapKa, boolean gMapKc, 
-			boolean tradeOffAd, boolean tradeOffTf,
-			boolean inputParams) {
+	public static boolean send(String plotDir, String from, String to, String message,
+			int noc, 
+			boolean icVSq, boolean gMapNo, boolean gMapAd, boolean gMapTf, boolean gMapKa, 
+			boolean gMapKc, boolean tradeOffAd, boolean tradeOffTf, boolean tradeOffKA,
+			boolean tradeOffKC, boolean inputParams) {
 		System.out.println("Start sending email...");
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
         String s = null;
@@ -39,7 +42,7 @@ public class SendEmail {
         content = content.replaceAll("\n", "<br>");
         System.out.println(content);
         try {
-        	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + from + " " + to + " " + content;
+        	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {
             	cmd += " ICvsQ.png";
             }
@@ -73,6 +76,12 @@ public class SendEmail {
             }
             if (tradeOffTf) {
             	cmd += " traddOff_Transfiguration.png";
+            }
+            if (tradeOffKA) {
+            	cmd += " traddOff_KAnonymity.png";
+            }
+            if (tradeOffKC) {
+            	cmd += " traddOff_KClustering.png";
             }
             if (inputParams) {
             	cmd += " emailInfo.txt";
