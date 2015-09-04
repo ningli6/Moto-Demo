@@ -2,6 +2,7 @@
  * This script is for selecting channels
  */
 
+var numberOfChannels = 1;  // number of channels [1, 3]
 
 /**
  * JQuery that bind to dropdown list

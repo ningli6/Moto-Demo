@@ -2,8 +2,10 @@
  * This script is used to select query methods
  */
 
-// file name of user uploaded text file
-var file_name;  
+var numberOfQueries;       // number of queries
+// var queryFile;             // name of querying file
+var file_name;             // file name of user uploaded text file
+  
 
 /**
  * Disable query number input

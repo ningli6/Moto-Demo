@@ -2,7 +2,6 @@
  * This script collect parameters from web interface and pass it to php script
  */
 
-var numberOfChannels = 1;  // number of channels [1, 3]
 var location_PU = [];      // pu's location
 var countermeasure = [];   // countermeasures for ic vs q
 var cmVal = []             // cm parameters
@@ -15,8 +14,6 @@ var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
 var tradeOffTF = false;
 var tradeOffKA = false;
 var tradeOffKC = false;
-var numberOfQueries;       // number of queries
-var queryFile;             // name of querying file
 var email;                 // send result to this email
 var inputParams = false;   // whether to include input parameters in the email
 var args;                  // formatted params as a argument for java program
@@ -28,15 +25,8 @@ var args;                  // formatted params as a argument for java program
  */
 function getParams () {
     // check cell size
-    var cellSize = document.getElementById("cd").value;
-    if (!isNumeric(cellSize)) {
+    if (cellSize != 0.005 && cellSize != 0.01 && cellSize != 0.05) {
         cellSize = 0.005;
-    }
-    else if (cellSize > 0.05) {
-        cellSize = 0.05;
-    }
-    else if (cellSize < 0.005) {
-        cellSize = 0.005
     }
     // check parameters and grab values from forms
     if (rect == undefined || recRegion == undefined) {
@@ -355,7 +345,7 @@ function getParams () {
         args += "-q " + numberOfQueries + " ";
     }
     else {
-        args += "-f " + queryFile + " ";
+        // args += "-f " + queryFile + " ";
     }
     // email
     args += "-e " + email + " ";
@@ -443,7 +433,7 @@ function getParams () {
         querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries;
     }
     else {
-        querystr = "Use location from " + queryFile;
+        // querystr = "Use location from " + queryFile;
     }
     document.getElementById("wellquery").innerHTML = querystr;
     // email

@@ -105,15 +105,14 @@ function initialize() {
  * Check size of analysis area
  */
 function checkSize(recRegion) {
-    var sz = document.getElementById("cd").value;
+    var sz = cellSize;
     var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / sz);
     var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / sz);
     if (rows < 50 || cols < 50) {
         console.log("Rows: " + rows + ", Cols: " + cols);
-        alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
+        alert("Selected region is too small. Please draw a region which is at least a 50 by 50 grid based on current grid size to perform a reasonable simulation.");
         return false;
     }
-    console.log("Zoom level: " + map.getZoom());
     return true;
 }
 
@@ -267,7 +266,7 @@ function placeMarker(location) {
  * Show grid cells in analysis area
  */
 function drawGrids(recRegion) {
-    var sz = document.getElementById("cd").value;
+    var sz = cellSize;
     if (!isNumeric(sz)) {
         sz = 0.005;
     }
