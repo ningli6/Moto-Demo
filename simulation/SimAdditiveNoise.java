@@ -84,7 +84,6 @@ public class SimAdditiveNoise extends Simulation {
 			}
 			if (cmServer.reachNoiseLevel()) { // if noise level satisfied
 				System.out.println("Noise level satisfied!");
-//				System.out.println("Actual lies: " + cmServer.getNumberOfLies() + " Expected lies: " + cmServer.getExpectedLies());
 				break;
 			}
 			attempts--;
@@ -97,19 +96,6 @@ public class SimAdditiveNoise extends Simulation {
 			return;
 		}
 		IC = client.computeIC();
-		
-//		/* debug */
-//		for (List<PU> puList : cmServer.getChannelsList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
 		
 		printSingle(cmServer, client, directory, "Additive_Noise");
 	}

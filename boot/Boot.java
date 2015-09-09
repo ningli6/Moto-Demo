@@ -1,9 +1,12 @@
 package boot;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 /**
  * Entrance of java program
@@ -54,7 +57,7 @@ public class Boot {
 			}
 			/* start program, return ok */
 			System.out.println("OK");
-			Runtime.getRuntime().exec("java -jar C:\\Users\\Administrator\\Desktop\\motoDemo\\demoRun.jar " + cmd + dataDir + " " + plotDir);
+//			Process p = Runtime.getRuntime().exec("java -jar C:\\Users\\Administrator\\Desktop\\motoDemo\\demoRun.jar " + cmd + dataDir + " " + plotDir);
 //			BufferedReader stdInput = new BufferedReader(new
 //						InputStreamReader(p.getInputStream()));
 //	
@@ -71,7 +74,15 @@ public class Boot {
 //			while ((s = stdError.readLine()) != null) {
 //				System.out.println(s);
 //			}
-		} catch (IOException e) {
+//			BootParams bp = Parser.parse(Arrays.copyOfRange(args, 0, args.length - 2));
+			BootParams bp = Parser.parse(args);
+			if (bp == null) {
+				System.out.println("FAILED");
+				return;
+			}
+			DemoRun demo = new DemoRun(bp, 1, 5, dataDir, plotDir);
+			demo.run();
+		} catch (Exception e) {
 			System.out.println("FAIL");
 			e.printStackTrace();
 		}

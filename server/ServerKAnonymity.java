@@ -206,9 +206,9 @@ public class ServerKAnonymity extends Server {
 	 */
 	public double virtualMTP(double dist, double base) {
 		double PMAX = 1;
-		if (dist < MTP.d1 + base) return 0;
-		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
-		if (dist >= MTP.d2 + base && dist < MTP.d3 + base) return 0.75 * PMAX;
+		if (dist < (MTP.d1 + base)) return 0;
+		if (dist >= (MTP.d1 + base) && dist < (MTP.d2 + base)) return 0.5 * PMAX;
+		if (dist >= (MTP.d2 + base) && dist < (MTP.d3 + base)) return 0.75 * PMAX;
 		return PMAX;
 	}
 

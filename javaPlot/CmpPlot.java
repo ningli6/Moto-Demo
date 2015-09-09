@@ -18,6 +18,7 @@ public class CmpPlot {
 	public static boolean plot(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		System.out.println("Start plotting ic vs queries...");
 		try {
+//			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwChannels.py " + dataDir + " "+ plotDir;
 			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
 			if (noCM) {
 				cmd += " averageIC_NoCountermeasure.txt";
@@ -34,7 +35,7 @@ public class CmpPlot {
 			if (kc) {
 				cmd += " cmp_kClustering.txt";
 			}
-
+			System.out.println(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int r = p.waitFor();
 

@@ -41,8 +41,6 @@ public class SimKAnonymity extends Simulation {
 			for (Location ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
 				cmServer.addPU(pu, k);
-				/* debug */
-//				pu.printInfo();
 			}
 		}
 		if (k > 0) {
@@ -78,19 +76,11 @@ public class SimKAnonymity extends Simulation {
 		
 		/* compute IC */
 		IC = client.computeIC();
-		
-//		/* debug */
-//		for (List<PU> puList : cmServer.getVirtualChannelList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
+		System.out.println("IC: ");
+		for (double d : IC){
+			System.out.print((int)d + " ");
+		}
+		System.out.println();
 		
 		printSingle(cmServer, client, directory, "K_Anonymity");
 	}
@@ -106,7 +96,7 @@ public class SimKAnonymity extends Simulation {
 		}
 		
 		// multiple simulation with k anonymity
-		Client multclient = new Client(cmServer); 
+		Client multclient = new Client(cmServer);
 		System.out.println("Start computing average IC with k anonymity...");
 		// compute query points
 		int gap = noq / interval;

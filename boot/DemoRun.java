@@ -125,19 +125,19 @@ public class DemoRun {
         	if (bp.getInputParams()) {
         		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
         	}
-        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
-        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
-        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
-        			bp.isTradeOffKC(), bp.getInputParams())) {
-        		System.out.println("Sending email failed");
-        		return;
-        	}
+//        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
+//        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
+//        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
+//        			bp.isTradeOffKC(), bp.getInputParams())) {
+//        		System.out.println("Sending email failed");
+//        		return;
+//        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
 //        System.out.println("Cleaning up folders...");
-        deleteDirectory(new File(dataDir));
-        deleteDirectory(new File(plotDir));
+//        deleteDirectory(new File(dataDir));
+//        deleteDirectory(new File(plotDir));
     }
     
     public static boolean deleteDirectory(File directory) {

@@ -44,15 +44,6 @@ public class Simulation {
 		Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 		this.map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
 
-		/* debug 
-		 * See number of rows & cols in the map
-		 */
-//		map.showBoundary();
-//		System.out.println("Map rows: " + map.getRows());
-//		System.out.println("Map cols: " + map.getCols());
-//		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
-//		System.out.println("Total cells: " + map.getNumberOfCells());
-
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 
@@ -68,7 +59,6 @@ public class Simulation {
 			List<Location> LatLngList = bootParams.getPUOnChannel(k);
 			for (Location ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
-//				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
 				server.addPU(pu, k);
 			}
 		}
@@ -77,7 +67,7 @@ public class Simulation {
 		noq = bootParams.getNumberOfQueries();
 		
 		/* initialize number of repetition */
-		repeat = 10;
+		repeat = 20;
 
 		/* initialize ic */
 		IC = null;
@@ -93,27 +83,14 @@ public class Simulation {
 		/* run simulation for one time */
 		for (int i = 1; i <= noq; i++) {
 			client.randomLocation();
-			/**
-			 * Debug: See client's new location
-			 */
-//			System.out.println("***Query***");
-//			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
 			client.query(server);
 		}
 		IC = client.computeIC();
-		
-		/* debug */
-//		for (List<PU> puList : server.getChannelsList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
 		System.out.println("IC: ");
 		for (double d : IC){
 			System.out.print((int)d + " ");
 		}
-//		System.out.println();
+		System.out.println();
 		
 		printSingle(server, client, directory, "No_Countermeasure");
 	}
@@ -153,7 +130,7 @@ public class Simulation {
 					icMap.put(i, sum);
 				}
 			}
-			multclient.reset(); // set infer matrix to 0.5
+			multclient.reset();
 		}
 		printMultiple(qlist, icMap, directory, "averageIC_NoCountermeasure.txt");
 	}

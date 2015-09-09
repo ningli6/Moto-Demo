@@ -75,19 +75,6 @@ public class SimKClustering extends Simulation {
 		/* compute IC */
 		IC = client.computeIC();
 		
-		/* debug */
-//		for (List<PU> puList : cmServer.getVirtualChannelList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
-		
 		printSingle(cmServer, client, directory, "K_Clustering");
 	}
 	

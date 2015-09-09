@@ -82,19 +82,6 @@ public class SimTransfiguration extends Simulation {
 		/* compute IC */
 		IC = client.computeIC();
 		
-//		/* debug */
-//		for (List<PU> puList : cmServer.getChannelsList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
-		
 		printSingle(cmServer, client, directory, "Transfiguration");
 	}
 
@@ -187,20 +174,6 @@ public class SimTransfiguration extends Simulation {
 				trdIC[k] = 0;
 			}
 		}
-		// for the last sides 10, use the original circular contour
-//		Client client = new Client(server);  // the original server
-//		int k = cmString.length - 1;
-//		System.out.println("Sides: infinite");
-//		for (int r = 0; r < repeat; r++) {
-//			client.reset();
-//			/* run simulation for once */
-//			for (int i = 0; i < noq; i++) {
-//				client.randomLocation();
-//				client.query(server);
-//			}
-//			double[] ic = client.computeIC();
-//			trdIC[k] += average(ic) / repeat;
-//		}
 		
 		printTradeOff(cmString, trdIC, directory, "traddOff_Transfiguration.txt");
 	}
