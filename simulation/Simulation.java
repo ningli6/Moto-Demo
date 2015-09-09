@@ -15,6 +15,7 @@ import utility.MTP;
 import utility.PU;
 import boot.BootParams;
 import client.Client;
+import client.SmartAttacker;
 
 public class Simulation {
 	String directory;      // output dir
@@ -28,7 +29,8 @@ public class Simulation {
 	int noq;               // number of queries
 	int repeat;            // number of repetition for multiple simulations
 	double[] IC;           // ic for single simulation, may include this information in email
-	Map<Integer, double[]> icMap; // associate ic to number of queries
+	Map<Integer, double[]> icMap;       // associate ic to number of queries
+	Map<Integer, double[]> icSmartMap;  // associate ic to number of queries under smart query
 
 	public Simulation(BootParams bootParams, double mtpScale, int interval, String directory) {
 		this.bootParams = bootParams;
@@ -74,6 +76,7 @@ public class Simulation {
 
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
+		icSmartMap = new HashMap<Integer, double[]>();
 	}
 
 	public void singleSimulation() {
@@ -133,6 +136,46 @@ public class Simulation {
 			multclient.reset();
 		}
 		printMultiple(qlist, icMap, directory, "averageIC_NoCountermeasure.txt");
+	}
+	
+	public void smartSimulation() {
+		System.out.println("Start smart quering...");
+		/* initialize a client */
+		SmartAttacker attacker = new SmartAttacker(server);
+		// find record point
+//		int gap = noq / interval;
+//		int base = 1;
+//		int tmp = gap;
+//		while(tmp / base > 0) {
+//			base *= 10;
+//		}
+//		gap = (gap / (base / 10)) * (base / 10);
+//		// start query from 0 times
+//		List<Integer> qlist = new ArrayList<Integer>(10);
+//		for (int i = 0; i <= interval; i++) {
+//			qlist.add(gap * i);
+//			icSmartMap.put(gap * i, new double[noc]);
+//		}
+//		int maxQ = qlist.get(qlist.size() - 1);
+//		icSmartMap.put(0, attacker.computeIC()); // ic at query 0 is constant
+		int repetition = 1;
+		for (int rep = 0; rep < repetition; rep++){
+			attacker.reset();
+			for (int i = 1; i <= noq; i++) {
+				System.out.println("Q: " + i);
+				attacker.smartLocation();
+				attacker.query(server);
+//				if (icSmartMap.containsKey(i)){
+//					double[] newIC = attacker.computeIC();
+//					double[] sum = icSmartMap.get(i);
+//					for (int k = 0; k < noc; k++) {
+//						sum[k] += newIC[k] / repetition; // avoid overflow
+//					}
+//					icSmartMap.put(i, sum);
+//				}
+			}
+		}
+//		printMultiple(qlist, icSmartMap, directory, "Smart.txt");
 	}
 
 	/**

@@ -21,14 +21,9 @@ public class Boot {
 
 	public static void main(String[] args) {
 		try {
-			String cmd = "";
-			for (String arg : args) {
-				cmd += arg + " ";
-			}
 			Long time = System.currentTimeMillis();
 			String dataDir = dataRootDir + time + "\\";
 			String plotDir = plotRootDir + time + "\\";
-//			System.out.println("Start creating folders...");
 			File dataFile = new File(dataDir);
 			File plotFile = new File(plotDir);
 			if (dataFile.exists()) {
@@ -74,13 +69,12 @@ public class Boot {
 //			while ((s = stdError.readLine()) != null) {
 //				System.out.println(s);
 //			}
-//			BootParams bp = Parser.parse(Arrays.copyOfRange(args, 0, args.length - 2));
 			BootParams bp = Parser.parse(args);
 			if (bp == null) {
 				System.out.println("FAILED");
 				return;
 			}
-			DemoRun demo = new DemoRun(bp, 1, 5, dataDir, plotDir);
+			DemoRun demo = new DemoRun(bp, dataDir, plotDir);
 			demo.run();
 		} catch (Exception e) {
 			System.out.println("FAIL");

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import server.Server;
+import utility.GridMap;
 import utility.InferMap;
 import utility.Location;
 import utility.MTP;
@@ -15,13 +16,14 @@ import utility.Response;
  */
 public class Client {
 	public static final double PMAX = 1;
-	private int numberOfChannels = 1; // number of channels
-	private Location location;	      // location of the SU
-	private int indexOfRow = -1;
-	private int indexOfCol = -1;
-	public int[] count;               // count the number for each channel for updating, for testing
-	private InferMap[] inferMap;      // inferMap for each channel
-	private List<PU>[] channelsList;  // channel list from pu
+	protected int numberOfChannels = 1; // number of channels
+	protected Location location;	      // location of the attacker
+	protected int indexOfRow = -1;      // row index
+	protected int indexOfCol = -1;      // column index
+	protected GridMap map;            // grid map instance
+	protected InferMap[] inferMap;      // inference map for each channel
+	protected List<PU>[] channelsList;  // channel list of primary user, used to compute distance from each cell to the nearest primary user
+	public int[] count;               // count the number for each channel for updating (for debugging)
 	
 	/**
 	 * Use server to initialize client, to get number of channels, reference to map and channel list
@@ -33,7 +35,8 @@ public class Client {
 		this.location = new Location();
 		this.count = new int[numberOfChannels];
 		this.inferMap = new InferMap[numberOfChannels];
-		for (int i = 0; i < numberOfChannels; i++) inferMap[i] = new InferMap(i, server.getMap());
+		this.map = server.getMap();
+		for (int i = 0; i < numberOfChannels; i++) inferMap[i] = new InferMap(i, map);
 		this.channelsList = server.getChannelsList();
 	}
 
@@ -45,10 +48,15 @@ public class Client {
 		this.numberOfChannels = numberOfChannels;
 	}
 
+	/**
+	 * Set the location of attacker at (r, c) with respect of grid map
+	 * @param r    Number of rows
+	 * @param c    Number of columns
+	 */
 	public void setLocation(int r, int c) {
-		if (r < 0 || r >= inferMap[0].getRows()) throw new IllegalArgumentException("SU's location is out out index");
-		if (c < 0 || c >= inferMap[0].getCols()) throw new IllegalArgumentException("SU's location is out out index");
-		location.setLocation(inferMap[0].rowToLat(r), inferMap[0].colToLng(c));
+		if (r < 0 || r >= map.getRows()) throw new IllegalArgumentException("SU's location is out out index");
+		if (c < 0 || c >= map.getCols()) throw new IllegalArgumentException("SU's location is out out index");
+		location.setLocation(map.rowToLat(r), map.colToLng(c));
 		indexOfRow = r;
 		indexOfCol = c;
 	}
@@ -58,11 +66,9 @@ public class Client {
 	 */
 	public void randomLocation() {
 		Random rand = new Random();
-		int newR = rand.nextInt(inferMap[0].getRows());
-		int newC = rand.nextInt(inferMap[0].getCols());
+		int newR = rand.nextInt(map.getRows());
+		int newC = rand.nextInt(map.getCols());
 		setLocation(newR, newC);
-		indexOfRow = newR;
-		indexOfCol = newC;
 	}
 
 	public Location getLocation() {
@@ -76,8 +82,6 @@ public class Client {
 	public int getColIndex() {
 		return indexOfCol;
 	}
-	// for testing purpose
-	public double d1 = -1, d2 = -1;
 	
 	// send a query to server
 	public void query(Server server) {
@@ -113,11 +117,9 @@ public class Client {
 		else {
 			throw new IllegalArgumentException();
 		}
-		this.d1 = d1;
-		this.d2 = d2;
 		// client records how many times a channel is updated
 		count[channelID]++;
-		inferMap[channelID].update(this, d1, d2);
+		inferMap[channelID].update(indexOfRow, indexOfCol, d1, d2);
 	}
 
 	/**
@@ -145,7 +147,7 @@ public class Client {
 		return IC;
 	}
 
-	public double distanceToClosestPU(int channel, int r, int c) {
+	private double distanceToClosestPU(int channel, int r, int c) {
 		if (channel < 0 || channel >= numberOfChannels) throw new IllegalArgumentException("Bad channel number");
 		double minDist = Double.MAX_VALUE; // if channel is empty, return max int
 		for (PU pu : channelsList[channel]) {

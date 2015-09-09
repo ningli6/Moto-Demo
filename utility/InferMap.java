@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import client.Client;
-
 /*
  * InferMap is the grid map that attackers use to infer PU's location
  * It inherents GridMap class, with additional matrix that corresponding
@@ -30,29 +28,48 @@ public class InferMap extends GridMap {
 			}
 		}
 	}
+	
+	/**
+	 * Deep copy of another inference map
+	 * @param map
+	 */
+	public InferMap(InferMap infMap) {
+		super(infMap);
+		this.id = infMap.getID();;
+		p = new double[getRows()][getCols()];
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getCols(); j++) {
+				p[i][j] = infMap.getProbability(i, j);
+			}
+		}
+	}
+	
+	public double[][] getProbabilityMatrix() {
+		return p;
+	}
+	
+	public int getID() {
+		return id;
+	}
 
 	/**
 	 * Update probabilities for infer map
-	 * @param client    current location for client
+	 * @param rIndex    row index location of client
+	 * @param cIndex    column index location of client
 	 * @param d1        update range, area with d1 is set to 0
 	 * @param d2        update range, probability of area in between d1 and d2 will increase
 	 */
-	public void update(Client client, double d1, double d2) {
-		Location clientLocation = client.getLocation();
+	public void update(int rIndex, int cIndex, double d1, double d2) {
+		Location clientLocation = getLocation(rIndex, cIndex);
 		if (clientLocation == null) return;
-		if (!withInBoundary(clientLocation)) {
-			System.out.println("Invalid location");
-			return;
-		}
-		if (d1 < 0 || d2 < 0 || d1 > d2) {
-			System.out.println("Invalid parameters");
-			return;
-		}
+		if (rIndex < 0 || rIndex >= getRows()) throw new IllegalArgumentException();
+		if (cIndex < 0 || cIndex >= getCols()) throw new IllegalArgumentException();
+		if (d1 < 0 || d2 < 0 || d1 > d2) throw new IllegalArgumentException();
 		// parameter used in updating formula
 		int G = 0;
 		// index for client's position
-		int rowIndex = client.getRowIndex();
-		int colIndex = client.getColIndex();
+		int rowIndex = rIndex;
+		int colIndex = cIndex;
 		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
 
 		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
@@ -85,9 +102,11 @@ public class InferMap extends GridMap {
 				}
 		}
 	}
-
-	public double[][] getProbabilityMatrix() {
-		return p;
+	
+	public double getProbability(int i, int j) {
+		if (i < 0 || i >= getRows()) throw new IllegalArgumentException();
+		if (j < 0 || j >= getCols()) throw new IllegalArgumentException();
+		return p[i][j];
 	}
 
 	/**

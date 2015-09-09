@@ -14,7 +14,7 @@ public class Parser {
 	/**
 	 * Parse an input string from web interface
 	 * The arguments from web interface should be formatted as:
-	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
+	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no (-1|1)) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
 	 * @param     string from web page
 	 * @return    BootParams that holds all these information
 	 */
@@ -77,7 +77,10 @@ public class Parser {
 				throw new IllegalArgumentException("Must specify countermeasure!");
 			}
 			if (args[i].equals("-no")) {
-				bootParams.putCountermeasure("NOCOUNTERMEASURE", -1);
+				bootParams.putCountermeasure("NOCOUNTERMEASURE", Double.valueOf(args[i + 1]));
+				if (bootParams.getCMParam("NOCOUNTERMEASURE") == 1) { // -1 for no smart query, 1 for smart query
+					bootParams.setSmartQuery(true);
+				}
 				i += 2;
 			}
 			if (args[i].equals("-an")) {

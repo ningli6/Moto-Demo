@@ -26,10 +26,10 @@ public class DemoRun {
     private String dataDir;        // output directory
     private String plotDir;        // directory that saves plots from python and maltab
 
-    public DemoRun(BootParams bp, double scale, int inter, String dataDir, String plotDir){
+    public DemoRun(BootParams bp, String dataDir, String plotDir){
     	this.bp = bp;
-        this.mtpScale = scale;
-        this.interval = inter;
+        this.mtpScale = bp.getMtpScale();
+        this.interval = bp.getInterval();
         this.dataDir = dataDir;
         this.plotDir = plotDir;
     }
@@ -37,12 +37,20 @@ public class DemoRun {
     public void run() {
         String emailInfo = null;  // additional information for the email
         try {
+        	Long start = System.currentTimeMillis();
+    		Simulation simSmart = new Simulation(bp, mtpScale, interval, dataDir);
+    		simSmart.smartSimulation();
+    		Long ends = System.currentTimeMillis();
+    		System.out.println((ends - start) / 1000);
         	// program goes here
         	if (bp.containsCM("NOCOUNTERMEASURE")) {
         		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
         		sim.multipleSimulation();
         		if (bp.plotGooglMapNO()) {
         			sim.singleSimulation();
+        		}
+        		if (bp.isSmartQuery()) {
+            		sim.smartSimulation();
         		}
         	}
         	if (bp.containsCM("ADDITIVENOISE")) {
@@ -163,7 +171,7 @@ public class DemoRun {
 			System.out.println("FAILED");
 			return;
 		}
-		DemoRun demo = new DemoRun(bp, 1, 5, args[args.length - 2], args[args.length - 1]);
+		DemoRun demo = new DemoRun(bp, args[args.length - 2], args[args.length - 1]);
 		demo.run();
     }
 }

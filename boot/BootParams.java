@@ -8,6 +8,8 @@ import utility.Location;
 
 /* class that holds information about input parameters */
 public class BootParams {
+	private double mtpScale = 1;       // scale for mtp function
+	private int interval = 5;          // intervals for recording points
 	private double cellSize;           // grid size
 	private double NorthLat;           // coordinates
 	private double SouthLat;
@@ -15,6 +17,7 @@ public class BootParams {
 	private double WestLng;
 	private List<Location>[] puList;   // location list
 	private Map<String, Double> cmMap; // countermeasures and their values
+	private boolean smartQuery;        // whether to do smart queries
 	private boolean gMapNO;            // plot google map for no countermeasure
 	private boolean gMapAD;            // plot google map for additive noise
 	private boolean gMapTF;            // plot google map for transfiguration
@@ -32,6 +35,22 @@ public class BootParams {
 
 	public BootParams() {
 		this.cmMap = new HashMap<String, Double>();
+	}
+
+	public double getMtpScale() {
+		return mtpScale;
+	}
+
+	public void setMtpScale(double mtpScale) {
+		this.mtpScale = mtpScale;
+	}
+
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
 	}
 
 	public double getCellSize() {
@@ -86,6 +105,14 @@ public class BootParams {
 	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
 		return puList[c];
+	}
+
+	public boolean isSmartQuery() {
+		return smartQuery;
+	}
+
+	public void setSmartQuery(boolean smartQuery) {
+		this.smartQuery = smartQuery;
 	}
 
 	/**
