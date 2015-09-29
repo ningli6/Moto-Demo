@@ -37,102 +37,104 @@ public class DemoRun {
     public void run() {
         String emailInfo = null;  // additional information for the email
         try {
-        	Long start = System.currentTimeMillis();
+//        	Long start = System.currentTimeMillis();
     		Simulation simSmart = new Simulation(bp, mtpScale, interval, dataDir);
     		simSmart.smartSimulation();
-    		Long ends = System.currentTimeMillis();
-    		System.out.println((ends - start) / 1000);
+    		simSmart.multipleSimulation();
+//    		simSmart.heavySimulation();
+//    		Long ends = System.currentTimeMillis();
+//    		System.out.println((ends - start) / 1000);
         	// program goes here
-        	if (bp.containsCM("NOCOUNTERMEASURE")) {
-        		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapNO()) {
-        			sim.singleSimulation();
-        		}
-        		if (bp.isSmartQuery()) {
-            		sim.smartSimulation();
-        		}
-        	}
-        	if (bp.containsCM("ADDITIVENOISE")) {
-        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapAD()) {
-        			sim.singleSimulation();
-        		}
-        		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("ADDITIVENOISE");
-        			bp.setGoogleMapAD(false);
-        			emailInfo += "Noise requirement can't be reached.\n\n";
-        		}
-        		if (bp.isTradeOffAD()) {
-        			sim.tradeOffCurve();
-        		}
-        	}
-        	if (bp.containsCM("TRANSFIGURATION")) {
-        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapTF()) {
-        			sim.singleSimulation();
-        		}
-        		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("TRANSFIGURATION");
-        			bp.setGoogleMapTF(false);
-        			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
-        		}
-        		if (bp.isTradeOffTF()) {
-        			sim.tradeOffCurve();
-        		}
-        	}
-        	if (bp.containsCM("KANONYMITY")) {
-        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapKA()) {
-        			sim.singleSimulation();
-        		}
-        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("KANONYMITY");
-        			bp.setGoogleMapKA(false);
-        			emailInfo += "K must be a positive integer.\n\n";
-        		}
-        		if (bp.isTradeOffKA()) {
-        			sim.tradeOffBar();
-        		}
-        	}
-        	if (bp.containsCM("KCLUSTERING")) {
-        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapKC()) {
-        			sim.singleSimulation();
-        		}
-        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("KCLUSTERING");
-        			bp.setGoogleMapKC(false);
-        			emailInfo += "K must be a positive integer.\n\n";
-        		}
-        		if (bp.isTradeOffKC()) {
-        			sim.tradeOffBar();
-        		}
-        	}
-        	// plot ic vs q
-        	if (!CmpPlot.plot(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-        		System.out.println("Plot ic vs q failed");
-        		return;
-        	}
-        	// plot google map
-        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
-        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
-        		System.out.println("Plot Google Maps failed");
-        		return;
-        	}
-        	// plot tradeOff curve/bar
-        	if (!TradeOffPlot.plot(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-        		System.out.println("Plot trade-off failed");
-        		return;
-        	}
-        	// send email
-        	if (bp.getInputParams()) {
-        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
-        	}
+//        	if (bp.containsCM("NOCOUNTERMEASURE")) {
+//        		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
+////        		sim.multipleSimulation();
+////        		if (bp.plotGooglMapNO()) {
+////        			sim.singleSimulation();
+////        		}
+////        		if (bp.isSmartQuery()) {
+////        		sim.smartSimulation();
+////        		}
+//        	}
+//        	if (bp.containsCM("ADDITIVENOISE")) {
+//        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
+//        		sim.multipleSimulation();
+//        		if (bp.plotGooglMapAD()) {
+//        			sim.singleSimulation();
+//        		}
+//        		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
+//        			bp.delCountermeasure("ADDITIVENOISE");
+//        			bp.setGoogleMapAD(false);
+//        			emailInfo += "Noise requirement can't be reached.\n\n";
+//        		}
+//        		if (bp.isTradeOffAD()) {
+//        			sim.tradeOffCurve();
+//        		}
+//        	}
+//        	if (bp.containsCM("TRANSFIGURATION")) {
+//        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
+//        		sim.multipleSimulation();
+//        		if (bp.plotGooglMapTF()) {
+//        			sim.singleSimulation();
+//        		}
+//        		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
+//        			bp.delCountermeasure("TRANSFIGURATION");
+//        			bp.setGoogleMapTF(false);
+//        			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
+//        		}
+//        		if (bp.isTradeOffTF()) {
+//        			sim.tradeOffCurve();
+//        		}
+//        	}
+//        	if (bp.containsCM("KANONYMITY")) {
+//        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
+//        		sim.multipleSimulation();
+//        		if (bp.plotGooglMapKA()) {
+//        			sim.singleSimulation();
+//        		}
+//        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+//        			bp.delCountermeasure("KANONYMITY");
+//        			bp.setGoogleMapKA(false);
+//        			emailInfo += "K must be a positive integer.\n\n";
+//        		}
+//        		if (bp.isTradeOffKA()) {
+//        			sim.tradeOffBar();
+//        		}
+//        	}
+//        	if (bp.containsCM("KCLUSTERING")) {
+//        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
+//        		sim.multipleSimulation();
+//        		if (bp.plotGooglMapKC()) {
+//        			sim.singleSimulation();
+//        		}
+//        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+//        			bp.delCountermeasure("KCLUSTERING");
+//        			bp.setGoogleMapKC(false);
+//        			emailInfo += "K must be a positive integer.\n\n";
+//        		}
+//        		if (bp.isTradeOffKC()) {
+//        			sim.tradeOffBar();
+//        		}
+//        	}
+//        	// plot ic vs q
+//        	if (!CmpPlot.plot(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+//        		System.out.println("Plot ic vs q failed");
+//        		return;
+//        	}
+//        	// plot google map
+//        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
+//        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+//        		System.out.println("Plot Google Maps failed");
+//        		return;
+//        	}
+//        	// plot tradeOff curve/bar
+//        	if (!TradeOffPlot.plot(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+//        		System.out.println("Plot trade-off failed");
+//        		return;
+//        	}
+//        	// send email
+//        	if (bp.getInputParams()) {
+//        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
+//        	}
 //        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
 //        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
 //        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 

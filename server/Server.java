@@ -74,11 +74,11 @@ public class Server {
 			return;
 		}
 
-		if (pu.getRowIndex() < 0 || pu.getRowIndex() >= map.getRows()) {
+		if (pu.getRowIndex() < 0 || pu.getRowIndex() >= map.getNumOfRows()) {
 			System.out.println("PU's location is out out index");
 			return;
 		}
-		if (pu.getColIndex() < 0 || pu.getColIndex() >= map.getCols()) {
+		if (pu.getColIndex() < 0 || pu.getColIndex() >= map.getNumOfCols()) {
 			System.out.println("PU's location is out out index");
 			return;
 		}
@@ -101,8 +101,7 @@ public class Server {
 	public Response response(Client client) {
 		if (client == null) throw new NullPointerException("Querying client does not exist");
 		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
-		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
-		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
+		if (getNumberOfPUs() == 0) throw new IllegalArgumentException("No pu in the map");
 		LinkedList<Response> responseList = new LinkedList<Response>();
 		for (LinkedList<PU> list : channelsList) {
 			Collections.shuffle(list); // for each list, minimum responses can have more than one, this guarantee randomness

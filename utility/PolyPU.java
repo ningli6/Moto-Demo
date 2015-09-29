@@ -56,9 +56,9 @@ public class PolyPU {
 		int startCol = indexOfCol - 3 * updateRadius;
 		if (startCol < 0) startCol = 0;
 		int endRow = indexOfRow + 3 * updateRadius;
-		if (endRow > map.getRows()) endRow = map.getRows();
+		if (endRow > map.getNumOfRows()) endRow = map.getNumOfRows();
 		int endCol = indexOfCol + 3 * updateRadius;
-		if (endCol > map.getCols()) endCol = map.getCols();
+		if (endCol > map.getNumOfCols()) endCol = map.getNumOfCols();
 		for (int i = startRow; i < endRow; i++) {
 			for (int j = startCol; j < endCol; j++) {
 				long code = hashcode(i, j);
@@ -115,7 +115,7 @@ public class PolyPU {
 	 * @return   transmit power
 	 */
 	public double response(int i, int j) {
-		if (i < 0 || j < 0 || i >= map.getRows() || j >= map.getCols()) throw new IndexOutOfBoundsException();
+		if (i < 0 || j < 0 || i >= map.getNumOfRows() || j >= map.getNumOfCols()) throw new IndexOutOfBoundsException();
 		long code = hashcode(i, j);
 		if (hashmap.containsKey(code)) {
 			return hashmap.get(code);
@@ -134,6 +134,6 @@ public class PolyPU {
 	 * @return     hash value
 	 */
 	public long hashcode(int i, int j) {
-		return map.getCols() * i + j;
+		return map.getNumOfCols() * i + j;
 	}
 }

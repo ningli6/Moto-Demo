@@ -39,8 +39,8 @@ public class MatPlot {
 		Location lowerLeft = new Location(slat, wlng);
 		Location lowerRight = new Location(slat, elng);
 		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellSize);
-		int rows = map.getRows();
-		int cols = map.getCols();
+		int rows = map.getNumOfRows();
+		int cols = map.getNumOfCols();
 		try {
 	        // using the Runtime exec method:
 	        String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
