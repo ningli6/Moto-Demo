@@ -370,3 +370,16 @@ function resetAllMarkers() {
     document.getElementById("tradeOff3").disabled = true; // do not allow user to plot bar if no markers on channel
     document.getElementById("tradeOff4").disabled = true;
 }
+
+/**
+ * JQuery function to start modal for plot instruction
+ */
+$(document).ready(function(){
+    $('.plotGuide').on('click', function(){
+        $('#guideModal').modal({
+            backdrop: true,
+            keyboard: true,
+            show: true
+        })
+    });
+});
