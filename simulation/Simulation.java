@@ -15,6 +15,7 @@ import utility.MTP;
 import utility.PU;
 import boot.BootParams;
 import client.Client;
+import client.HeavyAttacker;
 import client.SmartAttacker;
 
 public class Simulation {
@@ -31,7 +32,8 @@ public class Simulation {
 	double[] IC;           // ic for single simulation, may include this information in email
 	Map<Integer, double[]> icMap;       // associate ic to number of queries
 	Map<Integer, double[]> icSmartMap;  // associate ic to number of queries under smart query
-
+	Map<Integer, double[]> icHeavyMap;
+	
 	public Simulation(BootParams bootParams, double mtpScale, int interval, String directory) {
 		this.bootParams = bootParams;
 		this.cellsize = bootParams.getCellSize();
@@ -77,6 +79,7 @@ public class Simulation {
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
 		icSmartMap = new HashMap<Integer, double[]>();
+		icHeavyMap = new HashMap<Integer, double[]>();
 	}
 
 	public void singleSimulation() {
@@ -105,12 +108,6 @@ public class Simulation {
 		Client multclient = new Client(server);
 		// compute query points
 		int gap = noq / interval;
-		int base = 1;
-		int tmp = gap;
-		while(tmp / base > 0) {
-			base *= 10;
-		}
-		gap = (gap / (base / 10)) * (base / 10);
 		// start query from 0 times
 		List<Integer> qlist = new ArrayList<Integer>(10);
 		for (int i = 0; i <= interval; i++) {
@@ -142,40 +139,104 @@ public class Simulation {
 		System.out.println("Start smart quering...");
 		/* initialize a client */
 		SmartAttacker attacker = new SmartAttacker(server);
-		// find record point
-//		int gap = noq / interval;
-//		int base = 1;
-//		int tmp = gap;
-//		while(tmp / base > 0) {
-//			base *= 10;
-//		}
-//		gap = (gap / (base / 10)) * (base / 10);
-//		// start query from 0 times
-//		List<Integer> qlist = new ArrayList<Integer>(10);
-//		for (int i = 0; i <= interval; i++) {
-//			qlist.add(gap * i);
-//			icSmartMap.put(gap * i, new double[noc]);
-//		}
-//		int maxQ = qlist.get(qlist.size() - 1);
-//		icSmartMap.put(0, attacker.computeIC()); // ic at query 0 is constant
+		// find record point, works if number of queries is multiple of 10
+		int gap = noq / interval;
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval; i++) {
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		
+		/** Check qlist */
+		for (int q : qlist) {
+			System.out.print(q + ", ");
+		}
+		System.out.println();
+		/** Check ends **/
+		
+		/** Check map size */
+		System.out.println("Map rows: " + map.getNumOfRows() + ", columns: " + map.getNumOfCols());
+		/** Check ends **/
+		
+		int maxQ = qlist.get(qlist.size() - 1);
+		icSmartMap.put(0, attacker.computeIC());    // ic at query 0 is constant
 		int repetition = 1;
-		for (int rep = 0; rep < repetition; rep++){
+		for (int rep = 0; rep < repetition; rep++){ // repetition
 			attacker.reset();
-			for (int i = 1; i <= noq; i++) {
+			for (int i = 1; i <= maxQ; i++) {       // number of queries
 				System.out.println("Q: " + i);
 				attacker.smartLocation();
+				
+				/** Check location **/
+				System.out.println("[" + attacker.getRowIndex() + ", " + attacker.getColIndex() + "]");
+				/** check ends **/
+				
 				attacker.query(server);
-//				if (icSmartMap.containsKey(i)){
-//					double[] newIC = attacker.computeIC();
-//					double[] sum = icSmartMap.get(i);
-//					for (int k = 0; k < noc; k++) {
-//						sum[k] += newIC[k] / repetition; // avoid overflow
-//					}
-//					icSmartMap.put(i, sum);
-//				}
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = attacker.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetition; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
 			}
 		}
-//		printMultiple(qlist, icSmartMap, directory, "Smart.txt");
+		printMultiple(qlist, icSmartMap, directory, "Smart.txt");
+//		printSingle(server, attacker, directory, "averageSmart");
+	}
+	
+	public void heavySimulation() {
+		System.out.println("Start heavy quering...");
+		/* initialize a client */
+		HeavyAttacker attacker = new HeavyAttacker(server);
+		// find record point, works if number of queries is multiple of 10
+		int gap = noq / interval;
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval; i++) {
+			qlist.add(gap * i);
+			icHeavyMap.put(gap * i, new double[noc]);
+		}
+		
+		/** Check qlist */
+		for (int q : qlist) {
+			System.out.print(q + ", ");
+		}
+		System.out.println();
+		/** Check ends **/
+		
+		/** Check map size */
+		System.out.println("Map rows: " + map.getNumOfRows() + ", columns: " + map.getNumOfCols());
+		/** Check ends **/
+		
+		int maxQ = qlist.get(qlist.size() - 1);
+		icHeavyMap.put(0, attacker.computeIC()); // ic at query 0 is constant
+		int repetition = 1;
+		for (int rep = 0; rep < repetition; rep++){ // repetition
+			attacker.reset();
+			for (int i = 1; i <= maxQ; i++) {       // number of queries
+				System.out.println("Q: " + i);
+				attacker.heavyLocation();
+				
+				/** Check location **/
+				System.out.println("[" + attacker.getRowIndex() + ", " + attacker.getColIndex() + "]");
+				/** check ends **/
+				
+				attacker.query(server);
+				if (icHeavyMap.containsKey(i)){
+					double[] newIC = attacker.computeIC();
+					double[] sum = icHeavyMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetition; // avoid overflow
+					}
+					icHeavyMap.put(i, sum);
+				}
+			}
+		}
+		printMultiple(qlist, icHeavyMap, directory, "Heavy.txt");
+		printSingle(server, attacker, directory, "averageHeavy");
 	}
 
 	/**

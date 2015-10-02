@@ -25,11 +25,11 @@ public class GridMap {
 	// height of the map
 	private double height = -1;
 	// number of rows
-	private int numberOfRows = -1;
+	protected int numberOfRows = -1;
 	// number of columns
-	private int numberOfCols = -1;
+	protected int numberOfCols = -1;
 	// average distance between each cell
-	private double averDist;
+	protected double averDist;
 
 	public class coordinatesOutOfBoundsException extends RuntimeException {
 		/**
@@ -80,8 +80,8 @@ public class GridMap {
 		botLeft = map.getBotLeftCorner();
 		botRight = map.getBotRightCorner();
 		cellDegree = map.getCellDegree();
-		numberOfRows = map.getRows();
-		numberOfCols = map.getCols();
+		numberOfRows = map.getNumOfRows();
+		numberOfCols = map.getNumOfCols();
 		length = map.getLength();
 		height = map.getHeight();
 		averDist = map.getAverageDistance();
@@ -100,14 +100,14 @@ public class GridMap {
 	}
 	
 	// number of number_of_rows for the map
-	public int getRows() {
+	public int getNumOfRows() {
 		return numberOfRows;
 	}
 	
 	/**
 	 * Get number of columns
 	 */
-	public int getCols() {
+	public int getNumOfCols() {
 		return numberOfCols;
 	}
 
