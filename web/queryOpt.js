@@ -3,36 +3,37 @@
  */
 
 var numberOfQueries;       // number of queries
-// var queryFile;             // name of querying file
+var smartNumOfQueries;     // smart number of queries
 var file_name;             // file name of user uploaded text file
-  
 
-/**
- * Disable query number input
- * @return {void}
- */
-function disableRandomQueries () {
-    document.getElementById("randomQuery").disabled = true;
-}
+$(document).ready(function(){
+    $('[data-toggle="qtip"]').tooltip();   
+});
 
-/**
- * Enable query number input
- * @return {void}
- */
-function enableRandomQueries () {
-    document.getElementById("randomQuery").disabled = false;
+function queryInput (args) {
+    if (args == "random") {
+        document.getElementById("randomQueryInput").disabled = !document.getElementById("randomQueryInput").disabled;
+    } else if (args == "smart") {
+        document.getElementById("smartQueryInput").disabled = !document.getElementById("smartQueryInput").disabled;
+    }
 }
 
 /**
  * Adjust value of query numbers so that it is multiple of 10
  * Min: 10, Max: 500
  */
-function adjustValue() {
-    if (!isNumeric(document.getElementById("randomQuery").value)) {
-        document.getElementById("randomQuery").value = 100;
+function adjustValue(args) {
+    var id = 'id';
+    if (args == 'random') {
+        id = 'randomQueryInput';
+    } else {
+        id = 'smartQueryInput';
+    }
+    if (!isNumeric(document.getElementById(id).value)) {
+        document.getElementById(id).value = 100;
         return;
     }
-    var val = document.getElementById("randomQuery").value;
+    var val = document.getElementById(id).value;
     var newVal = Math.round(val / 10) * 10;
     if (newVal < 10) {
         newVal = 10;
@@ -40,12 +41,8 @@ function adjustValue() {
     if (newVal > 500) {
         newVal = 500;
     }
-    document.getElementById("randomQuery").value = newVal;
+    document.getElementById(id).value = newVal;
 }
-
-$(document).ready(function(){
-    $('[data-toggle="qtip"]').tooltip();   
-});
 
 function uploadfile () {
     var form = document.getElementById('file-form');

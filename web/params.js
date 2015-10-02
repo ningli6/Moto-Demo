@@ -3,17 +3,6 @@
  */
 
 var location_PU = [];      // pu's location
-var countermeasure = [];   // countermeasures for ic vs q
-var cmVal = []             // cm parameters
-var gmapNO = false;        // plot google map for no countermeasure
-var gmapAD = false;        // plot google map for additive noise
-var gmapTF = false;        // plot google map for transfiguration
-var gmapKA = false;        // plot google map for k anonymity
-var gmapKC = false;        // plot google map for k clustering
-var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
-var tradeOffTF = false;
-var tradeOffKA = false;
-var tradeOffKC = false;
 var email;                 // send result to this email
 var inputParams = false;   // whether to include input parameters in the email
 var args;                  // formatted params as a argument for java program
@@ -24,6 +13,29 @@ var args;                  // formatted params as a argument for java program
  * @return {void}
  */
 function getParams () {
+
+    // reset params for input options
+    location_PU = [];
+
+    gmapNO = false;
+    tradeOffAD = false;
+    gmapAD = false;
+    tradeOffTF = false;
+    gmapTF = false;
+    tradeOffKA = false;
+    gmapKA = false;
+    tradeOffKC = false;
+    gmapKC = false;
+    inputParams = false;
+
+    countermeasure = [];
+    cmVal = [];
+
+    numberOfQueries = null;
+    smartNumOfQueries = null;
+
+    email = null;
+    args = null;
     // check cell size
     if (cellSize != 0.005 && cellSize != 0.01 && cellSize != 0.05) {
         cellSize = 0.005;
@@ -86,8 +98,12 @@ function getParams () {
         return;
     }
 
-    // get pus' location
-    location_PU = [];
+    // at leaset one method of query need to be chosen
+    if (!document.getElementById("randomQuery").checked && !document.getElementById("smartQuery").checked) {
+        alert("Please choose at least one method of query");
+        return;
+    }
+
     if (numberOfChannels == 1) location_PU.push(markers_one);
     if (numberOfChannels == 2) {
         location_PU.push(markers_two_channel0);
@@ -99,20 +115,6 @@ function getParams () {
         location_PU.push(markers_three_channel2);
     }
 
-    // reset params for input options
-    gmapNO = false;
-    tradeOffAD = false;
-    gmapAD = false;
-    tradeOffTF = false;
-    gmapTF = false;
-    tradeOffKA = false;
-    gmapKA = false;
-    tradeOffKC = false;
-    gmapKC = false;
-    inputParams = false;
-
-    countermeasure = [];
-    cmVal = [];
     // get countermeasure, cm value, google map options, trade off curve options
     if (document.getElementById('cmopt0').checked) {
         countermeasure.push("no");
@@ -230,13 +232,13 @@ function getParams () {
     }
 
     // get query method
-    if (document.getElementById("input_query0").checked) {
-        numberOfQueries = document.getElementById("randomQuery").value;
+    if (document.getElementById("randomQuery").checked) {
+        numberOfQueries = document.getElementById("randomQueryInput").value;
         if (numberOfQueries == undefined) {
             alert("Please specify number of queries!");
             return;
         }
-        if (!isNumeric(document.getElementById('randomQuery').value)) {
+        if (!isNumeric(document.getElementById('randomQueryInput').value)) {
             alert("Number of query is not a valid number!");
             return;
         }
@@ -245,14 +247,23 @@ function getParams () {
             return;
         }
     }
-    // if (document.getElementById("input_query1").checked) {
-    //     queryFile = file_name;
-    //     if (queryFile == undefined) {
-    //         alert("Please upload a text file containing location information");
-    //         return;
-    //     }
-    // }
-    if (numberOfQueries == undefined && queryFile == undefined) {
+    if (!document.getElementById("smartQuery").disabled && document.getElementById("smartQuery").checked) {
+        smartNumOfQueries = document.getElementById("smartQueryInput").value;
+        if (smartNumOfQueries == undefined) {
+            alert("Please specify number of queries!");
+            return;
+        }
+        if (!isNumeric(document.getElementById('smartQueryInput').value)) {
+            alert("Number of query is not a valid number!");
+            return;
+        }
+        if (smartNumOfQueries <= 0 || smartNumOfQueries % 1 != 0) {
+            alert("Number of queries should be a positive integer");
+            return;
+        }
+    }
+
+    if (numberOfQueries == undefined && smartNumOfQueries == undefined) {
         alert("Please specify querying method");
         return;
     }
@@ -341,11 +352,13 @@ function getParams () {
         args += 'kc '
     }
     // queries
+    args += "-q "
     if (numberOfQueries != null) {
-        args += "-q " + numberOfQueries + " ";
+        args += numberOfQueries + " ";
     }
-    else {
-        // args += "-f " + queryFile + " ";
+    args += "-sq "
+    if (smartNumOfQueries != null) {
+        args += smartNumOfQueries + " ";
     }
     // email
     args += "-e " + email + " ";
@@ -430,10 +443,10 @@ function getParams () {
     // query
     var querystr = "";
     if (numberOfQueries != null) {
-        querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries;
+        querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries + "<br>";
     }
-    else {
-        // querystr = "Use location from " + queryFile;
+    if (smartNumOfQueries != null) {
+        querystr += "Using smart query algorithm to find determine query location<br>Number of queries: " + smartNumOfQueries + "<br>";
     }
     document.getElementById("wellquery").innerHTML = querystr;
     // email

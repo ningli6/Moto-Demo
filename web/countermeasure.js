@@ -2,6 +2,17 @@
  * This script is used for selecting countermeasures 
  */
 
+var countermeasure = [];   // countermeasures for ic vs q
+var cmVal = []             // cm parameters
+var gmapNO = false;        // plot google map for no countermeasure
+var gmapAD = false;        // plot google map for additive noise
+var gmapTF = false;        // plot google map for transfiguration
+var gmapKA = false;        // plot google map for k anonymity
+var gmapKC = false;        // plot google map for k clustering
+var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
+var tradeOffTF = false;
+var tradeOffKA = false;
+var tradeOffKC = false;
 /**
  * When checkbox is selected, enable/disable related input field for countermeasure parameter.
  * For additive noise and transfiguration, uncheck trade-off curve at the same time
@@ -9,12 +20,20 @@
  * @return {void}
  */
 function enableInput(arg) {
-	if (arg == "cmval0") {
-		if (!document.getElementById("cmopt0").checked) {
-    		document.getElementById("gmno").checked = false;
+	if (arg == "cmval0") {  // choose No countermeasure
+		if (!document.getElementById("cmopt0").checked) {    // if uncheck cm option box
+    		document.getElementById("gmno").checked = false; // uncheck plot google map box as well
+    	}
+    	if (document.getElementById("smartQuery").disabled) { // check smart query check box
+    		document.getElementById("smartQuery").disabled = false;
+    	} else { // uncheck smart query check box
+    		queryInput('smart'); // disable input box
+    		document.getElementById("smartQuery").checked = false; // uncheck check box
+    		document.getElementById("smartQuery").disabled = true; // disable check box
     	}
     	return;
     }
+    // check other countermeasure
 	if (document.getElementById(arg).disabled) {
 		document.getElementById(arg).disabled = false;
 		if (arg == "cmval1") {
@@ -30,7 +49,7 @@ function enableInput(arg) {
 			document.getElementById("cmval4").value = 1;
 		}
 	}
-    else {
+    else { // uncheck other countermeasure
     	document.getElementById(arg).disabled = true;
     	if (arg == "cmval1") {
     		document.getElementById("tradeOff1").checked = false;

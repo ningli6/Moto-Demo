@@ -1,7 +1,7 @@
 function [] = probPlot(varargin)
 
 % Usage:
-% probPlot(nc, rows, cols, latStart, latEnd, lngStart, lngEnd)
+% probPlot(dataDir, plotDir, nc, rows, cols, latStart, latEnd, lngStart, lngEnd, ad, tf, ka, kc)
 % @Param dataDir   [Directory for data file]
 % @Param plotDir   [Save directory for plotted figure]
 % @Param nc        [Number of channels]
