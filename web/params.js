@@ -313,19 +313,19 @@ function getParams () {
     args += "-cm ";
     for (var i = 0; i < countermeasure.length; i++) {
         if (countermeasure[i] == "no") {
-            args += "-no -1 ";
+            args += "no -1 ";
         }
         else if (countermeasure[i] == "an") {
-            args += "-an " + cmVal[i] + " ";
+            args += "an " + cmVal[i] + " ";
         }
         else if (countermeasure[i] == "tf") {
-            args += "-tf " + cmVal[i] + " ";
+            args += "tf " + cmVal[i] + " ";
         }
         else if (countermeasure[i] == "ka") {
-            args += "-ka " + cmVal[i] + " ";
+            args += "ka " + cmVal[i] + " ";
         }
         else {
-            args += "-kc " + cmVal[i] + " ";
+            args += "kc " + cmVal[i] + " ";
         }
     }
     // google map plots
