@@ -10,6 +10,9 @@ $(document).ready(function(){
     $('[data-toggle="qtip"]').tooltip();   
 });
 
+/**
+ * Enable/disable input box for number of queries
+ */
 function queryInput (args) {
     if (args == "random") {
         document.getElementById("randomQueryInput").disabled = !document.getElementById("randomQueryInput").disabled;
@@ -24,13 +27,17 @@ function queryInput (args) {
  */
 function adjustValue(args) {
     var id = 'id';
+    var aux = 'aux_id';
     if (args == 'random') {
         id = 'randomQueryInput';
+        aux = 'smartQueryInput';
     } else {
         id = 'smartQueryInput';
+        aux = 'randomQueryInput';
     }
     if (!isNumeric(document.getElementById(id).value)) {
         document.getElementById(id).value = 100;
+        document.getElementById(aux).value = 100;
         return;
     }
     var val = document.getElementById(id).value;
@@ -42,6 +49,7 @@ function adjustValue(args) {
         newVal = 500;
     }
     document.getElementById(id).value = newVal;
+    document.getElementById(aux).value = newVal;
 }
 
 function uploadfile () {

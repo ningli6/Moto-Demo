@@ -2,21 +2,25 @@
  * This script collect parameters from web interface and pass it to php script
  */
 
-var location_PU = [];      // pu's location
-var email;                 // send result to this email
-var inputParams = false;   // whether to include input parameters in the email
-var args;                  // formatted params as a argument for java program
+var location_PU;      // pu's location
+var email;            // send result to this email
+var inputParams;      // whether to include input parameters in the email
+var args;             // formatted params as a argument for java program
 
 /**
  * Check parameters first, then consturct argument string for backend program,
  * build modal at last
- * @return {void}
  */
 function getParams () {
-
-    // reset params for input options
-    location_PU = [];
-
+    /**
+     * Reset parameters when page is refreshed
+     */
+    /* save location of PUs */
+    location_PU = [];    // list of list of markers
+    /* Countermeasures and their value */
+    countermeasure = []; // list of string
+    cmVal = [];          // list of number
+    /* Plot options */
     gmapNO = false;
     tradeOffAD = false;
     gmapAD = false;
@@ -26,22 +30,24 @@ function getParams () {
     gmapKA = false;
     tradeOffKC = false;
     gmapKC = false;
+    /* Whether to include input parameters */
     inputParams = false;
+    /* Number of queries */
+    numberOfQueries = -1;
+    /* Email address */
+    email = "";
+    /* Passing arguments */
+    args = "";
 
-    countermeasure = [];
-    cmVal = [];
-
-    numberOfQueries = null;
-    smartNumOfQueries = null;
-
-    email = null;
-    args = null;
-    // check cell size
+    /**
+     * Check necessary parameters and verify their value
+     */
+    // check cell size, if cell size not equal to 0.005, 0.01 or 0.05, assign it to 0.005
     if (cellSize != 0.005 && cellSize != 0.01 && cellSize != 0.05) {
         cellSize = 0.005;
     }
     // check parameters and grab values from forms
-    if (rect == undefined || recRegion == undefined) {
+    if (!(rect && recRegion)) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
         return;
     }
@@ -92,9 +98,19 @@ function getParams () {
         return;
     }
 
-    // make sure number of markers are more than 1 when checking trade off bar
+    // make sure number of markers are more than 1 when checking trade off bar of KA and KC
     if (numberOfMarkers < 2 && (document.getElementById("tradeOff3").checked || document.getElementById("tradeOff4").checked)) {
-        alert("Trade off bar should be selected only when number of primary users is more than 1");
+        alert("Trade off bar of K-Anoymity and K-Clustering should be selected only when number of primary users is more than 1");
+        return;
+    }
+
+    // User must select at least one option
+    if (!document.getElementById("cmopt0").checked
+        && !document.getElementById("cmopt1").checked
+        && !document.getElementById("cmopt2").checked
+        && !document.getElementById("cmopt3").checked
+        && !document.getElementById("cmopt4").checked) {
+        alert("Please select at least one option under Inaccuracy vs Queries!");
         return;
     }
 
@@ -104,6 +120,7 @@ function getParams () {
         return;
     }
 
+    // push list of markers to location list
     if (numberOfChannels == 1) location_PU.push(markers_one);
     if (numberOfChannels == 2) {
         location_PU.push(markers_two_channel0);
@@ -226,15 +243,11 @@ function getParams () {
             gmapKC = false;
         }
     }
-    if (countermeasure.length == 0) {
-        alert("Please select at least one option under Inaccuracy vs Queries!");
-        return;
-    }
 
     // get query method
     if (document.getElementById("randomQuery").checked) {
         numberOfQueries = document.getElementById("randomQueryInput").value;
-        if (numberOfQueries == undefined) {
+        if (!numberOfQueries) {
             alert("Please specify number of queries!");
             return;
         }
@@ -247,9 +260,9 @@ function getParams () {
             return;
         }
     }
-    if (!document.getElementById("smartQuery").disabled && document.getElementById("smartQuery").checked) {
-        smartNumOfQueries = document.getElementById("smartQueryInput").value;
-        if (smartNumOfQueries == undefined) {
+    if (document.getElementById("smartQuery").checked) {
+        numberOfQueries = document.getElementById("smartQueryInput").value;
+        if (!numberOfQueries) {
             alert("Please specify number of queries!");
             return;
         }
@@ -257,15 +270,10 @@ function getParams () {
             alert("Number of query is not a valid number!");
             return;
         }
-        if (smartNumOfQueries <= 0 || smartNumOfQueries % 1 != 0) {
+        if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
             alert("Number of queries should be a positive integer");
             return;
         }
-    }
-
-    if (numberOfQueries == undefined && smartNumOfQueries == undefined) {
-        alert("Please specify querying method");
-        return;
     }
 
     // get email
@@ -353,12 +361,12 @@ function getParams () {
     }
     // queries
     args += "-q "
-    if (numberOfQueries != null) {
+    if (document.getElementById("randomQuery").checked) {
         args += numberOfQueries + " ";
     }
     args += "-sq "
-    if (smartNumOfQueries != null) {
-        args += smartNumOfQueries + " ";
+    if (document.getElementById("smartQuery").checked) {
+        args += numberOfQueries + " ";
     }
     // email
     args += "-e " + email + " ";
@@ -441,13 +449,14 @@ function getParams () {
     }
     document.getElementById("wellcm").innerHTML = cmstr;
     // query
-    var querystr = "";
-    if (numberOfQueries != null) {
-        querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries + "<br>";
+    var querystr;
+    if (document.getElementById("randomQuery").checked) {
+        querystr = "Randomly generated location<br>";
     }
-    if (smartNumOfQueries != null) {
-        querystr += "Using smart query algorithm to find determine query location<br>Number of queries: " + smartNumOfQueries + "<br>";
+    if (document.getElementById("smartQuery").checked) {
+        querystr += "Using smart query algorithm to determine query location<br>";
     }
+    querystr += "Number of queries: " + numberOfQueries;
     document.getElementById("wellquery").innerHTML = querystr;
     // email
     var emstr = "";
@@ -493,7 +502,6 @@ function sendParams()
         }
         if (xmlhttp.readyState == 4 && xmlhttp.status != 200)
         {
-            // document.getElementById("params").innerHTML=xmlhttp.responseText;
             alert("Sorry. Failed to start demo. " + xmlhttp.status);
             // reload page
             window.location = 'index.html';

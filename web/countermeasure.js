@@ -24,13 +24,6 @@ function enableInput(arg) {
 		if (!document.getElementById("cmopt0").checked) {    // if uncheck cm option box
     		document.getElementById("gmno").checked = false; // uncheck plot google map box as well
     	}
-    	if (document.getElementById("smartQuery").disabled) { // check smart query check box
-    		document.getElementById("smartQuery").disabled = false;
-    	} else { // uncheck smart query check box
-    		queryInput('smart'); // disable input box
-    		document.getElementById("smartQuery").checked = false; // uncheck check box
-    		document.getElementById("smartQuery").disabled = true; // disable check box
-    	}
     	return;
     }
     // check other countermeasure

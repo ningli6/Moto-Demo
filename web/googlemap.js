@@ -67,7 +67,7 @@ function initialize() {
         if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
             rect.setMap(map);
             recRegion = rect.getBounds();
-            console.log(recRegion.toString());
+            // console.log(recRegion.toString());
         }
         // restore cursor to hand
         drawingManager.setDrawingMode(null);
