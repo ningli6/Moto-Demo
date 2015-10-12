@@ -1,12 +1,12 @@
 package boot;
 
 import java.io.File;
-
 import javaEmail.BuildText;
 import javaEmail.SendEmail;
 import javaPlot.CmpPlot;
 import javaPlot.MatPlot;
 import javaPlot.TradeOffPlot;
+
 import simulation.SimAdditiveNoise;
 import simulation.SimKAnonymity;
 import simulation.SimKClustering;
@@ -14,49 +14,58 @@ import simulation.SimTransfiguration;
 import simulation.Simulation;
 
 /**
- * Handle multiple simulation requests by generating new threads for each task
+ * Demo instance without using new threads, invoked in another process
  */
-public class Demo implements Runnable {
-    private Thread t;                // thread instance
-    private String threadName;       // thread name
+public class Demo {
     private BootParams bp;           // BootParams instance
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
-    private String dataDir;        // output directory
-    private String plotDir;        // directory that saves plots from python and maltab
+    private String dataDir;          // output directory
+    private String plotDir;          // directory that saves plots from python and maltab
 
-    public Demo(BootParams bp, double scale, int inter, String dataDir, String plotDir){
-    	this.threadName ="New Demo";
+    public Demo(BootParams bp, String dataDir, String plotDir){
     	this.bp = bp;
-        this.mtpScale = scale;
-        this.interval = inter;
+        this.mtpScale = bp.getMtpScale();
+        this.interval = bp.getInterval();
         this.dataDir = dataDir;
         this.plotDir = plotDir;
     }
 
-    @Override
     public void run() {
-        System.out.println("Running " +  threadName );
-        String emailInfo = null;  // additional information for the email
+        String emailInfo = null;  // feedback information of the email
         try {
-        	// program goes here
         	if (bp.containsCM("NOCOUNTERMEASURE")) {
         		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapNO()) {
-        			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {
+            		sim.multipleSimulation();
+            		if (bp.plotGooglMapNO()) {
+            			sim.singleSimulation();
+            		}
+        		}
+        		if (bp.isSmartQuery()) {
+        			sim.smartSimulation(); // output ic as well as inference map
         		}
         	}
         	if (bp.containsCM("ADDITIVENOISE")) {
         		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapAD()) {
-        			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {
+            		sim.multipleSimulation();
+            		if (bp.plotGooglMapAD()) {
+            			sim.singleSimulation();
+            		}
+            		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("ADDITIVENOISE");
+            			bp.setGoogleMapAD(false);
+            			emailInfo += "Noise requirement can't be reached.\n\n";
+            		}
         		}
-        		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("ADDITIVENOISE");
-        			bp.setGoogleMapAD(false);
-        			emailInfo += "Noise requirement can't be reached.\n\n";
+        		if ( bp.containsCM("ADDITIVENOISE") && bp.isSmartQuery()) {
+            		sim.smartSimulation();
+            		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("ADDITIVENOISE");
+            			bp.setGoogleMapAD(false);
+            			emailInfo += "Noise requirement can't be reached.\n\n";
+            		}
         		}
         		if (bp.isTradeOffAD()) {
         			sim.tradeOffCurve();
@@ -64,14 +73,24 @@ public class Demo implements Runnable {
         	}
         	if (bp.containsCM("TRANSFIGURATION")) {
         		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapTF()) {
-        			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {
+            		sim.multipleSimulation();
+            		if (bp.plotGooglMapTF()) {
+            			sim.singleSimulation();
+            		}
+            		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("TRANSFIGURATION");
+            			bp.setGoogleMapTF(false);
+            			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
+            		}
         		}
-        		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("TRANSFIGURATION");
-        			bp.setGoogleMapTF(false);
-        			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
+        		if (bp.containsCM("TRANSFIGURATION") && bp.isSmartQuery()) {
+            		sim.smartSimulation();
+            		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("TRANSFIGURATION");
+            			bp.setGoogleMapTF(false);
+            			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
+            		}
         		}
         		if (bp.isTradeOffTF()) {
         			sim.tradeOffCurve();
@@ -79,14 +98,24 @@ public class Demo implements Runnable {
         	}
         	if (bp.containsCM("KANONYMITY")) {
         		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapKA()) {
-        			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {
+            		sim.multipleSimulation();
+            		if (bp.plotGooglMapKA()) {
+            			sim.singleSimulation();
+            		}
+            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("KANONYMITY");
+            			bp.setGoogleMapKA(false);
+            			emailInfo += "K must be a positive integer.\n\n";
+            		}
         		}
-        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("KANONYMITY");
-        			bp.setGoogleMapKA(false);
-        			emailInfo += "K must be a positive integer.\n\n";
+        		if (bp.containsCM("KANONYMITY") && bp.isSmartQuery()) {
+            		sim.smartSimulation();
+            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("KANONYMITY");
+            			bp.setGoogleMapKA(false);
+            			emailInfo += "K must be a positive integer.\n\n";
+            		}
         		}
         		if (bp.isTradeOffKA()) {
         			sim.tradeOffBar();
@@ -94,14 +123,24 @@ public class Demo implements Runnable {
         	}
         	if (bp.containsCM("KCLUSTERING")) {
         		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
-        		sim.multipleSimulation();
-        		if (bp.plotGooglMapKC()) {
-        			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {
+            		sim.multipleSimulation();
+            		if (bp.plotGooglMapKC()) {
+            			sim.singleSimulation();
+            		}
+            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("KCLUSTERING");
+            			bp.setGoogleMapKC(false);
+            			emailInfo += "K must be a positive integer.\n\n";
+            		}
         		}
-        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-        			bp.delCountermeasure("KCLUSTERING");
-        			bp.setGoogleMapKC(false);
-        			emailInfo += "K must be a positive integer.\n\n";
+        		if (bp.isSmartQuery()) {
+            		sim.smartSimulation();
+            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+            			bp.delCountermeasure("KCLUSTERING");
+            			bp.setGoogleMapKC(false);
+            			emailInfo += "K must be a positive integer.\n\n";
+            		}
         		}
         		if (bp.isTradeOffKC()) {
         			sim.tradeOffBar();
@@ -135,13 +174,11 @@ public class Demo implements Runnable {
         		return;
         	}
         } catch (Exception e) {
-            System.out.println("Thread " +  threadName + " interrupted.");
             e.printStackTrace();
         }
-        System.out.println("Thread " +  threadName + " exiting.");
-//        System.out.println("Cleaning up folders...");
-//        deleteDirectory(new File(dataDir));
-//        deleteDirectory(new File(plotDir));
+        System.out.println("Cleaning up folders...");
+        deleteDirectory(new File(dataDir));
+        deleteDirectory(new File(plotDir));
     }
     
     public static boolean deleteDirectory(File directory) {
@@ -159,18 +196,5 @@ public class Demo implements Runnable {
             }
         }
         return(directory.delete());
-    }
-
-    /**
-     * Start program in a new thread
-     * run() is called
-     */
-    public void start ()
-    {
-        if (t == null)
-        {
-            t = new Thread (this, threadName);
-            t.start();
-        }
     }
 }

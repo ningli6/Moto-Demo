@@ -62,17 +62,17 @@ public class SmartAttacker extends Client {
 			for (int j = 0; j < numOfCols; j++) { // for each query location
 				long exp = 0;
 				for (int k = 0; k < numberOfChannels; k++) { // for each channel
-					if (isVisited[k][i][j]) {
-						System.out.println("k: " + k + " i: " + i + " j: " + j);
-						continue; // skip last query location
-					}
 					for (int r = 0; r < numOfRows; r++) {
 						for (int c = 0; c < numOfCols; c++) { // for each possible pu location
-							if (inferMap[k].getProbability(r, c) == 0) continue;
-							for (double res : resSet) {
-								long tmpIC = inferMap[k].tmpUpdate(i, j, r, c, res, icMat[k][r][c]);
-								long tmpVal = (long) (tmpIC * 0.25 * inferMap[k].getProbability(r, c));
-								exp += tmpVal;
+							if (isVisited[k][i][j]) {  // visited before, set exp to max value
+								exp += Integer.MAX_VALUE;
+							} else {  // not visited, compute exp
+								if (inferMap[k].getProbability(r, c) == 0) continue;
+								for (double res : resSet) {
+									long tmpIC = inferMap[k].tmpUpdate(i, j, r, c, res, icMat[k][r][c]);
+									long tmpVal = (long) (tmpIC * 0.25 * inferMap[k].getProbability(r, c));
+									exp += tmpVal;
+								}
 							}
 						}
 					}

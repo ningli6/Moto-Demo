@@ -7,14 +7,14 @@ import utility.Location;
 
 /**
  * Parser class that takes in input string from web interface,
- * then parse and wrap it as a BootParams instance
- * @author Ning Li
+ * then parse it and return a BootParams instance
+ * @author Ning Li <ningli@vt.edu>
  */
 public class Parser {
 	/**
 	 * Parse an input string from web interface
 	 * The arguments from web interface should be formatted as:
-	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no (-1|1)) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?
+	 * -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(no -1) (an val) (tf val) (ka val) (kc val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? -q noq -sq noq -e email -opt pa?
 	 * @param     string from web page
 	 * @return    BootParams that holds all these information
 	 */
@@ -23,24 +23,25 @@ public class Parser {
 			return null;
 		BootParams bootParams = new BootParams();
 		try {
+			int i = 0; // index
 			// get cell size
-			if (!args[0].equals("-cd")) {
+			if (!args[i++].equals("-cd")) {
 				throw new IllegalArgumentException("-cd");
 			}
-			bootParams.setCellSize(Double.parseDouble(args[1]));
+			bootParams.setCellSize(Double.parseDouble(args[i++]));
 			// get boundary
-			if (!args[2].equals("-a")) {
+			if (!args[i++].equals("-a")) {
 				throw new IllegalArgumentException("-a");
 			}
-			bootParams.setNorthLat(Double.parseDouble(args[3]));
-			bootParams.setSouthLat(Double.parseDouble(args[5]));
-			bootParams.setWestLng(Double.parseDouble(args[4]));
-			bootParams.setEastLng(Double.parseDouble(args[6]));
+			bootParams.setNorthLat(Double.parseDouble(args[i++]));
+			bootParams.setSouthLat(Double.parseDouble(args[i++]));
+			bootParams.setWestLng(Double.parseDouble(args[i++]));
+			bootParams.setEastLng(Double.parseDouble(args[i++]));
 			// get number of channels
-			if (!args[7].equals("-c")) {
+			if (!args[i++].equals("-c")) {
 				throw new IllegalArgumentException("-c");
 			}
-			int noc = Integer.parseInt(args[8]);
+			int noc = Integer.parseInt(args[i++]);
 			if (noc < 1 || noc > 3) {
 				throw new IllegalArgumentException("Number of channels must be 1, 2 or 3");
 			}
@@ -51,7 +52,6 @@ public class Parser {
 			for (int j = 0; j < puLocations.length; j++) {
 				puLocations[j] = new LinkedList<Location>();
 			}
-			int i = 9;
 			int ch = 0;
 			while(ch < noc) {
 				if (args[i].equals("-C")) {
@@ -73,29 +73,29 @@ public class Parser {
 			i += 1;
 			bootParams.setPUonChannels(puLocations);
 			// countermeasure
-			if (!args[i].equals("-no") && !args[i].equals("-an") && !args[i].equals("-tf") && !args[i].equals("-ka") && !args[i].equals("-kc")) {
+			if (!args[i].equals("no") && !args[i].equals("an") && !args[i].equals("tf") && !args[i].equals("ka") && !args[i].equals("kc")) {
 				throw new IllegalArgumentException("Must specify countermeasure!");
 			}
-			if (args[i].equals("-no")) {
+			if (args[i].equals("no")) {
 				bootParams.putCountermeasure("NOCOUNTERMEASURE", Double.valueOf(args[i + 1]));
 				if (bootParams.getCMParam("NOCOUNTERMEASURE") == 1) { // -1 for no smart query, 1 for smart query
 					bootParams.setSmartQuery(true);
 				}
 				i += 2;
 			}
-			if (args[i].equals("-an")) {
+			if (args[i].equals("an")) {
 				bootParams.putCountermeasure("ADDITIVENOISE", Double.valueOf(args[i + 1]));
 				i += 2;
 			}
-			if (args[i].equals("-tf")) {
+			if (args[i].equals("tf")) {
 				bootParams.putCountermeasure("TRANSFIGURATION", Double.valueOf(args[i + 1]));
 				i += 2;
 			}
-			if (args[i].equals("-ka")) {
+			if (args[i].equals("ka")) {
 				bootParams.putCountermeasure("KANONYMITY", Double.valueOf(args[i + 1]));
 				i += 2;
 			}
-			if (args[i].equals("-kc")) {
+			if (args[i].equals("kc")) {
 				bootParams.putCountermeasure("KCLUSTERING", Double.valueOf(args[i + 1]));
 				i += 2;
 			}
@@ -146,16 +146,23 @@ public class Parser {
 				i += 1;
 			}
 			// queries
-			if (args[i].equals("-f")) {
-				bootParams.useFile(args[i + 1]);
-				i += 2;
+			if (!args[i].equals("-q")) {
+				throw new IllegalArgumentException("-q");
 			}
-			else if (args[i].equals("-q")){
-				bootParams.setNumberOfQueries(Integer.parseInt(args[i + 1]));
-				i += 2;
+			i++;
+			if (!args[i].equals("-sq")) {
+				bootParams.setNumberOfQueries(Integer.parseInt(args[i]));
+				bootParams.setRandomQuery(true);
+				i++;
 			}
-			else {
-				throw new IllegalArgumentException("No query information!");
+			if (!args[i].equals("-sq")) {
+				throw new IllegalArgumentException("-sq");
+			}
+			i++;
+			if (!args[i].equals("-e")) {
+				bootParams.setNumberOfQueries(Integer.parseInt(args[i]));
+				bootParams.setSmartQuery(true);
+				i++;
 			}
 			if (!args[i].equals("-e")) {
 				throw new IllegalArgumentException("No email address!");

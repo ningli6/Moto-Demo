@@ -135,8 +135,7 @@ public class InferMap extends GridMap {
 		}
 		int startRow = Math.max(attackerR - updateRadius, 0);
 		int startCol = Math.max(attackerC - updateRadius, 0);
-//
-//		// temporary location for each cell
+		// temporary location for each cell
 		Location tmpCell = new Location();
 		for (int i = startRow; i <= startRow + updateLength && i < numberOfRows; i++) {
 			for (int j = startCol; j <= startCol + updateLength && j < numberOfCols; j++) {

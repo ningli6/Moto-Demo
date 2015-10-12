@@ -17,6 +17,7 @@ public class BootParams {
 	private double WestLng;
 	private List<Location>[] puList;   // location list
 	private Map<String, Double> cmMap; // countermeasures and their values
+	private boolean randomQuery;       // whether to do random queries
 	private boolean smartQuery;        // whether to do smart queries
 	private boolean gMapNO;            // plot google map for no countermeasure
 	private boolean gMapAD;            // plot google map for additive noise
@@ -105,6 +106,14 @@ public class BootParams {
 	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
 		return puList[c];
+	}
+	
+	public boolean isRandomQuery() {
+		return randomQuery;
+	}
+	
+	public void setRandomQuery(boolean randq) {
+		this.randomQuery = randq;
 	}
 
 	public boolean isSmartQuery() {

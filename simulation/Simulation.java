@@ -103,7 +103,6 @@ public class Simulation {
 
 	public void multipleSimulation() {
 		System.out.println("Start computing average IC...");
-
 		// create a new client instead of using the old one, which is saved for email to use
 		Client multclient = new Client(server);
 		// compute query points
@@ -184,7 +183,6 @@ public class Simulation {
 			}
 		}
 		printMultiple(qlist, icSmartMap, directory, "Smart.txt");
-//		printSingle(server, attacker, directory, "averageSmart");
 	}
 	
 	public void heavySimulation() {

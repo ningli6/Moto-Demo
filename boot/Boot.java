@@ -1,12 +1,8 @@
 package boot;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 /**
  * Entrance of java program
@@ -39,8 +35,8 @@ public class Boot {
 				return;
 			}
 			if (plotFile.exists()) {
-				SecureRandom random1 = new SecureRandom();
-				plotDir = plotRootDir + new BigInteger(130, random1).toString(32) + "\\";
+				SecureRandom random = new SecureRandom();
+				plotDir = plotRootDir + new BigInteger(130, random).toString(32) + "\\";
 				if (!new File(plotDir).mkdirs()) {
 					System.out.println("FAIL");
 					return;
@@ -50,36 +46,19 @@ public class Boot {
 				System.out.println("FAIL");
 				return;
 			}
-			/* start program, return ok */
-			System.out.println("OK");
-//			Process p = Runtime.getRuntime().exec("java -jar C:\\Users\\Administrator\\Desktop\\motoDemo\\demoRun.jar " + cmd + dataDir + " " + plotDir);
-//			BufferedReader stdInput = new BufferedReader(new
-//						InputStreamReader(p.getInputStream()));
-//	
-//			BufferedReader stdError = new BufferedReader(new
-//					InputStreamReader(p.getErrorStream()));
-//
-//			String s;
-//			// read the output from the command
-//			while ((s = stdInput.readLine()) != null) {
-//				System.out.println(s);
-//			}
-//
-//			// read any errors from the attempted command
-//			while ((s = stdError.readLine()) != null) {
-//				System.out.println(s);
-//			}
+			/* Parse input string */
 			BootParams bp = Parser.parse(args);
 			if (bp == null) {
 				System.out.println("FAILED");
 				return;
 			}
-			DemoRun demo = new DemoRun(bp, dataDir, plotDir);
+			/* start program, return ok */
+			System.out.println("OK");
+			Demo demo = new Demo(bp, dataDir, plotDir);
 			demo.run();
 		} catch (Exception e) {
 			System.out.println("FAIL");
 			e.printStackTrace();
 		}
-	    System.out.println("Finish");
 	}
 }
