@@ -82,7 +82,7 @@ public class SimTransfiguration extends Simulation {
 		/* compute IC */
 		IC = client.computeIC();
 		
-		printSingle(cmServer, client, directory, "Transfiguration");
+		printInfercenMatrix(cmServer, client, directory, "Transfiguration");
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class SimTransfiguration extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printMultiple(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
 	}
 
 	public void tradeOffCurve() {

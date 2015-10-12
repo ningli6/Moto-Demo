@@ -10,6 +10,7 @@ import utility.Location;
 public class BootParams {
 	private double mtpScale = 1;       // scale for mtp function
 	private int interval = 5;          // intervals for recording points
+	public static final double MaxCellSize = 0.05; // max grid size
 	private double cellSize;           // grid size
 	private double NorthLat;           // coordinates
 	private double SouthLat;

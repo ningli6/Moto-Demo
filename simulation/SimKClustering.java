@@ -75,7 +75,7 @@ public class SimKClustering extends Simulation {
 		/* compute IC */
 		IC = client.computeIC();
 		
-		printSingle(cmServer, client, directory, "K_Clustering");
+		printInfercenMatrix(cmServer, client, directory, "K_Clustering");
 	}
 	
 	@Override
@@ -117,7 +117,7 @@ public class SimKClustering extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printMultiple(qlist, icCMMap, directory, "cmp_kClustering.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_kClustering.txt");
 	}
 
 	public void tradeOffBar() {

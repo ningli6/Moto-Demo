@@ -82,7 +82,7 @@ public class SimKAnonymity extends Simulation {
 		}
 		System.out.println();
 		
-		printSingle(cmServer, client, directory, "K_Anonymity");
+		printInfercenMatrix(cmServer, client, directory, "K_Anonymity");
 	}
 	
 	@Override
@@ -124,7 +124,7 @@ public class SimKAnonymity extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printMultiple(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
 	}
 
 	public void tradeOffBar() {

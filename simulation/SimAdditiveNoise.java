@@ -97,7 +97,7 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		IC = client.computeIC();
 		
-		printSingle(cmServer, client, directory, "Additive_Noise");
+		printInfercenMatrix(cmServer, client, directory, "Additive_Noise");
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class SimAdditiveNoise extends Simulation {
 			}
 		}
 		feasible = true;         // noise level is feasible, proceed
-		printMultiple(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
 	}
 	
 	/**
