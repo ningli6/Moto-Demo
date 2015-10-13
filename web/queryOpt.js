@@ -13,11 +13,11 @@ $(document).ready(function(){
 /**
  * Enable/disable input box for number of queries
  */
-function queryInput (args) {
-    if (args == "random") {
-        document.getElementById("randomQueryInput").disabled = !document.getElementById("randomQueryInput").disabled;
-    } else if (args == "smart") {
-        document.getElementById("smartQueryInput").disabled = !document.getElementById("smartQueryInput").disabled;
+function enableQueryInput (args) {
+    if (document.getElementById("randomQuery").checked || document.getElementById("smartQuery").checked) {
+        document.getElementById("queryInput").disabled = false;
+    } else {
+        document.getElementById("queryInput").disabled = true;
     }
 }
 
@@ -26,18 +26,9 @@ function queryInput (args) {
  * Min: 10, Max: 500
  */
 function adjustValue(args) {
-    var id = 'id';
-    var aux = 'aux_id';
-    if (args == 'random') {
-        id = 'randomQueryInput';
-        aux = 'smartQueryInput';
-    } else {
-        id = 'smartQueryInput';
-        aux = 'randomQueryInput';
-    }
+    var id = "queryInput";
     if (!isNumeric(document.getElementById(id).value)) {
         document.getElementById(id).value = 100;
-        document.getElementById(aux).value = 100;
         return;
     }
     var val = document.getElementById(id).value;
@@ -49,7 +40,6 @@ function adjustValue(args) {
         newVal = 500;
     }
     document.getElementById(id).value = newVal;
-    document.getElementById(aux).value = newVal;
 }
 
 function uploadfile () {
