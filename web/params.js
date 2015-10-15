@@ -244,36 +244,19 @@ function getParams () {
         }
     }
 
-    // get query method
-    if (document.getElementById("randomQuery").checked) {
-        numberOfQueries = document.getElementById("randomQueryInput").value;
-        if (!numberOfQueries) {
-            alert("Please specify number of queries!");
-            return;
-        }
-        if (!isNumeric(document.getElementById('randomQueryInput').value)) {
-            alert("Number of query is not a valid number!");
-            return;
-        }
-        if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
-            alert("Number of queries should be a positive integer");
-            return;
-        }
+    // get query number
+    if (!isNumeric(document.getElementById('queryInput').value)) {
+        alert("Number of query is not a valid number!");
+        return;
     }
-    if (document.getElementById("smartQuery").checked) {
-        numberOfQueries = document.getElementById("smartQueryInput").value;
-        if (!numberOfQueries) {
-            alert("Please specify number of queries!");
-            return;
-        }
-        if (!isNumeric(document.getElementById('smartQueryInput').value)) {
-            alert("Number of query is not a valid number!");
-            return;
-        }
-        if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
-            alert("Number of queries should be a positive integer");
-            return;
-        }
+    numberOfQueries = document.getElementById("queryInput").value;
+    if (!numberOfQueries) {
+        alert("Please specify number of queries!");
+        return;
+    }
+    if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
+        alert("Number of queries should be a positive integer");
+        return;
     }
 
     // get email
