@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class TradeOffPlot {
-	public static boolean plot(String dataDir, String plotDir, boolean ad, boolean tr, boolean ka, boolean kc) {
+	public static boolean plotRandom(String dataDir, String plotDir, boolean ad, boolean tr, boolean ka, boolean kc) {
 		if (!ad && !tr && !ka && !kc) {
 			System.out.println("No trade-off curve need to be plotted.");
 			return true;
@@ -69,5 +69,12 @@ public class TradeOffPlot {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static boolean plotSmart(String dataDir, String plotDir,
+			boolean tradeOffAD, boolean tradeOffTF, boolean tradeOffKA,
+			boolean tradeOffKC) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

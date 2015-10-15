@@ -51,11 +51,12 @@ public class SimKAnonymity extends Simulation {
 		icCMMap = new HashMap<Integer, double[]>();
 		
 		/* initialize feasible */
-		feasible = false;
+		if (this.k > 0) feasible = true;
+		else feasible = false;
 	}
 
 	@Override
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		if (this.k > 0) {
 			feasible = true;
 		}
@@ -86,7 +87,7 @@ public class SimKAnonymity extends Simulation {
 	}
 	
 	@Override
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		if (this.k > 0) {
 			feasible = true;
 		}
@@ -127,7 +128,7 @@ public class SimKAnonymity extends Simulation {
 		printICvsQ(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
 	}
 
-	public void tradeOffBar() {
+	public void randomTradeOffBar() {
 		System.out.println("Start computing trade off bar for K Anonymity...");
 		int repeat = 10;
 		Client trClient = new Client(cmServer);
@@ -193,5 +194,10 @@ public class SimKAnonymity extends Simulation {
 
 	public String getCountermeasure() {
 		return counterMeasure;
+	}
+
+	public void smartTradeOffBar() {
+		// TODO Auto-generated method stub
+		
 	}
 }

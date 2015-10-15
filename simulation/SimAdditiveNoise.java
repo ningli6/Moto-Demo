@@ -63,7 +63,7 @@ public class SimAdditiveNoise extends Simulation {
 	}
 
 	@Override
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		if (noiseLevel < 0 || noiseLevel > 1) {
 			System.out.println("Noise level must be in range 0 to 1.");
 			feasible = false;   // do not execute following simulations
@@ -101,7 +101,7 @@ public class SimAdditiveNoise extends Simulation {
 	}
 
 	@Override
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
 			feasible = false;
 			System.out.println("Noise level is not feasible.");
@@ -153,7 +153,7 @@ public class SimAdditiveNoise extends Simulation {
 	/**
 	 * Plot trade-of curve, output data in a file named traddOff_AdditiveNoise.txt
 	 */
-	public void tradeOffCurve() {
+	public void randomTradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
 		int repeat = 20;
@@ -220,5 +220,10 @@ public class SimAdditiveNoise extends Simulation {
 
 	public String getCountermeasure() {
 		return countermeasure;
+	}
+
+	public void smartTradeOffCurve() {
+		// TODO Auto-generated method stub
+		
 	}
 }

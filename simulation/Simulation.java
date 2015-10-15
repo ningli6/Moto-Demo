@@ -83,7 +83,7 @@ public class Simulation {
 		icSmartMap = new HashMap<Integer, double[]>();
 	}
 
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		System.out.println("Start querying...");
 		/* initialize a client */
 		Client client = new Client(server);
@@ -102,7 +102,7 @@ public class Simulation {
 		printInfercenMatrix(server, client, directory, "NoCountermeasure");
 	}
 
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		System.out.println("Start computing average IC...");
 		// create a new client instead of using the old one, which is saved for email to use
 		Client multclient = new Client(server);

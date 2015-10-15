@@ -18,8 +18,6 @@ public class BootParams {
 	private double WestLng;
 	private List<Location>[] puList;   // location list
 	private Map<String, Double> cmMap; // countermeasures and their values
-	private boolean randomQuery;       // whether to do random queries
-	private boolean smartQuery;        // whether to do smart queries
 	private boolean gMapNO;            // plot google map for no countermeasure
 	private boolean gMapAD;            // plot google map for additive noise
 	private boolean gMapTF;            // plot google map for transfiguration
@@ -30,8 +28,9 @@ public class BootParams {
 	private boolean tradeOffKA;        // whether to plot rade off bar for k anonymity
 	private boolean tradeOffKC;        // whether to plot rade off bar for k clustering
 	private int numberOfChannels;      // number of channels
+	private boolean randomQuery;       // whether to do random queries
+	private boolean smartQuery;        // whether to do smart queries
 	private int numberOfQueries;       // number of queries
-	private String fileName;           // upload file name
 	private String email;              // email address
 	private boolean inputParams;       // whether to include input parameters in the email
 
@@ -107,22 +106,6 @@ public class BootParams {
 	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
 		return puList[c];
-	}
-	
-	public boolean isRandomQuery() {
-		return randomQuery;
-	}
-	
-	public void setRandomQuery(boolean randq) {
-		this.randomQuery = randq;
-	}
-
-	public boolean isSmartQuery() {
-		return smartQuery;
-	}
-
-	public void setSmartQuery(boolean smartQuery) {
-		this.smartQuery = smartQuery;
 	}
 
 	/**
@@ -263,19 +246,26 @@ public class BootParams {
 	public int getNumberOfQueries() {
 		return numberOfQueries;
 	}
+	
+	public boolean isRandomQuery() {
+		return randomQuery;
+	}
+	
+	public void setRandomQuery(boolean randq) {
+		this.randomQuery = randq;
+	}
+
+	public boolean isSmartQuery() {
+		return smartQuery;
+	}
+
+	public void setSmartQuery(boolean smartQuery) {
+		this.smartQuery = smartQuery;
+	}
 
 	public void setNumberOfQueries(int q) {
 		if (q < 0) throw new IllegalArgumentException();
 		this.numberOfQueries = q;
-	}
-
-	public String getFileName() {
-		return this.fileName;
-	}
-
-	public void useFile(String file) {
-		if (file == null) throw new IllegalArgumentException();
-		this.fileName = file;
 	}
 
 	public void setEmail(String e) {
@@ -301,6 +291,9 @@ public class BootParams {
 		this.inputParams = f;
 	}
 	
+	/**
+	 * Generate string that contains information about inputs
+	 */
 	public String paramsToTextFile() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Simulation parameters:\n\n");
@@ -362,12 +355,7 @@ public class BootParams {
 			sb.append("\n");
 		}
 		sb.append("\n");
-		if (numberOfQueries < 0) {
-			sb.append("Upload_file: " + fileName + "\n");
-		}
-		else {
-			sb.append("Number of queries: " + numberOfQueries + "\n");
-		}
+		sb.append("Number of queries: " + numberOfQueries + "\n");
 		return sb.toString();
 	}
 

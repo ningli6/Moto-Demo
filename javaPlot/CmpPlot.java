@@ -15,7 +15,7 @@ public class CmpPlot {
 	 * @param kc   plot k clustering
 	 * @return true if it works all right
 	 */
-	public static boolean plot(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+	public static boolean plotRandom(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		System.out.println("Start plotting ic vs queries...");
 		try {
 //			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwChannels.py " + dataDir + " "+ plotDir;
@@ -61,6 +61,27 @@ public class CmpPlot {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public static boolean plotSmart(String dataDir, String plotDir,
+			boolean containsCM, boolean containsCM2, boolean containsCM3,
+			boolean containsCM4, boolean containsCM5) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static boolean plotRandomSmart(String dataDir, String plotDir,
+			boolean containsCM, boolean containsCM2, boolean containsCM3,
+			boolean containsCM4, boolean containsCM5) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static boolean plotRandomSmartBar(String dataDir, String plotDir,
+			boolean containsCM, boolean containsCM2, boolean containsCM3,
+			boolean containsCM4, boolean containsCM5) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

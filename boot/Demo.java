@@ -17,11 +17,13 @@ import simulation.Simulation;
  * Demo instance without using new threads, invoked in another process
  */
 public class Demo {
+	
     private BootParams bp;           // BootParams instance
     private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String dataDir;          // output directory
     private String plotDir;          // directory that saves plots from python and maltab
+    private String emailInfo;        // feedback information of the email
 
     public Demo(BootParams bp, String dataDir, String plotDir){
     	this.bp = bp;
@@ -32,135 +34,162 @@ public class Demo {
     }
 
     public void run() {
-        String emailInfo = null;  // feedback information of the email
         try {
-        	if (bp.containsCM("NOCOUNTERMEASURE")) {
+        	if (bp.containsCM("NOCOUNTERMEASURE")) {  // if no countermeasure is selected
         		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
-        		if (bp.isRandomQuery()) {
-            		sim.multipleSimulation();
+        		if (bp.isRandomQuery()) {  // if using random query
+            		sim.randomSimulation();
             		if (bp.plotGooglMapNO()) {
-            			sim.singleSimulation();
+            			sim.singleRandomSimulation();
             		}
         		}
-        		if (bp.isSmartQuery()) {
-        			sim.smartSimulation(); // output ic as well as inference map
+        		if (bp.isSmartQuery()) {   // if using smart query
+        			sim.smartSimulation(); // output ic as well as inference map, implicitly available to plot google map
         		}
         	}
-        	if (bp.containsCM("ADDITIVENOISE")) {
+        	if (bp.containsCM("ADDITIVENOISE")) {  // if additive noise is selected
         		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
-        		if (bp.isRandomQuery()) {
-            		sim.multipleSimulation();
-            		if (bp.plotGooglMapAD()) {
-            			sim.singleSimulation();
+        		if (bp.isRandomQuery()) {    // if using random query
+            		sim.randomSimulation();  // would be able to figure out if the noise level is feasible here
+            		if (sim.isFeasible() && bp.plotGooglMapAD()) {
+            			sim.singleRandomSimulation();
             		}
             		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
             			bp.delCountermeasure("ADDITIVENOISE");
             			bp.setGoogleMapAD(false);
             			emailInfo += "Noise requirement can't be reached.\n\n";
             		}
+            		if (bp.isTradeOffAD()) {  // plot trade off bar of additive noise anyway if user selected
+            			sim.randomTradeOffCurve();
+            		}
         		}
-        		if ( bp.containsCM("ADDITIVENOISE") && bp.isSmartQuery()) {
+        		if (bp.containsCM("ADDITIVENOISE") && bp.isSmartQuery()) {
             		sim.smartSimulation();
             		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
             			bp.delCountermeasure("ADDITIVENOISE");
             			bp.setGoogleMapAD(false);
             			emailInfo += "Noise requirement can't be reached.\n\n";
             		}
-        		}
-        		if (bp.isTradeOffAD()) {
-        			sim.tradeOffCurve();
+            		if (bp.isTradeOffAD()) {  // plot trade off bar using smart location algorithm
+            			sim.smartTradeOffCurve();
+            		}
         		}
         	}
-        	if (bp.containsCM("TRANSFIGURATION")) {
+        	if (bp.containsCM("TRANSFIGURATION")) {  // user selected transfiguration
         		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
-        		if (bp.isRandomQuery()) {
-            		sim.multipleSimulation();
-            		if (bp.plotGooglMapTF()) {
-            			sim.singleSimulation();
-            		}
-            		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("TRANSFIGURATION");
-            			bp.setGoogleMapTF(false);
-            			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
-            		}
+        		if (!sim.isFeasible()) {  // check feasibility
+        			bp.delCountermeasure("TRANSFIGURATION");
+        			bp.setGoogleMapTF(false);
+        			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
         		}
-        		if (bp.containsCM("TRANSFIGURATION") && bp.isSmartQuery()) {
-            		sim.smartSimulation();
-            		if (!sim.isFeasible()) {   // if sides is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("TRANSFIGURATION");
-            			bp.setGoogleMapTF(false);
-            			emailInfo += "Number of sides must be a positive integer equal or grater than 3.\n\n";
-            		}
+        		if (bp.isRandomQuery()) {  // if using random query
+        			if (sim.isFeasible()) sim.randomSimulation();
+        			if (sim.isFeasible() && bp.plotGooglMapTF()) {
+        				sim.singleRandomSimulation();
+        			}
+        			if (bp.isTradeOffTF()) {
+        				sim.randomTradeOffCurve();
+        			}
         		}
-        		if (bp.isTradeOffTF()) {
-        			sim.tradeOffCurve();
+        		if (bp.isSmartQuery()) {  // if using smart query
+        			if (sim.isFeasible()) sim.smartSimulation();
+        			if (bp.isTradeOffTF()) {
+        				sim.smartTradeOffCurve();  // trade off bar using smart query
+        			}
         		}
         	}
-        	if (bp.containsCM("KANONYMITY")) {
+        	if (bp.containsCM("KANONYMITY")) {  // user selects k anonymity
         		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
-        		if (bp.isRandomQuery()) {
-            		sim.multipleSimulation();
-            		if (bp.plotGooglMapKA()) {
-            			sim.singleSimulation();
+        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+        			bp.delCountermeasure("KANONYMITY");
+        			bp.setGoogleMapKA(false);
+        			emailInfo += "K must be a positive integer.\n\n";
+        		}
+        		if (bp.isRandomQuery()) {  // if using random query
+            		if (sim.isFeasible()) sim.randomSimulation();
+            		if (sim.isFeasible() && bp.plotGooglMapKA()) {
+            			sim.singleRandomSimulation();
             		}
-            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("KANONYMITY");
-            			bp.setGoogleMapKA(false);
-            			emailInfo += "K must be a positive integer.\n\n";
+            		if (bp.isTradeOffKA()) {  // plot trade off bar anyway
+            			sim.randomTradeOffBar();
             		}
         		}
-        		if (bp.containsCM("KANONYMITY") && bp.isSmartQuery()) {
-            		sim.smartSimulation();
-            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("KANONYMITY");
-            			bp.setGoogleMapKA(false);
-            			emailInfo += "K must be a positive integer.\n\n";
+        		if (bp.isSmartQuery()) {  // if using smart query
+        			if (sim.isFeasible()) sim.smartSimulation();
+            		if (bp.isTradeOffKA()) {  // plot trade off bar with smart query
+            			sim.smartTradeOffBar();
             		}
-        		}
-        		if (bp.isTradeOffKA()) {
-        			sim.tradeOffBar();
         		}
         	}
-        	if (bp.containsCM("KCLUSTERING")) {
+        	if (bp.containsCM("KCLUSTERING")) { // if k cluster is selected
         		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
-        		if (bp.isRandomQuery()) {
-            		sim.multipleSimulation();
-            		if (bp.plotGooglMapKC()) {
-            			sim.singleSimulation();
+        		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
+        			bp.delCountermeasure("KCLUSTERING");
+        			bp.setGoogleMapKC(false);
+        			emailInfo += "K must be a positive integer.\n\n";
+        		}
+        		if (bp.isRandomQuery()) {  // using random query
+        			if (sim.isFeasible()) sim.randomSimulation();
+            		if (sim.isFeasible() && bp.plotGooglMapKC()) {
+            			sim.singleRandomSimulation();
             		}
-            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("KCLUSTERING");
-            			bp.setGoogleMapKC(false);
-            			emailInfo += "K must be a positive integer.\n\n";
+            		if (bp.isTradeOffKC()) {  // plot trade off bar anyway
+            			sim.randomTradeOffBar();
             		}
         		}
-        		if (bp.isSmartQuery()) {
-            		sim.smartSimulation();
-            		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
-            			bp.delCountermeasure("KCLUSTERING");
-            			bp.setGoogleMapKC(false);
-            			emailInfo += "K must be a positive integer.\n\n";
+        		if (bp.isSmartQuery()) {  // using smart query
+        			if (sim.isFeasible()) sim.smartSimulation();
+            		if (bp.isTradeOffKC()) {  // plot trade off bar using smart query
+            			sim.smartTradeOffBar();
             		}
-        		}
-        		if (bp.isTradeOffKC()) {
-        			sim.tradeOffBar();
         		}
         	}
+        	
         	// plot ic vs q
-        	if (!CmpPlot.plot(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-        		System.out.println("Plot ic vs q failed");
-        		return;
+        	if (bp.isRandomQuery()) {
+            	if (!CmpPlot.plotRandom(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot randomly queried ic vs q failed");
+            		return;
+            	}
         	}
+        	if (bp.isSmartQuery()) {
+            	if (!CmpPlot.plotSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot smart queried ic vs q failed");
+            		return;
+            	}
+        	}
+        	if (bp.isRandomQuery() && bp.isSmartQuery()) { // user selected both
+        		// plot ic vs q without countermeasure compared with both method
+            	if (!CmpPlot.plotRandomSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot smart queried ic vs q failed");
+            		return;
+            	}
+            	// plot bar for each countermeasure
+            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot smart queried ic vs q failed");
+            		return;
+            	}
+        	}
+
         	// plot google map
         	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
         			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
         		System.out.println("Plot Google Maps failed");
         		return;
         	}
+        	
         	// plot tradeOff curve/bar
-        	if (!TradeOffPlot.plot(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-        		System.out.println("Plot trade-off failed");
-        		return;
+        	if (bp.isRandomQuery()) {
+            	if (!TradeOffPlot.plotRandom(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+            		System.out.println("Plot trade-off failed");
+            		return;
+            	}
+        	}
+        	if (bp.isSmartQuery()) {
+            	if (!TradeOffPlot.plotSmart(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+            		System.out.println("Plot trade-off failed");
+            		return;
+            	}
         	}
         	// send email
         	if (bp.getInputParams()) {

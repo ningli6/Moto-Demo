@@ -164,6 +164,9 @@ public class Parser {
 				bootParams.setSmartQuery(true);
 				i++;
 			}
+			if (!bootParams.isRandomQuery() && !bootParams.isSmartQuery()) {
+				throw new IllegalArgumentException("Must select at least one query method.");
+			}
 			if (!args[i].equals("-e")) {
 				throw new IllegalArgumentException("No email address!");
 			}

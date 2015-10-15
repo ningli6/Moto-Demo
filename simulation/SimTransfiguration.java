@@ -57,11 +57,12 @@ public class SimTransfiguration extends Simulation {
 		icCMMap = new HashMap<Integer, double[]>();
 		
 		/* initialize feasible */
-		feasible = false;
+		if (sides > 2) feasible = true;
+		else feasible = false;
 	}
 
 	@Override
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		if (sides > 2) {
 			feasible = true;
 		}
@@ -86,7 +87,7 @@ public class SimTransfiguration extends Simulation {
 	}
 
 	@Override
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		if (sides > 2) {
 			feasible = true;
 		}
@@ -129,7 +130,7 @@ public class SimTransfiguration extends Simulation {
 		printICvsQ(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
 	}
 
-	public void tradeOffCurve() {
+	public void randomTradeOffCurve() {
 		int[] cmString = {3, 4, 5, 6};
 		double[] trdIC = new double[cmString.length];
 		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm -tf 3 -gm -tr tf -q 50 -e ningli@vt.edu -opt pa ";
@@ -215,5 +216,10 @@ public class SimTransfiguration extends Simulation {
 
 	public String getCountermeasure() {
 		return counterMeasure;
+	}
+
+	public void smartTradeOffCurve() {
+		// TODO Auto-generated method stub
+		
 	}
 }
