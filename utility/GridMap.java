@@ -186,7 +186,7 @@ public class GridMap {
 	 */
 	public int lngToCol(double lon) {
 		if (lon < westLng || lon > eastLng) throw new IllegalArgumentException("Longitude is out of map range");
-		int colIndex = (int) ((eastLng - lon) / cellDegree);
+		int colIndex = (int) ((lon - westLng) / cellDegree);
 		if (colIndex >= numberOfCols) throw new IndexOutOfBoundsException();
 		return colIndex;
 	}
