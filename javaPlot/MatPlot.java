@@ -35,10 +35,8 @@ public class MatPlot {
 		 * Construct a map instance to get number of rows and cols
 		 */
 		Location upperLeft = new Location(nlat, wlng);
-		Location upperRight = new Location(nlat, elng);
-		Location lowerLeft = new Location(slat, wlng);
 		Location lowerRight = new Location(slat, elng);
-		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellSize);
+		GridMap map = new GridMap(upperLeft, lowerRight, cellSize);
 		int rows = map.getNumOfRows();
 		int cols = map.getNumOfCols();
 		try {

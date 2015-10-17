@@ -136,10 +136,8 @@ public class SimTransfiguration extends Simulation {
 		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm -tf 3 -gm -tr tf -q 50 -e ningli@vt.edu -opt pa ";
 		BootParams tfBp = Parser.parse(args.split(" "));
 		Location upperLeft = new Location(tfBp.getNorthLat(), tfBp.getWestLng());
-		Location upperRight = new Location(tfBp.getNorthLat(), tfBp.getEastLng());
-		Location lowerLeft = new Location(tfBp.getSouthLat(), tfBp.getWestLng());
 		Location lowerRight = new Location(tfBp.getSouthLat(), tfBp.getEastLng());
-		GridMap tfMap = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, tfBp.getCellSize());
+		GridMap tfMap = new GridMap(upperLeft, lowerRight, tfBp.getCellSize());
 		ServerTransfiguration tfServer = new ServerTransfiguration(tfMap, tfBp.getNumberOfChannels(), (int) tfBp.getCMParam("TRANSFIGURATION"));
 		int PUid = 0;
 		for (int k = 0; k < tfBp.getNumberOfChannels(); k++) {

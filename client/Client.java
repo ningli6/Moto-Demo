@@ -15,7 +15,7 @@ import utility.Response;
  * It uses results from queries to update inference map
  */
 public class Client {
-	protected int numberOfChannels = 1; // number of channels
+	protected int numberOfChannels; // number of channels
 	protected Location location;	    // location of the attacker
 	protected int indexOfRow;           // row location
 	protected int indexOfCol;           // column location

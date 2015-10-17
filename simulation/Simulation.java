@@ -24,9 +24,9 @@ public class Simulation {
 	double mtpScale;       // control MTP function's protection zoo
 	int interval;          // how many querying points from 0 to noq
 	GridMap map;           // instance of grid map
-	GridMap largeMap;      // instance of grid map with 0.05 cell degree
+	GridMap largeGridMap;      // instance of grid map with 0.05 cell degree
 	Server server;         // instance of base server
-	Server largeServer;    // instance of server with 0.05 cell degree
+	Server largeGridServer;    // instance of server with 0.05 cell degree
 	int noc;               // number of channels
 	int noq;               // number of queries
 	int repeat;            // number of repetition for multiple simulations
@@ -42,12 +42,10 @@ public class Simulation {
 		this.directory = directory;
 
 		/* initialize map */
-		Location upperLeft = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
-		Location upperRight = new Location(bootParams.getNorthLat(), bootParams.getEastLng());
-		Location lowerLeft = new Location(bootParams.getSouthLat(), bootParams.getWestLng());
-		Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
-		this.map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
-		this.largeMap = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, BootParams.MaxCellSize);
+		Location nwLoc = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
+		Location seLoc = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
+		this.map = new GridMap(nwLoc, seLoc, cellsize);
+		this.largeGridMap = new GridMap(nwLoc, seLoc, BootParams.MaxCellSize);
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 
@@ -56,7 +54,7 @@ public class Simulation {
 		
 		/* initialize server */
 		server = new Server(map, noc);
-		largeServer = new Server(largeMap, noc);
+		largeGridServer = new Server(largeGridMap, noc);
 
 		/* Add PU to the map */
 		int PUid = 0;
@@ -65,7 +63,8 @@ public class Simulation {
 			for (Location ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
 				server.addPU(pu, k);
-				largeServer.addPU(pu, k);
+				PU pu_large = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), largeGridMap);
+				largeGridServer.addPU(pu_large, k);
 			}
 		}
 
@@ -138,7 +137,7 @@ public class Simulation {
 	public void smartSimulation() {
 		System.out.println("Start smart quering...");
 		/* initialize a client */
-		SmartAttacker attacker = new SmartAttacker(largeServer);
+		SmartAttacker attacker = new SmartAttacker(largeGridServer);
 		// find record point, works if number of queries is multiple of 10
 		int gap = noq / interval;
 		// start query from 0 times
@@ -153,7 +152,10 @@ public class Simulation {
 		for (int rep = 0; rep < repetition; rep++){ // repetition
 			attacker.reset();
 			for (int i = 1; i <= maxQ; i++) {       // number of queries
-				attacker.query(largeServer);
+				/* Debug */
+				System.out.println("Q: " + i);
+				attacker.smartLocation();           // find next query location
+				attacker.query(largeGridServer);
 				if (icSmartMap.containsKey(i)){
 					double[] newIC = attacker.computeIC();
 					double[] sum = icSmartMap.get(i);
@@ -164,7 +166,7 @@ public class Simulation {
 				}
 			}
 		}
-		printInfercenMatrix(largeServer, attacker, directory, "smart_NoCountermeasure");
+		printInfercenMatrix(largeGridServer, attacker, directory, "smart_NoCountermeasure");
 		printICvsQ(qlist, icSmartMap, directory, "smartIC_NoCountermeasure.txt");
 	}
 

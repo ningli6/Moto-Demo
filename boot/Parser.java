@@ -34,8 +34,8 @@ public class Parser {
 				throw new IllegalArgumentException("-a");
 			}
 			bootParams.setNorthLat(Double.parseDouble(args[i++]));
-			bootParams.setSouthLat(Double.parseDouble(args[i++]));
 			bootParams.setWestLng(Double.parseDouble(args[i++]));
+			bootParams.setSouthLat(Double.parseDouble(args[i++]));
 			bootParams.setEastLng(Double.parseDouble(args[i++]));
 			// get number of channels
 			if (!args[i++].equals("-c")) {
@@ -78,9 +78,6 @@ public class Parser {
 			}
 			if (args[i].equals("no")) {
 				bootParams.putCountermeasure("NOCOUNTERMEASURE", Double.valueOf(args[i + 1]));
-				if (bootParams.getCMParam("NOCOUNTERMEASURE") == 1) { // -1 for no smart query, 1 for smart query
-					bootParams.setSmartQuery(true);
-				}
 				i += 2;
 			}
 			if (args[i].equals("an")) {

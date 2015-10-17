@@ -145,69 +145,69 @@ public class Demo {
         		}
         	}
         	
-        	// plot ic vs q
-        	if (bp.isRandomQuery()) {
-            	if (!CmpPlot.plotRandom(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-            		System.out.println("Plot randomly queried ic vs q failed");
-            		return;
-            	}
-        	}
-        	if (bp.isSmartQuery()) {
-            	if (!CmpPlot.plotSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-            		System.out.println("Plot smart queried ic vs q failed");
-            		return;
-            	}
-        	}
-        	if (bp.isRandomQuery() && bp.isSmartQuery()) { // user selected both
-        		// plot ic vs q without countermeasure compared with both method
-            	if (!CmpPlot.plotRandomSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-            		System.out.println("Plot smart queried ic vs q failed");
-            		return;
-            	}
-            	// plot bar for each countermeasure
-            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-            		System.out.println("Plot smart queried ic vs q failed");
-            		return;
-            	}
-        	}
-
-        	// plot google map
-        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
-        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
-        		System.out.println("Plot Google Maps failed");
-        		return;
-        	}
-        	
-        	// plot tradeOff curve/bar
-        	if (bp.isRandomQuery()) {
-            	if (!TradeOffPlot.plotRandom(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-            		System.out.println("Plot trade-off failed");
-            		return;
-            	}
-        	}
-        	if (bp.isSmartQuery()) {
-            	if (!TradeOffPlot.plotSmart(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-            		System.out.println("Plot trade-off failed");
-            		return;
-            	}
-        	}
-        	// send email
-        	if (bp.getInputParams()) {
-        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
-        	}
-        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
-        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
-        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
-        			bp.isTradeOffKC(), bp.getInputParams())) {
-        		System.out.println("Sending email failed");
-        		return;
-        	}
+//        	// plot ic vs q
+//        	if (bp.isRandomQuery()) {
+//            	if (!CmpPlot.plotRandom(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+//            		System.out.println("Plot randomly queried ic vs q failed");
+//            		return;
+//            	}
+//        	}
+//        	if (bp.isSmartQuery()) {
+//            	if (!CmpPlot.plotSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+//            		System.out.println("Plot smart queried ic vs q failed");
+//            		return;
+//            	}
+//        	}
+//        	if (bp.isRandomQuery() && bp.isSmartQuery()) { // user selected both
+//        		// plot ic vs q without countermeasure compared with both method
+//            	if (!CmpPlot.plotRandomSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+//            		System.out.println("Plot smart queried ic vs q failed");
+//            		return;
+//            	}
+//            	// plot bar for each countermeasure
+//            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+//            		System.out.println("Plot smart queried ic vs q failed");
+//            		return;
+//            	}
+//        	}
+//
+//        	// plot google map
+//        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
+//        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+//        		System.out.println("Plot Google Maps failed");
+//        		return;
+//        	}
+//        	
+//        	// plot tradeOff curve/bar
+//        	if (bp.isRandomQuery()) {
+//            	if (!TradeOffPlot.plotRandom(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+//            		System.out.println("Plot trade-off failed");
+//            		return;
+//            	}
+//        	}
+//        	if (bp.isSmartQuery()) {
+//            	if (!TradeOffPlot.plotSmart(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+//            		System.out.println("Plot trade-off failed");
+//            		return;
+//            	}
+//        	}
+//        	// send email
+//        	if (bp.getInputParams()) {
+//        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
+//        	}
+//        	if (!SendEmail.send(this.plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
+//        			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
+//        			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
+//        			bp.isTradeOffKC(), bp.getInputParams())) {
+//        		System.out.println("Sending email failed");
+//        		return;
+//        	}
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Cleaning up folders...");
-        deleteDirectory(new File(dataDir));
-        deleteDirectory(new File(plotDir));
+//        System.out.println("Cleaning up folders...");
+//        deleteDirectory(new File(dataDir));
+//        deleteDirectory(new File(plotDir));
     }
     
     public static boolean deleteDirectory(File directory) {
