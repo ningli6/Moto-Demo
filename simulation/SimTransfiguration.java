@@ -70,7 +70,7 @@ public class SimTransfiguration extends Simulation {
 			feasible = false;
 			return;
 		}
-		System.out.println("Start querying...");
+		System.out.println("Start random query with transfiguration for once...");
 
 		/* initialize a client */
 		Client client = new Client(cmServer);
@@ -133,7 +133,7 @@ public class SimTransfiguration extends Simulation {
 	public void randomTradeOffCurve() {
 		int[] cmString = {3, 4, 5, 6};
 		double[] trdIC = new double[cmString.length];
-		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm -tf 3 -gm -tr tf -q 50 -e ningli@vt.edu -opt pa ";
+		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm tf 3 -gm -tr tf -q 50 -sq -e ningli@vt.edu -opt pa ";
 		BootParams tfBp = Parser.parse(args.split(" "));
 		Location upperLeft = new Location(tfBp.getNorthLat(), tfBp.getWestLng());
 		Location lowerRight = new Location(tfBp.getSouthLat(), tfBp.getEastLng());
@@ -148,7 +148,7 @@ public class SimTransfiguration extends Simulation {
 			}
 		}
 		int repeat = 30;
-		System.out.println("Start computing trade off curve for transfiguration...");
+		System.out.println("Start computing trade off curve for transfiguration withe random queries...");
 		Client trdOfClient = new Client(tfServer);     // get a new client
 		for (int k = 0; k < cmString.length; k++) {// for each sides
 			tfServer.transfigure(cmString[k]);         // set new number of sides

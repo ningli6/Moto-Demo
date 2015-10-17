@@ -10,7 +10,7 @@ public class TradeOffPlot {
 			return true;
 		}
 		try {
-			System.out.println("Start plotting trade off curves...");
+			System.out.println("Start plotting trade off curves for random queries...");
 			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOff.py " + dataDir + " " + plotDir;
 			if (ad) {
 				cmd += " traddOff_AdditiveNoise.txt";
@@ -38,7 +38,7 @@ public class TradeOffPlot {
 				System.out.println(s);
 			}
 			
-			System.out.println("Start plotting trade off bars...");
+			System.out.println("Start plotting trade off bars for random queries...");
 			cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffBar.py " + dataDir + " " + plotDir;
 			if (ka) {
 				cmd += " traddOff_KAnonymity.txt";

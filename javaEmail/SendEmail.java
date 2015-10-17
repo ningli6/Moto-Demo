@@ -40,7 +40,7 @@ public class SendEmail {
         content += "\nThanks for using.\n";
         content = content.replaceAll(" ", "_");
         content = content.replaceAll("\n", "<br>");
-        System.out.println(content);
+
         try {
         	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {

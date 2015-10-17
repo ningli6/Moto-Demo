@@ -5,9 +5,9 @@ import java.io.InputStreamReader;
 
 public class CmpPlot {
 	/**
-	 * Call a python script that plot ic vs q
-	 * @param dataDir TODO
-	 * @param plotDir TODO
+	 * Call a python script that plot ic vs q for random queries
+	 * @param dataDir folder that contains simulation data
+	 * @param plotDir folder that plots are saved
 	 * @param noCM plot no countermeasure
 	 * @param ad   plot additive noise
 	 * @param tf   plot transfiguration
@@ -16,12 +16,11 @@ public class CmpPlot {
 	 * @return true if it works all right
 	 */
 	public static boolean plotRandom(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
-		System.out.println("Start plotting ic vs queries...");
+		System.out.println("Start plotting ic vs queries for random queries...");
 		try {
-//			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQwChannels.py " + dataDir + " "+ plotDir;
 			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
 			if (noCM) {
-				cmd += " averageIC_NoCountermeasure.txt";
+				cmd += " cmp_NoCountermeasure.txt";
 			}
 			if (ad) {
 				cmd += " cmp_AdditiveNoise.txt";
@@ -30,10 +29,10 @@ public class CmpPlot {
 				cmd += " cmp_Transfiguration.txt";
 			}
 			if (ka) {
-				cmd += " cmp_kAnonymity.txt";
+				cmd += " cmp_KAnonymity.txt";
 			}
 			if (kc) {
-				cmd += " cmp_kClustering.txt";
+				cmd += " cmp_KClustering.txt";
 			}
 			System.out.println(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);

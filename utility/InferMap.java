@@ -33,7 +33,6 @@ public class InferMap extends GridMap {
 		updateLength = (int) (MTP.d3 * 2.5 / averDist);
 		updateRadius = updateLength / 2;
 		cellArea = averDist * averDist;
-		System.out.println("Update length: " + updateLength);
 	}
 	
 	/**
@@ -83,7 +82,6 @@ public class InferMap extends GridMap {
 				if (distance >= d1 && distance < d2) G++;
 			}
 		}
-//		System.out.println("G: " + G);
 		if (G != 0) {
 			for (int i = startRow; i <= startRow + updateLength && i < getNumOfRows(); i++)
 				for (int j = startCol; j <= startCol + updateLength && j < getNumOfCols(); j++) {

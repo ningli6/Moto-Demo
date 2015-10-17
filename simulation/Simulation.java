@@ -83,7 +83,7 @@ public class Simulation {
 	}
 
 	public void singleRandomSimulation() {
-		System.out.println("Start querying...");
+		System.out.println("Start random query withouth countermeasure for once...");
 		/* initialize a client */
 		Client client = new Client(server);
 		/* run simulation for one time */
@@ -92,13 +92,8 @@ public class Simulation {
 			client.query(server);
 		}
 		IC = client.computeIC();
-		System.out.println("IC: ");
-		for (double d : IC){
-			System.out.print((int)d + " ");
-		}
-		System.out.println();
 		
-		printInfercenMatrix(server, client, directory, "NoCountermeasure");
+		printInfercenMatrix(server, client, directory, "No_Countermeasure");
 	}
 
 	public void randomSimulation() {
@@ -131,7 +126,7 @@ public class Simulation {
 			}
 			multclient.reset();
 		}
-		printICvsQ(qlist, icMap, directory, "averageIC_NoCountermeasure.txt");
+		printICvsQ(qlist, icMap, directory, "cmp_NoCountermeasure.txt");
 	}
 	
 	public void smartSimulation() {

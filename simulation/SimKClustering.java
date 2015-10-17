@@ -63,7 +63,7 @@ public class SimKClustering extends Simulation {
 			feasible = false;
 			return;
 		}
-		System.out.println("Start querying...");
+		System.out.println("Start random query with k clustering for once...");
 
 		/* initialize a client */
 		Client client = new Client(cmServer);
@@ -118,11 +118,11 @@ public class SimKClustering extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printICvsQ(qlist, icCMMap, directory, "cmp_kClustering.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_KClustering.txt");
 	}
 
 	public void randomTradeOffBar() {
-		System.out.println("Start computing trade off bar for K Clustering...");
+		System.out.println("Start computing trade off bar for K Clustering with random queries...");
 		int repeat = 10;
 		Client trClient = new Client(cmServer);
 		// find value for k

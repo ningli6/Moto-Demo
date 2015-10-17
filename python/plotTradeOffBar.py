@@ -35,4 +35,3 @@ class tradeOffBars:
 
 trdOfP = tradeOffBars()
 trdOfP.plot(sys.argv[1], sys.argv[2], [sys.argv[x] for x in range(3, len(sys.argv))])
-# trdOfP.plot(['traddOff_KAnonymity.txt'])

@@ -65,7 +65,7 @@ public class SimKAnonymity extends Simulation {
 			return;
 		}
 		
-		System.out.println("Start querying...");
+		System.out.println("Start random query with k anonymity for once...");
 
 		/* initialize a client */
 		Client client = new Client(cmServer);
@@ -77,11 +77,6 @@ public class SimKAnonymity extends Simulation {
 		
 		/* compute IC */
 		IC = client.computeIC();
-		System.out.println("IC: ");
-		for (double d : IC){
-			System.out.print((int)d + " ");
-		}
-		System.out.println();
 		
 		printInfercenMatrix(cmServer, client, directory, "K_Anonymity");
 	}
@@ -125,11 +120,11 @@ public class SimKAnonymity extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printICvsQ(qlist, icCMMap, directory, "cmp_kAnonymity.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_KAnonymity.txt");
 	}
 
 	public void randomTradeOffBar() {
-		System.out.println("Start computing trade off bar for K Anonymity...");
+		System.out.println("Start computing trade off bar for K Anonymity with random queries...");
 		int repeat = 10;
 		Client trClient = new Client(cmServer);
 		// find value for k

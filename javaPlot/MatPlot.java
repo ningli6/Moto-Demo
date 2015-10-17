@@ -9,8 +9,8 @@ import utility.Location;
 public class MatPlot {
 	/**
 	 * Call Matlab function that plot data on google map
-	 * @param dataDir TODO
-	 * @param plotDir TODO
+	 * @param dataDir data dir
+	 * @param plotDir plot dir
 	 * @param cellSize grid size
 	 * @param noc      number of channels
 	 * @param nlat     north lat
