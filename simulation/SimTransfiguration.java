@@ -15,6 +15,7 @@ import utility.PU;
 import boot.BootParams;
 import boot.Parser;
 import client.Client;
+import client.SmartAttacker;
 
 public class SimTransfiguration extends Simulation {
 	private String counterMeasure;            // name of countermeasure
@@ -95,7 +96,6 @@ public class SimTransfiguration extends Simulation {
 			feasible = false;
 			return;
 		}
-
 		/**
 		 * use a new client for multiple simulation, 
 		 */
@@ -128,6 +128,52 @@ public class SimTransfiguration extends Simulation {
 			multclient.reset(); // set infer matrix to 0.5
 		}
 		printICvsQ(qlist, icCMMap, directory, "cmp_Transfiguration.txt");
+	}
+	
+	/**
+	 * Simulation using smart query algorithm
+	 */
+	@Override
+	public void smartSimulation() {
+		if (sides > 2) {
+			feasible = true;
+		}
+		else {
+			feasible = false;
+			return;
+		}
+		SmartAttacker multclient = new SmartAttacker(cmServer); 
+		System.out.println("Start computing average IC with transfiguration usin smart querying...");
+		// compute query points
+		int gap = noq / interval;
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval; i++) {
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		int maxQ = qlist.get(qlist.size() - 1);
+		int repetition = 1; // just repeat for once
+		/* run simulation for multiple times */
+		icSmartMap.put(0, multclient.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repetition; rep++){
+			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
+				multclient.smartLocation();
+				multclient.query(cmServer);
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = multclient.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetition; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
+			}
+			multclient.reset(); // set infer matrix to 0.5
+		}
+		printInfercenMatrix(cmServer, multclient, directory, "smart_Transfiguration");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_Transfiguration.txt");	
 	}
 
 	public void randomTradeOffCurve() {
