@@ -18,10 +18,10 @@ public class SendEmail {
 	 * @param gMapTf     whether to include google map for transfiguration
 	 * @param gMapKa     whether to include google map for k anonymity
 	 * @param gMapKc     whether to include google map for k clustering
-	 * @param tradeOffAd whether to trade-off curve for additive noise
-	 * @param tradeOffTf whether to trade-off curve for transfiguration
-	 * @param tradeOffKA whether to plot trade-off bar for k anonymity
-	 * @param tradeOffKC whether to plot trade-off bar for k clustering
+	 * @param tradeOffAd whether to include trade-off curve for additive noise
+	 * @param tradeOffTf whether to include trade-off curve for transfiguration
+	 * @param tradeOffKA whether to include trade-off bar for k anonymity
+	 * @param tradeOffKC whether to include trade-off bar for k clustering
 	 * @param inputParams include user parameters in the email as a text file
 	 * @return           true if everything works
 	 */
@@ -45,6 +45,8 @@ public class SendEmail {
         	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {
             	cmd += " ICvsQ.png";
+            	cmd += " ICvsQ_Smart.png";
+            	cmd += " ICvsQ_Random_Smart.png";
             }
             if (gMapNo) {
             	for (int k = 0; k < noc; k++) {

@@ -152,24 +152,24 @@ public class Demo {
             		return;
             	}
         	}
-//        	if (bp.isSmartQuery()) {
-//            	if (!CmpPlot.plotSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-//            		System.out.println("Plot smart queried ic vs q failed");
-//            		return;
-//            	}
-//        	}
-//        	if (bp.isRandomQuery() && bp.isSmartQuery()) { // user selected both
-//        		// plot ic vs q without countermeasure compared with both method
-//            	if (!CmpPlot.plotRandomSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-//            		System.out.println("Plot smart queried ic vs q failed");
-//            		return;
-//            	}
-//            	// plot bar for each countermeasure
+        	if (bp.isSmartQuery()) {
+            	if (!CmpPlot.plotSmart(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot smart queried ic vs q failed");
+            		return;
+            	}
+        	}
+        	if (bp.isRandomQuery() && bp.isSmartQuery()) { // user selected both
+        		// plot ic vs q without countermeasure compared with both method
+            	if (!CmpPlot.plotRandom_vs_Smart(this.dataDir, this.plotDir)) {
+            		System.out.println("Plot ic vs q compared between random queries and smart queries failed");
+            		return;
+            	}
+            	// plot bar for each countermeasure
 //            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
 //            		System.out.println("Plot smart queried ic vs q failed");
 //            		return;
 //            	}
-//        	}
+        	}
 //
 //        	/* plot google map, just working for random queries */
         	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
