@@ -170,7 +170,7 @@ public class SimAdditiveNoise extends Simulation {
 		for (int q : qlist) {             // for each query number
 			System.out.println("For query: " + q);
 			cmServer.updateLiesNeeded(q); // update expected number of lies
-			int attempts = iteration;             // within 5 attempts, must succeed once
+			int attempts = iteration;     // within 5 attempts, must succeed once
 			int succeed = 0;              // number of successful attempts
 			while (attempts > 0 && succeed < 1) {
 				attacker.reset();         // reset matrix to 0.5
@@ -203,6 +203,24 @@ public class SimAdditiveNoise extends Simulation {
 		feasible = true;         // noise level is feasible, proceed
 		printInfercenMatrix(cmServer, attacker, directory, "smart_AddtiveNoise");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AddtiveNoise.txt");
+	}
+	
+	public void testSmartSimulation(int noq) {
+		System.out.println("Start additive noise simulation wiht " + noq + " number of queries");
+		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
+		cmServer.updateLiesNeeded(noq); // update expected number of lies
+		for (int j = 0; j < noq; j++) {
+			System.out.println("Q: " + j);
+			attacker.smartLocation();
+			attacker.query(cmServer);
+		}
+		if (!cmServer.reachNoiseLevel()) {
+			System.out.println("Noise condition is not satisfied.");
+		}
+		double[] newIC = attacker.computeIC();
+		for (int i = 0; i < newIC.length; i++) {
+			System.out.println("IC of channel " + i + ": " + newIC[i]);
+		}
 	}
 	
 	/**

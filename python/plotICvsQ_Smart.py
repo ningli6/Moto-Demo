@@ -21,16 +21,16 @@ class cmpPlots_Smart:
 			if files[x] == 'cmp_smart_NoCountermeasure.txt':
 				label = "No countermeasure"
 				marker = '.'
-			elif files[x] == 'cmp_AdditiveNoise.txt':
+			elif files[x] == 'cmp_smart_AdditiveNoise.txt':
 				label = "Additive noise"
 				marker = "*"
-			elif files[x] == 'cmp_Transfiguration.txt':
+			elif files[x] == 'cmp_smart_Transfiguration.txt':
 				label = "Transfiguration"
 				marker = "o"
-			elif files[x] == 'cmp_KAnonymity.txt':
+			elif files[x] == 'cmp_smart_KAnonymity.txt':
 				label = "K anonymity"
 				marker = "^"
-			elif files[x] == 'cmp_KClustering.txt':
+			elif files[x] == 'cmp_smart_KClustering.txt':
 				label = "K clustering"
 				marker = "D"
 			plt.plot(l[0], pyf.normalize(pyf.average(l[1:])), label = label, marker = marker)

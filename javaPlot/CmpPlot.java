@@ -82,18 +82,18 @@ public class CmpPlot {
 			if (noCM) {
 				cmd += " cmp_smart_NoCountermeasure.txt";
 			}
-//			if (ad) {
-//				cmd += " cmp_AdditiveNoise.txt";
-//			}
-//			if (tf) {
-//				cmd += " cmp_Transfiguration.txt";
-//			}
-//			if (ka) {
-//				cmd += " cmp_KAnonymity.txt";
-//			}
-//			if (kc) {
-//				cmd += " cmp_KClustering.txt";
-//			}
+			if (ad) {
+				cmd += " cmp_smart_AdditiveNoise.txt";
+			}
+			if (tf) {
+				cmd += " cmp_smart_Transfiguration.txt";
+			}
+			if (ka) {
+				cmd += " cmp_smart_KAnonymity.txt";
+			}
+			if (kc) {
+				cmd += " cmp_smart_KClustering.txt";
+			}
 			System.out.println(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int r = p.waitFor();

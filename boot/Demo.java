@@ -64,7 +64,8 @@ public class Demo {
             		}
         		}
         		if (bp.containsCM("ADDITIVENOISE") && bp.isSmartQuery()) {
-            		sim.smartSimulation();
+//            		sim.smartSimulation();
+            		sim.testSmartSimulation(20);
             		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
             			bp.delCountermeasure("ADDITIVENOISE");
             			bp.setGoogleMapAD(false);

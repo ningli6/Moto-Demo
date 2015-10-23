@@ -162,7 +162,8 @@ public class SimKClustering extends Simulation {
 			multclient.reset(); // set infer matrix to 0.5
 		}
 		printInfercenMatrix(cmServer, multclient, directory, "smart_KClustering");
-		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_KClustering.txt");		}
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_KClustering.txt");		
+	}
 
 	public void randomTradeOffBar() {
 		System.out.println("Start computing trade off bar for K Clustering with random queries...");
