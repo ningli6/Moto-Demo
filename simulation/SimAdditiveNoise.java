@@ -202,7 +202,7 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		feasible = true;         // noise level is feasible, proceed
 		printInfercenMatrix(cmServer, attacker, directory, "smart_AddtiveNoise");
-		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AddtiveNoise.txt");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
 	}
 	
 	public void testSmartSimulation(int noq) {

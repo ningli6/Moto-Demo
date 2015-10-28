@@ -64,8 +64,8 @@ public class Demo {
             		}
         		}
         		if (bp.containsCM("ADDITIVENOISE") && bp.isSmartQuery()) {
-//            		sim.smartSimulation();
-            		sim.testSmartSimulation(20);
+            		sim.smartSimulation();
+//            		sim.testSmartSimulation(20);
             		if (!sim.isFeasible()) {   // if noise level is not feasible, do not plot anything with additive noise
             			bp.delCountermeasure("ADDITIVENOISE");
             			bp.setGoogleMapAD(false);
@@ -165,11 +165,11 @@ public class Demo {
             		System.out.println("Plot ic vs q compared between random queries and smart queries failed");
             		return;
             	}
-            	// plot bar for each countermeasure
-//            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
-//            		System.out.println("Plot smart queried ic vs q failed");
-//            		return;
-//            	}
+            	//  plot bar for each countermeasure
+            	if (!CmpPlot.plotRandomSmartBar(this.dataDir, this.plotDir, bp.containsCM("NOCOUNTERMEASURE"), bp.containsCM("ADDITIVENOISE"), bp.containsCM("TRANSFIGURATION"), bp.containsCM("KANONYMITY"), bp.containsCM("KCLUSTERING"))) {
+            		System.out.println("Plot smart queried ic vs q failed");
+            		return;
+            	}
         	}
 //
 //        	/* plot google map, just working for random queries */

@@ -161,11 +161,62 @@ public class CmpPlot {
 		}
 	}
 
+	/**
+	 * Plot ic bar of random query vs smart query for each countermeasure selected
+	 * @param dataDir  data dir
+	 * @param plotDir  resut dir
+	 * @param noCM     plot without countermeasure
+	 * @param ad       plot with additive noise
+	 * @param tf       plot with transfiguration
+	 * @param ka       plot with k anonimity
+	 * @param kc       plot with k clustering
+	 * @return
+	 */
 	public static boolean plotRandomSmartBar(String dataDir, String plotDir,
-			boolean containsCM, boolean containsCM2, boolean containsCM3,
-			boolean containsCM4, boolean containsCM5) {
-		// TODO Auto-generated method stub
-		return false;
+			boolean noCM, boolean ad, boolean tf,
+			boolean ka, boolean kc) {
+		System.out.println("Start plotting IC bar for random and smart queries...");
+		try {
+			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotCMPBar.py " + dataDir + " "+ plotDir;
+			if (noCM) {
+				cmd += " NoCountermeasure";
+			}
+			if (ad) {
+				cmd += " AdditiveNoise";
+			}
+			if (tf) {
+				cmd += " Transfiguration";
+			}
+			if (ka) {
+				cmd += " KAnonymity";
+			}
+			if (kc) {
+				cmd += " KClustering";
+			}
+			Process p = Runtime.getRuntime().exec(cmd);
+			int r = p.waitFor();
+
+			BufferedReader stdInput = new BufferedReader(new
+				InputStreamReader(p.getInputStream()));
+
+			BufferedReader stdError = new BufferedReader(new
+				InputStreamReader(p.getErrorStream()));
+
+	        String s;
+			// read the output from the command
+			while ((s = stdInput.readLine()) != null) {
+				System.out.println(s);
+			}
+
+	        // read any errors from the attempted command
+			while ((s = stdError.readLine()) != null) {
+				System.out.println(s);
+			}
+			return r == 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
