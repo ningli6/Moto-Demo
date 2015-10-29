@@ -200,6 +200,36 @@ public class SimKAnonymity extends Simulation {
 		printTradeOff(cmVal, icVal, directory, "traddOff_KAnonymity.txt");
 	}
 	
+	public void smartTradeOffBar() {
+		System.out.println("Start computing trade off bar for K Anonymity with smart queries...");
+		int repeat = 1;
+		SmartAttacker trClient = new SmartAttacker(cmServer);
+		// find value for k
+		int k = 0;
+		for (int i = 0; i < noc; i++) {
+			k = Math.max(k, bootParams.getPUOnChannel(i).size());
+		}
+		// initialize value for k
+		int[] cmVal = new int[k];
+		int[] icVal = new int[k];
+		for (int i = 1; i <= k; i++) {
+			cmVal[i - 1] = i;
+		}
+		for (int i : cmVal) { // for different k
+			cmServer.setK(i); // set new k and regroup
+			for (int r = 0; r < repeat; r++) {
+				trClient.reset();// reset k
+				for (int q = 0; q < noq; q++) {
+					System.out.println("Q: " + q);
+					trClient.smartLocation();
+					trClient.query(cmServer);
+				}
+				icVal[i - 1] += (int) average(trClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmVal, icVal, directory, "traddOff_smart_KAnonymity.txt");		
+	}
+	
 	private void printTradeOff(int[] cmString, int[] icVal,
 			String directory, String string) {
 		System.out.println("Start printing trade-off value...");
@@ -237,10 +267,5 @@ public class SimKAnonymity extends Simulation {
 
 	public String getCountermeasure() {
 		return counterMeasure;
-	}
-
-	public void smartTradeOffBar() {
-		// TODO Auto-generated method stub
-		
 	}
 }

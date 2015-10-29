@@ -44,9 +44,10 @@ public class SendEmail {
         try {
         	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {
-            	cmd += " ICvsQ.png";
-            	cmd += " ICvsQ_Smart.png";
-            	cmd += " ICvsQ_Random_Smart.png";
+            	cmd += " ICvsQ.png";                 // ic vs q with random query
+            	cmd += " ICvsQ_Smart.png";           // ic vs q with smart query
+            	cmd += " ICvsQ_Random_Smart.png";    // random vs smart query without countermeasure
+            	cmd += " cmpbar.png";                // random vs smart query with countermeasures
             }
             if (gMapNo) {
             	for (int k = 0; k < noc; k++) {
@@ -75,15 +76,19 @@ public class SendEmail {
             }
             if (tradeOffAd) {
             	cmd += " traddOff_AdditiveNoise.png";
+            	cmd += " traddOff_smart_AdditiveNoise.png";
             }
             if (tradeOffTf) {
             	cmd += " traddOff_Transfiguration.png";
+            	cmd += " traddOff_smart_Transfiguration.png";
             }
             if (tradeOffKA) {
             	cmd += " traddOff_KAnonymity.png";
+            	cmd += " traddOff_smart_KAnonymity.png";
             }
             if (tradeOffKC) {
             	cmd += " traddOff_KClustering.png";
+            	cmd += " traddOff_smart_KClustering.png";
             }
             if (inputParams) {
             	cmd += " emailInfo.txt";

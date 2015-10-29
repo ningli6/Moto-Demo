@@ -239,7 +239,33 @@ public class SimAdditiveNoise extends Simulation {
 				trdOfClient.reset();                // set matrix back to 0.5
 				cmServer.reset();                   // set actual lies back to 0
 				for (int i = 0; i < noq; i++) {
+					System.out.println("Q: " + i);
 					trdOfClient.randomLocation();
+					trdOfClient.query(cmServer);
+				}
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
+	}
+	
+	/**
+	 * Plot trade off curve with smart queries;
+	 */
+	public void smartTradeOffCurve() {
+		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
+		double[] trdIC = new double[8];
+		int repeat = 1;
+		System.out.println("Start computing trade off curve for additive noise with smart queries...");
+		SmartAttacker trdOfClient = new SmartAttacker(cmServer);  // create a new client
+		for (int k = 0; k < cmString.length; k++) { // for each noise level
+			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
+			System.out.println("Noise: " + cmString[k]);
+			for (int r = 0; r < repeat; r++) {
+				trdOfClient.reset();                // set matrix back to 0.5
+				cmServer.reset();                   // set actual lies back to 0
+				for (int i = 0; i < noq; i++) {
+					trdOfClient.smartLocation();
 					trdOfClient.query(cmServer);
 				}
 				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
@@ -293,10 +319,5 @@ public class SimAdditiveNoise extends Simulation {
 
 	public String getCountermeasure() {
 		return countermeasure;
-	}
-
-	public void smartTradeOffCurve() {
-		// TODO Auto-generated method stub
-		
 	}
 }

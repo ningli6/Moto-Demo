@@ -223,6 +223,29 @@ public class SimTransfiguration extends Simulation {
 		printTradeOff(cmString, trdIC, directory, "traddOff_Transfiguration.txt");
 	}
 	
+	public void smartTradeOffCurve() {
+		int[] cmString = {3, 4, 5, 6};
+		double[] trdIC = new double[cmString.length];
+		int repeat = 1;
+		System.out.println("Start computing trade off curve for transfiguration withe smart queries...");
+		SmartAttacker trdOfClient = new SmartAttacker(cmServer);     // get a new client
+		for (int k = 0; k < cmString.length; k++) {// for each sides
+			cmServer.transfigure(cmString[k]);         // set new number of sides
+			System.out.println("Sides: " + cmString[k]);
+			for (int r = 0; r < repeat; r++) {
+				trdOfClient.reset(); // set client maps back to 0.5
+				for (int i = 0; i < noq; i++) {
+					System.out.println("Q: " + i);
+					trdOfClient.smartLocation();
+					trdOfClient.query(cmServer);
+				}
+				double[] ic = trdOfClient.computeIC();
+				trdIC[k] += average(ic) / repeat;
+			}
+		}
+		printTradeOff(cmString, trdIC, directory, "traddOff_smart_Transfiguration.txt");		
+	}
+	
 	private void printTradeOff(int[] cmString, double[] trdIC,
 			String directory, String string) {
 		System.out.println("Start printing trade-off value...");
@@ -260,10 +283,5 @@ public class SimTransfiguration extends Simulation {
 
 	public String getCountermeasure() {
 		return counterMeasure;
-	}
-
-	public void smartTradeOffCurve() {
-		// TODO Auto-generated method stub
-		
 	}
 }

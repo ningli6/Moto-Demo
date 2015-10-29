@@ -35,7 +35,7 @@ public class Demo {
 
     public void run() {
         try {
-        	if (bp.containsCM("NOCOUNTERMEASURE")) {  // if no countermeasure is selected
+        	if((bp.isRandomQuery() && bp.isSmartQuery()) || bp.containsCM("NOCOUNTERMEASURE")) {  // if no countermeasure is selected
         		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
         		if (bp.isRandomQuery()) {  // if using random query
             		sim.randomSimulation();
@@ -171,14 +171,7 @@ public class Demo {
             		return;
             	}
         	}
-//
-//        	/* plot google map, just working for random queries */
-        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
-        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
-        		System.out.println("Plot Google Maps failed");
-        		return;
-        	}
-    	
+        	
         	/* plot tradeOff curve/bar */
         	if (bp.isRandomQuery()) {
             	if (!TradeOffPlot.plotRandom(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
@@ -186,12 +179,20 @@ public class Demo {
             		return;
             	}
         	}
-//        	if (bp.isSmartQuery()) {
-//            	if (!TradeOffPlot.plotSmart(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
-//            		System.out.println("Plot trade-off failed");
-//            		return;
-//            	}
+        	if (bp.isSmartQuery()) {
+            	if (!TradeOffPlot.plotSmart(this.dataDir, this.plotDir, bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), bp.isTradeOffKC())) {
+            		System.out.println("Plot trade-off failed");
+            		return;
+            	}
+        	}
+//
+//        	/* plot google map, just working for random queries */
+//        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
+//        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+//        		System.out.println("Plot Google Maps failed");
+//        		return;
 //        	}
+    	
         	/* send email, works only for random queries */
         	if (bp.getInputParams()) {
         		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
