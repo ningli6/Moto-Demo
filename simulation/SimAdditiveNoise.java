@@ -246,7 +246,7 @@ public class SimAdditiveNoise extends Simulation {
 				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
 			}
 		}
-		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
+		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
 	}
 	
 	/**
@@ -271,7 +271,7 @@ public class SimAdditiveNoise extends Simulation {
 				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
 			}
 		}
-		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
+		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
 	}
 	
 	private void printTradeOff(double[] cm, double[] ic, String path, String fileName) {

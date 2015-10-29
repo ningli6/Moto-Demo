@@ -193,6 +193,7 @@ public class CmpPlot {
 			if (kc) {
 				cmd += " KClustering";
 			}
+			System.out.println(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
 			int r = p.waitFor();
 
