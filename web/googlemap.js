@@ -30,7 +30,7 @@ var numberOfMarkers = 0;
 function initialize() {
     // create a google map
     var mapProp = {
-        zoom: 5,
+        zoom: 7,
         maxZoom: 9,
         center: myCenter
     };
