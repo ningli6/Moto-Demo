@@ -185,13 +185,13 @@ public class Demo {
             		return;
             	}
         	}
-//
+
 //        	/* plot google map, just working for random queries */
-//        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
-//        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
-//        		System.out.println("Plot Google Maps failed");
-//        		return;
-//        	}
+        	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
+        			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.isRandomQuery(), bp.isSmartQuery(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
+        		System.out.println("Plot Google Maps failed");
+        		return;
+        	}
     	
         	/* send email, works only for random queries */
         	if (bp.getInputParams()) {

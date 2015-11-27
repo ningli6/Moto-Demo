@@ -106,7 +106,9 @@ public class SimKClustering extends Simulation {
 		icCMMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repeat; rep++){
 			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
 				multclient.randomLocation();
+				System.out.println("location: [" + multclient.getRowIndex() + ", " + multclient.getColIndex() + "]");
 				multclient.query(cmServer);
 				if (icCMMap.containsKey(i)){
 					double[] newIC = multclient.computeIC();
@@ -146,6 +148,7 @@ public class SimKClustering extends Simulation {
 		/* run simulation for multiple times */
 		icSmartMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repetition; rep++){
+			multclient.reset(); // set infer matrix to 0.5
 			for (int i = 1; i <= maxQ; i++) {
 				System.out.println("Q: " + i);
 				multclient.smartLocation();
@@ -159,9 +162,8 @@ public class SimKClustering extends Simulation {
 					icSmartMap.put(i, sum);
 				}
 			}
-			multclient.reset(); // set infer matrix to 0.5
 		}
-		printInfercenMatrix(cmServer, multclient, directory, "smart_KClustering");
+		printInfercenMatrix(cmServer, multclient, directory, "smart_K_Clustering");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_KClustering.txt");		
 	}
 

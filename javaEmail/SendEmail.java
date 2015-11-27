@@ -52,26 +52,31 @@ public class SendEmail {
             if (gMapNo) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " No_Countermeasure_" + k + "_gMaps.png";
+            		cmd += " smart_No_Countermeasure_" + k + "_gMaps.png";
             	}
             }
             if (gMapAd) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " Additive_Noise_" + k + "_gMaps.png";
+            		cmd += " smart_Additive_Noise_" + k + "_gMaps.png";
             	}
             }
             if (gMapTf) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " Transfiguration_" + k + "_gMaps.png";
+            		cmd += " smart_Transfiguration_" + k + "_gMaps.png";
             	}
             }
             if (gMapKa) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " K_Anonymity_" + k + "_gMaps.png";
+            		cmd += " smart_K_Anonymity_" + k + "_gMaps.png";
             	}
             }
             if (gMapKc) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " K_Clustering_" + k + "_gMaps.png";
+            		cmd += " smart_K_Clustering_" + k + "_gMaps.png";
             	}
             }
             if (tradeOffAd) {

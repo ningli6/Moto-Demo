@@ -155,7 +155,7 @@ public class Simulation {
 				}
 			}
 		}
-		printInfercenMatrix(server, attacker, directory, "smart_NoCountermeasure");
+		printInfercenMatrix(server, attacker, directory, "smart_No_Countermeasure");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_NoCountermeasure.txt");
 	}
 

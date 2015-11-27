@@ -77,6 +77,7 @@ public class Client {
 		Response res = server.response(this);
 		if (res == null) return;
 		double power = res.getPower();      // response power
+//		System.out.println("Power: " + power);
 		int channelID = res.getChannelID(); // channel id
 		// client will know that no one is responding
 		if (channelID < 0) {

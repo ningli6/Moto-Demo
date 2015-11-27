@@ -17,6 +17,8 @@ public class MatPlot {
 	 * @param slat     south lat
 	 * @param wlng     west lng
 	 * @param elng     east lng
+	 * @param randomQuery  plot result of random query
+	 * @param smartQuery   plot result of smart query
 	 * @param noCM     plot google map for no countermeasure
 	 * @param ad       plot additive noise
 	 * @param tf       plot transfiguration
@@ -25,7 +27,13 @@ public class MatPlot {
 	 * @return
 	 */
 	public static boolean plot(String dataDir, String plotDir, double cellSize, int noc, double nlat, 
-			double slat, double wlng, double elng, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+			double slat, double wlng, double elng, 
+			boolean randomQuery, boolean smartQuery, 
+			boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+		if (!randomQuery && !smartQuery) {
+			System.out.println("Must specify method of queries");
+			return true;
+		}
 		if (!noCM && !ad && !tf && !ka && !kc) {
 			System.out.println("No google map need to be plotted");
 			return true;
@@ -45,21 +53,41 @@ public class MatPlot {
 	        							+ dataDir + " " + plotDir + " "
 	        							+ Integer.toString(noc) + " " + Integer.toString(rows) + " " + Integer.toString(cols) + " "
 	        							+ Double.toString(nlat) + " " + Double.toString(slat) + " " + Double.toString(wlng) + " " + Double.toString(elng);
-	        if (noCM) {
-	        	cmd += " No_Countermeasure";
+	        if (randomQuery) {
+		        if (noCM) {
+		        	cmd += " No_Countermeasure";
+		        }
+		        if (ad) {
+		        	cmd += " Additive_Noise";
+		        }
+		        if (tf) {
+		        	cmd += " Transfiguration";
+		        }
+		        if (ka) {
+		        	cmd += " K_Anonymity";
+		        }
+		        if (kc) {
+		        	cmd += " K_Clustering";
+		        }
 	        }
-	        if (ad) {
-	        	cmd += " Additive_Noise";
+	        if (smartQuery) {
+		        if (noCM) {
+		        	cmd += " smart_No_Countermeasure";
+		        }
+		        if (ad) {
+		        	cmd += " smart_Additive_Noise";
+		        }
+		        if (tf) {
+		        	cmd += " smart_Transfiguration";
+		        }
+		        if (ka) {
+		        	cmd += " smart_K_Anonymity";
+		        }
+		        if (kc) {
+		        	cmd += " smart_K_Clustering";
+		        }
 	        }
-	        if (tf) {
-	        	cmd += " Transfiguration";
-	        }
-	        if (ka) {
-	        	cmd += " K_Anonymity";
-	        }
-	        if (kc) {
-	        	cmd += " K_Clustering";
-	        }
+
 //	        System.out.println(cmd);
 	        Process p = Runtime.getRuntime().exec(cmd);
 	        /* uncomment these code to see matlab output */

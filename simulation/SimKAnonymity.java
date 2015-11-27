@@ -152,6 +152,7 @@ public class SimKAnonymity extends Simulation {
 		/* run simulation for multiple times */
 		icSmartMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repetation; rep++){
+			multclient.reset(); // set infer matrix to 0.5
 			for (int i = 1; i <= maxQ; i++) {
 				System.out.println("Q: " + i);
 				multclient.smartLocation();
@@ -165,9 +166,8 @@ public class SimKAnonymity extends Simulation {
 					icSmartMap.put(i, sum);
 				}
 			}
-			multclient.reset(); // set infer matrix to 0.5
 		}
-		printInfercenMatrix(cmServer, multclient, directory, "smart_KAnonymity");
+		printInfercenMatrix(cmServer, multclient, directory, "smart_K_Anonymity");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_KAnonymity.txt");
 	}
 

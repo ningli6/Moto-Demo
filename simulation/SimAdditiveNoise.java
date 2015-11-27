@@ -161,7 +161,7 @@ public class SimAdditiveNoise extends Simulation {
 		System.out.println("Start smart query with additive noise...");
 		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
 		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
-		int iteration = 5;
+		int iteration = 1;
 		List<Integer> qlist = new ArrayList<Integer>();
 		for (int i = 0; i <= interval; i++) {     // start query from 0 times
 			qlist.add(gap * i);
@@ -201,26 +201,8 @@ public class SimAdditiveNoise extends Simulation {
 			}
 		}
 		feasible = true;         // noise level is feasible, proceed
-		printInfercenMatrix(cmServer, attacker, directory, "smart_AddtiveNoise");
+		printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
-	}
-	
-	public void testSmartSimulation(int noq) {
-		System.out.println("Start additive noise simulation wiht " + noq + " number of queries");
-		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
-		cmServer.updateLiesNeeded(noq); // update expected number of lies
-		for (int j = 0; j < noq; j++) {
-			System.out.println("Q: " + j);
-			attacker.smartLocation();
-			attacker.query(cmServer);
-		}
-		if (!cmServer.reachNoiseLevel()) {
-			System.out.println("Noise condition is not satisfied.");
-		}
-		double[] newIC = attacker.computeIC();
-		for (int i = 0; i < newIC.length; i++) {
-			System.out.println("IC of channel " + i + ": " + newIC[i]);
-		}
 	}
 	
 	/**
@@ -229,6 +211,7 @@ public class SimAdditiveNoise extends Simulation {
 	public void randomTradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
+		for (int i = 0; i < 8; i++) trdIC[i] = -1;
 		int repeat = 20;
 		System.out.println("Start computing trade off curve for additive noise with random queries...");
 		Client trdOfClient = new Client(cmServer);  // create a new client
@@ -243,8 +226,12 @@ public class SimAdditiveNoise extends Simulation {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
 				}
-				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+				if (cmServer.reachNoiseLevel()) {
+					trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+				}
+				else break;
 			}
+			if (!cmServer.reachNoiseLevel()) break;
 		}
 		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
 	}
@@ -253,8 +240,10 @@ public class SimAdditiveNoise extends Simulation {
 	 * Plot trade off curve with smart queries;
 	 */
 	public void smartTradeOffCurve() {
-		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
-		double[] trdIC = new double[8];
+		double[] cmString = {0, 0.2, 0.4, 0.6, 0.8};
+		int len = cmString.length;
+		double[] trdIC = new double[len];
+		for (int i = 0; i < len; i++) trdIC[i] = -1;
 		int repeat = 1;
 		System.out.println("Start computing trade off curve for additive noise with smart queries...");
 		SmartAttacker trdOfClient = new SmartAttacker(cmServer);  // create a new client
@@ -268,9 +257,17 @@ public class SimAdditiveNoise extends Simulation {
 					trdOfClient.smartLocation();
 					trdOfClient.query(cmServer);
 				}
-				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+				if (cmServer.reachNoiseLevel()) {
+					trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+				}
+				else break;
 			}
+			if (!cmServer.reachNoiseLevel()) break;
 		}
+		for (int i = 0; i < len; i++) {
+			System.out.print(trdIC[i] + " ");
+		}
+		System.out.println();
 		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
 	}
 	
@@ -279,12 +276,14 @@ public class SimAdditiveNoise extends Simulation {
 		File file = new File(path + fileName);
 		try {
 			PrintWriter out = new PrintWriter(file);
-			for (double q : cm) {
-				out.print(q + " ");
+			for (int i = 0; i < cm.length; i++) {
+				if (ic[i] == -1) break;
+				out.print(cm[i] + " ");
 			}
-			out.println();	
-			for (double q : ic) {
-				out.print(q + " ");
+			out.println();
+			for (int i = 0; i < cm.length; i++) {
+				if (ic[i] == -1) break;
+				out.print(ic[i] + " ");
 			}
 			out.println();
 			out.close (); // this is necessary	

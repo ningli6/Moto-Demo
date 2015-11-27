@@ -157,6 +157,7 @@ public class SimTransfiguration extends Simulation {
 		/* run simulation for multiple times */
 		icSmartMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repetition; rep++){
+			multclient.reset(); // set infer matrix to 0.5
 			for (int i = 1; i <= maxQ; i++) {
 				System.out.println("Q: " + i);
 				multclient.smartLocation();
@@ -170,7 +171,6 @@ public class SimTransfiguration extends Simulation {
 					icSmartMap.put(i, sum);
 				}
 			}
-			multclient.reset(); // set infer matrix to 0.5
 		}
 		printInfercenMatrix(cmServer, multclient, directory, "smart_Transfiguration");
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_Transfiguration.txt");	
