@@ -108,9 +108,9 @@ function checkSize(recRegion) {
     var sz = cellSize;
     var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / sz);
     var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / sz);
-    if (rows < 50 || cols < 50) {
+    if (rows > 1000 || cols > 1000) {
         console.log("Rows: " + rows + ", Cols: " + cols);
-        alert("Selected region is too small. Please draw a region which is at least a 50 by 50 grid based on current grid size to perform a reasonable simulation.");
+        alert("Selected region is too large to compute in reasonable time. Please draw a smaller one.");
         return false;
     }
     return true;

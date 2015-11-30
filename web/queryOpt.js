@@ -19,6 +19,11 @@ function enableQueryInput (args) {
     } else {
         document.getElementById("queryInput").disabled = true;
     }
+    // if user selected smart query, set grid size to 5 km
+    if (document.getElementById("smartQuery").checked) {
+        $('#gridSizeDisp').html("5 km");
+        adjustGridSize("5 km");
+    }
 }
 
 /**
