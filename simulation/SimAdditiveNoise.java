@@ -205,6 +205,45 @@ public class SimAdditiveNoise extends Simulation {
 		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
 	}
 	
+	public void smartSingleSimulation() {
+		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
+			feasible = false;
+			System.out.println("Noise level is not feasible.");
+			return;
+		}
+		System.out.println("Start smart query with additive noise...");
+		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
+		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
+		List<Integer> qlist = new ArrayList<Integer>();
+		for (int i = 0; i <= interval; i++) {     // start query from 0 times
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		int repetation = 1;
+		int maxQ = qlist.get(qlist.size() - 1);
+		cmServer.updateLiesNeeded(maxQ); // update expected number of lies
+		icSmartMap.put(0, attacker.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repetation; rep++){
+			attacker.reset(); // set infer matrix to 0.5
+			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
+				attacker.smartLocation();
+				attacker.query(cmServer);
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = attacker.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetation; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
+			}
+		}
+		feasible = true;         // noise level is feasible, proceed
+		printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
+	}
+	
 	/**
 	 * Plot trade-of curve, output data in a file named traddOff_AdditiveNoise.txt
 	 */
@@ -226,12 +265,12 @@ public class SimAdditiveNoise extends Simulation {
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
 				}
-				if (cmServer.reachNoiseLevel()) {
-					trdIC[k] += average(trdOfClient.computeIC()) / repeat;
-				}
-				else break;
+//				if (cmServer.reachNoiseLevel()) {
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+//				}
+//				else break;
 			}
-			if (!cmServer.reachNoiseLevel()) break;
+//			if (!cmServer.reachNoiseLevel()) break;
 		}
 		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
 	}
@@ -240,7 +279,7 @@ public class SimAdditiveNoise extends Simulation {
 	 * Plot trade off curve with smart queries;
 	 */
 	public void smartTradeOffCurve() {
-		double[] cmString = {0, 0.2, 0.4, 0.6, 0.8};
+		double[] cmString = {0.2, 0.4, 0.6, 0.8};
 		int len = cmString.length;
 		double[] trdIC = new double[len];
 		for (int i = 0; i < len; i++) trdIC[i] = -1;
@@ -257,17 +296,13 @@ public class SimAdditiveNoise extends Simulation {
 					trdOfClient.smartLocation();
 					trdOfClient.query(cmServer);
 				}
-				if (cmServer.reachNoiseLevel()) {
-					trdIC[k] += average(trdOfClient.computeIC()) / repeat;
-				}
-				else break;
+//				if (cmServer.reachNoiseLevel()) {
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+//				}
+//				else break;
 			}
-			if (!cmServer.reachNoiseLevel()) break;
+//			if (!cmServer.reachNoiseLevel()) break;
 		}
-		for (int i = 0; i < len; i++) {
-			System.out.print(trdIC[i] + " ");
-		}
-		System.out.println();
 		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
 	}
 	
