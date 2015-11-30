@@ -11,6 +11,7 @@ We compute inaccuracy for each channel to evaluate the result of inference as a 
 * The third technique is K-anonymity, which groups PUs into a group of k members, such that they share a larger area of protection contour, then compute a virtual primary user whose protection contour is the minimum covering circle for all other PUs in that group. Use the virtual PU as the new PU to respond to new queries. Poor grouping decision can lead to poor spectrum utility performance.
 
 * The fourth technique is K-Clustering, which uses a k-means algorithm to classify PUs into different group according to their location distribution, then compute a virtual primary user whose protection contour is the minimum covering circle for all other PUs in that cluster. Use the virtual PU as the new PU to respond to new queries.
+
 ### Query options
 User can select random query and/or smart query in the process of simulation. Generally random query is much faster and works better with countermeasures. Smart query usually brings down inaccuracy really quick but it's computationally demanding so it can't operate on a larger map. Smart query sometimes won’t cooperate with countermeasures.
 ### Author
