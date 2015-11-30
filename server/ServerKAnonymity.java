@@ -126,8 +126,8 @@ public class ServerKAnonymity extends Server {
 		PU virtualPU = new PU();
 		virtualPU.setMap(map);
 		virtualPU.setChannelID(channelID); // set up working channel
-		for (int i = 0; i < map.getRows(); i++) {
-			for (int j = 0; j < map.getCols(); j++) {
+		for (int i = 0; i < map.getNumOfRows(); i++) {
+			for (int j = 0; j < map.getNumOfCols(); j++) {
 				Location loc = map.getLocation(i, j);
 				double max_radius = 0;
 				for (PU pu: list) {
@@ -206,9 +206,9 @@ public class ServerKAnonymity extends Server {
 	 */
 	public double virtualMTP(double dist, double base) {
 		double PMAX = 1;
-		if (dist < MTP.d1 + base) return 0;
-		if (dist >= MTP.d1 + base && dist < MTP.d2 + base) return 0.5 * PMAX;
-		if (dist >= MTP.d2 + base && dist < MTP.d3 + base) return 0.75 * PMAX;
+		if (dist < (MTP.d1 + base)) return 0;
+		if (dist >= (MTP.d1 + base) && dist < (MTP.d2 + base)) return 0.5 * PMAX;
+		if (dist >= (MTP.d2 + base) && dist < (MTP.d3 + base)) return 0.75 * PMAX;
 		return PMAX;
 	}
 

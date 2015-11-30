@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import client.Client;
+import client.SmartAttacker;
 import server.ServerKClustering;
 import utility.Location;
 import utility.PU;
@@ -50,11 +51,12 @@ public class SimKClustering extends Simulation {
 		icCMMap = new HashMap<Integer, double[]>();
 		
 		/* initialize feasible */
-		feasible = false;
+		if (this.k > 0) feasible = true;
+		else feasible = false;
 	}
 	
 	@Override
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		if (this.k > 0) {
 			feasible = true;
 		}
@@ -62,7 +64,7 @@ public class SimKClustering extends Simulation {
 			feasible = false;
 			return;
 		}
-		System.out.println("Start querying...");
+		System.out.println("Start random query with k clustering for once...");
 
 		/* initialize a client */
 		Client client = new Client(cmServer);
@@ -75,24 +77,11 @@ public class SimKClustering extends Simulation {
 		/* compute IC */
 		IC = client.computeIC();
 		
-		/* debug */
-//		for (List<PU> puList : cmServer.getVirtualChannelList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
-		
-		printSingle(cmServer, client, directory, "K_Clustering");
+		printInfercenMatrix(cmServer, client, directory, "K_Clustering");
 	}
 	
 	@Override
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		if (this.k > 0) {
 			feasible = true;
 		}
@@ -117,7 +106,9 @@ public class SimKClustering extends Simulation {
 		icCMMap.put(0, multclient.computeIC()); // ic at query 0 is constant
 		for (int rep = 0; rep < repeat; rep++){
 			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
 				multclient.randomLocation();
+				System.out.println("location: [" + multclient.getRowIndex() + ", " + multclient.getColIndex() + "]");
 				multclient.query(cmServer);
 				if (icCMMap.containsKey(i)){
 					double[] newIC = multclient.computeIC();
@@ -130,11 +121,54 @@ public class SimKClustering extends Simulation {
 			}
 			multclient.reset(); // set infer matrix to 0.5
 		}
-		printMultiple(qlist, icCMMap, directory, "cmp_kClustering.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_KClustering.txt");
+	}
+	
+	public void smartSimulation() {
+		if (this.k > 0) {
+			feasible = true;
+		}
+		else {
+			feasible = false;
+			return;
+		}
+		// multiple simulation with k anonymity
+		SmartAttacker multclient = new SmartAttacker(cmServer); 
+		System.out.println("Start computing average IC with k clustering using smart queries...");
+		// compute query points
+		int gap = noq / interval;
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval; i++) {
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		int maxQ = qlist.get(qlist.size() - 1);
+		int repetition = 1;
+		/* run simulation for multiple times */
+		icSmartMap.put(0, multclient.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repetition; rep++){
+			multclient.reset(); // set infer matrix to 0.5
+			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
+				multclient.smartLocation();
+				multclient.query(cmServer);
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = multclient.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetition; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
+			}
+		}
+		printInfercenMatrix(cmServer, multclient, directory, "smart_K_Clustering");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_KClustering.txt");		
 	}
 
-	public void tradeOffBar() {
-		System.out.println("Start computing trade off bar for K Clustering...");
+	public void randomTradeOffBar() {
+		System.out.println("Start computing trade off bar for K Clustering with random queries...");
 		int repeat = 10;
 		Client trClient = new Client(cmServer);
 		// find value for k
@@ -160,6 +194,35 @@ public class SimKClustering extends Simulation {
 			}
 		}
 		printTradeOff(cmVal, icVal, directory, "traddOff_KClustering.txt");
+	}
+	
+	public void smartTradeOffBar() {
+		System.out.println("Start computing trade off bar for K Clustering with smart queries...");
+		int repeat = 1;
+		SmartAttacker trClient = new SmartAttacker(cmServer);
+		// find value for k
+		int k = 0;
+		for (int i = 0; i < noc; i++) {
+			k = Math.max(k, bootParams.getPUOnChannel(i).size());
+		}
+		// initialize value for k
+		int[] cmVal = new int[k];
+		int[] icVal = new int[k];
+		for (int i = 1; i <= k; i++) {
+			cmVal[i - 1] = i;
+		}
+		for (int i : cmVal) { // for different k
+			cmServer.setK(i); // set new k and regroup
+			for (int r = 0; r < repeat; r++) {
+				trClient.reset();// reset k
+				for (int q = 0; q < noq; q++) {
+					trClient.smartLocation();
+					trClient.query(cmServer);
+				}
+				icVal[i - 1] += (int) average(trClient.computeIC()) / repeat;
+			}
+		}
+		printTradeOff(cmVal, icVal, directory, "traddOff_smart_KClustering.txt");		
 	}
 	
 	private void printTradeOff(int[] cmString, int[] icVal,

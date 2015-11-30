@@ -1,22 +1,21 @@
 function [] = probPlot(varargin)
 
 % Usage:
-% probPlot(nc, rows, cols, latStart, latEnd, lngStart, lngEnd)
-% @Param dataDir   [Directory for data file]
-% @Param plotDir   [Save directory for plotted figure]
-% @Param nc        [Number of channels]
-% @Param rows      [Number of rows for analysis area]
-% @Param cols      [Number of cols for analysis area]
-% @Param latStart  [top bound]
-% @Param latEnd    [bot bound]
-% @Param lngStart  [left bound]
-% @Param lngEnd    [right bound]
-% @Param noCM      [plot map of no countermeasure]
-% @Param ad        [plot additive noise]
-% @Param tf        [plot transfiguration]
-% @Param ka        [plot anonymity]
-% @Param kc        [plot clustering]
-
+% probPlot(dataDir, plotDir, nc, rows, cols, latStart, latEnd, lngStart, lngEnd, ad, tf, ka, kc)
+% 1@Param dataDir    [Directory for data file]
+% 2@Param plotDir    [Save directory for plotted figure]
+% 3@Param nc         [Number of channels]
+% 4@Param rows       [Number of rows for analysis area]
+% 5@Param cols       [Number of cols for analysis area]
+% 6@Param latStart   [top bound]
+% 7@Param latEnd     [bot bound]
+% 8@Param lngStart   [left bound]
+% 9@Param lngEnd     [right bound]
+% 10@Param noCM      [plot map of no countermeasure]
+% 11@Param ad        [plot additive noise]
+% 12@Param tf        [plot transfiguration]
+% 13@Param ka        [plot anonymity]
+% 14@Param kc        [plot clustering]
 
 rows = str2double(varargin{4});
 cols = str2double(varargin{5});
@@ -108,7 +107,7 @@ for iter = 1:size(cmArray, 2)
         % title and label
         cm = '';
         if (strcmp(cmArray{iter}, 'No_Countermeasure') == 1)
-            cm = 'no countermeasure';
+            cm = 'No countermeasure';
         elseif (strcmp(cmArray{iter}, 'Additive_Noise') == 1)
             cm = 'Additive noise';
         elseif (strcmp(cmArray{iter}, 'Transfiguration') == 1)
@@ -117,6 +116,16 @@ for iter = 1:size(cmArray, 2)
             cm = 'K Anonymity';
         elseif (strcmp(cmArray{iter}, 'K_Clustering') == 1)
             cm = 'K Clustering';
+        elseif (strcmp(cmArray{iter}, 'smart_No_Countermeasure') == 1)
+            cm = 'No countermeasure with smart queries';
+        elseif (strcmp(cmArray{iter}, 'smart_Additive_Noise') == 1)
+            cm = 'Additive noise with smart queries';
+        elseif (strcmp(cmArray{iter}, 'smart_Transfiguration') == 1)
+            cm = 'Transfiguration with smart queries';
+        elseif (strcmp(cmArray{iter}, 'smart_K_Anonymity') == 1)
+            cm = 'K Anonymity with smart queries';
+        elseif (strcmp(cmArray{iter}, 'smart_K_Clustering') == 1)
+            cm = 'K Clustering with smart queries';
         end
         title(['Probability distribution with ', cm, ' on channel ', channelID]);
         xlabel('longitude');

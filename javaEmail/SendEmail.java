@@ -18,10 +18,10 @@ public class SendEmail {
 	 * @param gMapTf     whether to include google map for transfiguration
 	 * @param gMapKa     whether to include google map for k anonymity
 	 * @param gMapKc     whether to include google map for k clustering
-	 * @param tradeOffAd whether to trade-off curve for additive noise
-	 * @param tradeOffTf whether to trade-off curve for transfiguration
-	 * @param tradeOffKA whether to plot trade-off bar for k anonymity
-	 * @param tradeOffKC whether to plot trade-off bar for k clustering
+	 * @param tradeOffAd whether to include trade-off curve for additive noise
+	 * @param tradeOffTf whether to include trade-off curve for transfiguration
+	 * @param tradeOffKA whether to include trade-off bar for k anonymity
+	 * @param tradeOffKC whether to include trade-off bar for k clustering
 	 * @param inputParams include user parameters in the email as a text file
 	 * @return           true if everything works
 	 */
@@ -40,48 +40,60 @@ public class SendEmail {
         content += "\nThanks for using.\n";
         content = content.replaceAll(" ", "_");
         content = content.replaceAll("\n", "<br>");
-        System.out.println(content);
+
         try {
         	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {
-            	cmd += " ICvsQ.png";
+            	cmd += " ICvsQ.png";                 // ic vs q with random query
+            	cmd += " ICvsQ_Smart.png";           // ic vs q with smart query
+            	cmd += " ICvsQ_Random_Smart.png";    // random vs smart query without countermeasure
+            	cmd += " cmpbar.png";                // random vs smart query with countermeasures
             }
             if (gMapNo) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " No_Countermeasure_" + k + "_gMaps.png";
+            		cmd += " smart_No_Countermeasure_" + k + "_gMaps.png";
             	}
             }
             if (gMapAd) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " Additive_Noise_" + k + "_gMaps.png";
+            		cmd += " smart_Additive_Noise_" + k + "_gMaps.png";
             	}
             }
             if (gMapTf) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " Transfiguration_" + k + "_gMaps.png";
+            		cmd += " smart_Transfiguration_" + k + "_gMaps.png";
             	}
             }
             if (gMapKa) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " K_Anonymity_" + k + "_gMaps.png";
+            		cmd += " smart_K_Anonymity_" + k + "_gMaps.png";
             	}
             }
             if (gMapKc) {
             	for (int k = 0; k < noc; k++) {
             		cmd += " K_Clustering_" + k + "_gMaps.png";
+            		cmd += " smart_K_Clustering_" + k + "_gMaps.png";
             	}
             }
             if (tradeOffAd) {
             	cmd += " traddOff_AdditiveNoise.png";
+            	cmd += " traddOff_smart_AdditiveNoise.png";
             }
             if (tradeOffTf) {
             	cmd += " traddOff_Transfiguration.png";
+            	cmd += " traddOff_smart_Transfiguration.png";
             }
             if (tradeOffKA) {
             	cmd += " traddOff_KAnonymity.png";
+            	cmd += " traddOff_smart_KAnonymity.png";
             }
             if (tradeOffKC) {
             	cmd += " traddOff_KClustering.png";
+            	cmd += " traddOff_smart_KClustering.png";
             }
             if (inputParams) {
             	cmd += " emailInfo.txt";

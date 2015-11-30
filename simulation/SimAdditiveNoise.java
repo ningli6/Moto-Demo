@@ -13,6 +13,7 @@ import utility.Location;
 import utility.PU;
 import boot.BootParams;
 import client.Client;
+import client.SmartAttacker;
 
 public class SimAdditiveNoise extends Simulation {
 	private String countermeasure;        // name of countermeasure
@@ -63,7 +64,7 @@ public class SimAdditiveNoise extends Simulation {
 	}
 
 	@Override
-	public void singleSimulation() {
+	public void singleRandomSimulation() {
 		if (noiseLevel < 0 || noiseLevel > 1) {
 			System.out.println("Noise level must be in range 0 to 1.");
 			feasible = false;   // do not execute following simulations
@@ -72,7 +73,7 @@ public class SimAdditiveNoise extends Simulation {
 		if (!feasible) {  // multiple simulation was performed first, so if it's not feasible, return
 			return;
 		}
-		System.out.println("Start querying...");  
+		System.out.println("Start random query with additive noise for once...");  
 		Client client = new Client(cmServer);		// initialize a client
 		int attempts = maxIteration;		        // define max iteration
 		while(attempts > 0) {
@@ -84,7 +85,6 @@ public class SimAdditiveNoise extends Simulation {
 			}
 			if (cmServer.reachNoiseLevel()) { // if noise level satisfied
 				System.out.println("Noise level satisfied!");
-//				System.out.println("Actual lies: " + cmServer.getNumberOfLies() + " Expected lies: " + cmServer.getExpectedLies());
 				break;
 			}
 			attempts--;
@@ -98,24 +98,11 @@ public class SimAdditiveNoise extends Simulation {
 		}
 		IC = client.computeIC();
 		
-//		/* debug */
-//		for (List<PU> puList : cmServer.getChannelsList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-//		System.out.println("IC: ");
-//		for (double d : IC){
-//			System.out.print((int)d + " ");
-//		}
-//		System.out.println();
-		
-		printSingle(cmServer, client, directory, "Additive_Noise");
+		printInfercenMatrix(cmServer, client, directory, "Additive_Noise");
 	}
 
 	@Override
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
 			feasible = false;
 			System.out.println("Noise level is not feasible.");
@@ -161,17 +148,111 @@ public class SimAdditiveNoise extends Simulation {
 			}
 		}
 		feasible = true;         // noise level is feasible, proceed
-		printMultiple(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
+		printICvsQ(qlist, icCMMap, directory, "cmp_AdditiveNoise.txt");
+	}
+	
+	@Override
+	public void smartSimulation() {
+		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
+			feasible = false;
+			System.out.println("Noise level is not feasible.");
+			return;
+		}
+		System.out.println("Start smart query with additive noise...");
+		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
+		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
+		int iteration = 1;
+		List<Integer> qlist = new ArrayList<Integer>();
+		for (int i = 0; i <= interval; i++) {     // start query from 0 times
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		for (int q : qlist) {             // for each query number
+			System.out.println("For query: " + q);
+			cmServer.updateLiesNeeded(q); // update expected number of lies
+			int attempts = iteration;     // within 5 attempts, must succeed once
+			int succeed = 0;              // number of successful attempts
+			while (attempts > 0 && succeed < 1) {
+				attacker.reset();         // reset matrix to 0.5
+				cmServer.reset();         // rest actual lies to 0
+				for (int j = 0; j < q; j++) {
+					System.out.println("Q: " + j);
+					attacker.smartLocation();
+					attacker.query(cmServer);
+				}
+				if (!cmServer.reachNoiseLevel()) {
+					System.out.println("Noise condition is not satisfied, try again");
+					attempts--; // noise level not reached, bad attempt
+				}
+				else {
+					double[] newIC = attacker.computeIC();
+					double[] sum = icSmartMap.get(q);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k]; // avoid overflow
+					}
+					icSmartMap.put(q, sum);
+					succeed++; // succeed
+					attempts = iteration;  // have another [maxIteration] times for next success
+				}
+			}
+			if (attempts == 0) { // can't reach noise level in [maxIteration] attempts
+				feasible = false;
+				return;
+			}
+		}
+		feasible = true;         // noise level is feasible, proceed
+		printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
+	}
+	
+	public void smartSingleSimulation() {
+		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
+			feasible = false;
+			System.out.println("Noise level is not feasible.");
+			return;
+		}
+		System.out.println("Start smart query with additive noise...");
+		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
+		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
+		List<Integer> qlist = new ArrayList<Integer>();
+		for (int i = 0; i <= interval; i++) {     // start query from 0 times
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		int repetation = 1;
+		int maxQ = qlist.get(qlist.size() - 1);
+		cmServer.updateLiesNeeded(maxQ); // update expected number of lies
+		icSmartMap.put(0, attacker.computeIC()); // ic at query 0 is constant
+		for (int rep = 0; rep < repetation; rep++){
+			attacker.reset(); // set infer matrix to 0.5
+			for (int i = 1; i <= maxQ; i++) {
+				System.out.println("Q: " + i);
+				attacker.smartLocation();
+				attacker.query(cmServer);
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = attacker.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetation; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
+			}
+		}
+		feasible = true;         // noise level is feasible, proceed
+		printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
 	}
 	
 	/**
 	 * Plot trade-of curve, output data in a file named traddOff_AdditiveNoise.txt
 	 */
-	public void tradeOffCurve() {
+	public void randomTradeOffCurve() {
 		double[] cmString = {0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8};
 		double[] trdIC = new double[8];
+		for (int i = 0; i < 8; i++) trdIC[i] = -1;
 		int repeat = 20;
-		System.out.println("Start computing trade off curve for additive noise...");
+		System.out.println("Start computing trade off curve for additive noise with random queries...");
 		Client trdOfClient = new Client(cmServer);  // create a new client
 		for (int k = 0; k < cmString.length; k++) { // for each noise level
 			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
@@ -180,13 +261,49 @@ public class SimAdditiveNoise extends Simulation {
 				trdOfClient.reset();                // set matrix back to 0.5
 				cmServer.reset();                   // set actual lies back to 0
 				for (int i = 0; i < noq; i++) {
+					System.out.println("Q: " + i);
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
 				}
+//				if (cmServer.reachNoiseLevel()) {
 				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+//				}
+//				else break;
 			}
+//			if (!cmServer.reachNoiseLevel()) break;
 		}
 		printTradeOff(cmString, trdIC, directory, "traddOff_AdditiveNoise.txt");
+	}
+	
+	/**
+	 * Plot trade off curve with smart queries;
+	 */
+	public void smartTradeOffCurve() {
+		double[] cmString = {0.2, 0.4, 0.6, 0.8};
+		int len = cmString.length;
+		double[] trdIC = new double[len];
+		for (int i = 0; i < len; i++) trdIC[i] = -1;
+		int repeat = 1;
+		System.out.println("Start computing trade off curve for additive noise with smart queries...");
+		SmartAttacker trdOfClient = new SmartAttacker(cmServer);  // create a new client
+		for (int k = 0; k < cmString.length; k++) { // for each noise level
+			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
+			System.out.println("Noise: " + cmString[k]);
+			for (int r = 0; r < repeat; r++) {
+				trdOfClient.reset();                // set matrix back to 0.5
+				cmServer.reset();                   // set actual lies back to 0
+				for (int i = 0; i < noq; i++) {
+					trdOfClient.smartLocation();
+					trdOfClient.query(cmServer);
+				}
+//				if (cmServer.reachNoiseLevel()) {
+				trdIC[k] += average(trdOfClient.computeIC()) / repeat;
+//				}
+//				else break;
+			}
+//			if (!cmServer.reachNoiseLevel()) break;
+		}
+		printTradeOff(cmString, trdIC, directory, "traddOff_smart_AdditiveNoise.txt");
 	}
 	
 	private void printTradeOff(double[] cm, double[] ic, String path, String fileName) {
@@ -194,12 +311,14 @@ public class SimAdditiveNoise extends Simulation {
 		File file = new File(path + fileName);
 		try {
 			PrintWriter out = new PrintWriter(file);
-			for (double q : cm) {
-				out.print(q + " ");
+			for (int i = 0; i < cm.length; i++) {
+				if (ic[i] == -1) break;
+				out.print(cm[i] + " ");
 			}
-			out.println();	
-			for (double q : ic) {
-				out.print(q + " ");
+			out.println();
+			for (int i = 0; i < cm.length; i++) {
+				if (ic[i] == -1) break;
+				out.print(ic[i] + " ");
 			}
 			out.println();
 			out.close (); // this is necessary	

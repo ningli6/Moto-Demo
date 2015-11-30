@@ -15,6 +15,7 @@ import utility.MTP;
 import utility.PU;
 import boot.BootParams;
 import client.Client;
+import client.SmartAttacker;
 
 public class Simulation {
 	String directory;      // output dir
@@ -28,8 +29,9 @@ public class Simulation {
 	int noq;               // number of queries
 	int repeat;            // number of repetition for multiple simulations
 	double[] IC;           // ic for single simulation, may include this information in email
-	Map<Integer, double[]> icMap; // associate ic to number of queries
-
+	Map<Integer, double[]> icMap;       // associate ic to number of queries
+	Map<Integer, double[]> icSmartMap;  // associate ic to number of queries under smart query
+	
 	public Simulation(BootParams bootParams, double mtpScale, int interval, String directory) {
 		this.bootParams = bootParams;
 		this.cellsize = bootParams.getCellSize();
@@ -38,21 +40,9 @@ public class Simulation {
 		this.directory = directory;
 
 		/* initialize map */
-		Location upperLeft = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
-		Location upperRight = new Location(bootParams.getNorthLat(), bootParams.getEastLng());
-		Location lowerLeft = new Location(bootParams.getSouthLat(), bootParams.getWestLng());
-		Location lowerRight = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
-		this.map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellsize);
-
-		/* debug 
-		 * See number of rows & cols in the map
-		 */
-//		map.showBoundary();
-//		System.out.println("Map rows: " + map.getRows());
-//		System.out.println("Map cols: " + map.getCols());
-//		System.out.println("Average size per cell: " + map.getAverageDistance() + " km");
-//		System.out.println("Total cells: " + map.getNumberOfCells());
-
+		Location nwLoc = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
+		Location seLoc = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
+		this.map = new GridMap(nwLoc, seLoc, cellsize);
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 
@@ -61,14 +51,13 @@ public class Simulation {
 		
 		/* initialize server */
 		server = new Server(map, noc);
-
+		
 		/* Add PU to the map */
 		int PUid = 0;
 		for (int k = 0; k < noc; k++) {
 			List<Location> LatLngList = bootParams.getPUOnChannel(k);
 			for (Location ll : LatLngList) {
 				PU pu = new PU(PUid++, ll.getLatitude(), ll.getLongitude(), map);
-//				System.out.println("PU: " + pu.getRowIndex() + ", " + pu.getColIndex());
 				server.addPU(pu, k);
 			}
 		}
@@ -77,60 +66,36 @@ public class Simulation {
 		noq = bootParams.getNumberOfQueries();
 		
 		/* initialize number of repetition */
-		repeat = 10;
+		repeat = 20;
 
 		/* initialize ic */
 		IC = null;
 
 		/* associate ic to number of queries */
 		icMap = new HashMap<Integer, double[]>();
+		icSmartMap = new HashMap<Integer, double[]>();
 	}
 
-	public void singleSimulation() {
-		System.out.println("Start querying...");
+	public void singleRandomSimulation() {
+		System.out.println("Start random query withouth countermeasure for once...");
 		/* initialize a client */
 		Client client = new Client(server);
 		/* run simulation for one time */
 		for (int i = 1; i <= noq; i++) {
 			client.randomLocation();
-			/**
-			 * Debug: See client's new location
-			 */
-//			System.out.println("***Query***");
-//			System.out.println("Query location: " + client.getRowIndex() + ", " + client.getColIndex());
 			client.query(server);
 		}
 		IC = client.computeIC();
 		
-		/* debug */
-//		for (List<PU> puList : server.getChannelsList()) {
-//			for (PU pu : puList){
-//				pu.printInfo();
-//			}
-//		}
-//		client.countChannel();
-		System.out.println("IC: ");
-		for (double d : IC){
-			System.out.print((int)d + " ");
-		}
-//		System.out.println();
-		
-		printSingle(server, client, directory, "No_Countermeasure");
+		printInfercenMatrix(server, client, directory, "No_Countermeasure");
 	}
 
-	public void multipleSimulation() {
+	public void randomSimulation() {
 		System.out.println("Start computing average IC...");
-
 		// create a new client instead of using the old one, which is saved for email to use
 		Client multclient = new Client(server);
 		// compute query points
 		int gap = noq / interval;
-		int base = 1;
-		int tmp = gap;
-		while(tmp / base > 0) {
-			base *= 10;
-		}
-		gap = (gap / (base / 10)) * (base / 10);
 		// start query from 0 times
 		List<Integer> qlist = new ArrayList<Integer>(10);
 		for (int i = 0; i <= interval; i++) {
@@ -153,40 +118,72 @@ public class Simulation {
 					icMap.put(i, sum);
 				}
 			}
-			multclient.reset(); // set infer matrix to 0.5
+			multclient.reset();
 		}
-		printMultiple(qlist, icMap, directory, "averageIC_NoCountermeasure.txt");
+		printICvsQ(qlist, icMap, directory, "cmp_NoCountermeasure.txt");
+	}
+	
+	public void smartSimulation() {
+		System.out.println("Start smart quering...");
+		/* initialize a client */
+		SmartAttacker attacker = new SmartAttacker(server);
+		// find record point, works if number of queries is multiple of 10
+		int gap = noq / interval;
+		// start query from 0 times
+		List<Integer> qlist = new ArrayList<Integer>(10);
+		for (int i = 0; i <= interval; i++) {
+			qlist.add(gap * i);
+			icSmartMap.put(gap * i, new double[noc]);
+		}
+		int maxQ = qlist.get(qlist.size() - 1);
+		icSmartMap.put(0, attacker.computeIC());    // ic at query 0 is constant
+		int repetition = 1;
+		for (int rep = 0; rep < repetition; rep++){ // repetition
+			attacker.reset();
+			for (int i = 1; i <= maxQ; i++) {       // number of queries
+				/* Debug */
+				System.out.println("Q: " + i);
+				attacker.smartLocation();           // find next query location
+				attacker.query(server);
+				if (icSmartMap.containsKey(i)){
+					double[] newIC = attacker.computeIC();
+					double[] sum = icSmartMap.get(i);
+					for (int k = 0; k < noc; k++) {
+						sum[k] += newIC[k] / repetition; // avoid overflow
+					}
+					icSmartMap.put(i, sum);
+				}
+			}
+		}
+		printInfercenMatrix(server, attacker, directory, "smart_No_Countermeasure");
+		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_NoCountermeasure.txt");
 	}
 
 	/**
-	 * Print text file
-	 * Probability matrix and location of pu on each channel
+	 * Print probability matrix and location of pu on each channel
 	 * @param server       provides information about location of primary users
 	 * @param client       provide probability matrix
 	 * @param dir          output path of text file
 	 * @param fileName     file that holds information about probability and locations
 	 */
-	public void printSingle(Server server, Client client, String dir, String fileName) {
+	public void printInfercenMatrix(Server server, Client client, String dir, String fileName) {
 		if (client == null || server == null || dir == null || dir.length() == 0) {
 			throw new NullPointerException();
 		}
-		
-		System.out.println("Start printing probability...");
-		client.printProbability(dir, fileName);
-		
 		System.out.println("Start printing location of primary users...");
 		server.printPUAllChannel(dir, fileName);
+		System.out.println("Start printing probability...");
+		client.printProbability(dir, fileName);
 	}
 
 	/**
-	 * Print text file
-	 * IC vs Query
+	 * Print IC vs Query
 	 * @param qlist points of queries
 	 * @param icMap ic values at each point of query
 	 * @param dir output directory
 	 * @param fileName name of the text file
 	 */
-	public void printMultiple(List<Integer> qlist, Map<Integer, double[]> icMap, String dir, String fileName) {
+	public void printICvsQ(List<Integer> qlist, Map<Integer, double[]> icMap, String dir, String fileName) {
 		System.out.println("Start printing average IC...");
 		File file = new File(dir + fileName);
 		try {

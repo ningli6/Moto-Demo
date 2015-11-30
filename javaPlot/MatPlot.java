@@ -9,14 +9,16 @@ import utility.Location;
 public class MatPlot {
 	/**
 	 * Call Matlab function that plot data on google map
-	 * @param dataDir TODO
-	 * @param plotDir TODO
+	 * @param dataDir data dir
+	 * @param plotDir plot dir
 	 * @param cellSize grid size
 	 * @param noc      number of channels
 	 * @param nlat     north lat
 	 * @param slat     south lat
 	 * @param wlng     west lng
 	 * @param elng     east lng
+	 * @param randomQuery  plot result of random query
+	 * @param smartQuery   plot result of smart query
 	 * @param noCM     plot google map for no countermeasure
 	 * @param ad       plot additive noise
 	 * @param tf       plot transfiguration
@@ -25,7 +27,13 @@ public class MatPlot {
 	 * @return
 	 */
 	public static boolean plot(String dataDir, String plotDir, double cellSize, int noc, double nlat, 
-			double slat, double wlng, double elng, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+			double slat, double wlng, double elng, 
+			boolean randomQuery, boolean smartQuery, 
+			boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
+		if (!randomQuery && !smartQuery) {
+			System.out.println("Must specify method of queries");
+			return true;
+		}
 		if (!noCM && !ad && !tf && !ka && !kc) {
 			System.out.println("No google map need to be plotted");
 			return true;
@@ -35,33 +43,51 @@ public class MatPlot {
 		 * Construct a map instance to get number of rows and cols
 		 */
 		Location upperLeft = new Location(nlat, wlng);
-		Location upperRight = new Location(nlat, elng);
-		Location lowerLeft = new Location(slat, wlng);
 		Location lowerRight = new Location(slat, elng);
-		GridMap map = new GridMap(upperLeft, upperRight, lowerLeft, lowerRight, cellSize);
-		int rows = map.getRows();
-		int cols = map.getCols();
+		GridMap map = new GridMap(upperLeft, lowerRight, cellSize);
+		int rows = map.getNumOfRows();
+		int cols = map.getNumOfCols();
 		try {
 	        // using the Runtime exec method:
 	        String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
 	        							+ dataDir + " " + plotDir + " "
 	        							+ Integer.toString(noc) + " " + Integer.toString(rows) + " " + Integer.toString(cols) + " "
 	        							+ Double.toString(nlat) + " " + Double.toString(slat) + " " + Double.toString(wlng) + " " + Double.toString(elng);
-	        if (noCM) {
-	        	cmd += " No_Countermeasure";
+	        if (randomQuery) {
+		        if (noCM) {
+		        	cmd += " No_Countermeasure";
+		        }
+		        if (ad) {
+		        	cmd += " Additive_Noise";
+		        }
+		        if (tf) {
+		        	cmd += " Transfiguration";
+		        }
+		        if (ka) {
+		        	cmd += " K_Anonymity";
+		        }
+		        if (kc) {
+		        	cmd += " K_Clustering";
+		        }
 	        }
-	        if (ad) {
-	        	cmd += " Additive_Noise";
+	        if (smartQuery) {
+		        if (noCM) {
+		        	cmd += " smart_No_Countermeasure";
+		        }
+		        if (ad) {
+		        	cmd += " smart_Additive_Noise";
+		        }
+		        if (tf) {
+		        	cmd += " smart_Transfiguration";
+		        }
+		        if (ka) {
+		        	cmd += " smart_K_Anonymity";
+		        }
+		        if (kc) {
+		        	cmd += " smart_K_Clustering";
+		        }
 	        }
-	        if (tf) {
-	        	cmd += " Transfiguration";
-	        }
-	        if (ka) {
-	        	cmd += " K_Anonymity";
-	        }
-	        if (kc) {
-	        	cmd += " K_Clustering";
-	        }
+
 //	        System.out.println(cmd);
 	        Process p = Runtime.getRuntime().exec(cmd);
 	        /* uncomment these code to see matlab output */

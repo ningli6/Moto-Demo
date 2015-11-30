@@ -102,8 +102,8 @@ public class ServerTransfiguration extends Server{
 				File file = new File(dir + "tf_" + polyPU.getPU().getID() + ".txt");
 				try {
 					PrintWriter out = new PrintWriter(file);
-					for (int i = 0; i < map.getRows(); i++) {
-						for (int j = 0; j < map.getCols(); j++) {
+					for (int i = 0; i < map.getNumOfRows(); i++) {
+						for (int j = 0; j < map.getNumOfCols(); j++) {
 							double val = polyPU.response(i, j);
 							out.print(val + " ");
 						}

@@ -39,7 +39,7 @@ path = sys.argv[1]
 text = '.txt';
 png = '.png';
 fileNames = sys.argv[5:]
-for fileName in fileNames:
+for fileName in fileNames:  # this shouldn't break the service even if the file doesn't exist
 	try:
 		if text in fileName:
 			f = file(path + fileName)

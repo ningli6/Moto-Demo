@@ -2,35 +2,41 @@
  * This script is used to select query methods
  */
 
-// file name of user uploaded text file
-var file_name;  
+var numberOfQueries;       // number of queries
+var smartNumOfQueries;     // smart number of queries
+var file_name;             // file name of user uploaded text file
+
+$(document).ready(function(){
+    $('[data-toggle="qtip"]').tooltip();   
+});
 
 /**
- * Disable query number input
- * @return {void}
+ * Enable/disable input box for number of queries
  */
-function disableRandomQueries () {
-    document.getElementById("randomQuery").disabled = true;
-}
-
-/**
- * Enable query number input
- * @return {void}
- */
-function enableRandomQueries () {
-    document.getElementById("randomQuery").disabled = false;
+function enableQueryInput (args) {
+    if (document.getElementById("randomQuery").checked || document.getElementById("smartQuery").checked) {
+        document.getElementById("queryInput").disabled = false;
+    } else {
+        document.getElementById("queryInput").disabled = true;
+    }
+    // if user selected smart query, set grid size to 5 km
+    if (document.getElementById("smartQuery").checked) {
+        $('#gridSizeDisp').html("5 km");
+        adjustGridSize("5 km");
+    }
 }
 
 /**
  * Adjust value of query numbers so that it is multiple of 10
  * Min: 10, Max: 500
  */
-function adjustValue() {
-    if (!isNumeric(document.getElementById("randomQuery").value)) {
-        document.getElementById("randomQuery").value = 100;
+function adjustValue(args) {
+    var id = "queryInput";
+    if (!isNumeric(document.getElementById(id).value)) {
+        document.getElementById(id).value = 100;
         return;
     }
-    var val = document.getElementById("randomQuery").value;
+    var val = document.getElementById(id).value;
     var newVal = Math.round(val / 10) * 10;
     if (newVal < 10) {
         newVal = 10;
@@ -38,12 +44,8 @@ function adjustValue() {
     if (newVal > 500) {
         newVal = 500;
     }
-    document.getElementById("randomQuery").value = newVal;
+    document.getElementById(id).value = newVal;
 }
-
-$(document).ready(function(){
-    $('[data-toggle="qtip"]').tooltip();   
-});
 
 function uploadfile () {
     var form = document.getElementById('file-form');

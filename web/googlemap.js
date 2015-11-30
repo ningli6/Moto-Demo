@@ -30,7 +30,7 @@ var numberOfMarkers = 0;
 function initialize() {
     // create a google map
     var mapProp = {
-        zoom: 5,
+        zoom: 7,
         maxZoom: 9,
         center: myCenter
     };
@@ -67,7 +67,7 @@ function initialize() {
         if (rect.type == google.maps.drawing.OverlayType.RECTANGLE) {
             rect.setMap(map);
             recRegion = rect.getBounds();
-            console.log(recRegion.toString());
+            // console.log(recRegion.toString());
         }
         // restore cursor to hand
         drawingManager.setDrawingMode(null);
@@ -105,15 +105,14 @@ function initialize() {
  * Check size of analysis area
  */
 function checkSize(recRegion) {
-    var sz = document.getElementById("cd").value;
+    var sz = cellSize;
     var rows = parseInt((recRegion.getNorthEast().lat() - recRegion.getSouthWest().lat()) / sz);
     var cols = parseInt((recRegion.getNorthEast().lng() - recRegion.getSouthWest().lng()) / sz);
-    if (rows < 50 || cols < 50) {
+    if (rows > 1000 || cols > 1000) {
         console.log("Rows: " + rows + ", Cols: " + cols);
-        alert("Selected area is too small. Please draw a larger area to perform a more resonable simulation.");
+        alert("Selected region is too large to compute in reasonable time. Please draw a smaller one.");
         return false;
     }
-    console.log("Zoom level: " + map.getZoom());
     return true;
 }
 
@@ -267,7 +266,7 @@ function placeMarker(location) {
  * Show grid cells in analysis area
  */
 function drawGrids(recRegion) {
-    var sz = document.getElementById("cd").value;
+    var sz = cellSize;
     if (!isNumeric(sz)) {
         sz = 0.005;
     }
@@ -371,3 +370,16 @@ function resetAllMarkers() {
     document.getElementById("tradeOff3").disabled = true; // do not allow user to plot bar if no markers on channel
     document.getElementById("tradeOff4").disabled = true;
 }
+
+/**
+ * JQuery function to start modal for plot instruction
+ */
+$(document).ready(function(){
+    $('.plotGuide').on('click', function(){
+        $('#guideModal').modal({
+            backdrop: true,
+            keyboard: true,
+            show: true
+        })
+    });
+});

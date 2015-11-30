@@ -2,44 +2,52 @@
  * This script collect parameters from web interface and pass it to php script
  */
 
-var numberOfChannels = 1;  // number of channels [1, 3]
-var location_PU = [];      // pu's location
-var countermeasure = [];   // countermeasures for ic vs q
-var cmVal = []             // cm parameters
-var gmapNO = false;        // plot google map for no countermeasure
-var gmapAD = false;        // plot google map for additive noise
-var gmapTF = false;        // plot google map for transfiguration
-var gmapKA = false;        // plot google map for k anonymity
-var gmapKC = false;        // plot google map for k clustering
-var tradeOffAD = false;    // countermeasures that need to plot trade-off curve
-var tradeOffTF = false;
-var tradeOffKA = false;
-var tradeOffKC = false;
-var numberOfQueries;       // number of queries
-var queryFile;             // name of querying file
-var email;                 // send result to this email
-var inputParams = false;   // whether to include input parameters in the email
-var args;                  // formatted params as a argument for java program
+var location_PU;      // pu's location
+var email;            // send result to this email
+var inputParams;      // whether to include input parameters in the email
+var args;             // formatted params as a argument for java program
 
 /**
  * Check parameters first, then consturct argument string for backend program,
  * build modal at last
- * @return {void}
  */
 function getParams () {
-    // check cell size
-    var cellSize = document.getElementById("cd").value;
-    if (!isNumeric(cellSize)) {
+    /**
+     * Reset parameters when page is refreshed
+     */
+    /* save location of PUs */
+    location_PU = [];    // list of list of markers
+    /* Countermeasures and their value */
+    countermeasure = []; // list of string
+    cmVal = [];          // list of number
+    /* Plot options */
+    gmapNO = false;
+    tradeOffAD = false;
+    gmapAD = false;
+    tradeOffTF = false;
+    gmapTF = false;
+    tradeOffKA = false;
+    gmapKA = false;
+    tradeOffKC = false;
+    gmapKC = false;
+    /* Whether to include input parameters */
+    inputParams = false;
+    /* Number of queries */
+    numberOfQueries = -1;
+    /* Email address */
+    email = "";
+    /* Passing arguments */
+    args = "";
+
+    /**
+     * Check necessary parameters and verify their value
+     */
+    // check cell size, if cell size not equal to 0.005, 0.01 or 0.05, assign it to 0.005
+    if (cellSize != 0.005 && cellSize != 0.01 && cellSize != 0.05) {
         cellSize = 0.005;
     }
-    else if (cellSize > 0.05) {
-        cellSize = 0.05;
-    }
-    else if (cellSize < 0.005) {
-        cellSize = 0.005
-    }
     // check parameters and grab values from forms
-    if (rect == undefined || recRegion == undefined) {
+    if (!(rect && recRegion)) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");
         return;
     }
@@ -90,14 +98,29 @@ function getParams () {
         return;
     }
 
-    // make sure number of markers are more than 1 when checking trade off bar
+    // make sure number of markers are more than 1 when checking trade off bar of KA and KC
     if (numberOfMarkers < 2 && (document.getElementById("tradeOff3").checked || document.getElementById("tradeOff4").checked)) {
-        alert("Trade off bar should be selected only when number of primary users is more than 1");
+        alert("Trade off bar of K-Anoymity and K-Clustering should be selected only when number of primary users is more than 1");
         return;
     }
 
-    // get pus' location
-    location_PU = [];
+    // User must select at least one option
+    if (!document.getElementById("cmopt0").checked
+        && !document.getElementById("cmopt1").checked
+        && !document.getElementById("cmopt2").checked
+        && !document.getElementById("cmopt3").checked
+        && !document.getElementById("cmopt4").checked) {
+        alert("Please select at least one option under Inaccuracy vs Queries!");
+        return;
+    }
+
+    // at leaset one method of query need to be chosen
+    if (!document.getElementById("randomQuery").checked && !document.getElementById("smartQuery").checked) {
+        alert("Please choose at least one method of query");
+        return;
+    }
+
+    // push list of markers to location list
     if (numberOfChannels == 1) location_PU.push(markers_one);
     if (numberOfChannels == 2) {
         location_PU.push(markers_two_channel0);
@@ -109,20 +132,6 @@ function getParams () {
         location_PU.push(markers_three_channel2);
     }
 
-    // reset params for input options
-    gmapNO = false;
-    tradeOffAD = false;
-    gmapAD = false;
-    tradeOffTF = false;
-    gmapTF = false;
-    tradeOffKA = false;
-    gmapKA = false;
-    tradeOffKC = false;
-    gmapKC = false;
-    inputParams = false;
-
-    countermeasure = [];
-    cmVal = [];
     // get countermeasure, cm value, google map options, trade off curve options
     if (document.getElementById('cmopt0').checked) {
         countermeasure.push("no");
@@ -234,36 +243,19 @@ function getParams () {
             gmapKC = false;
         }
     }
-    if (countermeasure.length == 0) {
-        alert("Please select at least one option under Inaccuracy vs Queries!");
+
+    // get query number
+    if (!isNumeric(document.getElementById('queryInput').value)) {
+        alert("Number of query is not a valid number!");
         return;
     }
-
-    // get query method
-    if (document.getElementById("input_query0").checked) {
-        numberOfQueries = document.getElementById("randomQuery").value;
-        if (numberOfQueries == undefined) {
-            alert("Please specify number of queries!");
-            return;
-        }
-        if (!isNumeric(document.getElementById('randomQuery').value)) {
-            alert("Number of query is not a valid number!");
-            return;
-        }
-        if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
-            alert("Number of queries should be a positive integer");
-            return;
-        }
+    numberOfQueries = document.getElementById("queryInput").value;
+    if (!numberOfQueries) {
+        alert("Please specify number of queries!");
+        return;
     }
-    // if (document.getElementById("input_query1").checked) {
-    //     queryFile = file_name;
-    //     if (queryFile == undefined) {
-    //         alert("Please upload a text file containing location information");
-    //         return;
-    //     }
-    // }
-    if (numberOfQueries == undefined && queryFile == undefined) {
-        alert("Please specify querying method");
+    if (numberOfQueries <= 0 || numberOfQueries % 1 != 0) {
+        alert("Number of queries should be a positive integer");
         return;
     }
 
@@ -304,19 +296,19 @@ function getParams () {
     args += "-cm ";
     for (var i = 0; i < countermeasure.length; i++) {
         if (countermeasure[i] == "no") {
-            args += "-no -1 ";
+            args += "no -1 ";
         }
         else if (countermeasure[i] == "an") {
-            args += "-an " + cmVal[i] + " ";
+            args += "an " + cmVal[i] + " ";
         }
         else if (countermeasure[i] == "tf") {
-            args += "-tf " + cmVal[i] + " ";
+            args += "tf " + cmVal[i] + " ";
         }
         else if (countermeasure[i] == "ka") {
-            args += "-ka " + cmVal[i] + " ";
+            args += "ka " + cmVal[i] + " ";
         }
         else {
-            args += "-kc " + cmVal[i] + " ";
+            args += "kc " + cmVal[i] + " ";
         }
     }
     // google map plots
@@ -351,11 +343,13 @@ function getParams () {
         args += 'kc '
     }
     // queries
-    if (numberOfQueries != null) {
-        args += "-q " + numberOfQueries + " ";
+    args += "-q "
+    if (document.getElementById("randomQuery").checked) {
+        args += numberOfQueries + " ";
     }
-    else {
-        args += "-f " + queryFile + " ";
+    args += "-sq "
+    if (document.getElementById("smartQuery").checked) {
+        args += numberOfQueries + " ";
     }
     // email
     args += "-e " + email + " ";
@@ -438,13 +432,14 @@ function getParams () {
     }
     document.getElementById("wellcm").innerHTML = cmstr;
     // query
-    var querystr = "";
-    if (numberOfQueries != null) {
-        querystr = "Randomly generated location<br>Number of queries: " + numberOfQueries;
+    var querystr;
+    if (document.getElementById("randomQuery").checked) {
+        querystr = "Randomly generated location<br>";
     }
-    else {
-        querystr = "Use location from " + queryFile;
+    if (document.getElementById("smartQuery").checked) {
+        querystr += "Using smart query algorithm to determine query location<br>";
     }
+    querystr += "Number of queries: " + numberOfQueries;
     document.getElementById("wellquery").innerHTML = querystr;
     // email
     var emstr = "";
@@ -490,7 +485,6 @@ function sendParams()
         }
         if (xmlhttp.readyState == 4 && xmlhttp.status != 200)
         {
-            // document.getElementById("params").innerHTML=xmlhttp.responseText;
             alert("Sorry. Failed to start demo. " + xmlhttp.status);
             // reload page
             window.location = 'index.html';

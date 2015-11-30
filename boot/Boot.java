@@ -1,7 +1,6 @@
 package boot;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
@@ -18,14 +17,9 @@ public class Boot {
 
 	public static void main(String[] args) {
 		try {
-			String cmd = "";
-			for (String arg : args) {
-				cmd += arg + " ";
-			}
 			Long time = System.currentTimeMillis();
 			String dataDir = dataRootDir + time + "\\";
 			String plotDir = plotRootDir + time + "\\";
-//			System.out.println("Start creating folders...");
 			File dataFile = new File(dataDir);
 			File plotFile = new File(plotDir);
 			if (dataFile.exists()) {
@@ -41,8 +35,8 @@ public class Boot {
 				return;
 			}
 			if (plotFile.exists()) {
-				SecureRandom random1 = new SecureRandom();
-				plotDir = plotRootDir + new BigInteger(130, random1).toString(32) + "\\";
+				SecureRandom random = new SecureRandom();
+				plotDir = plotRootDir + new BigInteger(130, random).toString(32) + "\\";
 				if (!new File(plotDir).mkdirs()) {
 					System.out.println("FAIL");
 					return;
@@ -52,29 +46,19 @@ public class Boot {
 				System.out.println("FAIL");
 				return;
 			}
+			/* Parse input string */
+			BootParams bp = Parser.parse(args);
+			if (bp == null) {
+				System.out.println("FAILED");
+				return;
+			}
 			/* start program, return ok */
 			System.out.println("OK");
-			Runtime.getRuntime().exec("java -jar C:\\Users\\Administrator\\Desktop\\motoDemo\\demoRun.jar " + cmd + dataDir + " " + plotDir);
-//			BufferedReader stdInput = new BufferedReader(new
-//						InputStreamReader(p.getInputStream()));
-//	
-//			BufferedReader stdError = new BufferedReader(new
-//					InputStreamReader(p.getErrorStream()));
-//
-//			String s;
-//			// read the output from the command
-//			while ((s = stdInput.readLine()) != null) {
-//				System.out.println(s);
-//			}
-//
-//			// read any errors from the attempted command
-//			while ((s = stdError.readLine()) != null) {
-//				System.out.println(s);
-//			}
-		} catch (IOException e) {
+			Demo demo = new Demo(bp, dataDir, plotDir);
+			demo.run();
+		} catch (Exception e) {
 			System.out.println("FAIL");
 			e.printStackTrace();
 		}
-	    System.out.println("Finish");
 	}
 }
