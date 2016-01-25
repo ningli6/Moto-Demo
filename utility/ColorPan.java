@@ -11,7 +11,11 @@ import javax.swing.JFrame;
 
 public class ColorPan extends JComponent {
 
-  private int[] data;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+private int[] data;
   private int width;
   private int height;
 

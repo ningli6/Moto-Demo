@@ -1,19 +1,18 @@
 ## Introduction
 This project implements techniques for protecting privacy of primary users proposed in paper: Protecting the Primary Users’ Operational Privacy in Spectrum Sharing. [2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]
-### Implementation description
-We will allow user to specify parameters such as maps range, cell size, number of queries. We set up several channels assign PUs in different channels. The attacker then makes queries and receive responses from PU. With this knowledge it will infer the location of PUs for each channel. The program then produces the probability of PU's existence for each channels. The Matlab code uses these data to plot on google map to reflect these data. All PUs and SUs are assumed to be at the center of the cell.
+### Web interface description
+User need to specify number of channels that primary users operate on. Then draw an analysis region on Google Map and select locations for primary users on different channels. The region should cover all primary users on any channel. Each channel must have at least one primary user. This web application is able to plot 3 different kinds of figures: Inaccuracy vs Queries, heat map on Google map, trade-off curve/bar. Users need to specify number of queries. Query locations are  either uniformly randomly generated or generated based on more sophisticated algorithm which selects next query location wisely.
+### Protection techniques
+We compute inaccuracy for each channel to evaluate the result of inference as a metric for our protecting algorithms.
+* First technique for protecting location privacy is perturbation with additive noise. Whenever response the server will lie to the querying client in a way that it will chooses to respond with a smaller value if possible.
 
-We use latitude & longitude instead of cell index to do computation in our map, which is more accurate. Cell size are defined by degree. Conceptually user will assign a rectangle area for the program to do the demo.
+* Second technique for protecting privacy is to use transfiguration, which transfigure circular contours into convex polygon. It works pretty good for small numbers of sides, such as triangle and rectangle.
 
-We compute inaccuracy for each channel to evaluate the result of inference. The actual compute formula is in presented in the paper.
+* The third technique is K-anonymity, which groups PUs into a group of k members, such that they share a larger area of protection contour, then compute a virtual primary user whose protection contour is the minimum covering circle for all other PUs in that group. Use the virtual PU as the new PU to respond to new queries. Poor grouping decision can lead to poor spectrum utility performance.
 
-* First technique for protecting location privacy is perturbation with additive noise. Whenever response the server will lie to the querying client in a way that it will chooses to response with a smaller value if possible.
+* The fourth technique is K-Clustering, which uses a k-means algorithm to classify PUs into different group according to their location distribution, then compute a virtual primary user whose protection contour is the minimum covering circle for all other PUs in that cluster. Use the virtual PU as the new PU to respond to new queries.
 
-* Second technique for protecing privacy is to use transfiguration, which tansfigure circular contours into convex polygon. It works pretty good for small numbers of sides, such as triangle and rectangle.
-
-* The third technique is K-anonymity, which groups PUs into a group of k members, such that they share a larger area of protection contour, then compute a virtual primary user whose protection coutour is the minimum covering circle for all other PUs in that group. Use the virtual PU as the new PU to response to new queries. Poor grouping decision can lead to poor spectrum utility performance.
-
-* The forth technique is K-Clustering, which uses a k-means algorithm to classify PUs into different group according to their loaction distribution, then compute a virtual primary user whose protection coutour is the minimum covering circle for all other PUs in that cluster. Use the virtual PU as the new PU to response to new queries.
-
+### Query options
+User can select random query and/or smart query in the process of simulation. Generally random query is much faster and works better with countermeasures. Smart query usually brings down inaccuracy really quick but it's computationally demanding so it can't operate on a larger map. Smart query sometimes won’t cooperate with countermeasures.
 ### Author
 *Ning Li(ningli@vt.edu)*

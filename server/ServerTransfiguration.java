@@ -1,67 +1,75 @@
 package server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
 
-import utility.*;
+import utility.GridMap;
+import utility.PU;
+import utility.PolyPU;
+import utility.Response;
 import client.Client;
 
 public class ServerTransfiguration extends Server{
-	public static int NUMBER_OF_SIDES = 3;
-	private List<PolyPU>[] channels_poly_List;
-
-	public ServerTransfiguration(GridMap map) {
-		super(map);
-		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_poly_List[i] = new LinkedList<PolyPU>();
+	private int numberOfSides;                     // number of sides for polygon
+	private List<PolyPU>[] polyPUList;             // channel list for polyPU
+	
+	@SuppressWarnings("unchecked")
+	public ServerTransfiguration(GridMap map, int noc, int numberOfSides) {
+		super(map, noc);
+		this.numberOfSides = numberOfSides; 
+		polyPUList = (List<PolyPU>[]) new List[numberOfChannels];
+		for (int i = 0; i < numberOfChannels; i++) {
+			polyPUList[i] = new LinkedList<PolyPU>();
 		}
 	}
 
-	public ServerTransfiguration(GridMap map, int number_of_sides) {
-		super(map);
-		NUMBER_OF_SIDES = number_of_sides;
-		if (NUMBER_OF_SIDES < 3) throw new IllegalArgumentException("Number of sides must be at least 3"); 
-		channels_poly_List = (List<PolyPU>[]) new List[Number_Of_Channels];
-		for (int i = 0; i < Number_Of_Channels; i++) {
-			channels_poly_List[i] = new LinkedList<PolyPU>();
-		}
-	}
-
+	/**
+	 * Wrap primary users into PloyPU object
+	 */
 	public void transfigure() {
 		if (getNumberOfPUs() == 0) return;
-		int channel = 0;
-		for (List<PU> list : channels_List) {
+		int k = 0;
+		for (List<PU> list : channelsList) {
 			for (PU pu: list) {
-				System.out.println("Transfigure: " + pu.getID() + " on channel: " + channel);
-				channels_poly_List[channel].add(new PolyPU(pu, NUMBER_OF_SIDES));
+				polyPUList[k].add(new PolyPU(pu, numberOfSides));
 			}
-			channel++;
+			k++;
 		}
-		// for (List<PolyPU> list : channels_poly_List) {
-		// 	for (PolyPU ppu: list) {
-		// 		// preCompute
-		// 		ppu.printPreCompute();
-		// 		// originalCompute
-		// 		ppu.printOriginCompute();
-		// 	}
-		// }
+	}
+	
+	/**
+	 * Set new number of sides
+	 * @param sides  new number of sides
+	 */
+	public void transfigure(int sides) {
+		if (sides < 3) {
+			System.out.println("Invalid number of sides for polygon");
+			return;
+		}
+		if (getNumberOfPUs() == 0) return;
+		for (List<PolyPU> list : polyPUList) {
+			list.clear();  // clear all previous polyPU
+		}
+		numberOfSides = sides;
+		transfigure();
 	}
 
-	// @override
+	/**
+	 * Instead of using MTP function to determine response power,
+	 * transfiguration server use its polyPU to get pre-computed response power 
+	 */
+	@Override
 	public Response response(Client client) {
-		// System.out.println("override");
-		// response with (-1, -1) means no transmit power available
-		if (client == null) return new Response(-1, -1);
-		if (!map.withInBoundary(client.getLocation())) throw new ClientOutOfMapException("Client location is not in the range of map");
+		if (client == null) throw new NullPointerException("Querying client does not exist");
+		if (!map.withInBoundary(client.getLocation())) throw new IllegalArgumentException("Client location is not in the range of map");
 		// response with (-1, PMAX) means that no PU responses, but allow max transmit power
-		/* clarify this behavior */
 		if (getNumberOfPUs() == 0) return new Response(-1, PMAX);
 		List<Response> response_list = new LinkedList<Response>();
-		double final_res_power = -1;
-		int final_res_id = -1;
-		for (List<PolyPU> list : channels_poly_List) {
+		for (List<PolyPU> list : polyPUList) {
 			Collections.shuffle(list);
 			PU minPU = null;
 			double minPower = Double.MAX_VALUE;
@@ -81,5 +89,33 @@ public class ServerTransfiguration extends Server{
 		Collections.shuffle(response_list);
 		// This method iterates over the entire collection, hence it requires time proportional to the size of the collection
 		return Collections.max(response_list);
+	}
+	
+	public List<PolyPU>[] getChannelPolyPU() {
+		return polyPUList;
+	}
+
+	public void printTransfiguredMap(String dir) {
+		if (dir == null || dir.length() == 0) return;
+		for (List<PolyPU> ppu : polyPUList) {
+			for (PolyPU polyPU : ppu) {
+				File file = new File(dir + "tf_" + polyPU.getPU().getID() + ".txt");
+				try {
+					PrintWriter out = new PrintWriter(file);
+					for (int i = 0; i < map.getNumOfRows(); i++) {
+						for (int j = 0; j < map.getNumOfCols(); j++) {
+							double val = polyPU.response(i, j);
+							out.print(val + " ");
+						}
+						out.println();
+					}
+					out.close (); // this is necessary
+				} catch (FileNotFoundException e) {
+					System.out.println("FileNotFoundException: " + e.getMessage());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }

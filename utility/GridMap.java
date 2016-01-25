@@ -1,204 +1,204 @@
 package utility;
 /*
- * GridMap class represent a grid map, with lenght, height and cell size
+ * GridMap class represent a grid map, with length, height and cell size
  * Number of number_of_rows and columns are computed then
  * Note that the origin is the upper left cell
  */
 public class GridMap {
 	public static double epsilon = 0.05; // in degree
 	// size of cells in degrees
-	public static double cellDegree;
-	// location of four coordinates
-	private Location upperLeft;
-	private Location upperRight;
-	private Location lowerLeft;
-	private Location lowerRight;
+	private final double cellDegree;
 	// lat & lon coordinate boundary
-	private double upperLat;
-	private double lowerLat;
-	private double leftLon;
-	private double rightLon;
+	private double northLat;
+	private double southLat;
+	private double westLng;
+	private double eastLng;
 	// length of the map
-	private double length = -1;
+	private double length;
 	// height of the map
-	private double height = -1;
+	private double height;
 	// number of rows
-	private int number_of_rows = -1;
+	protected int numberOfRows;
 	// number of columns
-	private int number_of_cols = -1;
+	protected int numberOfCols;
 	// average distance between each cell
-	private double averDist;
+	protected double averDist;
 
-	public class coordinatesOutOfBoundsException extends RuntimeException {
-		public coordinatesOutOfBoundsException(String message) {
-			super(message);
-		}
-		public coordinatesOutOfBoundsException() {
-			super();
-		}
-	}
-
-	// initialize map using four coordinates and cell degree
-	public GridMap(Location ul, Location ur, Location ll, Location lr, double cd) {
+	/**
+	 * Initialize map using four coordinates and cell degree
+	 * Works for north hemisphere
+	 * @param nw north west location
+	 * @param se south east location
+	 * @param cd cell degree
+	 */
+	public GridMap(Location nw, Location se, double cd) {
 		if (cd <= 0) throw new IllegalArgumentException("Cell size defined in degree must be positive");
-		// expect user's input is a rectangle area
-		if (Math.abs(ul.getLatitude() - ur.getLatitude()) > epsilon) throw new IllegalArgumentException("Rectangular area expected");
-		if (Math.abs(ll.getLatitude() - lr.getLatitude()) > epsilon) throw new IllegalArgumentException("Rectangular area expected");
-		if (Math.abs(ul.getLongitude() - ll.getLongitude()) > epsilon) throw new IllegalArgumentException("Rectangular area expected");
-		if (Math.abs(ur.getLongitude() - lr.getLongitude()) > epsilon) throw new IllegalArgumentException("Rectangular area expected");
-		upperLeft = ul;
-		upperRight = ur;
-		lowerLeft = ll;
-		lowerRight = lr;
 		cellDegree = cd;
-		number_of_rows = (int) (Math.abs(upperLeft.getLatitude() - lowerLeft.getLatitude()) / cellDegree);
-		number_of_cols = (int) (Math.abs(upperLeft.getLongitude() - upperRight.getLongitude()) / cellDegree);
-		if (number_of_rows <= 0 || number_of_cols <= 0) throw new IllegalArgumentException();
-		// works for north hemisphere
-		upperRight.setLocation(upperLeft.getLatitude(), upperLeft.getLongitude() + cellDegree * number_of_cols);
-		lowerLeft.setLocation(upperLeft.getLatitude() - cellDegree * number_of_rows, upperLeft.getLongitude());
-		lowerRight.setLocation(upperLeft.getLatitude() - cellDegree * number_of_rows, upperLeft.getLongitude() + cellDegree * number_of_cols);
-		length = upperLeft.distTo(upperRight);
-		height = upperLeft.distTo(lowerLeft);
-		averDist = (length + height) / (number_of_rows + number_of_cols);
-		upperLat = getUpperBoundary();
-		lowerLat = getLowerBounday();
-		leftLon = getLeftBoundary();
-		rightLon = getRightBoundary();
+		northLat = nw.getLatitude();
+		southLat = se.getLatitude();
+		westLng = nw.getLongitude();
+		eastLng = se.getLongitude();
+		numberOfRows = (int) ((northLat - southLat) / cellDegree);
+		numberOfCols = (int) ((eastLng - westLng) / cellDegree);
+		if (numberOfRows <= 0 || numberOfCols <= 0) throw new IllegalArgumentException();
+		southLat = northLat - cellDegree * numberOfRows;
+		eastLng = westLng + cellDegree * numberOfCols;
+		Location nw_loc = new Location(northLat, westLng);
+		Location ne_loc = new Location(northLat, eastLng);
+		length = nw_loc.distTo(ne_loc);
+		Location sw_loc = new Location(northLat, westLng);
+		Location se_loc = new Location(southLat, westLng);
+		height = sw_loc.distTo(se_loc);
+		averDist = (length + height) / (numberOfRows + numberOfCols);
 	}
 
+	/**
+	 * Construct a GridMap from another map
+	 */
 	public GridMap(GridMap map) {
 		if (map == null) throw new NullPointerException();
-		upperLeft = map.getUpperLeft();
-		upperRight = map.getUpperRight();
-		lowerLeft = map.getLowerLeft();
-		lowerRight = map.getLowerRight();
 		cellDegree = map.getCellDegree();
-		number_of_rows = map.getRows();
-		number_of_cols = map.getCols();
+		numberOfRows = map.getNumOfRows();
+		numberOfCols = map.getNumOfCols();
+		northLat = map.getNorthLat();
+		southLat = map.getSouthLat();
+		westLng = map.getWestLng();
+		eastLng = map.getEastLng();
 		length = map.getLength();
 		height = map.getHeight();
 		averDist = map.getAverageDistance();
-		upperLat = map.getUpperBoundary();
-		lowerLat = map.getLowerBounday();
-		leftLon = map.getLeftBoundary();
-		rightLon = map.getRightBoundary();
+	}
+	
+	/**
+	 * Get north latitude of the map
+	 */
+	public double getNorthLat() {
+		return northLat;
 	}
 
+	/**
+	 * Get south latitude of the map
+	 */
+	public double getSouthLat() {
+		return southLat;
+	}
+
+	/**
+	 * Get west longitude of the map
+	 */
+	public double getWestLng() {
+		return westLng;
+	}
+
+	/**
+	 * Get east longitude of the map
+	 */
+	public double getEastLng() {
+		return eastLng;
+	}
+	
+	/**
+	 * Get number of rows
+	 */
+	public int getNumOfRows() {
+		return numberOfRows;
+	}
+	
+	/**
+	 * Get number of columns
+	 */
+	public int getNumOfCols() {
+		return numberOfCols;
+	}
+
+	/**
+	 * Get cell size
+	 */
+	public double getCellDegree() {
+		return cellDegree;
+	}
+	
+	/**
+	 * Get length of the map in km
+	 */
 	public double getLength() {
 		return length;
 	}
 
+	/**
+	 * Get height of the map in km
+	 */
 	public double getHeight() {
 		return height;
 	}
-	// number of number_of_rows for the map
-	public int getRows() {
-		return number_of_rows;
-	}
-	// number of number_of_cols for the map
-	public int getCols() {
-		return number_of_cols;
-	}
 
-	public double getCellDegree() {
-		return cellDegree;
-	}
-
+	/**
+	 * Get average distance of a single cell in meters
+	 */
 	public double getAverageDistance() {
 		return averDist;
 	}
 
-	public Location getUpperLeft() {
-		return upperLeft;
-	}
-
-	public Location getUpperRight() {
-		return upperRight;
-	}
-
-	public Location getLowerLeft() {
-		return lowerLeft;
-	}
-
-	public Location getLowerRight() {
-		return lowerRight;
-	}
-	// check if the location is in the range of grid map
+	/** 
+	 * Check if the location is in the range of grid map
+	 */
 	public boolean withInBoundary(Location location) {
 		if (location == null) return false;
 		double lat = location.getLatitude();
 		double lon = location.getLongitude();
-		if (lat < getLowerBounday() || lat > getUpperBoundary()) return false;
-		if (lon < getLeftBoundary() || lon > getRightBoundary()) return false;
+		if (lat < southLat || lat > northLat) return false;
+		if (lon < westLng || lon > eastLng) return false;
 		return true;
-	}
-
-	// check if the location is in the range of grid map
-	public boolean withInBoundary(double lat, double lon) {
-		if (lat < getLowerBounday() || lat > getUpperBoundary()) return false;
-		if (lon < getLeftBoundary() || lon > getRightBoundary()) return false;
-		return true;
-	}
-
-	public double getLeftBoundary() {
-		return upperLeft.getLongitude();
-	}
-
-	public double getRightBoundary() {
-		return upperRight.getLongitude();
-	}
-
-	public double getUpperBoundary() {
-		return upperLeft.getLatitude();
-	}
-
-	public double getLowerBounday() {
-		return lowerLeft.getLatitude();
-	}
-	// print four corners of location
-	public void showBoundary() {
-		System.out.println("Map boundary: ");
-		upperLeft.printLocation();
-		upperRight.printLocation();
-		lowerLeft.printLocation();
-		lowerRight.printLocation();
 	}
 	
-	// get lat & lon according to given number_of_rows & number_of_cols index
-	public double RowToLat(int r) {
-		if (r < 0 || r >= number_of_rows) throw new IllegalArgumentException();
-		double newLat = upperLat - 0.5 * cellDegree - r * cellDegree;
-		if (newLat < getLowerBounday() || newLat > getUpperBoundary()) throw new coordinatesOutOfBoundsException();
+	/**
+	 * Get latitude from row index
+	 */
+	public double rowToLat(int r) {
+		if (r < 0 || r >= numberOfRows) throw new IndexOutOfBoundsException();
+		double newLat = northLat - 0.5 * cellDegree - r * cellDegree;
+		if (newLat < southLat || newLat > northLat) throw new IllegalArgumentException();
 		return newLat;
 	}
-
-	public double ColToLon(int c) {
-		if (c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
-		double newLon = leftLon + 0.5 * cellDegree + c * cellDegree;
-		if (newLon < getLeftBoundary() || newLon > getRightBoundary()) throw new coordinatesOutOfBoundsException();
+	
+	/**
+	 * Get longitude from column index
+	 */
+	public double colToLng(int c) {
+		if (c < 0 || c >= numberOfCols) throw new IndexOutOfBoundsException();
+		double newLon = westLng + 0.5 * cellDegree + c * cellDegree;
+		if (newLon < westLng || newLon > eastLng) throw new IllegalArgumentException();
 		return newLon;
 	}
 
-	// convert latitude to the index of row where the coordinate belongs 
-	public int LatToRow(double lat) {
-		if (lat < getLowerBounday() || lat > getUpperBoundary()) throw new IllegalArgumentException("Latitude is out of map range");
-		int rowIndex = (int) (Math.abs(upperLeft.getLatitude() - lat) / cellDegree);
-		if (rowIndex >= number_of_rows) throw new IndexOutOfBoundsException();
+	/**
+	 * Get row index from latitude
+	 */
+	public int latToRow(double lat) {
+		if (lat < southLat || lat > northLat) throw new IllegalArgumentException("Latitude is out of map range");
+		int rowIndex = (int) ((northLat - lat) / cellDegree);
+		if (rowIndex >= numberOfRows) throw new IndexOutOfBoundsException();
 		return rowIndex;
 	}
 
-	// convert longitude to the index of col where the coordinate belongs 
-	public int LonToCol(double lon) {
-		if (lon < getLeftBoundary() || lon > getRightBoundary()) throw new IllegalArgumentException("Longitude is out of map range");
-		int colIndex = (int) (Math.abs(upperLeft.getLongitude() - lon) / cellDegree);
-		if (colIndex >= number_of_cols) throw new IndexOutOfBoundsException();
+	/**
+	 * Get column index from longitude
+	 */
+	public int lngToCol(double lon) {
+		if (lon < westLng || lon > eastLng) throw new IllegalArgumentException("Longitude is out of map range");
+		int colIndex = (int) ((lon - westLng) / cellDegree);
+		if (colIndex >= numberOfCols) throw new IndexOutOfBoundsException();
 		return colIndex;
 	}
 
+	/**
+	 * Given map indices of rows and cols, return location of the center of that cell
+	 * @param r   index of row
+	 * @param c   index of col
+	 * @return    location of the center of cell(i, j)
+	 */
 	public Location getLocation(int r, int c) {
-		if (r < 0 || r >= number_of_rows || c < 0 || c >= number_of_cols) throw new IndexOutOfBoundsException();
-		return new Location(upperLat - 0.5 * cellDegree - r * cellDegree, 
-			leftLon + 0.5 * cellDegree + c * cellDegree);
+		if (r < 0 || r >= numberOfRows || c < 0 || c >= numberOfCols) throw new IndexOutOfBoundsException();
+		return new Location(rowToLat(r), colToLng(c));
 	}
 }

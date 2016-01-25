@@ -1,13 +1,8 @@
 package utility;
 
-import java.text.DecimalFormat;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import java.io.PrintWriter;
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 /*
  * InferMap is the grid map that attackers use to infer PU's location
@@ -15,206 +10,288 @@ import java.io.File;
  * to each cell representing the probability of existence of PU
  */
 public class InferMap extends GridMap {
-	// probability map
-	private int id;
-	private double[][] p;
-	public static String directory;
+	private int id;                      // channel id
+	private double[][] p;                // probability matrix
+	private int updateLength;            // update diameter
+	private int updateRadius;            // update radius
+	private double cellArea;
 
+	/**
+	 * Construct a probability map with 0.5 for each cell
+	 * @param id    channel id
+	 * @param map   grid map that inherents from parent class
+	 */
 	public InferMap(int id, GridMap map) {
 		super(map);
 		this.id = id;
-		p = new double[getRows()][getCols()];
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
+		p = new double[getNumOfRows()][getNumOfCols()];
+		for (int i = 0; i < getNumOfRows(); i++) {
+			for (int j = 0; j < getNumOfCols(); j++) {
 				p[i][j] = 0.5;
+			}
+		}
+		updateLength = (int) (MTP.d3 * 2.5 / averDist);
+		updateRadius = updateLength / 2;
+		cellArea = averDist * averDist;
+	}
+	
+	/**
+	 * Deep copy of another inference map
+	 * @param map
+	 */
+	public InferMap(InferMap infMap) {
+		super(infMap);
+		this.id = infMap.getID();;
+		p = new double[getNumOfRows()][getNumOfCols()];
+		for (int i = 0; i < getNumOfRows(); i++) {
+			for (int j = 0; j < getNumOfCols(); j++) {
+				p[i][j] = infMap.getProbability(i, j);
+			}
+		}
+		updateLength = infMap.getUpdateLenght();
+		updateRadius = infMap.getUpdateRadius();
+		cellArea = infMap.getCellArea();
 	}
 
-	// initialize each entry to be 0.5
-	public InferMap(int id, Location ul, Location ur, Location ll, Location lr, double cd) {
-		super(ul, ur, ll, lr, cd);
-		this.id = id;
-		p = new double[getRows()][getCols()];
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
-				p[i][j] = 0.5;
-	}
-
-	// updates the matrix based on response from server
-	public void update(Location location, double d1, double d2) {
-		if (location == null) return;
-		if (!withInBoundary(location)) {
-			System.out.println("Invalid location");
-			return;
-		}
-		if (d1 < 0 || d2 < 0) {
-			System.out.println("Invalid parameters");
-			return;
-		}
+	/**
+	 * Update probabilities for infer map
+	 * @param rIndex    row index location of client
+	 * @param cIndex    column index location of client
+	 * @param d1        update range, area with d1 is set to 0
+	 * @param d2        update range, probability of area in between d1 and d2 will increase
+	 */
+	public void update(int rIndex, int cIndex, double d1, double d2) {
+		if (d1 < 0 || d2 < 0 || d1 > d2) throw new IllegalArgumentException();
+		if (rIndex < 0 || rIndex >= numberOfRows || cIndex < 0 || cIndex >= numberOfCols) throw new IllegalArgumentException();
+		Location clientLocation = getLocation(rIndex, cIndex);
+		// parameter used in updating formula
 		int G = 0;
-		double cd = getCellDegree();
-		if (cd <= 0) return;
-		double upperBoundary = getUpperBoundary();
-		double leftBoundary = getLeftBoundary();
-		int rowIndex = LatToRow(location.getLatitude());
-		int colIndex = LonToCol(location.getLongitude());
-		
-		/* debug information */
-		// System.out.println("***Update****");
-		// System.out.println("d1: " + d1 + " d2: " + d2);
-		// System.out.println("center: ");
-		// location.printLocation();
-		// System.out.println("[" + rowIndex + "][" + colIndex + "]");
-		// int updateLength = (int) Math.round(30 * 2 / getAverageDistance());
-		// for testing
-		int updateLength = (int) Math.round(MTP.d3 * 4 / getAverageDistance());
-		/* debug information */
-		// System.out.println("updateLength: " + updateLength);
+		int startRow = Math.max(rIndex - updateRadius, 0);
+		int startCol = Math.max(cIndex - updateRadius, 0);
 
-		int startRow = rowIndex - (int) Math.round(updateLength / 2.0);
-		if (startRow < 0) startRow = 0;
-		int startCol = colIndex - (int) Math.round(updateLength / 2.0);
-		if (startCol < 0) startCol = 0;
-		/* debug information */
-		// System.out.println("startRow: " + startRow);
-		// System.out.println("startCol: " + startCol);
-
-		Location loc = new Location();
-		for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
-			for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
+		// temporary location for each cell
+		Location tmpCell = new Location();
+		for (int i = startRow; i <= startRow + updateLength && i < getNumOfRows(); i++) {
+			for (int j = startCol; j <= startCol + updateLength && j < getNumOfCols(); j++) {
 				// assume that PU is located at the center of cell
-				loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-				double distance = loc.distTo(location);
+				tmpCell.setLocation(rowToLat(i), colToLng(j));
+				double distance = tmpCell.distTo(clientLocation);
 				if (distance < d1) {
 					p[i][j] = 0;
 				}
 				if (distance >= d1 && distance < d2) G++;
 			}
-		/* debug information */
-		// System.out.println("Number of G is: " + G);
+		}
 		if (G != 0) {
-			for (int i = startRow; i <= startRow + updateLength && i < getRows(); i++)
-				for (int j = startCol; j <= startCol + updateLength && j < getCols(); j++) {
+			for (int i = startRow; i <= startRow + updateLength && i < getNumOfRows(); i++)
+				for (int j = startCol; j <= startCol + updateLength && j < getNumOfCols(); j++) {
 					// assume that PU is located at the center of cell
-					loc.setLocation(upperBoundary - 0.5 * cd - i * cd, leftBoundary + 0.5 * cd + j * cd);
-					double distance = loc.distTo(location);
+					tmpCell.setLocation(rowToLat(i), colToLng(j));
+					double distance = tmpCell.distTo(clientLocation);
 					if (distance >= d1 && distance < d2) {
-						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / G);
-						/* debug information */
-						// System.out.println("p" + "[" + i + "]" + "[" + j + "] = " + p[i][j]);
+						p[i][j] = p[i][j] / (1 - (1 - p[i][j]) / (G));
 					}
 				}
 		}
-		// System.out.println("***Update over****");
-		// System.out.println("");
 	}
+	
+	/**
+	 * Temporarily update inaccuracy value at location (clientR, clientC), with radius (d1, d2).
+	 * Previous inaccuracy is ic assuming pu is at (puR, puC).
+	 * Return updated inaccuracy without changing the map.
+	 * @param attackerR   row index of updating location
+	 * @param attackerC   column index of updating location
+	 * @param puR   row index of assumed pu
+	 * @param puC   column index of assumed pu
+	 * @param res  response power
+	 * @param ic   previous inaccuracy
+	 * @return    updated inaccuracy
+	 */
+	public long tmpUpdate(int attackerR, int attackerC, int puR, int puC, double res, long ic) {		
+		if (attackerR < 0 || attackerR >= numberOfRows || attackerC < 0 || attackerC >= numberOfCols) throw new IllegalArgumentException();
+		if (puR < 0 || puR >= numberOfRows || puC < 0 || puC >= numberOfCols) throw new IllegalArgumentException();
+//		if (ic < 0) throw new IllegalArgumentException();
+		Location clientLocation = getLocation(attackerR, attackerC);
+		Location puLocation = getLocation(puR, puC);
+//		// parameter used in updating formula
+		int G, d0, d1;
+		if (res == MTP.P_0) {
+			d0 = 0; d1 = 8;
+			G = (int) (MTP.pid1d1 / cellArea);
+		}
+		else if (res == MTP.P_50) {
+			d0 = 8; d1 = 14;
+			G = (int) ((MTP.pid2d2 - MTP.pid1d1) / cellArea);
+		}
+		else if (res == MTP.P_75) {
+			d0 = 14; d1 = 25;
+			G = (int) ((MTP.pid3d3 - MTP.pid2d2) / cellArea);
+		}
+		else {
+			d0 = 25; d1 = 25;
+			G = 0;
+		}
+		int startRow = Math.max(attackerR - updateRadius, 0);
+		int startCol = Math.max(attackerC - updateRadius, 0);
+		// temporary location for each cell
+		Location tmpCell = new Location();
+		for (int i = startRow; i <= startRow + updateLength && i < numberOfRows; i++) {
+			for (int j = startCol; j <= startCol + updateLength && j < numberOfCols; j++) {
+				// assume that PU is located at the center of cell
+				tmpCell.setLocation(rowToLat(i), colToLng(j));
+				double distance = tmpCell.distTo(clientLocation);
+				if (distance < d0) {
+					ic -= p[i][j] * tmpCell.distTo(puLocation);
+				}
+				if (distance >= d0 && distance < d1 && G > 0) {
+					double oldP = p[i][j];
+					double newP = p[i][j] / (1 - (1 - p[i][j]) / G);
+					ic += (newP - oldP) * tmpCell.distTo(puLocation);
+				}
+			}
+		}
+		return ic;
+	}
+	
+	/**
+	 * Update inference map and update ic value for each entry
+	 * @param res          response power
+	 * @param icMat        icMat
+	 * @param indexOfRow   query row
+	 * @param indexOfCol   query columns
+	 */
+	public void updateIcMat(int attackerR, int attackerC, double res, long[][] icMat) {
+		if (attackerR < 0 || attackerR >= numberOfRows || attackerC < 0 || attackerC >= numberOfCols) throw new IllegalArgumentException();
+		if (icMat.length != numberOfRows || icMat[0].length != numberOfCols) throw new IllegalArgumentException();
+		Location clientLocation = getLocation(attackerR, attackerC);
+		// parameter used in updating formula
+		int G, d0, d1;
+		if (res == MTP.P_0) {
+			d0 = 0; d1 = 8;
+			G = (int) (MTP.pid1d1 / cellArea);
+		}
+		else if (res == MTP.P_50) {
+			d0 = 8; d1 = 14;
+			G = (int) ((MTP.pid2d2 - MTP.pid1d1) / cellArea);
+		}
+		else if (res == MTP.P_75) {
+			d0 = 14; d1 = 25;
+			G = (int) ((MTP.pid3d3 - MTP.pid2d2) / cellArea);
+		}
+		else {
+			d0 = 25; d1 = 25;
+			G = 0;
+		}
+		int startRow = Math.max(attackerR - updateRadius, 0);
+		int startCol = Math.max(attackerC - updateRadius, 0);
 
+		// temporary location for each cell
+		Location tmpCell = new Location();
+		for (int i = startRow; i <= startRow + updateLength && i < getNumOfRows(); i++) {
+			for (int j = startCol; j <= startCol + updateLength && j < getNumOfCols(); j++) {
+				// assume that PU is located at the center of cell
+				tmpCell.setLocation(rowToLat(i), colToLng(j));
+				double distance = tmpCell.distTo(clientLocation);
+				if (distance < d0) {
+					for (int r = 0; r < numberOfRows; r++) {
+						for (int c = 0; c < numberOfCols; c++) {
+							if (p[r][c] > 0) {
+								double dist = getLocation(r, c).distTo(tmpCell);
+								icMat[r][c] -= dist * p[i][j];
+							}
+						}
+					}
+					p[i][j] = 0;
+				}
+				if (distance >= d0 && distance < d1) {
+					double oldP = p[i][j];
+					double newP = p[i][j] / (1 - (1 - p[i][j]) / (G));
+					for (int r = 0; r < numberOfRows; r++) {
+						for (int c = 0; c < numberOfCols; c++) {
+							if (p[r][c] > 0) {
+								double dist = getLocation(r, c).distTo(tmpCell);
+								icMat[r][c] += dist * (newP - oldP);
+							}
+						}
+					}
+					p[i][j] = newP;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get probability at location (i, j)
+	 * @param i    row index
+	 * @param j    column index
+	 * @return     probability at that location
+	 */
+	public double getProbability(int i, int j) {
+		if (i < 0 || i >= getNumOfRows()) throw new IllegalArgumentException();
+		if (j < 0 || j >= getNumOfCols()) throw new IllegalArgumentException();
+		return p[i][j];
+	}
+	
+	/**
+	 * Get the whole probability matrix
+	 * @return  double[][]
+	 */
 	public double[][] getProbabilityMatrix() {
 		return p;
 	}
-
-	public Location getLocation(int r, int c) {
-		return super.getLocation(r, c);
+	
+	/**
+	 * Get the id of the inference map
+	 * @return  id
+	 */
+	public int getID() {
+		return id;
+	}
+	
+	private double getCellArea() {
+		return cellArea;
 	}
 
+	private int getUpdateRadius() {
+		return updateRadius;
+	}
+
+	private int getUpdateLenght() {
+		return updateLength;
+	}
+
+	/**
+	 * Rest infer matrix back to 0.5
+	 */
 	public void resetMap() {
-		for (int i = 0; i < getRows(); i++) 
-			for (int j = 0; j < getCols(); j++)
+		for (int i = 0; i < getNumOfRows(); i++)  {
+			for (int j = 0; j < getNumOfCols(); j++) {
 				p[i][j] = 0.5;
-	}
-
-	// print the probability matrix
-	// obsolete
-	public void print() {
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getCols(); j++) {
-				System.out.print(new DecimalFormat(".000").format(p[i][j]) + " ");
-			}
-			System.out.println();
-		}
-	}
-
-	// visualize results
-	public void visualize() {
-		// boolean greater = false;
-		int rows = getRows();
-		int cols = getCols();
-		int[] data = new int[rows * cols];
-		int red = -1;
-		int green = -1;
-		int blue = -1;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				if (p[i][j] == 0.5) { // gray
-					red = 128;
-					green = 128;
-					blue = 128;
-				}
-				else if (p[i][j] == 0) { // white
-					red = 255;
-					green = 255;
-					blue = 255;
-				}
-				else { // > 0.5, black
-					red = 0;
-					green = 0;
-					blue = 0;
-					// greater = true;
-					// throw new IllegalArgumentException();
-				}
-				data[j + cols * i] = (red << 16) | (green << 8) | blue;
 			}
 		}
-		JFrame frame = new JFrame("ColorPan " + id);
-		frame.getContentPane().add(new ColorPan(data, cols, rows));
-		frame.setSize(cols, rows);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		// System.out.println("Greater than 0.5:" + greater);
 	}
 
-	// the output will be matrix
-	public void printoutMatrix(int id) {
-		if (directory == null || directory.length() == 0) return;
-		// String text = "Output";
-		File file = new File(directory + "demoMatrix_" + id + ".txt");
-		double max = 0;
+	/**
+	 * Print infer map's probability map
+	 * @param dir     output path
+	 * @param fileName file name of text file that contains probability
+	 */
+	public void printProbability(String dir, String fileName) {
+		if (dir == null || dir.length() == 0) return;
+		File file = new File(dir + fileName + "_" + this.id + "_pMatrix.txt");
 		try {
 			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing... ");
-			for (int i = 0; i < getRows(); i++) {
-				for (int j = 0; j < getCols(); j++) {
-					out.print(p[i][j] + " ");
-					if (p[i][j] > max) max = p[i][j];
-				}
-				out.println();
-			}
-			out.close (); // this is necessary
-		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
-		} finally {
-			System.out.println("Greatest value: " + max);
-			System.out.println("Printing ends");
-		}
-	}
-
-	// the output will be tables that specified in the sample data
-	public void printInRequiredFormat(int id) {
-		if (directory == null || directory.length() == 0) return;
-		File file = new File(directory + "demoTable_" + id + ".txt");
-		try {
-			PrintWriter out = new PrintWriter(file);
-			System.out.println("Start printing... ");
-			out.println("LAT LON P");
-			for (int i = 0; i < getRows(); i++) {
-				for (int j = 0; j < getCols(); j++) {
-					out.println(RowToLat(i) + " " + LonToCol(j) + " " + p[i][j]);
+			out.println("ROW COL P");
+			for (int i = 0; i < getNumOfRows(); i++) {
+				for (int j = 0; j < getNumOfCols(); j++) {
+					out.println(i + " " + j + " " + p[i][j]);
 				}
 			}
 			out.close (); // this is necessary
 		} catch (FileNotFoundException e) {
-			System.err.println("FileNotFoundException: " + e.getMessage());
-		} finally {
-			System.out.println("Printing ends");
+			System.out.println("FileNotFoundException: " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
