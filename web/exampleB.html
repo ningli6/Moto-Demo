@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- CSS for inserted image -->
+    <link rel="stylesheet" type="text/css" href="img.css">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->
@@ -50,17 +52,17 @@
     </ul>
     <h4>Inaccuracy vs Random Queries</h4>
     <p>This plot compares inaccuracy between different countermeasures with random query method.</p>
-    <img class="img-responsive" src="ic_q_b.png">
+    <img class="img-responsive imgcenter" src="ic_q_b.png">
     <p>In this case the line for K anonymity is pretty much the same with no countermeasure, whereas the line for K cluster is generally higher because it groups two Primary Users as one and thus extends its protection range.</p>
     <h4>Inaccuracy vs Smart Queries</h4>
     <p>This plot compares inaccuracy between different countermeasures with smart query method.</p>
-    <img class="img-responsive" src="ic_q_b_smart.png">
+    <img class="img-responsive imgcenter" src="ic_q_b_smart.png">
     <p>In this case the line for K anonymity is the same as no countermeasure. The line for K cluster is higher after certain numbers of queries.</p>
     <h4>Inaccuracy vs Random/Smart Queries</h4>
     <p>This figure shows that with no countermeasure, smart query method performs better than random query method in terms of inferring actual locations of Primary Users.</p>
-    <img class="img-responsive" src="rand_smart.png">
+    <img class="img-responsive imgcenter" src="rand_smart.png">
     <h4>Inaccuracy Bar Plot</h4>
     <p>This figure compares the inaccuracy value after all the queries are done. It groups a pair of inaccuracy value by countermeasures and compare the inaccuracy between random queries and smart queries for a particular countermeasure.</p>
-    <img class="img-responsive" src="bar.png">
+    <img class="img-responsive imgcenter" src="bar.png">
     <p>As you can see the inaccuracy with smart queries are generally more efficient than its random counterpart. The smart querying algorithm is able to bring down the inaccuracy very quickly with less queries.</p>
 </div>

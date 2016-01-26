@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- CSS for inserted image -->
+    <link rel="stylesheet" type="text/css" href="img.css">
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Latest compiled JavaScript -->
@@ -48,23 +50,23 @@
     </ul>
     <h4>Inaccuracy vs Queries</h4>
     <p>This plot compares inaccuracy between different countermeasures. In this case it has following result:</p>
-    <img class="img-responsive" src="ic_q_a.png">
+    <img class="img-responsive imgcenter" src="ic_q_a.png">
     <p>Note that as number of queries increases, the inaccuracy drops. This is because the attacker gets more information with more number of queries. The higher the inaccuracy gets, the better the countermeasure performs, although its spectrum utilization is even lower. In our configuration K-Anonymity is actually the same as no countermeasure. Transfiguration is slightly effective dealing with large maps. Those three lines are close to each other, whereas the other countermeasures are quite effective.</p>
     <h4>Heat Map</h4>
     <p>The heat map is actually probability distribution inferred by the attacker. We project this data right on top of the analysis area. The color near red means the attacker thinks there is a greater probability that the associated area has a Primary User. The blue end means less probability. The transparent region means the attacker is certain that Primary User does not reside in those areas.</p>
-    <img class="img-responsive" src="heat_a.png">
+    <img class="img-responsive imgcenter" src="heat_a.png">
     <h4>Trade-off Plots</h4>
     <p>Trade-off plots compares performance for the same countermeasure with different values.</p>
     <p>In terms of additive noise,</p>
-    <img class="img-responsive" src="ad_a.png">
+    <img class="img-responsive imgcenter" src="ad_a.png">
     <p>The higher noise level gets, the better the countermeasure performs.</p>
     <p>In terms of transfiguration, we compared values at three, four and five.</p>
-    <img class="img-responsive" src="tf_a.png">
+    <img class="img-responsive imgcenter" src="tf_a.png">
     <p>Generally three has best performance. As number of sides increases, the difference is small.</p>
     <p>For K-Anonymity, we only have 2 PU in our map, so we compare values at 1 and 2.</p>
-    <img class="img-responsive" src="ka_a.png">
+    <img class="img-responsive imgcenter" src="ka_a.png">
     <p>When K is one, there is actually no countermeasure, when K is two, two PUs are grouped as one, so the inaccuracy is greater.</p>
     <p>For K-Cluster, we only have 2 PU in our map, so we compare values at 1 and 2.</p>
-    <img class="img-responsive" src="kc_a.png">
+    <img class="img-responsive imgcenter" src="kc_a.png">
     <p>When K is two, there is actually no countermeasure, when K is one, two PUs are clustered as one, so the inaccuracy is greater.</p>
 </div>
