@@ -160,108 +160,63 @@ public class SimAdditiveNoise extends Simulation {
 		
 		printInfercenMatrix(cmServer, client, directory, "Additive_Noise");
 	}
-	
-	/**
-	 * Smart simulation with additive noise.
-	 * Keep recording ic as number of queries increases but only update number of lies needed once
-	 * with the maximum number of queries.
-	 */
-	public void smartSingleSimulation() {
-		if (this.noiseLevel > 1 || this.noiseLevel < 0) {
-			feasible = false;
-			System.out.println("Noise level is not feasible.");
-			return;
-		}
-		System.out.println("Start smart query with additive noise...");
-		SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
-		int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
-		List<Integer> qlist = new ArrayList<Integer>();
-		for (int i = 0; i <= interval; i++) {     // start query from 0 times
-			qlist.add(gap * i);
-			icSmartMap.put(gap * i, new double[noc]);
-		}
-		int repetation = 1;
-		int maxQ = qlist.get(qlist.size() - 1);
-		cmServer.updateLiesNeeded(maxQ);         // update expected number of lies
-		icSmartMap.put(0, attacker.computeIC()); // ic at query 0 is constant
-		for (int rep = 0; rep < repetation; rep++){
-			attacker.reset(); // set infer matrix to 0.5
-			cmServer.reset(); // rest actual lies to 0
-			for (int i = 1; i <= maxQ; i++) {
-				System.out.println("Q: " + i);
-				attacker.smartLocation();
-				attacker.query(cmServer);
-				if (icSmartMap.containsKey(i)){
-					double[] newIC = attacker.computeIC();
-					double[] sum = icSmartMap.get(i);
-					for (int k = 0; k < noc; k++) {
-						sum[k] += newIC[k] / repetation; // avoid overflow
-					}
-					icSmartMap.put(i, sum);
-				}
-			}
-		}
-		feasible = true;         // noise level is feasible, proceed
-		printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
-		printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
-	}
 
 	/**
-	 * Smart queries with additive noise. Don't use it. It's just too expensive.
+	 * Smart queries with additive noise. It's just too expensive.
 	 */
-	// @Override
-	// public void smartSimulation() {
-	// 	if (this.noiseLevel > 1 || this.noiseLevel < 0) {
-	// 		feasible = false;
-	// 		System.out.println("Noise level is not feasible.");
-	// 		return;
-	// 	}
-	// 	System.out.println("Start smart query with additive noise...");
-	// 	SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
-	// 	int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
-	// 	int iteration = 1;
-	// 	List<Integer> qlist = new ArrayList<Integer>();
-	// 	for (int i = 0; i <= interval; i++) {     // start query from 0 times
-	// 		qlist.add(gap * i);
-	// 		icSmartMap.put(gap * i, new double[noc]);
-	// 	}
-	// 	for (int q : qlist) {             // for each query number
-	// 		System.out.println("For query: " + q);
-	// 		cmServer.updateLiesNeeded(q); // update expected number of lies
-	// 		int attempts = iteration;     // within 5 attempts, must succeed once
-	// 		int succeed = 0;              // number of successful attempts
-	// 		while (attempts > 0 && succeed < 1) {
-	// 			attacker.reset();         // reset matrix to 0.5
-	// 			cmServer.reset();         // rest actual lies to 0
-	// 			for (int j = 0; j < q; j++) {
-	// 				System.out.println("Q: " + j);
-	// 				attacker.smartLocation();
-	// 				attacker.query(cmServer);
-	// 			}
-	// 			if (!cmServer.reachNoiseLevel()) {
-	// 				System.out.println("Noise condition is not satisfied, try again");
-	// 				attempts--; // noise level not reached, bad attempt
-	// 			}
-	// 			else {
-	// 				double[] newIC = attacker.computeIC();
-	// 				double[] sum = icSmartMap.get(q);
-	// 				for (int k = 0; k < noc; k++) {
-	// 					sum[k] += newIC[k]; // avoid overflow
-	// 				}
-	// 				icSmartMap.put(q, sum);
-	// 				succeed++; // succeed
-	// 				attempts = iteration;  // have another [maxIteration] times for next success
-	// 			}
-	// 		}
-	// 		if (attempts == 0) { // can't reach noise level in [maxIteration] attempts
-	// 			feasible = false;
-	// 			return;
-	// 		}
-	// 	}
-	// 	feasible = true;         // noise level is feasible, proceed
-	// 	printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
-	// 	printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
-	// }
+	 @Override
+	 public void smartSimulation() {
+	 	if (this.noiseLevel > 1 || this.noiseLevel < 0) {
+	 		feasible = false;
+	 		System.out.println("Noise level is not feasible.");
+	 		return;
+	 	}
+	 	System.out.println("Start smart query with additive noise...");
+	 	SmartAttacker attacker = new SmartAttacker(cmServer); // get a new client
+	 	int gap = noq / interval;  		          // compute query points, number of query must be a mulitple of 10
+	 	int iteration = 1;
+	 	List<Integer> qlist = new ArrayList<Integer>();
+	 	for (int i = 0; i <= interval; i++) {     // start query from 0 times
+	 		qlist.add(gap * i);
+	 		icSmartMap.put(gap * i, new double[noc]);
+	 	}
+	 	for (int q : qlist) {             // for each query number
+	 		System.out.println("For query: " + q);
+	 		cmServer.updateLiesNeeded(q); // update expected number of lies
+	 		int attempts = 1;             // within 1 attempts, must succeed
+	 		int succeed = 0;              // number of successful attempts
+	 		while (attempts > 0 && succeed < 1) {
+	 			attacker.reset();         // reset matrix to 0.5
+	 			cmServer.reset();         // rest actual lies to 0
+	 			for (int j = 0; j < q; j++) {
+	 				System.out.println("Q: " + j);
+	 				attacker.smartLocation();
+	 				attacker.query(cmServer);
+	 			}
+	 			if (!cmServer.reachNoiseLevel()) {
+	 				System.out.println("Noise condition is not satisfied, try again");
+	 				attempts--; // noise level not reached, bad attempt
+	 			}
+	 			else {
+	 				double[] newIC = attacker.computeIC();
+	 				double[] sum = icSmartMap.get(q);
+	 				for (int k = 0; k < noc; k++) {
+	 					sum[k] += newIC[k]; // avoid overflow
+	 				}
+	 				icSmartMap.put(q, sum);
+	 				succeed++; // succeed
+	 				attempts = iteration;  // have another [maxIteration] times for next success
+	 			}
+	 		}
+	 		if (attempts == 0) { // can't reach noise level in [maxIteration] attempts
+	 			feasible = false;
+	 			return;
+	 		}
+	 	}
+	 	feasible = true;         // noise level is feasible, proceed
+	 	printInfercenMatrix(cmServer, attacker, directory, "smart_Additive_Noise");
+	 	printICvsQ(qlist, icSmartMap, directory, "cmp_smart_AdditiveNoise.txt");
+	 }
 	
 	/**
 	 * Plot trade-of curve, output data in a file named traddOff_AdditiveNoise.txt
