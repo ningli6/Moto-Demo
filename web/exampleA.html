@@ -27,7 +27,7 @@
         </ul>
       </div><!-- /.container-fluid -->
     </nav>
-    <div class="page-header"><h3 style="margin-top: 70px !important;">Test scenario</h3></div>
+    <div class="page-header"><h3 style="margin-top: 90px !important;">Test Scenario</h3></div>
     <p>In this example, we will simulate with two Primary Users on a single channel map with 0.5 km grid size. We will simulate with no countermeasure as well as all the other countermeasures with random queries. We will also show the heat map and trade-off plots for each countermeasure in the result.</p>
     <div class="page-header"><h3>Configurations</h3></div>
     <p>The following screenshots show the configuration process for above requirement.</p>
@@ -38,7 +38,7 @@
     <p>We choose to <mark>include heat map</mark> in the results. It projects probability distribution inferred by the attacker on top of the Google Map. We also choose to <mark>include trade-off plots</mark> in the results so that we can compare different values for each countermeasures.</p>
     <img class="img-responsive" src="cma.png">
     <p>Finally we choose to use <mark>random queries only</mark> and query for <mark>50</mark> times.</p>
-    <div class="page-header"><h3>Simulation results</h3></div>
+    <div class="page-header"><h3>Simulation Results</h3></div>
     <p>In the result email, you will receive following files and plots:</p>
     <ul>
         <li>A log file that describes the configuration you just decided</li>
@@ -50,10 +50,10 @@
     <p>This plot compares inaccuracy between different countermeasures. In this case it has following result:</p>
     <img class="img-responsive" src="ic_q_a.png">
     <p>Note that as number of queries increases, the inaccuracy drops. This is because the attacker gets more information with more number of queries. The higher the inaccuracy gets, the better the countermeasure performs, although its spectrum utilization is even lower. In our configuration K-Anonymity is actually the same as no countermeasure. Transfiguration is slightly effective dealing with large maps. Those three lines are close to each other, whereas the other countermeasures are quite effective.</p>
-    <h4>Heat map</h4>
+    <h4>Heat Map</h4>
     <p>The heat map is actually probability distribution inferred by the attacker. We project this data right on top of the analysis area. The color near red means the attacker thinks there is a greater probability that the associated area has a Primary User. The blue end means less probability. The transparent region means the attacker is certain that Primary User does not reside in those areas.</p>
     <img class="img-responsive" src="heat_a.png">
-    <h4>Trade-off plots</h4>
+    <h4>Trade-off Plots</h4>
     <p>Trade-off plots compares performance for the same countermeasure with different values.</p>
     <p>In terms of additive noise,</p>
     <img class="img-responsive" src="ad_a.png">

@@ -28,9 +28,39 @@
       </div><!-- /.container-fluid -->
     </nav>
 
-    <div class="page-header"><h3 style="margin-top: 70px !important;">Test scenario</h3></div>
-    <p>In this test scenario we'd like to show what happens when you select both query options, the random query and the smart query. This is important because we generate two new kinds of graph to compare these two different query methods. All the features and graphs from the first example remain the same. The smart query algorithm is quite demanding in terms of computation so in our configuration we try to construct a simple case. We will simulate with one Primary User operating in one channel. We choose a relatively small analysis area with the greatest grid size to reduce computation. Within a small region a small number of queries would be sufficient.</p>
+    <div class="page-header"><h3 style="margin-top: 90px !important;">Test Scenario</h3></div>
+    <p>In this test scenario we'd like to show what happens when you select both query options, the random query and the smart query. This is important because we generate two new kinds of graph to compare these two different query methods. All the features and graphs from the first example remain the same. The smart query algorithm is quite demanding in terms of computation so in our configuration we try to construct a simple case. We will simulate with two Primary User operating in one channel. We choose a relatively small analysis area with the greatest grid size to reduce computation. Within a small region a small number of queries would be sufficient. We use K-Anonymity and K-Clustering as countermeasures in this example.</p>
     <div class="page-header"><h3>Configurations</h3></div>
-    <div class="page-header"><h3>Simulation results</h3></div>
-
+    <p>The following screenshots show the configuration process for above requirement.</p>
+    <p>First select number of channels as <mark>1 channel</mark> and specify grid size as <mark>5 km</mark> from the dropdown button.</p>
+    <p>Then specify two Primary Users on a rectangle area of interest.</p>
+    <img class="img-responsive" src="eb_plot.png">
+    <p><mark>Choose No countermeasure, K-Anonymity and K-Clustering</mark>. For anonymity <mark>1</mark> means each group will have one Primary User inside, which is in fact the same as no countermeasure. For clustering <mark>1</mark> means two Primary Users in the map will be clustered as one.</p> 
+    <p>We don't include heat map or trade-off plots this time. They are generally the same with previous example.</p>
+    <img class="img-responsive" src="cmb.png">
+    <p>Select both query options: <mark>Random queries and Smart queries</mark>. This time we query for <mark>10</mark> times, which is enough for a map at this scale.</p>
+    <div class="page-header"><h3>Simulation Results</h3></div>
+    <p>In the result email, you will receive following files and plots:</p>
+    <ul>
+        <li>A log file summarizing the configuration you just decided</li>
+        <li>Inaccuracy vs Queries plot with random queries</li>
+        <li>Inaccuracy vs Queries plot with smart queries</li>
+        <li>Inaccuracy vs Queries plot compared between random and smart queries without countermeasure</li>
+        <li>Inaccuracy bar plot compared between random and smart queries for all the countermeasure selected after all the queries</li>
+    </ul>
+    <h4>Inaccuracy vs Random Queries</h4>
+    <p>This plot compares inaccuracy between different countermeasures with random query method.</p>
+    <img class="img-responsive" src="ic_q_b.png">
+    <p>In this case the line for K anonymity is pretty much the same with no countermeasure, whereas the line for K cluster is generally higher because it groups two Primary Users as one and thus extends its protection range.</p>
+    <h4>Inaccuracy vs Smart Queries</h4>
+    <p>This plot compares inaccuracy between different countermeasures with smart query method.</p>
+    <img class="img-responsive" src="ic_q_b_smart.png">
+    <p>In this case the line for K anonymity is the same as no countermeasure. The line for K cluster is higher after certain numbers of queries.</p>
+    <h4>Inaccuracy vs Random/Smart Queries</h4>
+    <p>This figure shows that with no countermeasure, smart query method performs better than random query method in terms of inferring actual locations of Primary Users.</p>
+    <img class="img-responsive" src="rand_smart.png">
+    <h4>Inaccuracy Bar Plot</h4>
+    <p>This figure compares the inaccuracy value after all the queries are done. It groups a pair of inaccuracy value by countermeasures and compare the inaccuracy between random queries and smart queries for a particular countermeasure.</p>
+    <img class="img-responsive" src="bar.png">
+    <p>As you can see the inaccuracy with smart queries are generally more efficient than its random counterpart. The smart querying algorithm is able to bring down the inaccuracy very quickly with less queries.</p>
 </div>
