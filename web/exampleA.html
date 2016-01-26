@@ -27,4 +27,44 @@
         </ul>
       </div><!-- /.container-fluid -->
     </nav>
+    <div class="page-header"><h3 style="margin-top: 70px !important;">Test scenario</h3></div>
+    <p>In this example, we will simulate with two Primary Users on a single channel map with 0.5 km grid size. We will simulate with no countermeasure as well as all the other countermeasures with random queries. We will also show the heat map and trade-off plots for each countermeasure in the result.</p>
+    <div class="page-header"><h3>Configurations</h3></div>
+    <p>The following screenshots show the configuration process for above requirement.</p>
+    <p>First select number of channels as <mark>1 channel</mark> and specify grid size as <mark>1 km</mark> from the dropdown button.</p>
+    <p>Then specify two Primary Users on a rectangle area of interest.</p>
+    <img class="img-responsive" src="ea_plot.png">
+    <p><mark>Choose all the countermeasures</mark>, because we'd like to compare different countermeasures as well. Each countermeasure has its own value. For additive noise, <mark>0.7</mark> means out of ten queries, the system must lie seven times. For transfiguration <mark>3</mark> means the protection zone will be transfigured as a triangle. For anonymity <mark>1</mark> means each group will have one Primary User inside. For clustering <mark>1</mark> means two Primary Users in the map will be clustered as one.</p>
+    <p>We choose to <mark>include heat map</mark> in the results. It projects probability distribution inferred by the attacker on top of the Google Map. We also choose to <mark>include trade-off plots</mark> in the results so that we can compare different values for each countermeasures.</p>
+    <img class="img-responsive" src="cma.png">
+    <p>Finally we choose to use <mark>random queries only</mark> and query for <mark>50</mark> times.</p>
+    <div class="page-header"><h3>Simulation results</h3></div>
+    <p>In the result email, you will receive following files and plots:</p>
+    <ul>
+        <li>A log file that describes the configuration you just decided</li>
+        <li>Inaccuracy vs Queries plot</li>
+        <li>Heat maps indication probability distribution inferred by the attacker</li>
+        <li>Trade-off plots for each countermeasure</li>
+    </ul>
+    <h4>Inaccuracy vs Queries</h4>
+    <p>This plot compares inaccuracy between different countermeasures. In this case it has following result:</p>
+    <img class="img-responsive" src="ic_q_a.png">
+    <p>Note that as number of queries increases, the inaccuracy drops. This is because the attacker gets more information with more number of queries. The higher the inaccuracy gets, the better the countermeasure performs, although its spectrum utilization is even lower. In our configuration K-Anonymity is actually the same as no countermeasure. Transfiguration is slightly effective dealing with large maps. Those three lines are close to each other, whereas the other countermeasures are quite effective.</p>
+    <h4>Heat map</h4>
+    <p>The heat map is actually probability distribution inferred by the attacker. We project this data right on top of the analysis area. The color near red means the attacker thinks there is a greater probability that the associated area has a Primary User. The blue end means less probability. The transparent region means the attacker is certain that Primary User does not reside in those areas.</p>
+    <img class="img-responsive" src="heat_a.png">
+    <h4>Trade-off plots</h4>
+    <p>Trade-off plots compares performance for the same countermeasure with different values.</p>
+    <p>In terms of additive noise,</p>
+    <img class="img-responsive" src="ad_a.png">
+    <p>The higher noise level gets, the better the countermeasure performs.</p>
+    <p>In terms of transfiguration, we compared values at three, four and five.</p>
+    <img class="img-responsive" src="tf_a.png">
+    <p>Generally three has best performance. As number of sides increases, the difference is small.</p>
+    <p>For K-Anonymity, we only have 2 PU in our map, so we compare values at 1 and 2.</p>
+    <img class="img-responsive" src="ka_a.png">
+    <p>When K is one, there is actually no countermeasure, when K is two, two PUs are grouped as one, so the inaccuracy is greater.</p>
+    <p>For K-Cluster, we only have 2 PU in our map, so we compare values at 1 and 2.</p>
+    <img class="img-responsive" src="kc_a.png">
+    <p>When K is two, there is actually no countermeasure, when K is one, two PUs are clustered as one, so the inaccuracy is greater.</p>
 </div>
