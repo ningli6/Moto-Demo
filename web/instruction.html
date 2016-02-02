@@ -31,6 +31,7 @@
     <div class="page-header">
         <h3 style="margin-top: 90px !important;">Introduction</h3>
     </div>
+
     <p>This page introduces the work that generates this demo and provides a step by step guidance to use the demo.</p>
     <p>This demo is to introduce some of the idea from the paper:</p>
     <p><cite>
@@ -40,15 +41,50 @@
     <p>Perhaps the abstraction of the paper provides a good overview for this demo as well.</p>
     <blockquote><p>Although using geolocation databases is a practical approach for enabling spectrum sharing, it poses a potentially serious privacy problem. Secondary users (queriers), through seemingly innocuous queries to the database, can determine the types and locations of incumbent systems operating in a given region of interest, and thus compromise the incumbents’ operational privacy. When the incumbent systems (primary users) are commercial systems, this is typically not a critical issue. However, if the incumbents are federal government systems, including military systems, then the information revealed by the databases can lead to a serious breach of operational privacy. In this paper, we propose privacy-preserving mechanisms and techniques for an obfuscated geolocation database that can enable the coexistence of primary and secondary users while preserving the operational privacy of the primary users.</p></blockquote>
     <p>This demo simulates these seemingly innocuous queries to the database, and shows that the operational privacy is compromised. Meanwhile it implements several privacy-preserving mechanisms and techniques, and shows that these techniques actually protect operational privacy from malicious attacks.</p>
+
+    <h4>Countermeasures</h4>
+    <p>We have implemented 4 countermeasures mentioned in the paper. Here is a brief introduction for all of them. If you need more information about the coutermeasures and their algorithms, they are well addressed in detail in the paper. These countermeasures are privacy-preserving techniques that can be used to counter inference attacks and preserve location privacy.</p>
+
+    <h5>Perturbation with Additive Noise</h5>
+    <blockquote>
+        <p>The perturbative masking method (a.k.a randomization method) is a technique for privacy-preserving databases that uses data distortion in order to mask the attribute values of records.
+        In this method, we add sufficiently large noise to individual record values to prevent recovery of these values by an adversary.</p>
+    </blockquote>
+    <h5>Perturbation with Transfiguration</h5>
+    <blockquote>
+        <p>Another form of perturbation is to change the shape of the protected contour. Replacing the circular or non-circular protected contours with random shapes that envelop the actual protected contour will increase the location privacy of PUs.</p>
+    </blockquote>
+
+    <h5>k-Anonymity</h5>
+    <blockquote>
+        <p>In the context of location privacy of PUs in database- driven spectrum sharing, we can achieve location k-anonymity by combining protected contours of k PUs that are closest together, and creating a larger protected contour. The SUs are not allowed to transmit in the area covered by this larger protected contour.</p>
+    </blockquote>
+
+    <h5>k-Clustering</h5>
+    <blockquote>
+        <p>In this technique, instead of classifying PUs into groups of k users, we group them into k clusters. These clusters may not be of equal size.</p>
+    </blockquote>
+
+    <h4>Metric for Location Privacy</h4>
+    <p>Here we introduce the metric for location privacy defined by the paper. Its purpose is to measure quantitatively the effectiveness of a particular countermeasure. It is necessary because we need to compare between different countermeasures and different query methods. Here is how we define Inaccuracy, as a measurement of location privacy:</p>
+    <div class="well">
+        <p>The implementation underlying the analysis area is matrix. Given the grid size specified by the user, the matrix has a certain number of rows and columns. Each cell in the matrix has a probability value <strong><em>p</em></strong> ranging from 0 to 1 associated with it. We use <strong><em>d</em></strong> to represent the distance between each cell to its closest primary user. Then we sum over the entire matrix:</p>
+        <p align="center"><em>Inaccuarcy = &Sigma; ( p * d )</em></p>
+        <p>Generally this value is greatest at the beginning and starts to drop as queries begin. Greater value indicates that the attacker's inference is more inaccurate whereas smaller values means the attacker is able to make a close guess about primary users locations.</p>
+    </div>
+
     <div class="page-header">
         <h3>Step by Step Guidance</h3>
     </div>
+
     <h4>Specify number of channels</h4>
     <p>First, select number of channels with the dropdown button. This will specify the number of channels that the simulation will operate on. We have provided three options, you can choose to use either one, two or three channels for the simulation.</p>
+    
     <h4>Specify the grid size</h4>
     <p>Then you need to specify grid size with the dropdown button. We implemented our map in terms of the matrix. By specifying grid size here you are actually specifying granularity of the matrix. For now we have provided three options: 0.5 km, 1 km and 5 km. For a certain area, smaller grid size means a more fine-grained underlying matrix, and more computation needed as well.</p>
+    
     <h4>Specify analysis area and locations of Primary Users</h4> 
-    <p>The next thing you need to do is to specify analysis area and Primary Users distribution for the simulation. Here are the buttons that you will find helpful:</p>
+    <p>The next thing you need to do is to specify analysis area and primary users distribution for the simulation. Here are the buttons that you will find helpful:</p>
     <div>
         <button type='button' class='btn btn-success'>Plot guidance</button>
         <p>This button provides simple instructions to use Google Map frame. Introduces MTP function used in our demo.</p>
@@ -59,22 +95,23 @@
     </div>
     <div>
         <button type='button' class='btn btn-info'>Select location of PU(s) for channel 0</button>
-        <p>If you choose more than one channel for the simulation, this button will appear, indicating which channel you are choosing Primary Users for.</p>
+        <p>If you choose more than one channel for the simulation, this button will appear, indicating which channel you are choosing primary users for.</p>
     </div>
     <p>Here are the rules to interact with the Google Map:</p>
     <div class="well">
         <p>Use the button in the upper middle area of the Google Map frame to draw a rectangle on the map. This region covered by this rectangle is the area of analysis.</p>
-        <p>By clicking on the map, a location will be marked with a circle centered at that location. The marker indicates the location of the Primary User. The circle indicates the circular protection zone of the Primary User.</p>
-        <p>You can either plot analysis area first or specifying markers first. But once you have analysis area ready, you must select location of Primary Users inside the region. Once you have markers ready, you must draw an analysis area that covers all the primary Users.</p>
+        <p>By clicking on the map, a location will be marked with a circle centered at that location. The marker indicates the location of the primary user. The circle indicates the circular protection zone of the primary user.</p>
+        <p>You can either plot analysis area first or specifying markers first. But once you have analysis area ready, you must select location of primary users inside the region. Once you have markers ready, you must draw an analysis area that covers all the primary Users.</p>
     </div>
-    <p>The circle of each marker has radius of 25 km. It represents the greatest protecting zone of Primary User. In our demo, MTP function is defined as below:</p>
-    <p>Let <i>d</i> be the distance between attacker and Primary User. <i>R</i> is the full transmit power available, <i>r</i> is the actual transmit power that attacker can use.</p>
+    <p>The circle of each marker has radius of 25 km. It represents the greatest protecting zone of primary user. In our demo, MTP function is defined as below:</p>
+    <p>Let <i>d</i> be the distance between attacker and primary user. <i>R</i> is the full transmit power available, <i>r</i> is the actual transmit power that attacker can use.</p>
     <div class="well">
         <p align="center"><i>r = 0 if d &le; 8 km<br>r = 0.5 R if 8 &lt; d &le; 14 km<br>r = 0.75 R if 14 &lt; d &le; 25 km<br>r = R if d &gt; 25 km</i></p>
     </div>
-    <p>This means if the distance between attacker and Primary User is less than 8 km, the transmit power that Primary User can provide is 0. If this distance is greater than 8 but less than 14 km, the transmit power available transmit power would be 50 &#37; of full power. If the distance is between 14 km to 25 km, the available transmit power would be 75 &#37;. Otherwise the attacker can have the full transmit power. The knowledge of the exact value used in MTP function is not necessary to use the demo.</p>
+    <p>This means if the distance between attacker and primary user is less than 8 km, the transmit power that primary user can provide is 0. If this distance is greater than 8 but less than 14 km, the transmit power available transmit power would be 50 &#37; of full power. If the distance is between 14 km to 25 km, the available transmit power would be 75 &#37;. Otherwise the attacker can have the full transmit power. The knowledge of the exact value used in MTP function is not necessary to use the demo.</p>
     <p>Here is the screenshot that reviews major elements you need to know to interact with the Google Map.</p>
     <img class="img-responsive" src="plot.jpg">
+    
     <h4>Choose countermeasures</h4>
     <p>Once you have set up above parameters, the simulation is actually good to go. It is a good time to specify which countermeasure to use. We have implemented four countermeasures:</p>
     <ul>
@@ -87,6 +124,7 @@
     <p>On the right part of the section you can check the <mark>Plot on Google Maps</mark> option to project probability heat map on top of the Google Map. You can also check the <mark>Include trade-off</mark> option to show the comparison between different countermeasure values for a particular countermeasure.</p>
     <p>Here is the screenshot that reviews major elements you need to know to specify countermeasures.</p>
     <img class="img-responsive" src="cm.png">
+    
     <h4>Specify queries</h4>
     <p>The final step is to specify method of queries and the number of queries for the simulation. Generally more queries require more time to compute but give more accurate result.</p>
     <p>We have implemented two methods of query:</p>
@@ -95,8 +133,10 @@
         <li>Smart queries. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generate query locations based on more sophisticated algorithm.</li>
     </ul>
     <p>Our smart query algorithm is quite computationally demanding, expect a long time for it to finish.</p>
+    
     <h4>Specify your email</h4>
     <p>Don't forget to fill in your email address so that we can send you the simulation results to you via email.</p>
+    
     <h4>Results</h4>
     <p>We will send you the simulation results via email. Based on your configuration some simulation cases can take a long time to finish. The email is based on Amazon Simple Email Service and sometimes can be classified as spam incorrectly, so please check your spam emails if you don't receive the results for a long time. You can check our examples for further information regarding results.</p>
 </div>
