@@ -43,7 +43,7 @@
     <p>This demo simulates these seemingly innocuous queries to the database, and shows that the operational privacy is compromised. Meanwhile it implements several privacy-preserving mechanisms and techniques, and shows that these techniques actually protect operational privacy from malicious attacks.</p>
 
     <h4>Countermeasures</h4>
-    <p>We have implemented 4 countermeasures mentioned in the paper. Here is a brief introduction for all of them. If you need more information about the coutermeasures and their algorithms, they are well addressed in detail in the paper. These countermeasures are privacy-preserving techniques that can be used to counter inference attacks and preserve location privacy.</p>
+    <p>We have implemented 4 countermeasures mentioned in the paper. Here is a brief introduction for all of them. If you need more information about the countermeasures and their algorithms, they are well addressed in detail in the paper. These countermeasures are privacy-preserving techniques that can be used to counter inference attacks and preserve location privacy.</p>
 
     <h5>Perturbation with Additive Noise</h5>
     <blockquote>
@@ -69,8 +69,31 @@
     <p>Here we introduce the metric for location privacy defined by the paper. Its purpose is to measure quantitatively the effectiveness of a particular countermeasure. It is necessary because we need to compare between different countermeasures and different query methods. Here is how we define Inaccuracy, as a measurement of location privacy:</p>
     <div class="well">
         <p>The implementation underlying the analysis area is matrix. Given the grid size specified by the user, the matrix has a certain number of rows and columns. Each cell in the matrix has a probability value <strong><em>p</em></strong> ranging from 0 to 1 associated with it. We use <strong><em>d</em></strong> to represent the distance between each cell to its closest primary user. Then we sum over the entire matrix:</p>
-        <p align="center"><em>Inaccuarcy = &Sigma; ( p * d )</em></p>
+        <p align="center"><em>Inaccuracy = &Sigma; ( p * d )</em></p>
         <p>Generally this value is greatest at the beginning and starts to drop as queries begin. Greater value indicates that the attacker's inference is more inaccurate whereas smaller values means the attacker is able to make a close guess about primary users locations.</p>
+    </div>
+
+    <h4>Smart Query Algorithm</h4>
+    <p>We offer two types of query options in our demo. Random query is to randomly generate query location inside the analysis area. Each cell of the underlying matrix has the equal chance to be selected. We propose another query algorithm that makes query decision based on previous query results. It generally outperforms the random query, brings down inaccuracy very quickly and appears to be smarter. We provide pseudocode here to give you an idea about how the algorithm works.</p>
+    <div class="well">
+        <p>This piece of pseudocode shows how to choose next query location wisely. We use <code>next_loc</code> to represent next query location, <code>p(loc)</code> to represent the probability for the presence of PU in that location, <code>re</code> to represent four possible responses, check out the MTP function in our Step by Step Guidance section.</p>
+        <pre>
+            initialize <var>next_loc</var>
+            <span style="color:#c7254e;">for</span> <var>loc</var> <span style="color:#c7254e;">in</span> all locations on the map:
+                <span style="color:#c7254e;">if</span> <var>loc</var> was chosen before:
+                    <span style="color:#c7254e;">continue</span>
+                <var>exp_ic</var> = 0                           <span style="color:green">// if we query at loc, what is the expected inaccuracy?</span>
+                <span style="color:#c7254e;">for</span> <var>pu_loc</var> <span style="color:#c7254e;">in</span> all locations on the map:
+                    <span style="color:#c7254e;">if</span> p(<var>pu_loc</var>) == 0:               <span style="color:green">// we know for sure that location doesn't have a PU</span>
+                        <span style="color:#c7254e;">continue</span>
+                    <span style="color:#c7254e;">for</span> <var>re</var> <span style="color:#c7254e;">in</span> all possible responses:
+                        update map around <var>loc</var> based on <var>re</var>
+                        <var>ic</var> = compute ic assuming PU is at <var>pu_loc</var>
+                        <var>exp_ic</var> += <var>ic</var> * 1 / 4 * p(<var>pu_loc</var>)
+                <var>next_loc</var> = <span style="color:blue">min</span> (<var>next_loc</var>, <var>exp_ic</var>)    <span style="color:green">// find the location with minimum expected inaccuracy</span>
+            mark <var>loc</var> associated with <var>next_loc</var> as chosen
+            query at <var>next_loc</var>
+        </pre>
     </div>
 
     <div class="page-header">
