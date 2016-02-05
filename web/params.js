@@ -432,7 +432,7 @@ function getParams () {
     }
     document.getElementById("wellcm").innerHTML = cmstr;
     // query
-    var querystr;
+    var querystr = "";
     if (document.getElementById("randomQuery").checked) {
         querystr = "Randomly generated location<br>";
     }
