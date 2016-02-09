@@ -475,10 +475,10 @@ function sendParams()
         {
             var res = xmlhttp.responseText;
             if (res == "OK") {
-                alert("Demo started successfully!\nWe will send simulation results to you shortly.\nThanks for using!");
+                alert("Simulation has started successfully!\nWe will send simulation results to you shortly.\nThanks for using!");
             }
             else {
-                alert("Demo failed. " + res);
+                alert("Simulation failed. " + res);
             }
             // reload page
             window.location = 'index.html';
@@ -510,6 +510,7 @@ function validateEmail(email) {
  */
 $(document).ready(function(){
     $("#launchButton").click(function(){
-        $("#launchButton").html('Launching...');
+        $("#launchButton").html('Launching...');   // change the text to be launching
+        $("#launchButton").prop('disabled', true); // disable the button
     });
 });
