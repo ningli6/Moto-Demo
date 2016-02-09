@@ -2,7 +2,15 @@ package boot;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Entrance of java program
@@ -14,7 +22,8 @@ public class Boot {
 	/* initial settings for working directory */
 	public static String dataRootDir = "C:\\Users\\Administrator\\Desktop\\motoData\\";
 	public static String plotRootDir = "C:\\Users\\Administrator\\Desktop\\motoPlot\\";;
-
+	public static String logRootDir = "C:\\Users\\Administrator\\Desktop\\motoDemo\\";
+	
 	public static void main(String[] args) {
 		try {
 			Long time = System.currentTimeMillis();
@@ -22,6 +31,7 @@ public class Boot {
 			String plotDir = plotRootDir + time + "\\";
 			File dataFile = new File(dataDir);
 			File plotFile = new File(plotDir);
+
 			if (dataFile.exists()) {
 				SecureRandom random = new SecureRandom();
 				dataDir = dataRootDir + new BigInteger(130, random).toString(32) + "\\";
@@ -52,6 +62,13 @@ public class Boot {
 				System.out.println("FAILED");
 				return;
 			}
+			
+			/* Keep record */
+			List<String> records = new ArrayList<String>();
+			records.add(new Date().toString() + " " + bp.getEmail() + "\n");
+			Path logTxt = Paths.get(logRootDir + "log.txt");
+			Files.write(logTxt, records, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
 			/* start program, return ok */
 			System.out.println("OK");
 			Demo demo = new Demo(bp, dataDir, plotDir);

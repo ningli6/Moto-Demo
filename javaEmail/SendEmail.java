@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class SendEmail {  
 	/**
-	 * Api for sending email
+	 * Start a Python script to send email and includes all the results
 	 * @param plotDir TODO
 	 * @param from       sender
 	 * @param to         receiver
@@ -33,11 +33,15 @@ public class SendEmail {
 		System.out.println("Start sending email...");
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
         String s = null;
-        String content = "Simulation results are attached to this email.\n";
+        String content = "Hi!\n\nThanks for using our Web-based Simulation Tool for Evaluating incumbent user's location Privacy in Spectrum sharing (STEPS).\n";
+        content += "\nSimulation results are attached to this email.\n";
+        if (inputParams) {
+        	content += "Based on your request your previous configuration for this simulation is recorded in the text file.\n";
+        }
         if (message != null && message.length() > 0) {
             content += message;
         }
-        content += "\nThanks for using.\n";
+        content += "Please refer to our website for more instructions and examples.\n";
         content = content.replaceAll(" ", "_");
         content = content.replaceAll("\n", "<br>");
 
@@ -100,13 +104,13 @@ public class SendEmail {
             }
         	// using the Runtime exec method:
             Process p = Runtime.getRuntime().exec(cmd);
-             
+            
             BufferedReader stdInput = new BufferedReader(new
                  InputStreamReader(p.getInputStream()));
- 
+            
             BufferedReader stdError = new BufferedReader(new
                  InputStreamReader(p.getErrorStream()));
- 
+            
             // read the output from the command
             // System.out.println("Here is the standard output of the command:\n");
             while ((s = stdInput.readLine()) != null) {

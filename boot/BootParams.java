@@ -57,6 +57,17 @@ public class BootParams {
 	public double getCellSize() {
 		return cellSize;
 	}
+	
+	/**
+	 * Get the estimated grid size in km instead of degree
+	 * @param cellsize
+	 * @return
+	 */
+	private double getGridSizeInKM(double cellsize) {
+		if (cellsize == 0.005) return 0.5;
+		if (cellsize == 0.01) return 1;
+		return 5;
+	}
 
 	public void setCellSize(double cellSize) {
 		this.cellSize = cellSize;
@@ -297,7 +308,8 @@ public class BootParams {
 	public String paramsToTextFile() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Simulation parameters:\n\n");
-		sb.append("Number of channels: " + numberOfChannels + "\n");
+		sb.append("Number of channels: " + numberOfChannels + "\n\n");
+		sb.append("Grid szie: " + getGridSizeInKM(cellSize) + " km \n\n");
 		sb.append("Analysis region: \n");
 		sb.append("North latitude :" + NorthLat + "\n");
 		sb.append("South latitude :" + SouthLat + "\n");
@@ -355,7 +367,17 @@ public class BootParams {
 			sb.append("\n");
 		}
 		sb.append("\n");
-		sb.append("Number of queries: " + numberOfQueries + "\n");
+		if (isRandomQuery() && isSmartQuery()) {
+			sb.append("Use both random query and smart query algorithms.\n");
+		}
+		else if (isRandomQuery()) {
+			sb.append("Only use random queries in the simulation.\n");
+		}
+		else {
+			sb.append("Only use smart queries in the simulation.\n");
+		}
+		sb.append("Number of queries: " + numberOfQueries + "\n\n");
+		sb.append("Receiver: " + email + "\n");
 		return sb.toString();
 	}
 
