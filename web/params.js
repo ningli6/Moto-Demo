@@ -445,7 +445,7 @@ function getParams () {
     var emstr = "";
     emstr += "<p>Results will be send to " + email;
     if (inputParams) {
-        emstr += ". Email will also include parameters from above";
+        emstr += ". Email will also include parameters from above.";
     }
     emstr += "</p>";
     document.getElementById("wellemail").innerHTML = emstr;
