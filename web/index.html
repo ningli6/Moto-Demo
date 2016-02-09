@@ -45,16 +45,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
     </nav>
 
     <div class="jumbotron" style="margin-top: 30px !important;">
-        <h2>Moto demo</h2>      
+        <h2>Web-based Simulation Tool for Evaluating incumbent user's location Privacy in Spectrum sharing (STEPS)</h2>      
         <p>
-            This is a demo of techniques for protecting the Primary Users’ operational privacy in spectrum sharing 
-            proposed in the paper: 
+            Although using geolocation databases for enabling dynamic spectrum sharing has a number of practical advantages, it also raises potentially serious operational security (OPSEC) and privacy issues.  For instance, secondary users (SUs), through seemingly innocuous  queries to the database, may be able to determine or infer the operational attributes and location of incumbent user (IU) systems operating in a given area of interest.  It is quite possible for adversarial SUs to obtain knowledge beyond what is revealed directly by the database's query replies by using database inference techniques -- this is referred to as a database inference attack.  This OPSEC issue has important implications in the deployment and  operation of database-driven spectrum sharing ecosystems, particularly those that involve spectrum sharing between federal government, including military, communications/radar systems and commercial wireless systems. 
         </p>
         <p>
-            <cite>
-                <a href="http://ieeexplore.ieee.org/xpl/abstractAuthors.jsp?arnumber=6817800" target="_blank">Protecting the Primary Users’ Operational Privacy in Spectrum Sharing.</a>
-                <small>[2014 IEEE International Symposium on Dynamic Spectrum Access Networks (DYSPAN), p 236-47, 2014]</small>
-            </cite>
+            This tool, which is referred to as STEPS (Simulation Tool for Evaluating incumbent user's location Privacy in Spectrum sharing), can be used to visualize the potential impact of database inference attacks as well as generate quantitative results that can be used to evaluate and compare various countermeasures for thwarting such attacks.  The Instructions page provides detailed instructions on how to use this tool.  Examples of two different simulation scenarios are described in Example A and Example B pages.  
         </p>
     </div>
 
@@ -286,7 +282,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     <br>
     <!-- result of passed params -->
-    <button type="submit" class="btn btn-primary btn-lg" style="float: right;" onclick="getParams();">Start demo <span class="glyphicon glyphicon-play"></span></button>
+    <button type="submit" class="btn btn-primary btn-lg" style="float: right;" onclick="getParams();">Start simulations <span class="glyphicon glyphicon-play"></span></button>
     <br><br><br><br>
 </div>
 
