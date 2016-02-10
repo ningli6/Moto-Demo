@@ -46,24 +46,25 @@
     <p>We have implemented 4 countermeasures mentioned in the paper. Here is a brief introduction for all of them that we quote from the paper. If you need more information about the countermeasures and their algorithms, they are well addressed in detail in the paper. These countermeasures are privacy-preserving techniques that can be used to counter inference attacks and preserve location privacy.</p>
 
     <h5>Perturbation with Additive Noise</h5>
-    <blockquote>
-        <p>The perturbative masking method (a.k.a randomization method) is a technique for privacy-preserving databases that uses data distortion in order to mask the attribute values of records.
-        In this method, we add sufficiently large noise to individual record values to prevent recovery of these values by an adversary.</p>
-    </blockquote>
+
+    <p>
+        The perturbative masking method (a.k.a randomization method) is a technique for privacy-preserving databases that uses data distortion in order to mask the attribute values of records. In this method, we add sufficiently large noise to individual record values to prevent recovery of these values by an adversary. One key advantage of the randomization method is that it is relatively simple, and does not require knowledge of the distribution of other records in the data. Additive noise is the most basicperturbative method that can be used for privacy-preserving databases.
+    </p>
+
     <h5>Perturbation with Transfiguration</h5>
-    <blockquote>
-        <p>Another form of perturbation is to change the shape of the protected contour. Replacing the circular or non-circular protected contours with random shapes that envelop the actual protected contour will increase the location privacy of PUs.</p>
-    </blockquote>
+    <p>
+        Another form of perturbation is to change the shape of the protected contour. Replacing the circular or non-circular protected contours with random shapes that envelop the actual protected contour will increase the location privacy of PUs.
+    </p>
 
-    <h5>k-Anonymity</h5>
-    <blockquote>
-        <p>In the context of location privacy of PUs in database- driven spectrum sharing, we can achieve location k-anonymity by combining protected contours of k PUs that are closest together, and creating a larger protected contour. The SUs are not allowed to transmit in the area covered by this larger protected contour.</p>
-    </blockquote>
+    <h5>K-Anonymity</h5>
+    <p>
+        The concept of k-anonymity was origi- nally introduced in the context of relational data privacy. The motivating factor behind the k-anonymity model was the possibility of indirect identification of records from public databases via quasi-identifiers i.e., combination of multiple record attributes that can be used to identify individual records. For instance, a medical institution may want to release a table of medical records with the names of the individu- als replaced with dummy identifiers. However, some set of attributes (which are referred to as the quasi-identifiers) can still lead to identity breaches. In the k-anonymity method, the granularity of data representation is reduced with the use of techniques such as generalization or suppression. In the context of location privacy of PUs in database-driven spectrum sharing, we can achieve location k-anonymity by combining protected contours of k PUs that are closest together, and creating a larger protected contour that works like the cloak box for Location-Based Services (LBSs). The SUs are not allowed to transmit in the area covered by this larger protected contour.
+    </p>
 
-    <h5>k-Clustering</h5>
-    <blockquote>
-        <p>In this technique, instead of classifying PUs into groups of k users, we group them into k clusters. These clusters may not be of equal size.</p>
-    </blockquote>
+    <h5>K-Clustering</h5>
+    <p>
+        In this technique, instead of classifying PUs into groups of k users, we group them into k clusters. Instead of dividing PUs into groups of equal size, the algorithm divides them into k clusters of PUs that are closest to each other. These clusters may not be of equal size. The main disadvantage of k-clustering is that some PUs that are distant from other PUs may end up in a single cluster by itself. In other words, this method may provide unequal levels of location privacy to different PUs. This shortcoming can be addressed by using a hybrid approach that combines k-clustering with other privacy-preserving techniques such as perturbation with additive noise or transfiguration of protected contour.
+    </p>
 
     <h4>Metric for Location Privacy</h4>
     <p>Here we introduce the metric for location privacy defined by the paper. Its purpose is to measure quantitatively the effectiveness of a particular countermeasure. It is necessary because we need to compare between different countermeasures and different query methods. Here is how we define Inaccuracy, as a measurement of location privacy:</p>
