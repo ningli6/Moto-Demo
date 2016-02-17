@@ -272,12 +272,7 @@ function getParams () {
 
     // get email option, deprecated, always set to true to include a text file
     // This is a lazy fix, the java program doesn't need to be changed
-    if (document.getElementById("inputParams").checked) {
-        inputParams = true;
-    }
-    else {
-        inputParams = true;
-    }
+    inputParams = true;
 
     // formatting params
     // cell size
@@ -446,7 +441,7 @@ function getParams () {
     var emstr = "";
     emstr += "<p>Results will be send to " + email;
     if (inputParams) {
-        emstr += ". Email will also include parameters from above.";
+        // emstr += ". Email will also include parameters from above.";
     }
     emstr += "</p>";
     document.getElementById("wellemail").innerHTML = emstr;
