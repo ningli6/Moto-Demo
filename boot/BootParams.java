@@ -343,7 +343,7 @@ public class BootParams {
 			sb.append("\n");
 		}
 		if (containsCM("TRANSFIGURATION")) {
-			sb.append("Transfiguration. Number of sids: " + (int) getCMParam("TRANSFIGURATION") + ".");
+			sb.append("Transfiguration. Number of sides: " + (int) getCMParam("TRANSFIGURATION") + ".");
 			if (plotGooglMapTF()) {
 				sb.append(" Plot inferred location of primary users on Google Maps.");
 			}
