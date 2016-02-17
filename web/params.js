@@ -270,12 +270,13 @@ function getParams () {
         return;
     }
 
-    // get email option
+    // get email option, deprecated, always set to true to include a text file
+    // This is a lazy fix, the java program doesn't need to be changed
     if (document.getElementById("inputParams").checked) {
         inputParams = true;
     }
     else {
-        inputParams = false;
+        inputParams = true;
     }
 
     // formatting params

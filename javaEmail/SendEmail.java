@@ -12,16 +12,16 @@ public class SendEmail {
 	 * @param to         receiver
 	 * @param message    additional email content
 	 * @param noc        number of channels
-	 * @param icVSq      whether to plot ic vs q
-	 * @param gMapNo     whether to include google map for no countermeasure
-	 * @param gMapAd     whether to include google map for additive noise
-	 * @param gMapTf     whether to include google map for transfiguration
-	 * @param gMapKa     whether to include google map for k anonymity
-	 * @param gMapKc     whether to include google map for k clustering
-	 * @param tradeOffAd whether to include trade-off curve for additive noise
-	 * @param tradeOffTf whether to include trade-off curve for transfiguration
-	 * @param tradeOffKA whether to include trade-off bar for k anonymity
-	 * @param tradeOffKC whether to include trade-off bar for k clustering
+	 * @param icVSq      to plot ic vs q
+	 * @param gMapNo     to include google map for no countermeasure
+	 * @param gMapAd     to include google map for additive noise
+	 * @param gMapTf     to include google map for transfiguration
+	 * @param gMapKa     to include google map for k anonymity
+	 * @param gMapKc     to include google map for k clustering
+	 * @param tradeOffAd to include trade-off curve for additive noise
+	 * @param tradeOffTf to include trade-off curve for transfiguration
+	 * @param tradeOffKA to include trade-off bar for k anonymity
+	 * @param tradeOffKC to include trade-off bar for k clustering
 	 * @param inputParams include user parameters in the email as a text file
 	 * @return           true if everything works
 	 */
@@ -36,7 +36,7 @@ public class SendEmail {
         String content = "Hi!\n\nThanks for using our Web-based Simulation Tool for Evaluating incumbent user's location Privacy in Spectrum sharing (STEPS).\n";
         content += "\nSimulation results are attached to this email.\n";
         if (inputParams) {
-        	content += "Based on your request your previous configuration for this simulation is recorded in the text file.\n";
+        	content += "Your simulation configurations is recorded in the text file as an attachment.\n";
         }
         if (message != null && message.length() > 0) {
             content += message;
