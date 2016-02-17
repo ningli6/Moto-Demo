@@ -439,7 +439,7 @@ function getParams () {
     document.getElementById("wellquery").innerHTML = querystr;
     // email
     var emstr = "";
-    emstr += "<p>Results will be send to " + email;
+    emstr += "<p>Results will be sent to " + email;
     if (inputParams) {
         // emstr += ". Email will also include parameters from above.";
     }
