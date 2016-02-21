@@ -46,6 +46,15 @@ function getParams () {
     if (cellSize != 0.005 && cellSize != 0.01 && cellSize != 0.05) {
         cellSize = 0.005;
     }
+
+    /**
+     * Check mtp parameters
+     */
+    if (!checkMTPParameters()) {
+        alert("Range parameters must be in increasing order.");
+        return;
+    }
+
     // check parameters and grab values from forms
     if (!(rect && recRegion)) {
         alert("Please draw anaysis area. Make sure it covers all primary users.");

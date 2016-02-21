@@ -1,0 +1,9 @@
+/**
+ * CSS for MTP parameters
+ */
+
+.mtpParam {
+	width: 75px; 
+	text-align: center; 
+	border-radius: 5px;
+}
