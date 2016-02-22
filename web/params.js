@@ -4,7 +4,6 @@
 
 var location_PU;      // pu's location
 var email;            // send result to this email
-var inputParams;      // whether to include input parameters in the email
 var args;             // formatted params as a argument for java program
 
 /**
@@ -30,8 +29,6 @@ function getParams () {
     gmapKA = false;
     tradeOffKC = false;
     gmapKC = false;
-    /* Whether to include input parameters */
-    inputParams = false;
     /* Number of queries */
     numberOfQueries = -1;
     /* Email address */
@@ -51,7 +48,7 @@ function getParams () {
      * Check mtp parameters
      */
     if (!checkMTPParameters()) {
-        alert("Range parameters must be in increasing order.");
+        alert("Invalid MTP parameters.");
         return;
     }
 
@@ -279,10 +276,6 @@ function getParams () {
         return;
     }
 
-    // get email option, deprecated, always set to true to include a text file
-    // This is a lazy fix, the java program doesn't need to be changed
-    inputParams = true;
-
     // formatting params
     // cell size
     args = "-cd " + cellSize + " ";
@@ -297,6 +290,8 @@ function getParams () {
             args += location_PU[i][j].position.lat() + " " + location_PU[i][j].position.lng() + " ";
         }
     }
+    // mtp parameters
+    args += "-mtp " + d0 + " " + d1 + " " + d2 + " ";
     // countermeasure
     args += "-cm ";
     for (var i = 0; i < countermeasure.length; i++) {
@@ -357,103 +352,13 @@ function getParams () {
         args += numberOfQueries + " ";
     }
     // email
-    args += "-e " + email + " ";
-    args += "-opt ";
-    if (inputParams) {
-        args += "pa ";
-    }
+    args += "-e " + email;
 
     // output formatted args to console
     console.log("args=" + args);
 
-    /* fill in wells */
-    // number of channels
-    document.getElementById("wellchannel").innerHTML = numberOfChannels;
-    // anaysis area
-    var regionstr = "";
-    regionstr += "North latitude: " + recRegion.getNorthEast().lat() + "<br>";
-    regionstr += "South latitude: " + recRegion.getSouthWest().lat() + "<br>";
-    regionstr += "West longitude: " + recRegion.getSouthWest().lng() + "<br>";
-    regionstr += "East longitude: " + recRegion.getNorthEast().lng() + "<br>";
-    document.getElementById("wellregion").innerHTML = regionstr;
-    // location of pu
-    var pustr = "";
-    for (var i = 0; i < location_PU.length; i++) {
-        pustr += "<p>";
-        pustr += "Primary user on channel " + i + "<br>";
-        for (var j = 0; j < location_PU[i].length; j++) {
-            pustr += "( " + location_PU[i][j].position.lat() + ", " + location_PU[i][j].position.lng() + " ) <br>";
-        }
-        pustr += "</p>";
-    }
-    document.getElementById("wellpu").innerHTML = pustr;
-    // countermeasure
-    var cmstr = "";
-    for (var i = 0; i < countermeasure.length; i++) {
-        cmstr += "<p>";
-        if (countermeasure[i] == "no") {
-            cmstr += "No countermeasure";
-            if (gmapNO) {
-                cmstr += ". Plot inferred location of primary users on Google Maps";
-            }
-        }
-        else if (countermeasure[i] == "an") {
-            cmstr += "Additive noise. Noise level: " + cmVal[i];
-            if (gmapAD) {
-                cmstr += ". Plot inferred location of primary users on Google Maps";
-            }
-            if (tradeOffAD) {
-                cmstr += ". Plot trade-off curve";
-            }
-        }
-        else if (countermeasure[i] == "tf") {
-            cmstr += "Transfiguration. Sides of polygon: " + cmVal[i];
-            if (gmapTF) {
-                cmstr += ". Plot inferred location of primary users on Google Maps";
-            }
-            if (tradeOffTF) {
-                cmstr += ". Plot trade-off curve";
-            }
-        }
-        else if (countermeasure[i] == "ka") {
-            cmstr += "K Anonymity. K: " + cmVal[i];
-            if (gmapKA) {
-                cmstr += ". Plot inferred location of primary users on Google Maps";
-            }
-            if (tradeOffKA) {
-                cmstr += ". Plot trade-off bar";
-            }
-        }
-        else {
-            cmstr += "K Clustering. K: " + cmVal[i];
-            if (gmapKC) {
-                cmstr += ". Plot inferred location of primary users on Google Maps";
-            }
-            if (tradeOffKC) {
-                cmstr += ". Plot trade-off bar";
-            }
-        }
-        cmstr += "</p>";
-    }
-    document.getElementById("wellcm").innerHTML = cmstr;
-    // query
-    var querystr = "";
-    if (document.getElementById("randomQuery").checked) {
-        querystr = "Randomly generated location<br>";
-    }
-    if (document.getElementById("smartQuery").checked) {
-        querystr += "Using smart query algorithm to determine query location<br>";
-    }
-    querystr += "Number of queries: " + numberOfQueries;
-    document.getElementById("wellquery").innerHTML = querystr;
-    // email
-    var emstr = "";
-    emstr += "<p>Results will be sent to " + email;
-    if (inputParams) {
-        // emstr += ". Email will also include parameters from above.";
-    }
-    emstr += "</p>";
-    document.getElementById("wellemail").innerHTML = emstr;
+    // fill in the walls
+    showParamsSummary();
 
     /* if everything works well, start modal */
     $('#myModal').modal({

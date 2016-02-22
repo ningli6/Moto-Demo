@@ -27,6 +27,7 @@
     <script type="text/javascript" src="params.js"></script>
     <script type="text/javascript" src="gridSize.js"></script>
     <script type="text/javascript" src="mtp.js"></script>
+    <script type="text/javascript" src="paramsSummary.js"></script>
 </head>
 
 <script type="text/javascript">
@@ -102,11 +103,11 @@ google.maps.event.addDomListener(window, 'load', initialize);
             <input id="inner0" name="inner" type="number" maxlength="2" value="8" class="mtpParam" onchange="setd0fromInner0();"> km
             <br>
             r = 0.5 R if 
-            <input id="inner1" name="inner" type="number" maxlength="2" value="8" class="mtpParam" onchange="setd0fromInner1();"> &lt; d &le; 
+            <input id="inner1" name="inner" type="number" maxlength="2" value="8" class="mtpParam" onchange="setd0fromInner1();"> km &lt; d &le; 
             <input id="middle0" name="middle" type="number" maxlength="2" value="14" class="mtpParam" onchange="setd1fromMiddle0();"> km
             <br>
             r = 0.75 R if 
-            <input id="middle1" name="middle" type="number" maxlength="2" value="14" class="mtpParam" onchange="setd1fromMiddle1();"> &lt; d &le; 
+            <input id="middle1" name="middle" type="number" maxlength="2" value="14" class="mtpParam" onchange="setd1fromMiddle1();"> km &lt; d &le; 
             <input id="outter0" name="outter" type="number" maxlength="2" value="25" class="mtpParam" onchange="setd2fromOutter0();"> km
             <br>
             r = R if d &gt; 
@@ -265,6 +266,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
             <div class="modal-body">
                 <h4>Number of channels</h4>
                 <div class="well" id="wellchannel"></div>
+                <h4>Grid size</h4>
+                <div class="well" id="wellgridsize"></div>
+                <h4>MTP parameters</h4>
+                <div class="well" id="wellmtp"></div>
                 <h4>Analysis region</h4>
                 <div class="well" id="wellregion"></div>
                 <h4>Location of primary users</h4>
@@ -291,11 +296,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
           <div class="modal-content">
             <div class="modal-body">
                 <p>Click rectangle icon on top of the google map to draw a rectangle area. This area is used as the analysis region for the simulatioin. All primary users should reside inside this region.</p>
-                <p>The circle around each primary user has radius of 25 km. It represents the greatest protecting zone of primary user. In our demo, MTP function is defined as below:</p>
-                <p>Let <i>d</i> be the distance between attacker and primary user. <i>R</i> is the full transmit power available, <i>r</i> is the actual transmit power that attacker can use.</p>
-                <div class="well">
-                    <p align="center"><i>r = 0 if d &le; 8 km<br>r = 0.5 R if 8 &lt; d &le; 14 km<br>r = 0.75 R if 14 &lt; d &le; 25 km<br>r = R if d &gt; 25 km</i></p>
-                </div>
+                <p>The circle around each primary user represents the greatest protecting zone of primary user defined by the largest radius of the MTP parameters.</p>
             </div>
           </div>   
         </div>
