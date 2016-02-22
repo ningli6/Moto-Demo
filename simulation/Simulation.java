@@ -11,7 +11,6 @@ import java.util.Map;
 import server.Server;
 import utility.GridMap;
 import utility.Location;
-import utility.MTP;
 import utility.PU;
 import boot.BootParams;
 import client.Client;
@@ -32,10 +31,9 @@ public class Simulation {
 	Map<Integer, double[]> icMap;       // associate ic to number of queries
 	Map<Integer, double[]> icSmartMap;  // associate ic to number of queries under smart query
 	
-	public Simulation(BootParams bootParams, double mtpScale, int interval, String directory) {
+	public Simulation(BootParams bootParams, int interval, String directory) {
 		this.bootParams = bootParams;
 		this.cellsize = bootParams.getCellSize();
-		this.mtpScale = mtpScale;
 		this.interval = interval;
 		this.directory = directory;
 
@@ -45,9 +43,6 @@ public class Simulation {
 		this.map = new GridMap(nwLoc, seLoc, cellsize);
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
-
-		/* initialize MTP scale */
-		MTP.ChangeMult(mtpScale);
 		
 		/* initialize server */
 		server = new Server(map, noc);

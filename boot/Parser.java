@@ -56,7 +56,7 @@ public class Parser {
 			while(ch < noc) {
 				if (args[i].equals("-C")) {
 					i++;
-					while (!args[i].equals("-C") && !args[i].equals("-cm")) {
+					while (!args[i].equals("-C") && !args[i].equals("-mtp")) {
 						puLocations[ch].add(new Location(Double.parseDouble(args[i++]), Double.parseDouble(args[i++])));
 					}
 					ch++;
@@ -67,11 +67,16 @@ public class Parser {
 					throw new IllegalArgumentException("Some channel is empty!");
 				}
 			}
-			if (ch != noc || !args[i].equals("-cm")) {
+			if (ch != noc || !args[i].equals("-mtp")) {
 				throw new IllegalArgumentException();
 			}
 			i += 1;
 			bootParams.setPUonChannels(puLocations);
+			// mtp parameters
+			bootParams.setd0(Double.parseDouble(args[i++]));
+			bootParams.setd1(Double.parseDouble(args[i++]));
+			bootParams.setd2(Double.parseDouble(args[i++]));
+			i += 1;
 			// countermeasure
 			if (!args[i].equals("no") && !args[i].equals("an") && !args[i].equals("tf") && !args[i].equals("ka") && !args[i].equals("kc")) {
 				throw new IllegalArgumentException("Must specify countermeasure!");
@@ -168,21 +173,12 @@ public class Parser {
 				throw new IllegalArgumentException("No email address!");
 			}
 			bootParams.setEmail(args[i + 1]);
-			i += 2;
-			if (!args[i].equals("-opt")) {
-				throw new IllegalArgumentException("No email option!");
-			}
-			i += 1;
-			if (i < args.length && args[i].equals("pa")) {
-				bootParams.setInputParams(true);
-				i += 1;
-			}
 			return bootParams;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Usage: ");
-			System.out.println("java Boot -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? ((-q number_of_queries)|(-f filename)) -e email -opt pa?");
+			System.out.println("java Boot -cd cellSize -a NorthLat WestLng SouthLat EastLng -c noc (-C (lat lon)+){noc} -mtp d0 d1 d2 -cm [(-no -1) (-an -val) (-tf -val) (-ka -val) (-kc -val)]+ -gm no? ad? tf? ka? kc? -tr ad? tf? ka? kc? -q noq -sq noq -e email");
 			return null;
 		}
 	}

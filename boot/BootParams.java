@@ -8,7 +8,6 @@ import utility.Location;
 
 /* class that holds information about input parameters */
 public class BootParams {
-	private double mtpScale = 1;       // scale for mtp function
 	private int interval = 5;          // intervals for recording points
 	public static final double MaxCellSize = 0.05; // max grid size
 	private double cellSize;           // grid size
@@ -17,6 +16,10 @@ public class BootParams {
 	private double EastLng;
 	private double WestLng;
 	private List<Location>[] puList;   // location list
+	private int numberOfChannels;      // number of channels
+	private double d0;                 // mtp parameters
+	private double d1;
+	private double d2;
 	private Map<String, Double> cmMap; // countermeasures and their values
 	private boolean gMapNO;            // plot google map for no countermeasure
 	private boolean gMapAD;            // plot google map for additive noise
@@ -27,23 +30,13 @@ public class BootParams {
 	private boolean tradeOffTF;        // whether to plot trade off curve for transfiguration
 	private boolean tradeOffKA;        // whether to plot rade off bar for k anonymity
 	private boolean tradeOffKC;        // whether to plot rade off bar for k clustering
-	private int numberOfChannels;      // number of channels
 	private boolean randomQuery;       // whether to do random queries
 	private boolean smartQuery;        // whether to do smart queries
 	private int numberOfQueries;       // number of queries
 	private String email;              // email address
-	private boolean inputParams;       // whether to include input parameters in the email
 
 	public BootParams() {
 		this.cmMap = new HashMap<String, Double>();
-	}
-
-	public double getMtpScale() {
-		return mtpScale;
-	}
-
-	public void setMtpScale(double mtpScale) {
-		this.mtpScale = mtpScale;
 	}
 
 	public int getInterval() {
@@ -117,6 +110,39 @@ public class BootParams {
 	public List<Location> getPUOnChannel(int c) {
 		if (c < 0 || c >= numberOfChannels) throw new IllegalArgumentException();
 		return puList[c];
+	}
+	
+	public int getNumberOfChannels() {
+		return numberOfChannels;
+	}
+
+	public void setNumberOfChannels(int c) {
+		if (c <= 0) throw new IllegalArgumentException();
+		this.numberOfChannels = c;
+	}
+	
+	public double getd0() {
+		return this.d0;
+	}
+	
+	public double getd1() {
+		return this.d1;
+	}
+	
+	public double getd2() {
+		return this.d2;
+	}
+	
+	public void setd0(double d0) {
+		this.d0 = d0;
+	}
+	
+	public void setd1(double d1) {
+		this.d1 = d1;
+	}
+	
+	public void setd2(double d2) {
+		this.d2 = d2;
 	}
 
 	/**
@@ -245,15 +271,6 @@ public class BootParams {
 		this.tradeOffKC = tradeOffKC;
 	}
 
-	public int getNumberOfChannels() {
-		return numberOfChannels;
-	}
-
-	public void setNumberOfChannels(int c) {
-		if (c <= 0) throw new IllegalArgumentException();
-		this.numberOfChannels = c;
-	}
-
 	public int getNumberOfQueries() {
 		return numberOfQueries;
 	}
@@ -286,21 +303,6 @@ public class BootParams {
 	public String getEmail() {
 		return email;
 	}
-
-	/**
-	 * Whether to include input parameters in the email
-	 * @return true if user decide to include input parameters in the email in text format
-	 */
-	public boolean getInputParams() {
-		return inputParams;
-	}
-
-	/**
-	 * Include input parameters in the email
-	 */
-	public void setInputParams(boolean f) {
-		this.inputParams = f;
-	}
 	
 	/**
 	 * Generate string that contains information about inputs
@@ -309,7 +311,7 @@ public class BootParams {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Simulation parameters:\n\n");
 		sb.append("Number of channels: " + numberOfChannels + "\n\n");
-		sb.append("Grid szie: " + getGridSizeInKM(cellSize) + " km \n\n");
+		sb.append("Grid size: " + getGridSizeInKM(cellSize) + " km \n\n");
 		sb.append("Analysis region: \n");
 		sb.append("North latitude :" + NorthLat + "\n");
 		sb.append("South latitude :" + SouthLat + "\n");
@@ -324,6 +326,7 @@ public class BootParams {
 			}
 			sb.append("\n");
 		}
+		sb.append("MTP parameters: " + this.d0 + " km, " + this.d1 + " km, " + this.d2 + " km\n\n");
 		sb.append("Countermeasure: \n");
 		if (containsCM("NOCOUNTERMEASURE")) {
 			sb.append("No countermeasure.");

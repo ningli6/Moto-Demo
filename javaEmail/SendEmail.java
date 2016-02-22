@@ -22,22 +22,19 @@ public class SendEmail {
 	 * @param tradeOffTf to include trade-off curve for transfiguration
 	 * @param tradeOffKA to include trade-off bar for k anonymity
 	 * @param tradeOffKC to include trade-off bar for k clustering
-	 * @param inputParams include user parameters in the email as a text file
 	 * @return           true if everything works
 	 */
 	public static boolean send(String plotDir, String from, String to, String message,
 			int noc, 
 			boolean icVSq, boolean gMapNo, boolean gMapAd, boolean gMapTf, boolean gMapKa, 
 			boolean gMapKc, boolean tradeOffAd, boolean tradeOffTf, boolean tradeOffKA,
-			boolean tradeOffKC, boolean inputParams) {
+			boolean tradeOffKC) {
 		System.out.println("Start sending email...");
 		if (from == null || from.length() == 0 || to == null || to.length() == 0) return false;
         String s = null;
         String content = "Hi!\n\nThanks for using our Web-based Simulation Tool for Evaluating incumbent user's location Privacy in Spectrum sharing (STEPS).\n";
         content += "\nSimulation results are attached to this email.\n";
-        if (inputParams) {
-        	content += "Your simulation configurations is recorded in the text file as an attachment.\n";
-        }
+        content += "Your simulation configurations is recorded in the text file as an attachment.\n";
         if (message != null && message.length() > 0) {
             content += message;
         }
@@ -99,9 +96,7 @@ public class SendEmail {
             	cmd += " traddOff_KClustering.png";
             	cmd += " traddOff_smart_KClustering.png";
             }
-            if (inputParams) {
-            	cmd += " emailInfo.txt";
-            }
+            cmd += " emailInfo.txt";
         	// using the Runtime exec method:
             Process p = Runtime.getRuntime().exec(cmd);
             

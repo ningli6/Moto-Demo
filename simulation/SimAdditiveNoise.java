@@ -23,9 +23,9 @@ public class SimAdditiveNoise extends Simulation {
 	private boolean feasible;             // whether this noise level is feasible
 	private Map<Integer, double[]> icCMMap;;      // ic for multiple simulation with countermeasure
 	
-	public SimAdditiveNoise(BootParams bootParams, double mtpScale, int interval, String directory) {
+	public SimAdditiveNoise(BootParams bootParams, int interval, String directory) {
 		/* call parent constructor */
-		super(bootParams, mtpScale, interval, directory);
+		super(bootParams, interval, directory);
 
 		/* initialize countermeasure */
 		this.countermeasure = "ADDITIVENOISE";

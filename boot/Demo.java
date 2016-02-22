@@ -19,7 +19,6 @@ import simulation.Simulation;
 public class Demo {
 	
     private BootParams bp;           // BootParams instance
-    private double mtpScale;         // scale that determines mtp function
     private int interval;            // query points in the middle
     private String dataDir;          // output directory
     private String plotDir;          // directory that saves plots from python and maltab
@@ -27,7 +26,6 @@ public class Demo {
 
     public Demo(BootParams bp, String dataDir, String plotDir){
     	this.bp = bp;
-        this.mtpScale = bp.getMtpScale();
         this.interval = bp.getInterval();
         this.dataDir = dataDir;
         this.plotDir = plotDir;
@@ -36,7 +34,7 @@ public class Demo {
     public void run() {
         try {
         	if((bp.isRandomQuery() && bp.isSmartQuery()) || bp.containsCM("NOCOUNTERMEASURE")) {  // if no countermeasure is selected
-        		Simulation sim = new Simulation(bp, mtpScale, interval, dataDir);
+        		Simulation sim = new Simulation(bp, interval, dataDir);
         		if (bp.isRandomQuery()) {  // if using random query
             		sim.randomSimulation();
             		if (bp.plotGooglMapNO()) {
@@ -48,7 +46,7 @@ public class Demo {
         		}
         	}
         	if (bp.containsCM("ADDITIVENOISE")) {  // if additive noise is selected
-        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, mtpScale, interval, dataDir);
+        		SimAdditiveNoise sim = new SimAdditiveNoise(bp, interval, dataDir);
         		if (bp.isRandomQuery()) {    // if using random query
             		sim.randomSimulation();  // would be able to figure out if the noise level is feasible here
             		if (sim.isFeasible() && bp.plotGooglMapAD()) {
@@ -78,7 +76,7 @@ public class Demo {
         		}
         	}
         	if (bp.containsCM("TRANSFIGURATION")) {  // user selected transfiguration
-        		SimTransfiguration sim = new SimTransfiguration(bp, mtpScale, interval, dataDir);
+        		SimTransfiguration sim = new SimTransfiguration(bp, interval, dataDir);
         		if (!sim.isFeasible()) {  // check feasibility
         			bp.delCountermeasure("TRANSFIGURATION");
         			bp.setGoogleMapTF(false);
@@ -101,7 +99,7 @@ public class Demo {
         		}
         	}
         	if (bp.containsCM("KANONYMITY")) {  // user selects k anonymity
-        		SimKAnonymity sim = new SimKAnonymity(bp, mtpScale, interval, dataDir);
+        		SimKAnonymity sim = new SimKAnonymity(bp, interval, dataDir);
         		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
         			bp.delCountermeasure("KANONYMITY");
         			bp.setGoogleMapKA(false);
@@ -124,7 +122,7 @@ public class Demo {
         		}
         	}
         	if (bp.containsCM("KCLUSTERING")) { // if k cluster is selected
-        		SimKClustering sim = new SimKClustering(bp, mtpScale, interval, dataDir);
+        		SimKClustering sim = new SimKClustering(bp, interval, dataDir);
         		if (!sim.isFeasible()) {   // if k is not feasible, do not plot anything with additive noise
         			bp.delCountermeasure("KCLUSTERING");
         			bp.setGoogleMapKC(false);
@@ -194,14 +192,12 @@ public class Demo {
         		return;
         	}
     	
-        	/* send email, works only for random queries */
-        	if (bp.getInputParams()) {
-        		BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
-        	}
+        	/* send email */
+        	BuildText.printText(plotDir, "emailInfo.txt", bp.paramsToTextFile());
         	if (!SendEmail.send(plotDir, "ningli@vt.edu", bp.getEmail(), emailInfo, 
         			bp.getNumberOfChannels(), true, bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), 
         			bp.plotGooglMapKC(), bp.isTradeOffAD(), bp.isTradeOffTF(), bp.isTradeOffKA(), 
-        			bp.isTradeOffKC(), bp.getInputParams())) {
+        			bp.isTradeOffKC())) {
         		System.out.println("Sending email failed");
         		return;
         	}

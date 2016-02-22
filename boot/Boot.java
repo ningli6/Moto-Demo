@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import utility.MTP;
+
 /**
  * Entrance of java program
  * Parse parameters from web interface then pass it as a new data structure to a runnable class
- * @author Administrator
+ * @author Ning Li ningli@vt.edu
  *
  */
 public class Boot {
@@ -62,6 +64,9 @@ public class Boot {
 				System.out.println("FAILED");
 				return;
 			}
+			
+			/* Modify MTP */
+			MTP.ModifyMTP(bp.getd0(), bp.getd1(), bp.getd2());
 			
 			/* Keep record */
 			List<String> records = new ArrayList<String>();

@@ -22,11 +22,11 @@ public class SimKAnonymity extends Simulation {
 	private boolean feasible;                 // is k for anonymity a valid parameter
 	private Map<Integer, double[]> icCMMap;;  // ic for multiple simulation with countermeasure
 
-	public SimKAnonymity(BootParams bootParams, double mtpScale,
-			int interval, String directory) {
+	public SimKAnonymity(BootParams bootParams, int interval,
+			String directory) {
 		
 		/* parent instructor */
-		super(bootParams, mtpScale, interval, directory);
+		super(bootParams, interval, directory);
 		
 		/* initialize countermeasure */
 		this.counterMeasure = "KANONYMITY";
