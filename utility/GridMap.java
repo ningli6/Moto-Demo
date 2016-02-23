@@ -41,7 +41,9 @@ public class GridMap {
 		numberOfRows = (int) ((northLat - southLat) / cellDegree);
 		numberOfCols = (int) ((eastLng - westLng) / cellDegree);
 		if (numberOfRows <= 0 || numberOfCols <= 0) throw new IllegalArgumentException();
+		// update the south latitude
 		southLat = northLat - cellDegree * numberOfRows;
+		// update the east longitude
 		eastLng = westLng + cellDegree * numberOfCols;
 		Location nw_loc = new Location(northLat, westLng);
 		Location ne_loc = new Location(northLat, eastLng);

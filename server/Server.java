@@ -144,7 +144,8 @@ public class Server {
 				PrintWriter out = new PrintWriter(file);
 				out.println("LAT LNG RI CI");
 				for (PU pu: channelsList[i]) {
-					out.println(pu.getLocation().getLatitude() + " " + pu.getLocation().getLongitude() + " " + pu.getRowIndex() + " " + pu.getColIndex());
+					// modify printed pu location a little bit.
+					out.println((pu.getLocation().getLatitude() - map.getCellDegree() * 0.5) + " " + (pu.getLocation().getLongitude() + map.getCellDegree() * 0.5) + " " + pu.getRowIndex() + " " + pu.getColIndex());
 				}
 				out.close (); // this is necessary
 			} catch (FileNotFoundException e) {

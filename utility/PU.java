@@ -42,8 +42,8 @@ public class PU {
 	public PU(int id, double lat, double lng, GridMap map) {
 		this.id = id;
 		this.map = map;
-		this.indexOfRow = map.latToRow(lat);
-		this.indexOfCol = map.lngToCol(lng);
+		this.indexOfRow = map.latToRow(lat); // round down, 
+		this.indexOfCol = map.lngToCol(lng); // round down, 
 		this.cellLocation = map.getLocation(indexOfRow, indexOfCol);
 	}
 

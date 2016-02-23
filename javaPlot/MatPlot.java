@@ -42,17 +42,15 @@ public class MatPlot {
 		/**
 		 * Construct a map instance to get number of rows and cols
 		 */
-		Location upperLeft = new Location(nlat, wlng);
-		Location lowerRight = new Location(slat, elng);
-		GridMap map = new GridMap(upperLeft, lowerRight, cellSize);
-		int rows = map.getNumOfRows();
-		int cols = map.getNumOfCols();
+		Location nwLoc = new Location(nlat, wlng);
+		Location seLoc = new Location(slat, elng);
+		GridMap map = new GridMap(nwLoc, seLoc, cellSize);
 		try {
 	        // using the Runtime exec method:
 	        String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
 	        							+ dataDir + " " + plotDir + " "
-	        							+ Integer.toString(noc) + " " + Integer.toString(rows) + " " + Integer.toString(cols) + " "
-	        							+ Double.toString(nlat) + " " + Double.toString(slat) + " " + Double.toString(wlng) + " " + Double.toString(elng);
+	        							+ Integer.toString(noc) + " " + Integer.toString(map.getNumOfRows()) + " " + Integer.toString(map.getNumOfCols()) + " "
+	        							+ Double.toString(map.getNorthLat()) + " " + Double.toString(map.getSouthLat()) + " " + Double.toString(map.getWestLng()) + " " + Double.toString(map.getEastLng());
 	        if (randomQuery) {
 		        if (noCM) {
 		        	cmd += " No_Countermeasure";
@@ -88,7 +86,8 @@ public class MatPlot {
 		        }
 	        }
 
-//	        System.out.println(cmd);
+	        System.out.println(cmd);
+	        
 	        Process p = Runtime.getRuntime().exec(cmd);
 	        /* uncomment these code to see matlab output */
 			BufferedReader stdInput = new BufferedReader(new

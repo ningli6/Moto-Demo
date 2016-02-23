@@ -41,6 +41,7 @@ public class Simulation {
 		Location nwLoc = new Location(bootParams.getNorthLat(), bootParams.getWestLng());
 		Location seLoc = new Location(bootParams.getSouthLat(), bootParams.getEastLng());
 		this.map = new GridMap(nwLoc, seLoc, cellsize);
+		
 		/* initialize number of channels */
 		noc = bootParams.getNumberOfChannels();
 		
