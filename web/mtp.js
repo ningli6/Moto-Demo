@@ -83,6 +83,7 @@ function setd2fromOutter0 () {
 	if (d2 <= d1 || d2 <= d0) {
 		alert("Range parameters must be in increasing order");
 	}
+	updateCircles();
 }
 
 function setd2fromOutter1 () {
@@ -100,8 +101,33 @@ function setd2fromOutter1 () {
 	if (d2 <= d1 || d2 <= d0) {
 		alert("Range parameters must be in increasing order");
 	}
+	updateCircles();
 }
 
 function checkMTPParameters () {
 	return d0 < d1 && d1 < d2 && d0 > 0 && d1 > 0 && d2 > 0
+}
+
+/**
+ * Update radius of circles of each marker accordingly
+ */
+function updateCircles () {
+	for (var i = 0; i < circles_one.length; i++) {
+		circles_one[i].setRadius(d2 * 1000);
+	}
+	for (var i = 0; i < circles_two_channel0.length; i++) {
+		circles_two_channel0[i].setRadius(d2 * 1000);
+	}
+	for (var i = 0; i < circles_two_channel1.length; i++) {
+		circles_two_channel1[i].setRadius(d2 * 1000);
+	}
+	for (var i = 0; i < circles_three_channel0.length; i++) {
+		circles_three_channel0[i].setRadius(d2 * 1000);
+	}
+	for (var i = 0; i < circles_three_channel1.length; i++) {
+		circles_three_channel1[i].setRadius(d2 * 1000);
+	}
+	for (var i = 0; i < circles_three_channel2.length; i++) {
+		circles_three_channel2[i].setRadius(d2 * 1000);
+	}
 }

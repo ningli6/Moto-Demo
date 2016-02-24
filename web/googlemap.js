@@ -210,7 +210,7 @@ function placeMarker(location) {
       map: map,
       clickable: false,
       center: location,
-      radius: 25000    // meters
+      radius: d2 * 1000    // meters
     };
     var pc = new google.maps.Circle(protectionCircle);
 
