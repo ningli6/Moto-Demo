@@ -71,6 +71,11 @@ public class Boot {
 			/* Keep record */
 			List<String> records = new ArrayList<String>();
 			records.add(new Date().toString() + " " + bp.getEmail() + "\n");
+			String command = "";
+			for (String arg : args) {
+				command += arg + " ";
+			}
+			records.add(command + "\n");
 			Path logTxt = Paths.get(logRootDir + "log.txt");
 			Files.write(logTxt, records, Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 
