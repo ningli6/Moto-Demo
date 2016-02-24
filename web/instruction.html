@@ -48,7 +48,7 @@
     <h5>Perturbation with Additive Noise</h5>
 
     <p>
-        The perturbative masking method (a.k.a randomization method) is a technique for privacy-preserving databases that uses data distortion in order to mask the attribute values of records. In this method, we add sufficiently large noise to individual record values to prevent recovery of these values by an adversary. One key advantage of the randomization method is that it is relatively simple, and does not require knowledge of the distribution of other records in the data. Additive noise is the most basicperturbative method that can be used for privacy-preserving databases.
+        The perturbative masking method (a.k.a randomization method) is a technique for privacy-preserving databases that uses data distortion in order to mask the attribute values of records. In this method, we add sufficiently large noise to individual record values to prevent recovery of these values by an adversary. One key advantage of the randomization method is that it is relatively simple, and does not require knowledge of the distribution of other records in the data. Additive noise is the most basic perturbative method that can be used for privacy-preserving databases.
     </p>
 
     <h5>Perturbation with Transfiguration</h5>
@@ -58,7 +58,7 @@
 
     <h5>K-Anonymity</h5>
     <p>
-        The concept of k-anonymity was origi- nally introduced in the context of relational data privacy. The motivating factor behind the k-anonymity model was the possibility of indirect identification of records from public databases via quasi-identifiers i.e., combination of multiple record attributes that can be used to identify individual records. For instance, a medical institution may want to release a table of medical records with the names of the individu- als replaced with dummy identifiers. However, some set of attributes (which are referred to as the quasi-identifiers) can still lead to identity breaches. In the k-anonymity method, the granularity of data representation is reduced with the use of techniques such as generalization or suppression. In the context of location privacy of PUs in database-driven spectrum sharing, we can achieve location k-anonymity by combining protected contours of k PUs that are closest together, and creating a larger protected contour that works like the cloak box for Location-Based Services (LBSs). The SUs are not allowed to transmit in the area covered by this larger protected contour.
+        The concept of k-anonymity was originally introduced in the context of relational data privacy. The motivating factor behind the k-anonymity model was the possibility of indirect identification of records from public databases via quasi-identifiers i.e., combination of multiple record attributes that can be used to identify individual records. For instance, a medical institution may want to release a table of medical records with the names of the individuals replaced with dummy identifiers. However, some set of attributes (which are referred to as the quasi-identifiers) can still lead to identity breaches. In the k-anonymity method, the granularity of data representation is reduced with the use of techniques such as generalization or suppression. In the context of location privacy of PUs in database-driven spectrum sharing, we can achieve location k-anonymity by combining protected contours of k PUs that are closest together, and creating a larger protected contour that works like the cloak box for Location-Based Services (LBSs). The SUs are not allowed to transmit in the area covered by this larger protected contour.
     </p>
 
     <h5>K-Clustering</h5>
@@ -107,6 +107,9 @@
     <h4>Specify the grid size</h4>
     <p>Then you need to specify grid size with the dropdown button. We implemented our map in terms of the matrix. By specifying grid size here you are actually specifying granularity of the matrix. For now we have provided three options: 0.5 km, 1 km and 5 km. For a certain area, smaller grid size means a more fine-grained underlying matrix, and more computation needed as well.</p>
     
+    <h4>Specify MTP parameters</h4>
+    <p>You can modify the MPT parameters if you want, although the default settings would work just fine. When you do so be sure to notice that these values are actually radius of protection zones. They need to be positive numbers and in increasing order.</p>
+
     <h4>Specify analysis area and locations of Primary Users</h4> 
     <p>The next thing you need to do is to specify analysis area and primary users distribution for the simulation. Here are the buttons that you will find helpful:</p>
     <div>
@@ -127,12 +130,12 @@
         <p>By clicking on the map, a location will be marked with a circle centered at that location. The marker indicates the location of the primary user. The circle indicates the circular protection zone of the primary user.</p>
         <p>You can either plot analysis area first or specifying markers first. But once you have analysis area ready, you must select location of primary users inside the region. Once you have markers ready, you must draw an analysis area that covers all the primary Users.</p>
     </div>
-    <p>The circle of each marker has radius of 25 km. It represents the greatest protecting zone of primary user. In our demo, MTP function is defined as below:</p>
+    <p>The circle of each marker has radius of 25 km. It represents the greatest protecting zone of primary user. In our demo, default MTP function is defined as below:</p>
     <p>Let <i>d</i> be the distance between attacker and primary user. <i>R</i> is the full transmit power available, <i>r</i> is the actual transmit power that attacker can use.</p>
     <div class="well">
         <p align="center"><i>r = 0 if d &le; 8 km<br>r = 0.5 R if 8 &lt; d &le; 14 km<br>r = 0.75 R if 14 &lt; d &le; 25 km<br>r = R if d &gt; 25 km</i></p>
     </div>
-    <p>This means if the distance between attacker and primary user is less than 8 km, the transmit power that primary user can provide is 0. If this distance is greater than 8 but less than 14 km, the transmit power available transmit power would be 50 &#37; of full power. If the distance is between 14 km to 25 km, the available transmit power would be 75 &#37;. Otherwise the attacker can have the full transmit power. The knowledge of the exact value used in MTP function is not necessary to use the demo.</p>
+    <p>This means if the distance between attacker and primary user is less than 8 km, the transmit power that primary user can provide is 0. If this distance is greater than 8 but less than 14 km, the transmit power available transmit power would be 50 &#37; of full power. If the distance is between 14 km to 25 km, the available transmit power would be 75 &#37;. Otherwise the attacker can have the full transmit power. We give uses the option to modify these MTP parameters.</p>
     <p>Here is the screenshot that reviews major elements you need to know to interact with the Google Map.</p>
     <img class="img-responsive" src="pics/plot.jpg">
     
