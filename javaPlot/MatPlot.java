@@ -47,7 +47,7 @@ public class MatPlot {
 		GridMap map = new GridMap(nwLoc, seLoc, cellSize);
 		try {
 	        // using the Runtime exec method:
-	        String cmd = "java -cp \"C:\\Users\\Administrator\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\win64\\javabuilder.jar\";\"C:\\Users\\Administrator\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
+	        String cmd = "java -cp \"C:\\Users\\Pradeep\\Desktop\\plotMap\";\"C:\\Program Files\\MATLAB\\MATLAB Compiler Runtime\\v83\\toolbox\\javabuilder\\jar\\javabuilder.jar\";\"C:\\Users\\Pradeep\\Desktop\\plotMap\\MatPlot.jar\" getmagic " 
 	        							+ dataDir + " " + plotDir + " "
 	        							+ Integer.toString(noc) + " " + Integer.toString(map.getNumOfRows()) + " " + Integer.toString(map.getNumOfCols()) + " "
 	        							+ Double.toString(map.getNorthLat()) + " " + Double.toString(map.getSouthLat()) + " " + Double.toString(map.getWestLng()) + " " + Double.toString(map.getEastLng());
@@ -85,7 +85,8 @@ public class MatPlot {
 		        	cmd += " smart_K_Clustering";
 		        }
 	        }
-
+	        
+	        // print command
 	        System.out.println(cmd);
 	        
 	        Process p = Runtime.getRuntime().exec(cmd);

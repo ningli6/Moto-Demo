@@ -158,7 +158,7 @@ public class SimTransfiguration extends Simulation {
 		for (int rep = 0; rep < repetition; rep++){
 			multclient.reset(); // set infer matrix to 0.5
 			for (int i = 1; i <= maxQ; i++) {
-				System.out.println("Q: " + i);
+//				System.out.println("Q: " + i);
 				multclient.smartLocation();
 				multclient.query(cmServer);
 				if (icSmartMap.containsKey(i)){
@@ -178,7 +178,7 @@ public class SimTransfiguration extends Simulation {
 	public void randomTradeOffCurve() {
 		int[] cmString = {3, 4, 5, 6};
 		double[] trdIC = new double[cmString.length];
-		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -cm tf 3 -gm -tr tf -q 50 -sq -e ningli@vt.edu -opt pa ";
+		String args = "-cd 0.005 -a 38.05890484918669 -79.70169067382812 37.46831856835604 -78.88320922851562 -c 1 -C 37.779398571318765 -79.29519653320312 -mtp 8 14 25 -cm tf 3 -gm -tr tf -q 50 -sq -e ningli@vt.edu";
 		BootParams tfBp = Parser.parse(args.split(" "));
 		Location upperLeft = new Location(tfBp.getNorthLat(), tfBp.getWestLng());
 		Location lowerRight = new Location(tfBp.getSouthLat(), tfBp.getEastLng());
@@ -197,7 +197,7 @@ public class SimTransfiguration extends Simulation {
 		Client trdOfClient = new Client(tfServer);     // get a new client
 		for (int k = 0; k < cmString.length; k++) {// for each sides
 			tfServer.transfigure(cmString[k]);         // set new number of sides
-			System.out.println("Sides: " + cmString[k]);
+//			System.out.println("Sides: " + cmString[k]);
 			int count = 0;
 			while (true) {
 				for (int r = 0; r < repeat; r++) {
@@ -209,7 +209,7 @@ public class SimTransfiguration extends Simulation {
 					double[] ic = trdOfClient.computeIC();
 					trdIC[k] += average(ic) / repeat;
 				}
-				System.out.println(cmString[k] + ": " + trdIC[k]);
+//				System.out.println(cmString[k] + ": " + trdIC[k]);
 				count++;
 				if (count == 5) {   // if after 5 attempts, we can't get smaller value of ic, make it 0.7 of its predecessor
 					trdIC[k] = 07 * trdIC[k - 1];
@@ -234,7 +234,7 @@ public class SimTransfiguration extends Simulation {
 			for (int r = 0; r < repeat; r++) {
 				trdOfClient.reset(); // set client maps back to 0.5
 				for (int i = 0; i < noq; i++) {
-					System.out.println("Q: " + i);
+//					System.out.println("Q: " + i);
 					trdOfClient.smartLocation();
 					trdOfClient.query(cmServer);
 				}

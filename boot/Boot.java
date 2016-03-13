@@ -22,9 +22,15 @@ import utility.MTP;
  */
 public class Boot {
 	/* initial settings for working directory */
+	/*
 	public static String dataRootDir = "C:\\Users\\Administrator\\Desktop\\motoData\\";
 	public static String plotRootDir = "C:\\Users\\Administrator\\Desktop\\motoPlot\\";;
 	public static String logRootDir = "C:\\Users\\Administrator\\Desktop\\motoDemo\\";
+	*/
+	
+	public static String dataRootDir = "C:\\Users\\Pradeep\\Desktop\\motoData\\";
+	public static String plotRootDir = "C:\\Users\\Pradeep\\Desktop\\motoPlot\\";;
+	public static String logRootDir = "C:\\Users\\Pradeep\\Desktop\\motoDemo\\";
 	
 	public static void main(String[] args) {
 		try {

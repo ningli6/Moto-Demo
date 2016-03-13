@@ -44,9 +44,9 @@ public class SmartAttacker extends Client {
 		if (res == null) return;
 		double power = res.getPower();
 		int cID = res.getChannelID();
-		System.out.println("Response power: " + power);
+//		System.out.println("Response power: " + power);
 		isVisited[cID][indexOfRow][indexOfCol] = true;
-		System.out.println("Set isVisited[" + cID + "][" + indexOfRow + "][" + indexOfCol + "] to true");
+//		System.out.println("Set isVisited[" + cID + "][" + indexOfRow + "][" + indexOfCol + "] to true");
 		inferMap[cID].updateIcMat(indexOfRow, indexOfCol, power, icMat[cID]);
 	}
 
@@ -85,7 +85,7 @@ public class SmartAttacker extends Client {
 			}
 		}
 		setLocation(qi, qj);
-		System.out.println("Choose: (" + qi + ", " + qj + ")");
+//		System.out.println("Choose: (" + qi + ", " + qj + ")");
 	}
 	
 	/**

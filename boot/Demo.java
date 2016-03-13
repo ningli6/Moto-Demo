@@ -185,7 +185,7 @@ public class Demo {
             	}
         	}
 
-//        	/* plot google map, just working for random queries */
+        	/* plot google map */
         	if (!MatPlot.plot(this.dataDir, this.plotDir, bp.getCellSize(), bp.getNumberOfChannels(), bp.getNorthLat(), 
         			bp.getSouthLat(), bp.getWestLng(), bp.getEastLng(), bp.isRandomQuery(), bp.isSmartQuery(), bp.plotGooglMapNO(), bp.plotGooglMapAD(), bp.plotGooglMapTF(), bp.plotGooglMapKA(), bp.plotGooglMapKC())) {
         		System.out.println("Plot Google Maps failed");

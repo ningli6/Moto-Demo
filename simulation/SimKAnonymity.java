@@ -154,7 +154,7 @@ public class SimKAnonymity extends Simulation {
 		for (int rep = 0; rep < repetation; rep++){
 			multclient.reset(); // set infer matrix to 0.5
 			for (int i = 1; i <= maxQ; i++) {
-				System.out.println("Q: " + i);
+//				System.out.println("Q: " + i);
 				multclient.smartLocation();
 				multclient.query(cmServer);
 				if (icSmartMap.containsKey(i)){
@@ -220,7 +220,7 @@ public class SimKAnonymity extends Simulation {
 			for (int r = 0; r < repeat; r++) {
 				trClient.reset();// reset k
 				for (int q = 0; q < noq; q++) {
-					System.out.println("Q: " + q);
+//					System.out.println("Q: " + q);
 					trClient.smartLocation();
 					trClient.query(cmServer);
 				}

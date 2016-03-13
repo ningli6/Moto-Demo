@@ -18,7 +18,8 @@ public class CmpPlot {
 	public static boolean plotRandom(String dataDir, String plotDir, boolean noCM, boolean ad, boolean tf, boolean ka, boolean kc) {
 		System.out.println("Start plotting ic vs queries for random queries...");
 		try {
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
+			//String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotICvsQ.py " + dataDir + " "+ plotDir;
 			if (noCM) {
 				cmd += " cmp_NoCountermeasure.txt";
 			}
@@ -78,7 +79,8 @@ public class CmpPlot {
 			boolean ka, boolean kc) {
 		System.out.println("Start plotting ic vs queries for smart queries...");
 		try {
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ_Smart.py " + dataDir + " "+ plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotICvsQ_Smart.py " + dataDir + " "+ plotDir;
+			//String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ_Smart.py " + dataDir + " "+ plotDir;
 			if (noCM) {
 				cmd += " cmp_smart_NoCountermeasure.txt";
 			}
@@ -131,7 +133,8 @@ public class CmpPlot {
 	public static boolean plotRandom_vs_Smart(String dataDir, String plotDir) {
 		System.out.println("Start plotting ic vs queries for random and smart queries with no countermeasure...");
 		try {
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ_random_smart.py " + dataDir + " "+ plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotICvsQ_random_smart.py " + dataDir + " "+ plotDir;
+			//String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotICvsQ_random_smart.py " + dataDir + " "+ plotDir;
 			cmd += " cmp_NoCountermeasure.txt cmp_smart_NoCountermeasure.txt";
 			System.out.println(cmd);
 			Process p = Runtime.getRuntime().exec(cmd);
@@ -177,7 +180,8 @@ public class CmpPlot {
 			boolean ka, boolean kc) {
 		System.out.println("Start plotting IC bar for random and smart queries...");
 		try {
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotCMPBar.py " + dataDir + " "+ plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotCMPBar.py " + dataDir + " "+ plotDir;
+			//String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotCMPBar.py " + dataDir + " "+ plotDir;
 			if (noCM) {
 				cmd += " NoCountermeasure";
 			}

@@ -39,9 +39,9 @@ public class ServerAdditiveNoise extends Server{
 		Response res = super.response(client);
 		if (res == null) return res;
 		if (actualLies < expectedLies) {
-			System.out.println("Expected: " + expectedLies + ", actualLies: " + actualLies);
+//			System.out.println("Expected: " + expectedLies + ", actualLies: " + actualLies);
 			if (res.decrease(NOISE_DECREASE_STEP)) {
-				System.out.println("Lie again!");
+//				System.out.println("Lie again!");
 				actualLies++;
 			}
 		}

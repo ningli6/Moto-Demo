@@ -148,7 +148,7 @@ public class SimAdditiveNoise extends Simulation {
 				break;
 			}
 			attempts--;
-			System.out.println("Noise level not satisfied, try again");
+//			System.out.println("Noise level not satisfied, try again");
 		}
 		/* if can't reach noise requirement within 20 attempts, return */
 		if (attempts == 0) {
@@ -181,7 +181,7 @@ public class SimAdditiveNoise extends Simulation {
 	 		icSmartMap.put(gap * i, new double[noc]);
 	 	}
 	 	for (int q : qlist) {             // for each query number
-	 		System.out.println("For query: " + q);
+//	 		System.out.println("For query: " + q);
 	 		cmServer.updateLiesNeeded(q); // update expected number of lies
 	 		int attempts = 1;             // within 1 attempts, must succeed
 	 		int succeed = 0;              // number of successful attempts
@@ -189,12 +189,12 @@ public class SimAdditiveNoise extends Simulation {
 	 			attacker.reset();         // reset matrix to 0.5
 	 			cmServer.reset();         // rest actual lies to 0
 	 			for (int j = 0; j < q; j++) {
-	 				System.out.println("Q: " + j);
+//	 				System.out.println("Q: " + j);
 	 				attacker.smartLocation();
 	 				attacker.query(cmServer);
 	 			}
 	 			if (!cmServer.reachNoiseLevel()) {
-	 				System.out.println("Noise condition is not satisfied, try again");
+//	 				System.out.println("Noise condition is not satisfied, try again");
 	 				attempts--; // noise level not reached, bad attempt
 	 			}
 	 			else {
@@ -230,12 +230,12 @@ public class SimAdditiveNoise extends Simulation {
 		Client trdOfClient = new Client(cmServer);  // create a new client
 		for (int k = 0; k < cmString.length; k++) { // for each noise level
 			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
-			System.out.println("Noise: " + cmString[k]);
+//			System.out.println("Noise: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
 				trdOfClient.reset();                // set matrix back to 0.5
 				cmServer.reset();                   // set actual lies back to 0
 				for (int i = 0; i < noq; i++) {
-					System.out.println("Q: " + i);
+//					System.out.println("Q: " + i);
 					trdOfClient.randomLocation();
 					trdOfClient.query(cmServer);
 				}
@@ -262,7 +262,7 @@ public class SimAdditiveNoise extends Simulation {
 		SmartAttacker trdOfClient = new SmartAttacker(cmServer);  // create a new client
 		for (int k = 0; k < cmString.length; k++) { // for each noise level
 			cmServer.setNoiseLevel(cmString[k]);    // set new noise level
-			System.out.println("Noise: " + cmString[k]);
+//			System.out.println("Noise: " + cmString[k]);
 			for (int r = 0; r < repeat; r++) {
 				trdOfClient.reset();                // set matrix back to 0.5
 				cmServer.reset();                   // set actual lies back to 0

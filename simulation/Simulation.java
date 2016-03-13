@@ -138,7 +138,7 @@ public class Simulation {
 			attacker.reset();
 			for (int i = 1; i <= maxQ; i++) {       // number of queries
 				/* Debug */
-				System.out.println("Q: " + i);
+//				System.out.println("Q: " + i);
 				attacker.smartLocation();           // find next query location
 				attacker.query(server);
 				if (icSmartMap.containsKey(i)){

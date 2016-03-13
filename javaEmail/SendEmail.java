@@ -43,7 +43,7 @@ public class SendEmail {
         content = content.replaceAll("\n", "<br>");
 
         try {
-        	String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
+        	String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\send.py " + plotDir + " " + from + " " + to + " " + content;
             if (icVSq) {
             	cmd += " ICvsQ.png";                 // ic vs q with random query
             	cmd += " ICvsQ_Smart.png";           // ic vs q with smart query

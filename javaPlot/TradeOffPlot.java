@@ -22,7 +22,7 @@ public class TradeOffPlot {
 		}
 		try {
 			System.out.println("Start plotting trade off curves for random queries...");
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOff.py " + dataDir + " " + plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotTradeOff.py " + dataDir + " " + plotDir;
 			if (ad) {
 				cmd += " traddOff_AdditiveNoise.txt";
 			}
@@ -50,7 +50,7 @@ public class TradeOffPlot {
 			}
 			
 			System.out.println("Start plotting trade off bars for random queries...");
-			cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffBar.py " + dataDir + " " + plotDir;
+			cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotTradeOffBar.py " + dataDir + " " + plotDir;
 			if (ka) {
 				cmd += " traddOff_KAnonymity.txt";
 			}
@@ -100,7 +100,7 @@ public class TradeOffPlot {
 		}
 		try {
 			System.out.println("Start plotting trade off curves for smart queries...");
-			String cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffSmart.py " + dataDir + " " + plotDir;
+			String cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotTradeOffSmart.py " + dataDir + " " + plotDir;
 			if (ad) {
 				cmd += " traddOff_smart_AdditiveNoise.txt";
 			}
@@ -128,7 +128,7 @@ public class TradeOffPlot {
 			}
 			
 			System.out.println("Start plotting trade off bars for random queries...");
-			cmd = "python C:\\Users\\Administrator\\Desktop\\motoDemo\\python\\plotTradeOffBarSmart.py " + dataDir + " " + plotDir;
+			cmd = "python C:\\Users\\Pradeep\\Desktop\\motoDemo\\python\\plotTradeOffBarSmart.py " + dataDir + " " + plotDir;
 			if (ka) {
 				cmd += " traddOff_smart_KAnonymity.txt";
 			}
